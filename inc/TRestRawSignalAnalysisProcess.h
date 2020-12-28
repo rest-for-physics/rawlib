@@ -24,9 +24,9 @@
 #define RestCore_TRestRawSignalAnalysisProcess
 
 #include <TH1D.h>
-#include <TRestDetectorReadout.h>
 #include <TRestDetectorGas.h>
 #include <TRestDetectorHitsEvent.h>
+#include <TRestDetectorReadout.h>
 #include <TRestRawSignalEvent.h>
 
 #include "TRestEventProcess.h"
@@ -48,8 +48,6 @@ class TRestRawSignalAnalysisProcess : public TRestEventProcess {
     Double_t fPointThreshold = 2;
     Double_t fSignalThreshold = 5;
     Int_t fPointsOverThreshold = 5;
-
-    void InitFromConfigFile();
 
     void Initialize();
 
