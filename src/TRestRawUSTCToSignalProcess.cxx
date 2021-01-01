@@ -26,11 +26,9 @@ using namespace std;
 #include <bitset>
 #include "TTimeStamp.h"
 
-ClassImp(TRestRawUSTCToSignalProcess)
-    //______________________________________________________________________________
-    TRestRawUSTCToSignalProcess::TRestRawUSTCToSignalProcess() {
-    Initialize();
-}
+ClassImp(TRestRawUSTCToSignalProcess);
+//______________________________________________________________________________
+TRestRawUSTCToSignalProcess::TRestRawUSTCToSignalProcess() { Initialize(); }
 
 TRestRawUSTCToSignalProcess::TRestRawUSTCToSignalProcess(char* cfgFileName) { Initialize(); }
 

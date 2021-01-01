@@ -19,11 +19,9 @@
 #include "TRestRawDAQMetadata.h"
 using namespace std;
 
-ClassImp(TRestRawDAQMetadata)
-    //______________________________________________________________________________
-    TRestRawDAQMetadata::TRestRawDAQMetadata() {
-    Initialize();
-}
+ClassImp(TRestRawDAQMetadata);
+//______________________________________________________________________________
+TRestRawDAQMetadata::TRestRawDAQMetadata() { Initialize(); }
 
 TRestRawDAQMetadata::TRestRawDAQMetadata(char* cfgFileName) : TRestMetadata(cfgFileName) {
     Initialize();

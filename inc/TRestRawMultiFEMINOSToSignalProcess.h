@@ -24,7 +24,6 @@
 #define RestCore_TRestRawMultiFEMINOSToSignalProcess
 
 #include "TRestRawToSignalProcess.h"
-#include "TRestDetectorSignalEvent.h"
 
 //! A process to read Feminos acquisition cards in single or TCM mode.
 class TRestRawMultiFEMINOSToSignalProcess : public TRestRawToSignalProcess {

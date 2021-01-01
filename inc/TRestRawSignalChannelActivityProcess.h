@@ -25,9 +25,11 @@
 
 #include <TH1D.h>
 
+#ifdef REST_DetectorLib
 #include <TRestDetectorReadout.h>
-#include <TRestRawSignalEvent.h>
+#endif
 
+#include <TRestRawSignalEvent.h>
 #include "TRestEventProcess.h"
 
 //! A pure analysis process to generate histograms with detector channels activity
@@ -36,8 +38,10 @@ class TRestRawSignalChannelActivityProcess : public TRestEventProcess {
     /// A pointer to the specific TRestRawSignalEvent input
     TRestRawSignalEvent* fSignalEvent;  //!
 
+#ifdef REST_DetectorLib
     /// A pointer to the readout metadata information accessible to TRestRun
     TRestDetectorReadout* fReadout;  //!
+#endif
 
     void InitFromConfigFile();
 
@@ -121,9 +125,13 @@ class TRestRawSignalChannelActivityProcess : public TRestEventProcess {
         metadata << "Start daq channel : " << fDaqStartChannel << endl;
         metadata << "End daq channel : " << fDaqEndChannel << endl;
 
+#ifdef REST_DetectorLib
         metadata << "Number of readout histogram channels : " << fReadoutHistogramChannels << endl;
         metadata << "Start readout channel : " << fReadoutStartChannel << endl;
         metadata << "End readout channel : " << fReadoutEndChannel << endl;
+#else
+        metadata << "Some Detector features in this process are not available!" << endl;
+#endif
 
         EndPrintProcess();
     }

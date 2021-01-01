@@ -68,14 +68,12 @@
 #include "TRestRawSignalRecoverChannelsProcess.h"
 using namespace std;
 
-ClassImp(TRestRawSignalRecoverChannelsProcess)
+ClassImp(TRestRawSignalRecoverChannelsProcess);
 
-    ///////////////////////////////////////////////
-    /// \brief Default constructor
-    ///
-    TRestRawSignalRecoverChannelsProcess::TRestRawSignalRecoverChannelsProcess() {
-    Initialize();
-}
+///////////////////////////////////////////////
+/// \brief Default constructor
+///
+TRestRawSignalRecoverChannelsProcess::TRestRawSignalRecoverChannelsProcess() { Initialize(); }
 
 ///////////////////////////////////////////////
 /// \brief Constructor loading data from a config file

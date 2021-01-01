@@ -148,14 +148,17 @@ void TRestRawSignalChannelActivityProcess::LoadConfig(std::string cfgFilename, s
 /// is found in the processing chain.
 ///
 void TRestRawSignalChannelActivityProcess::InitProcess() {
+#ifdef REST_DetectorLib
     fReadout = GetMetadata<TRestDetectorReadout>();
 
     debug << "TRestRawSignalChannelActivityProcess::InitProcess. Readout pointer : " << fReadout << endl;
     if (GetVerboseLevel() >= REST_Info && fReadout) fReadout->PrintMetadata();
+#endif
 
     if (!fReadOnly) {
         fDaqChannelsHisto = new TH1D("daqChannelActivityRaw", "daqChannelActivityRaw", fDaqHistogramChannels,
                                      fDaqStartChannel, fDaqEndChannel);
+#ifdef REST_DetectorLib
         if (fReadout) {
             fReadoutChannelsHisto =
                 new TH1D("rChannelActivityRaw", "readoutChannelActivity", fReadoutHistogramChannels,
@@ -185,6 +188,7 @@ void TRestRawSignalChannelActivityProcess::InitProcess() {
                 new TH1D("rChannelActivityRaw_MH", "readoutChannelActivity", fReadoutHistogramChannels,
                          fReadoutStartChannel, fReadoutEndChannel);
         }
+#endif
     }
 }
 
@@ -192,20 +196,7 @@ void TRestRawSignalChannelActivityProcess::InitProcess() {
 /// \brief The main processing event function
 ///
 TRestEvent* TRestRawSignalChannelActivityProcess::ProcessEvent(TRestEvent* evInput) {
-    TString obsName;
-
-    TRestRawSignalEvent* fInputSignalEvent = (TRestRawSignalEvent*)evInput;
-
-    /// Copying the signal event to the output event
-
-    fSignalEvent->SetID(fInputSignalEvent->GetID());
-    fSignalEvent->SetSubID(fInputSignalEvent->GetSubID());
-    fSignalEvent->SetTimeStamp(fInputSignalEvent->GetTimeStamp());
-    fSignalEvent->SetSubEventTag(fInputSignalEvent->GetSubEventTag());
-
-    Int_t N = fInputSignalEvent->GetNumberOfSignals();
-    for (int sgnl = 0; sgnl < N; sgnl++) fSignalEvent->AddSignal(*fInputSignalEvent->GetSignal(sgnl));
-    /////////////////////////////////////////////////
+    TRestRawSignalEvent* fSignalEvent = (TRestRawSignalEvent*)evInput;
 
     Int_t Nlow = 0;
     Int_t Nhigh = 0;
@@ -217,7 +208,8 @@ TRestEvent* TRestRawSignalChannelActivityProcess::ProcessEvent(TRestEvent* evInp
 
     for (int s = 0; s < fSignalEvent->GetNumberOfSignals(); s++) {
         TRestRawSignal* sgnl = fSignalEvent->GetSignal(s);
-        // Adding signal to the channel activity histogram
+// Adding signal to the channel activity histogram
+#ifdef REST_DetectorLib
         if (!fReadOnly && fReadout) {
             Int_t signalID = fSignalEvent->GetSignal(s)->GetID();
 
@@ -240,6 +232,7 @@ TRestEvent* TRestRawSignalChannelActivityProcess::ProcessEvent(TRestEvent* evInp
                 if (Nhigh > 3 && Nhigh < 10) fReadoutChannelsHisto_MultiSignals_High->Fill(readoutChannel);
             }
         }
+#endif
 
         if (!fReadOnly) {
             Int_t daqChannel = fSignalEvent->GetSignal(s)->GetID();
@@ -260,6 +253,7 @@ TRestEvent* TRestRawSignalChannelActivityProcess::ProcessEvent(TRestEvent* evInp
 void TRestRawSignalChannelActivityProcess::EndProcess() {
     if (!fReadOnly) {
         fDaqChannelsHisto->Write();
+#ifdef REST_DetectorLib
         if (fReadout) {
             fReadoutChannelsHisto->Write();
 
@@ -273,6 +267,7 @@ void TRestRawSignalChannelActivityProcess::EndProcess() {
             fReadoutChannelsHisto_ThreeSignals_High->Write();
             fReadoutChannelsHisto_MultiSignals_High->Write();
         }
+#endif
     }
 }
 

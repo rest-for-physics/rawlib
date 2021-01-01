@@ -25,11 +25,9 @@
 using namespace std;
 #include "TTimeStamp.h"
 
-ClassImp(TRestRawToSignalProcess)
-    //______________________________________________________________________________
-    TRestRawToSignalProcess::TRestRawToSignalProcess() {
-    Initialize();
-}
+ClassImp(TRestRawToSignalProcess);
+//______________________________________________________________________________
+TRestRawToSignalProcess::TRestRawToSignalProcess() { Initialize(); }
 
 TRestRawToSignalProcess::TRestRawToSignalProcess(char* cfgFileName) {
     Initialize();
