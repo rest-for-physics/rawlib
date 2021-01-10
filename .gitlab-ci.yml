@@ -11,10 +11,10 @@ stages:
 
 before_script:
     - export USER="raw"
-    - echo "USER:$USER"
-    - echo "**CRONJOB:$CRONJOB**"
-    - echo "**CI_SERVER_HOST:$CI_SERVER_HOST**"
-    - echo "**CI_REPOSITORY_URL:$CI_REPOSITORY_URL**"
+    - echo "$USER"
+    - echo "**$CRONJOB**"
+    - echo "**$CI_SERVER_HOST**"
+    - echo "**$CI_REPOSITORY_URL**"
 
 clang-format:
     stage: pre-build
@@ -30,7 +30,7 @@ build:
   type: build
   script:
     - echo "**${CI_PROJECT_DIR}**"
-    - git clone git@github.com:rest-for-physics/framework.git restFramework
+    - git clone https://github.com/rest-for-physics/framework.git restFramework
     - cd restFramework/source/libraries/raw
     - git clone ${CI_REPOSITORY_URL}
     - cd ../../../
