@@ -21,14 +21,19 @@
  *************************************************************************/
 
 //////////////////////////////////////////////////////////////////////////
-/// TRestRawVetoAnalysisProcess an empty TRestRawSignalEvent process to serve as
-/// a copy/paste template to add future processes
-///
-/// This process is internal to the library. That means the input and
-/// output event is the event type corresponding to the library, i.e.
-/// TRestRawSignalEvent.
+/// TRestRawVetoAnalysisProcess ... needs to be documented
 ///
 /// TO BE DOCUMENTED
+///
+/// <hr>
+///
+/// \warning **⚠ WARNING: REST is under continous development.** This documentation
+/// is offered to you by the REST community. Your HELP is needed to keep this code
+/// up to date. Your feedback will be worth to support this software, please report
+/// any problems/suggestions you may find while using it at [The REST Framework
+/// forum](http://ezpc10.unizar.es). You are welcome to contribute fixing typos, updating
+/// information or adding/proposing new contributions. See also our [Contribution
+/// Guide](https://github.com/rest-for-physics/framework/blob/master/CONTRIBUTING.md)
 ///
 ///--------------------------------------------------------------------------
 ///
@@ -39,9 +44,13 @@
 /// 2019-Nov:  First implementation
 ///             Cristina Margalejo/Javier Galan
 ///
+/// 2020-Dec:  Added multi-VETO channel capability
+///             Konrad Altenmuller
+///
 /// \class      TRestRawVetoAnalysisProcess
 /// \author     Cristina Margalejo
 /// \author     Javier Galan
+/// \author     Konrad Altenmuller
 ///
 /// <hr>
 ///
@@ -153,8 +162,8 @@ TRestEvent* TRestRawVetoAnalysisProcess::ProcessEvent(TRestEvent* evInput) {
 
     // iterate over vetoes
     for (unsigned int i = 0; i < nVetoes; i++) {
-        if (fOutputRawSignalEvent->GetSignalIndex(fVetoSignalId[i]) !=
-            -1) {  // Checks if channel (fVetoSignalID) participated in the event. If not, it is -1
+        if (fOutputRawSignalEvent->GetSignalIndex(fVetoSignalId[i]) != -1) {
+            // Checks if channel (fVetoSignalID) participated in the event. If not, it is -1
             // We extract the parameters from the veto signal
             TRestRawSignal* sgnl = fOutputRawSignalEvent->GetSignalById(fVetoSignalId[i]);
 

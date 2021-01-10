@@ -23,20 +23,17 @@
 //////////////////////////////////////////////////////////////////////////
 /// The TRestRawSignalEvent ...
 ///
-/// DOCUMENTATION TO BE WRITTEN (main description, methods, data members)
+/// DOCUMENTATION TO BE WRITTEN (main description, figures, methods, data members)
 ///
-/// \note If you find this code useful for your work feel free to use it, improve
-/// it, add new validation pipelines and/or document the code.
-/// See also our
-/// <a href="https://lfna.unizar.es/rest-development/REST_v2/-/blob/master/CONTRIBUTING.md">
-/// Contribution guide </a>.
-/// Any concern, issue or problem using REST might also be posted to the
-/// [REST Framework Forum](http://ezpc10.unizar.es/).
+/// <hr>
 ///
-/// **⚠ WARNING: REST is under continous development.** This documentation
-/// is offered to you by the REST community. Your HELP is needed to keep this file
-/// up to date. You are very welcome to contribute fixing typos, updating
-/// information or adding new contributions.
+/// \warning **⚠ WARNING: REST is under continous development.** This documentation
+/// is offered to you by the REST community. Your HELP is needed to keep this code
+/// up to date. Your feedback will be worth to support this software, please report
+/// any problems/suggestions you may find while using it at [The REST Framework
+/// forum](http://ezpc10.unizar.es). You are welcome to contribute fixing typos, updating
+/// information or adding/proposing new contributions. See also our [Contribution
+/// Guide](https://github.com/rest-for-physics/framework/blob/master/CONTRIBUTING.md)
 ///
 ///--------------------------------------------------------------------------
 ///

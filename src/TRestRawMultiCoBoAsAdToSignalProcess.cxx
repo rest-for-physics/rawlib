@@ -1,23 +1,53 @@
-///______________________________________________________________________________
-///______________________________________________________________________________
-///______________________________________________________________________________
+/*************************************************************************
+ * This file is part of the REST software framework.                     *
+ *                                                                       *
+ * Copyright (C) 2016 GIFNA/TREX (University of Zaragoza)                *
+ * For more information see http://gifna.unizar.es/trex                  *
+ *                                                                       *
+ * REST is free software: you can redistribute it and/or modify          *
+ * it under the terms of the GNU General Public License as published by  *
+ * the Free Software Foundation, either version 3 of the License, or     *
+ * (at your option) any later version.                                   *
+ *                                                                       *
+ * REST is distributed in the hope that it will be useful,               *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the          *
+ * GNU General Public License for more details.                          *
+ *                                                                       *
+ * You should have a copy of the GNU General Public License along with   *
+ * REST in $REST_PATH/LICENSE.                                           *
+ * If not, see http://www.gnu.org/licenses/.                             *
+ * For the list of contributors see $REST_PATH/CREDITS.                  *
+ *************************************************************************/
+
+//////////////////////////////////////////////////////////////////////////
+/// TRestRawMultiCoBoAsAdToSignalProcess ...
+///
+/// TODO. This process might be obsolete today. It may need additional revision,
+/// validation, and documentation.
+///
+/// <hr>
+///
+/// \warning **⚠ WARNING: REST is under continous development.** This documentation
+/// is offered to you by the REST community. Your HELP is needed to keep this code
+/// up to date. Your feedback will be worth to support this software, please report
+/// any problems/suggestions you may find while using it at [The REST Framework
+/// forum](http://ezpc10.unizar.es). You are welcome to contribute fixing typos, updating
+/// information or adding/proposing new contributions. See also our [Contribution
+/// Guide](https://github.com/rest-for-physics/framework/blob/master/CONTRIBUTING.md)
+///
+///--------------------------------------------------------------------------
+///
+/// RESTsoft - Software for Rare Event Searches with TPCs
+///
+/// History of developments:
 ///
 ///
-///             RESTSoft : Software for Rare Event Searches with TPCs
+/// \class      TRestRawMultiCoBoAsAdToSignalProcess
+/// \author     Unknown
 ///
-///             TRestRawMultiCoBoAsAdToSignalProcess.cxx
+/// <hr>
 ///
-///             Template to use to design "event process" classes inherited from
-///             TRestRawMultiCoBoAsAdToSignalProcess
-///             How to use: replace TRestRawMultiCoBoAsAdToSignalProcess by your
-///             name, fill the required functions following instructions and add
-///             all needed additional members and funcionality
-///
-///             jun 2014:   First concept
-///                 Created as part of the conceptualization of existing REST
-///                 software.
-///                 Igor G. Irastorza
-///_______________________________________________________________________________
 
 // int counter = 0;
 

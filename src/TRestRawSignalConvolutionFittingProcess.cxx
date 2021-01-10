@@ -22,7 +22,6 @@
 
 //////////////////////////////////////////////////////////////////////////
 ///
-///
 /// Fit every TRestRawSignal in a TRestRawSignalEvent with AGET theoretical curve
 /// times a logistic function convoluted with a gaussian pulse. The logistic function
 /// acts like a step function to select only the positive range of the AGET function.
@@ -65,6 +64,16 @@
 ///
 /// * **FitRatioSigmaMaxPeakMean**: Mean over all pulses in the event of square root of the squared
 /// difference betweeen raw signal and fit divided by number of bins and divided by amplitude of the pulse.
+///
+/// <hr>
+///
+/// \warning **⚠ WARNING: REST is under continous development.** This documentation
+/// is offered to you by the REST community. Your HELP is needed to keep this code
+/// up to date. Your feedback will be worth to support this software, please report
+/// any problems/suggestions you may find while using it at [The REST Framework
+/// forum](http://ezpc10.unizar.es). You are welcome to contribute fixing typos, updating
+/// information or adding/proposing new contributions. See also our [Contribution
+/// Guide](https://github.com/rest-for-physics/framework/blob/master/CONTRIBUTING.md)
 ///
 ///_______________________________________________________________________________
 ///

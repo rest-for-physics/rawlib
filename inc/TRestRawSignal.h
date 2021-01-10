@@ -30,7 +30,7 @@
 #include <TString.h>
 #include <TVector2.h>
 
-/// This class defines a Short_t array with a physical parameter that evolves in time using a fixed time bin.
+//! It defines a Short_t array with a physical parameter that evolves in time using a fixed time bin.
 class TRestRawSignal : public TObject {
    private:
     void CalculateThresholdIntegral();
