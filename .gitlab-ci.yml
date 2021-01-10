@@ -1,0 +1,60 @@
+image: nkx1231/root6-geant4-garfield:0.4
+
+variables:
+      GIT_SUBMODULE_STRATEGY: recursive
+
+stages:
+  - pre-build
+  - build
+  - loadRESTLibs
+  - metadata
+
+before_script:
+    - export USER="raw"
+    - echo "USER:$USER"
+    - echo "**CRONJOB:$CRONJOB**"
+    - echo "**CI_SERVER_HOST:$CI_SERVER_HOST**"
+    - echo "**CI_REPOSITORY_URL:$CI_REPOSITORY_URL**"
+
+clang-format:
+    stage: pre-build
+    script:
+        - cd ${CI_PROJECT_DIR}/pipeline/clang-format/
+        - ./clangformattest.sh
+          # We execute only at a schedulled pipeline that defines CRONJOB variable
+    only:
+        variables:
+            - $CRONJOB
+
+build:
+  type: build
+  script:
+    - echo "**${CI_PROJECT_DIR}**"
+    - git clone git@github.com:rest-for-physics/framework.git restFramework
+    - cd restFramework/source/libraries/raw
+    - git clone ${CI_REPOSITORY_URL}
+    - cd ../../../
+    - mkdir build
+    - cd build
+    - cmake ../ -DREST_WELCOME=ON -DRESTLIB_AXION=ON -DREST_GARFIELD=OFF -DREST_G4=OFF -DINSTALL_PREFIX=${CI_PROJECT_DIR}/install
+    - make install -j2
+    - . ${CI_PROJECT_DIR}/install/thisREST.sh
+    - restRoot -b -q
+  except:
+    variables:
+      - $CRONJOB
+  artifacts:
+    paths:
+      - ${CI_PROJECT_DIR}/install
+      - ${CI_PROJECT_DIR}/restFramework
+      - ${CI_PROJECT_DIR}/restFramework/build
+    expire_in: 1 day
+
+loadRESTLibs:
+  type: loadRESTLibs
+  script:
+    - . ${CI_PROJECT_DIR}/install/thisREST.sh
+    - restRoot -b -q
+  except:
+    variables:
+      - $CRONJOB
