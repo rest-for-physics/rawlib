@@ -151,32 +151,48 @@ TRestEvent* TRestRawVetoAnalysisProcess::ProcessEvent(TRestEvent* evInput) {
     GetChar();
     */
 
-    Double_t VetoPeakTime = 0;             // Cristina
-    Double_t VetoMaxPeakAmplitude = 0;     // Cristina
     Int_t nVetoes = fVetoSignalId.size();  // how many veto channels are there?
+    map<int, Double_t> VetoMaxPeakAmplitude_map;
+    map<int, Double_t> VetoPeakTime_map;
 
     fOutputRawSignalEvent->SetBaseLineRange(fBaseLineRange);
     fOutputRawSignalEvent->SetRange(fRange);
 
+    VetoMaxPeakAmplitude_map.clear();
+    VetoPeakTime_map.clear();
+
     // cout << nVetoes << endl;
+
+    // get veto IDs (work in progress...)
+    // TiXmlElement *vetoDefinition = GetElement("veto");
+    //
+    // for (unsigned int i=0; i<fVetoSystem.size(); i++){
+    //  	cout << vetoDefinition->size() << endl;
+    // }
 
     // iterate over vetoes
     for (unsigned int i = 0; i < nVetoes; i++) {
-        if (fOutputRawSignalEvent->GetSignalIndex(fVetoSignalId[i]) != -1) {
-            // Checks if channel (fVetoSignalID) participated in the event. If not, it is -1
+        if (fOutputRawSignalEvent->GetSignalIndex(fVetoSignalId[i]) !=
+            -1) {  // Checks if channel (fVetoSignalID) participated in the event. If not, it is -1
             // We extract the parameters from the veto signal
             TRestRawSignal* sgnl = fOutputRawSignalEvent->GetSignalById(fVetoSignalId[i]);
 
-            VetoPeakTime = sgnl->GetMaxPeakBin();
-            VetoMaxPeakAmplitude = sgnl->GetMaxPeakValue();
-
             // And at the end we remove the signal from the event
             fOutputRawSignalEvent->RemoveSignalWithId(fVetoSignalId[i]);
+
+            // Save two maps with (veto panel ID, max amplitude) and (veto panel ID, peak time)
+            VetoMaxPeakAmplitude_map[fVetoSignalId[i]] = sgnl->GetMaxPeakValue();
+            VetoPeakTime_map[fVetoSignalId[i]] = sgnl->GetMaxPeakBin();
         }
     }
 
+    SetObservableValue("PeakTime", VetoPeakTime_map);
+    SetObservableValue("MaxPeakAmplitude", VetoMaxPeakAmplitude_map);
+
+    /*
     SetObservableValue("PeakTime", VetoPeakTime);                  // Cristina
     SetObservableValue("MaxPeakAmplitude", VetoMaxPeakAmplitude);  // Cristina
+    */
 
     /*
     cout << "++++++++++++++++++++++++++" << endl;
@@ -202,17 +218,6 @@ TRestEvent* TRestRawVetoAnalysisProcess::ProcessEvent(TRestEvent* evInput) {
 ///
 void TRestRawVetoAnalysisProcess::InitFromConfigFile() {
     fVetoSignalId = StringToElements(GetParameter("vetoSignalId", "-1"), ",");
-    // fVetoSignalId = StringToInteger(GetParameter("vetoSignalId", "-1"));
-    /*
-    vector<string> fVetoSignalId_str = Split(GetParameter("vetoSignalId", "-1"),","); // split VetoSignalIDs
-    into vector<string>
-    cout << "Size vector: " << fVetoSignalId_str.size() << endl;
-    // cout << "Veto IDs:" << endl;
-    for (unsigned int i=0; i<fVetoSignalId_str.size(); i++) { // convert vector<string> to vector<int>
-        Int_t chId = StringToInteger(fVetoSignalId_str[i]);
-        fVetoSignalId.push_back( chId );
-    }
-    */
     fBaseLineRange = StringTo2DVector(GetParameter("baseLineRange", "(5,55)"));
     fRange = StringTo2DVector(GetParameter("range", "(10,500)"));
 }
