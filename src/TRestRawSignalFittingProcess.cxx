@@ -99,7 +99,7 @@ ClassImp(TRestRawSignalFittingProcess);
 ///////////////////////////////////////////////
 /// \brief Default constructor
 ///
-TRestRawSignalFittingProcess::TRestRawSignalFittingProcess() { Initialize(); }
+    TRestRawSignalFittingProcess::TRestRawSignalFittingProcess() { Initialize(); }
 
 ///////////////////////////////////////////////
 /// \brief Constructor loading data from a config file
@@ -116,7 +116,7 @@ TRestRawSignalFittingProcess::TRestRawSignalFittingProcess() { Initialize(); }
 TRestRawSignalFittingProcess::TRestRawSignalFittingProcess(char* cfgFileName) {
     Initialize();
 
-    if (LoadConfigFromFile(cfgFileName)) LoadDefaultConfig();
+         if (LoadConfigFromFile(cfgFileName)) LoadDefaultConfig();
 }
 
 ///////////////////////////////////////////////
