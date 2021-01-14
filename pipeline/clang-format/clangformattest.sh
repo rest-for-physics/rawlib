@@ -34,15 +34,15 @@ else
 	done
 
 	#We now repair commiting
-	git config --global user.email "runner@github.com"
-	git config --global user.name "runner"
+	git config --global user.email "javier.galan@unizar.es"
+	git config --global user.name "clang runner"
 	git config --global push.default simple
 	git remote set-url --push origin git@github.com:rest-for-physics/rawlib.git
 	git add -u
 	git commit -m "Pipeline clang-format automatic execution"
 	git status
-    echo "git push origin HEAD:$CI_COMMIT_REF_NAME"
-	git push origin HEAD:$CI_COMMIT_REF_NAME
+    echo "git push origin HEAD:master"
+	git push origin HEAD:master
 	echo "Clang-format should have generated a commit to fix code formatting"
 	echo "This validation should be solved in the next run."
 	exit 1;
