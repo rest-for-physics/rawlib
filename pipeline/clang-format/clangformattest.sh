@@ -45,7 +45,7 @@ else
 	git push origin HEAD:master
 	echo "Clang-format should have generated a commit to fix code formatting"
 	echo "This validation should be solved in the next run."
-	exit 1;
+	exit 0;
 fi
 
 # cleanup changes in git
