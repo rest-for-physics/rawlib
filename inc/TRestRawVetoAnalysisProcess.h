@@ -26,59 +26,61 @@
 #include "TRestEventProcess.h"
 #include "TRestRawSignalEvent.h"
 
-//! A template process to serve as an example to create new TRestRawSignalEventProcess
+//! A template process to serve as an example to create new
+//! TRestRawSignalEventProcess
 class TRestRawVetoAnalysisProcess : public TRestEventProcess {
-   private:
-    /// The range used to calculate the baseline parameters from the veto signal
-    TVector2 fBaseLineRange;  //<
+private:
+  /// The range used to calculate the baseline parameters from the veto signal
+  TVector2 fBaseLineRange; //<
 
-    /// The range used to calculate the veto signal parameters
-    TVector2 fRange;  //<
+  /// The range used to calculate the veto signal parameters
+  TVector2 fRange; //<
 
-    /// Veto definition: IDs and group names
-    vector<double> fVetoSignalId;
-    vector<string> fVetoGroupIds;
-    vector<string> fVetoGroupNames;
-    
-    /// Observable names
-    vector<string> fPeakTime;
-    vector<string> fPeakAmp;
+  /// Veto definition: IDs and group names
+  vector<double> fVetoSignalId;
+  vector<string> fVetoGroupIds;
+  vector<string> fVetoGroupNames;
 
-    /// A pointer to the specific TRestRawSignalEvent
-    TRestRawSignalEvent* fInputRawSignalEvent;   //!
-    TRestRawSignalEvent* fOutputRawSignalEvent;  //!
+  /// Observable names
+  vector<string> fPeakTime;
+  vector<string> fPeakAmp;
 
-    void InitProcess();
+  /// A pointer to the specific TRestRawSignalEvent
+  TRestRawSignalEvent *fInputRawSignalEvent;  //!
+  TRestRawSignalEvent *fOutputRawSignalEvent; //!
 
-    void InitFromConfigFile();
+  void InitProcess();
 
-    void Initialize();
+  void InitFromConfigFile();
 
-    void LoadDefaultConfig();
+  void Initialize();
 
-   protected:
-   public:
-    any GetInputEvent() { return fInputRawSignalEvent; }
-    any GetOutputEvent() { return fOutputRawSignalEvent; }
+  void LoadDefaultConfig();
 
-    TRestEvent* ProcessEvent(TRestEvent* evInput);
+protected:
+public:
+  any GetInputEvent() { return fInputRawSignalEvent; }
+  any GetOutputEvent() { return fOutputRawSignalEvent; }
 
-    void LoadConfig(std::string cfgFilename, std::string name = "");
+  TRestEvent *ProcessEvent(TRestEvent *evInput);
 
-    void PrintMetadata();
+  void LoadConfig(std::string cfgFilename, std::string name = "");
 
-    /// Returns a new instance of this class
-    TRestEventProcess* Maker() { return new TRestRawVetoAnalysisProcess; }
+  void PrintMetadata();
 
-    /// Returns the name of this process
-    TString GetProcessName() { return (TString) "vetoAnalysis"; }
+  /// Returns a new instance of this class
+  TRestEventProcess *Maker() { return new TRestRawVetoAnalysisProcess; }
 
-    TRestRawVetoAnalysisProcess();
-    TRestRawVetoAnalysisProcess(char* cfgFileName);
+  /// Returns the name of this process
+  TString GetProcessName() { return (TString) "vetoAnalysis"; }
 
-    ~TRestRawVetoAnalysisProcess();
+  TRestRawVetoAnalysisProcess();
+  TRestRawVetoAnalysisProcess(char *cfgFileName);
 
-    // If new members are added, removed or modified in this class version number must be increased!
-    ClassDef(TRestRawVetoAnalysisProcess, 1);
+  ~TRestRawVetoAnalysisProcess();
+
+  // If new members are added, removed or modified in this class version number
+  // must be increased!
+  ClassDef(TRestRawVetoAnalysisProcess, 1);
 };
 #endif

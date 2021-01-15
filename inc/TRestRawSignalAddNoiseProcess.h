@@ -29,48 +29,49 @@
 
 //! A process to add/emulate electronic noise into a TRestRawSignalEvent
 class TRestRawSignalAddNoiseProcess : public TRestEventProcess {
-   private:
-    TRestRawSignalEvent* fInputSignalEvent;
-    TRestRawSignalEvent* fOutputSignalEvent;
+private:
+  TRestRawSignalEvent *fInputSignalEvent;
+  TRestRawSignalEvent *fOutputSignalEvent;
 
-    void Initialize();
+  void Initialize();
 
-    void LoadDefaultConfig();
+  void LoadDefaultConfig();
 
-    Double_t fNoiseLevel = 10;
+  Double_t fNoiseLevel = 10;
 
-   protected:
-    // add here the members of your event process
+protected:
+  // add here the members of your event process
 
-   public:
-    any GetInputEvent() { return fInputSignalEvent; }
-    any GetOutputEvent() { return fOutputSignalEvent; }
+public:
+  any GetInputEvent() { return fInputSignalEvent; }
+  any GetOutputEvent() { return fOutputSignalEvent; }
 
-    void InitProcess();
-    TRestEvent* ProcessEvent(TRestEvent* eventInput);
-    void EndProcess();
+  void InitProcess();
+  TRestEvent *ProcessEvent(TRestEvent *eventInput);
+  void EndProcess();
 
-    void LoadConfig(std::string cfgFilename, string name = "");
+  void LoadConfig(std::string cfgFilename, string name = "");
 
-    void PrintMetadata() {
-        BeginPrintProcess();
+  void PrintMetadata() {
+    BeginPrintProcess();
 
-        metadata << "Noise Level : " << fNoiseLevel << endl;
+    metadata << "Noise Level : " << fNoiseLevel << endl;
 
-        EndPrintProcess();
-    }
+    EndPrintProcess();
+  }
 
-    TRestMetadata* GetProcessMetadata() { return NULL; }
+  TRestMetadata *GetProcessMetadata() { return NULL; }
 
-    TString GetProcessName() { return (TString) "rawSignalAddNoise"; }
+  TString GetProcessName() { return (TString) "rawSignalAddNoise"; }
 
-    // Constructor
-    TRestRawSignalAddNoiseProcess();
-    TRestRawSignalAddNoiseProcess(char* cfgFileName);
-    // Destructor
-    ~TRestRawSignalAddNoiseProcess();
+  // Constructor
+  TRestRawSignalAddNoiseProcess();
+  TRestRawSignalAddNoiseProcess(char *cfgFileName);
+  // Destructor
+  ~TRestRawSignalAddNoiseProcess();
 
-    ClassDef(TRestRawSignalAddNoiseProcess, 1);  // Template for a REST "event process" class inherited from
-                                                 // TRestEventProcess
+  ClassDef(TRestRawSignalAddNoiseProcess,
+           1); // Template for a REST "event process" class inherited from
+               // TRestEventProcess
 };
 #endif

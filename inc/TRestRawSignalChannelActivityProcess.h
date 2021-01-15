@@ -29,122 +29,128 @@
 #include <TRestDetectorReadout.h>
 #endif
 
-#include <TRestRawSignalEvent.h>
 #include "TRestEventProcess.h"
+#include <TRestRawSignalEvent.h>
 
-//! A pure analysis process to generate histograms with detector channels activity
+//! A pure analysis process to generate histograms with detector channels
+//! activity
 class TRestRawSignalChannelActivityProcess : public TRestEventProcess {
-   private:
-    /// A pointer to the specific TRestRawSignalEvent input
-    TRestRawSignalEvent* fSignalEvent;  //!
+private:
+  /// A pointer to the specific TRestRawSignalEvent input
+  TRestRawSignalEvent *fSignalEvent; //!
 
 #ifdef REST_DetectorLib
-    /// A pointer to the readout metadata information accessible to TRestRun
-    TRestDetectorReadout* fReadout;  //!
+  /// A pointer to the readout metadata information accessible to TRestRun
+  TRestDetectorReadout *fReadout; //!
 #endif
 
-    void InitFromConfigFile();
+  void InitFromConfigFile();
 
-    void Initialize();
+  void Initialize();
 
-    void LoadDefaultConfig();
+  void LoadDefaultConfig();
 
-   protected:
-    /// The value of the lower signal threshold to add it to the histogram
-    Double_t fLowThreshold;
+protected:
+  /// The value of the lower signal threshold to add it to the histogram
+  Double_t fLowThreshold;
 
-    /// The value of the higher signal threshold to add it to the histogram
-    Double_t fHighThreshold;
+  /// The value of the higher signal threshold to add it to the histogram
+  Double_t fHighThreshold;
 
-    /// The number of bins at the daq channels histogram
-    Int_t fDaqHistogramChannels;
+  /// The number of bins at the daq channels histogram
+  Int_t fDaqHistogramChannels;
 
-    /// The number of bins at the readout channels histogram
-    Int_t fReadoutHistogramChannels;
+  /// The number of bins at the readout channels histogram
+  Int_t fReadoutHistogramChannels;
 
-    /// The first channel at the daq channels histogram
-    Int_t fDaqStartChannel;
+  /// The first channel at the daq channels histogram
+  Int_t fDaqStartChannel;
 
-    /// The last channel at the daq channels histogram
-    Int_t fDaqEndChannel;
+  /// The last channel at the daq channels histogram
+  Int_t fDaqEndChannel;
 
-    /// The first channel at the readout channels histogram
-    Int_t fReadoutStartChannel;
+  /// The first channel at the readout channels histogram
+  Int_t fReadoutStartChannel;
 
-    /// The last channel at the readout channels histogram
-    Int_t fReadoutEndChannel;
+  /// The last channel at the readout channels histogram
+  Int_t fReadoutEndChannel;
 
-    /// The daq channels histogram
-    TH1D* fDaqChannelsHisto;  //!
+  /// The daq channels histogram
+  TH1D *fDaqChannelsHisto; //!
 
-    /// The readout channels histogram
-    TH1D* fReadoutChannelsHisto;  //!
+  /// The readout channels histogram
+  TH1D *fReadoutChannelsHisto; //!
 
-    /// The readout channels histogram built with 1-signal events (low threshold)
-    TH1D* fReadoutChannelsHisto_OneSignal;  //!
+  /// The readout channels histogram built with 1-signal events (low threshold)
+  TH1D *fReadoutChannelsHisto_OneSignal; //!
 
-    /// The readout channels histogram built with 1-signal events (high threshold)
-    TH1D* fReadoutChannelsHisto_OneSignal_High;  //!
+  /// The readout channels histogram built with 1-signal events (high threshold)
+  TH1D *fReadoutChannelsHisto_OneSignal_High; //!
 
-    /// The readout channels histogram built with 2-signal events (low threshold)
-    TH1D* fReadoutChannelsHisto_TwoSignals;  //!
+  /// The readout channels histogram built with 2-signal events (low threshold)
+  TH1D *fReadoutChannelsHisto_TwoSignals; //!
 
-    /// The readout channels histogram built with 2-signal events (high threshold)
-    TH1D* fReadoutChannelsHisto_TwoSignals_High;  //!
+  /// The readout channels histogram built with 2-signal events (high threshold)
+  TH1D *fReadoutChannelsHisto_TwoSignals_High; //!
 
-    /// The readout channels histogram built with 3-signal events (low threshold)
-    TH1D* fReadoutChannelsHisto_ThreeSignals;  //!
+  /// The readout channels histogram built with 3-signal events (low threshold)
+  TH1D *fReadoutChannelsHisto_ThreeSignals; //!
 
-    /// The readout channels histogram built with 3-signal events (high threshold)
-    TH1D* fReadoutChannelsHisto_ThreeSignals_High;  //!
+  /// The readout channels histogram built with 3-signal events (high threshold)
+  TH1D *fReadoutChannelsHisto_ThreeSignals_High; //!
 
-    /// The readout channels histogram built more than 3-signal events (low threshold)
-    TH1D* fReadoutChannelsHisto_MultiSignals;  //!
+  /// The readout channels histogram built more than 3-signal events (low
+  /// threshold)
+  TH1D *fReadoutChannelsHisto_MultiSignals; //!
 
-    /// The readout channels histogram built more than 3-signal events (high threshold)
-    TH1D* fReadoutChannelsHisto_MultiSignals_High;  //!
+  /// The readout channels histogram built more than 3-signal events (high
+  /// threshold)
+  TH1D *fReadoutChannelsHisto_MultiSignals_High; //!
 
-   public:
-    any GetInputEvent() { return fSignalEvent; }
-    any GetOutputEvent() { return fSignalEvent; }
+public:
+  any GetInputEvent() { return fSignalEvent; }
+  any GetOutputEvent() { return fSignalEvent; }
 
-    void InitProcess();
-    TRestEvent* ProcessEvent(TRestEvent* eventInput);
-    void EndProcess();
+  void InitProcess();
+  TRestEvent *ProcessEvent(TRestEvent *eventInput);
+  void EndProcess();
 
-    void LoadConfig(std::string cfgFilename, std::string name = "");
+  void LoadConfig(std::string cfgFilename, std::string name = "");
 
-    /// It prints out the process parameters stored in the metadata structure
-    void PrintMetadata() {
-        BeginPrintProcess();
+  /// It prints out the process parameters stored in the metadata structure
+  void PrintMetadata() {
+    BeginPrintProcess();
 
-        metadata << "Low signal threshold activity : " << fLowThreshold << endl;
-        metadata << "High signal threshold activity : " << fHighThreshold << endl;
+    metadata << "Low signal threshold activity : " << fLowThreshold << endl;
+    metadata << "High signal threshold activity : " << fHighThreshold << endl;
 
-        metadata << "Number of daq histogram channels : " << fDaqHistogramChannels << endl;
-        metadata << "Start daq channel : " << fDaqStartChannel << endl;
-        metadata << "End daq channel : " << fDaqEndChannel << endl;
+    metadata << "Number of daq histogram channels : " << fDaqHistogramChannels
+             << endl;
+    metadata << "Start daq channel : " << fDaqStartChannel << endl;
+    metadata << "End daq channel : " << fDaqEndChannel << endl;
 
 #ifdef REST_DetectorLib
-        metadata << "Number of readout histogram channels : " << fReadoutHistogramChannels << endl;
-        metadata << "Start readout channel : " << fReadoutStartChannel << endl;
-        metadata << "End readout channel : " << fReadoutEndChannel << endl;
+    metadata << "Number of readout histogram channels : "
+             << fReadoutHistogramChannels << endl;
+    metadata << "Start readout channel : " << fReadoutStartChannel << endl;
+    metadata << "End readout channel : " << fReadoutEndChannel << endl;
 #else
-        metadata << "Some Detector features in this process are not available!" << endl;
+    metadata << "Some Detector features in this process are not available!"
+             << endl;
 #endif
 
-        EndPrintProcess();
-    }
+    EndPrintProcess();
+  }
 
-    /// Returns the name of this process
-    TString GetProcessName() { return (TString) "rawSignalChannelActivity"; }
+  /// Returns the name of this process
+  TString GetProcessName() { return (TString) "rawSignalChannelActivity"; }
 
-    // Constructor
-    TRestRawSignalChannelActivityProcess();
-    TRestRawSignalChannelActivityProcess(char* cfgFileName);
-    // Destructor
-    ~TRestRawSignalChannelActivityProcess();
+  // Constructor
+  TRestRawSignalChannelActivityProcess();
+  TRestRawSignalChannelActivityProcess(char *cfgFileName);
+  // Destructor
+  ~TRestRawSignalChannelActivityProcess();
 
-    ClassDef(TRestRawSignalChannelActivityProcess, 2);
+  ClassDef(TRestRawSignalChannelActivityProcess, 2);
 };
 #endif

@@ -29,41 +29,41 @@
 
 //! A process to find a representative signal to generate a response signal
 class TRestRawFindResponseSignalProcess : public TRestEventProcess {
-   private:
-    TRestRawSignalEvent* fInputSignalEvent;   //!
-    TRestRawSignalEvent* fOutputSignalEvent;  //!
+private:
+  TRestRawSignalEvent *fInputSignalEvent;  //!
+  TRestRawSignalEvent *fOutputSignalEvent; //!
 
-    void Initialize();
+  void Initialize();
 
-    void LoadDefaultConfig();
+  void LoadDefaultConfig();
 
-   protected:
-    // add here the members of your event process
+protected:
+  // add here the members of your event process
 
-   public:
-    any GetInputEvent() { return fInputSignalEvent; }
-    any GetOutputEvent() { return fOutputSignalEvent; }
+public:
+  any GetInputEvent() { return fInputSignalEvent; }
+  any GetOutputEvent() { return fOutputSignalEvent; }
 
-    void InitProcess();
-    TRestEvent* ProcessEvent(TRestEvent* eventInput);
-    void EndProcess();
+  void InitProcess();
+  TRestEvent *ProcessEvent(TRestEvent *eventInput);
+  void EndProcess();
 
-    void LoadConfig(std::string cfgFilename, string name = "");
+  void LoadConfig(std::string cfgFilename, string name = "");
 
-    void PrintMetadata() {
-        BeginPrintProcess();
+  void PrintMetadata() {
+    BeginPrintProcess();
 
-        EndPrintProcess();
-    }
+    EndPrintProcess();
+  }
 
-    TRestMetadata* GetProcessMetadata() { return NULL; }
+  TRestMetadata *GetProcessMetadata() { return NULL; }
 
-    TString GetProcessName() { return (TString) "findResponseSignal"; }
+  TString GetProcessName() { return (TString) "findResponseSignal"; }
 
-    TRestRawFindResponseSignalProcess();
-    TRestRawFindResponseSignalProcess(char* cfgFileName);
-    ~TRestRawFindResponseSignalProcess();
+  TRestRawFindResponseSignalProcess();
+  TRestRawFindResponseSignalProcess(char *cfgFileName);
+  ~TRestRawFindResponseSignalProcess();
 
-    ClassDef(TRestRawFindResponseSignalProcess, 1);
+  ClassDef(TRestRawFindResponseSignalProcess, 1);
 };
 #endif

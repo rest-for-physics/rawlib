@@ -28,62 +28,64 @@
 
 #include "TRestEventProcess.h"
 
-//! An analysis REST process to extract valuable information from RawSignal type of data.
+//! An analysis REST process to extract valuable information from RawSignal type
+//! of data.
 class TRestRawSignalAnalysisProcess : public TRestEventProcess {
-   private:
-    /// A pointer to the specific TRestRawSignalEvent input
-    TRestRawSignalEvent* fSignalEvent;  //!
+private:
+  /// A pointer to the specific TRestRawSignalEvent input
+  TRestRawSignalEvent *fSignalEvent; //!
 
-    Double_t fFirstEventTime;             //!
-    vector<Double_t> fPreviousEventTime;  //!
+  Double_t fFirstEventTime;            //!
+  vector<Double_t> fPreviousEventTime; //!
 
-    time_t timeStored;  //!
+  time_t timeStored; //!
 
-    // parameters
-    TVector2 fBaseLineRange = TVector2(5, 55);
-    TVector2 fIntegralRange = TVector2(10, 500);
-    Double_t fPointThreshold = 2;
-    Double_t fSignalThreshold = 5;
-    Int_t fPointsOverThreshold = 5;
+  // parameters
+  TVector2 fBaseLineRange = TVector2(5, 55);
+  TVector2 fIntegralRange = TVector2(10, 500);
+  Double_t fPointThreshold = 2;
+  Double_t fSignalThreshold = 5;
+  Int_t fPointsOverThreshold = 5;
 
-    void Initialize();
+  void Initialize();
 
-    void LoadDefaultConfig();
+  void LoadDefaultConfig();
 
-   protected:
-    // add here the members of your event process
+protected:
+  // add here the members of your event process
 
-   public:
-    any GetInputEvent() { return fSignalEvent; }
-    any GetOutputEvent() { return fSignalEvent; }
+public:
+  any GetInputEvent() { return fSignalEvent; }
+  any GetOutputEvent() { return fSignalEvent; }
 
-    void InitProcess();
-    TRestEvent* ProcessEvent(TRestEvent* eventInput);
-    void EndProcess();
+  void InitProcess();
+  TRestEvent *ProcessEvent(TRestEvent *eventInput);
+  void EndProcess();
 
-    void LoadConfig(std::string cfgFilename, std::string name = "");
+  void LoadConfig(std::string cfgFilename, std::string name = "");
 
-    void PrintMetadata() {
-        BeginPrintProcess();
+  void PrintMetadata() {
+    BeginPrintProcess();
 
-        metadata << "Baseline range : ( " << fBaseLineRange.X() << " , " << fBaseLineRange.Y() << " ) "
-                 << endl;
-        metadata << "Integral range : ( " << fIntegralRange.X() << " , " << fIntegralRange.Y() << " ) "
-                 << endl;
-        metadata << "Point Threshold : " << fPointThreshold << " sigmas" << endl;
-        metadata << "Signal threshold : " << fSignalThreshold << " sigmas" << endl;
-        metadata << "Number of points over threshold : " << fPointsOverThreshold << endl;
+    metadata << "Baseline range : ( " << fBaseLineRange.X() << " , "
+             << fBaseLineRange.Y() << " ) " << endl;
+    metadata << "Integral range : ( " << fIntegralRange.X() << " , "
+             << fIntegralRange.Y() << " ) " << endl;
+    metadata << "Point Threshold : " << fPointThreshold << " sigmas" << endl;
+    metadata << "Signal threshold : " << fSignalThreshold << " sigmas" << endl;
+    metadata << "Number of points over threshold : " << fPointsOverThreshold
+             << endl;
 
-        EndPrintProcess();
-    }
+    EndPrintProcess();
+  }
 
-    TString GetProcessName() { return (TString) "rawSignalAnalysis"; }
+  TString GetProcessName() { return (TString) "rawSignalAnalysis"; }
 
-    TRestRawSignalAnalysisProcess();  // Constructor
-    TRestRawSignalAnalysisProcess(char* cfgFileName);
-    ~TRestRawSignalAnalysisProcess();  // Destructor
+  TRestRawSignalAnalysisProcess(); // Constructor
+  TRestRawSignalAnalysisProcess(char *cfgFileName);
+  ~TRestRawSignalAnalysisProcess(); // Destructor
 
-    ClassDef(TRestRawSignalAnalysisProcess, 3);
-    // Template for a REST "event process" class inherited from TRestEventProcess
+  ClassDef(TRestRawSignalAnalysisProcess, 3);
+  // Template for a REST "event process" class inherited from TRestEventProcess
 };
 #endif

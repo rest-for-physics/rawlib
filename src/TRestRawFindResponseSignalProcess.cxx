@@ -36,12 +36,17 @@
 ///
 /// <hr>
 ///
-/// \warning **⚠ WARNING: REST is under continous development.** This documentation
-/// is offered to you by the REST community. Your HELP is needed to keep this code
-/// up to date. Your feedback will be worth to support this software, please report
+/// \warning **⚠ WARNING: REST is under continous development.** This
+/// documentation
+/// is offered to you by the REST community. Your HELP is needed to keep this
+/// code
+/// up to date. Your feedback will be worth to support this software, please
+/// report
 /// any problems/suggestions you may find while using it at [The REST Framework
-/// forum](http://ezpc10.unizar.es). You are welcome to contribute fixing typos, updating
-/// information or adding/proposing new contributions. See also our [Contribution
+/// forum](http://ezpc10.unizar.es). You are welcome to contribute fixing typos,
+/// updating
+/// information or adding/proposing new contributions. See also our
+/// [Contribution
 /// Guide](https://github.com/rest-for-physics/framework/blob/master/CONTRIBUTING.md)
 ///
 ///--------------------------------------------------------------------------
@@ -68,7 +73,9 @@ ClassImp(TRestRawFindResponseSignalProcess);
 ///////////////////////////////////////////////
 /// \brief Default constructor
 ///
-TRestRawFindResponseSignalProcess::TRestRawFindResponseSignalProcess() { Initialize(); }
+TRestRawFindResponseSignalProcess::TRestRawFindResponseSignalProcess() {
+  Initialize();
+}
 
 ///////////////////////////////////////////////
 /// \brief Constructor loading data from a config file
@@ -82,26 +89,30 @@ TRestRawFindResponseSignalProcess::TRestRawFindResponseSignalProcess() { Initial
 ///
 /// \param cfgFileName A const char* giving the path to an RML file.
 ///
-TRestRawFindResponseSignalProcess::TRestRawFindResponseSignalProcess(char* cfgFileName) {
-    Initialize();
+TRestRawFindResponseSignalProcess::TRestRawFindResponseSignalProcess(
+    char *cfgFileName) {
+  Initialize();
 
-    if (LoadConfigFromFile(cfgFileName) == -1) LoadDefaultConfig();
+  if (LoadConfigFromFile(cfgFileName) == -1)
+    LoadDefaultConfig();
 
-    PrintMetadata();
-    // TRestRawFindResponseSignalProcess default constructor
+  PrintMetadata();
+  // TRestRawFindResponseSignalProcess default constructor
 }
 
 ///////////////////////////////////////////////
 /// \brief Default destructor
 ///
-TRestRawFindResponseSignalProcess::~TRestRawFindResponseSignalProcess() { delete fOutputSignalEvent; }
+TRestRawFindResponseSignalProcess::~TRestRawFindResponseSignalProcess() {
+  delete fOutputSignalEvent;
+}
 
 ///////////////////////////////////////////////
 /// \brief Function to load the default config in absence of RML input
 ///
 void TRestRawFindResponseSignalProcess::LoadDefaultConfig() {
-    SetName("findResponseSignal-Default");
-    SetTitle("Default config");
+  SetName("findResponseSignal-Default");
+  SetTitle("Default config");
 }
 
 ///////////////////////////////////////////////
@@ -109,10 +120,10 @@ void TRestRawFindResponseSignalProcess::LoadDefaultConfig() {
 /// section name
 ///
 void TRestRawFindResponseSignalProcess::Initialize() {
-    SetSectionName(this->ClassName());
+  SetSectionName(this->ClassName());
 
-    fInputSignalEvent = NULL;
-    fOutputSignalEvent = new TRestRawSignalEvent();
+  fInputSignalEvent = NULL;
+  fOutputSignalEvent = new TRestRawSignalEvent();
 }
 
 ///////////////////////////////////////////////
@@ -127,8 +138,10 @@ void TRestRawFindResponseSignalProcess::Initialize() {
 /// \param name The name of the specific metadata. It will be used to find the
 /// correspondig TRestGeant4AnalysisProcess section inside the RML.
 ///
-void TRestRawFindResponseSignalProcess::LoadConfig(string cfgFilename, string name) {
-    if (LoadConfigFromFile(cfgFilename, name) == -1) LoadDefaultConfig();
+void TRestRawFindResponseSignalProcess::LoadConfig(string cfgFilename,
+                                                   string name) {
+  if (LoadConfigFromFile(cfgFilename, name) == -1)
+    LoadDefaultConfig();
 }
 
 ///////////////////////////////////////////////
@@ -140,33 +153,37 @@ void TRestRawFindResponseSignalProcess::InitProcess() {}
 ///////////////////////////////////////////////
 /// \brief The main processing event function
 ///
-TRestEvent* TRestRawFindResponseSignalProcess::ProcessEvent(TRestEvent* evInput) {
-    fInputSignalEvent = (TRestRawSignalEvent*)evInput;
+TRestEvent *
+TRestRawFindResponseSignalProcess::ProcessEvent(TRestEvent *evInput) {
+  fInputSignalEvent = (TRestRawSignalEvent *)evInput;
 
-    // We accept signals that are inside a given condition.
-    // TODO: Now it is also possible to use ApplyCut and <cut definitions?
-    if (fInputSignalEvent->GetNumberOfSignals() <= 0) return NULL;
-    if (fInputSignalEvent->GetNumberOfSignals() > 8) return NULL;
+  // We accept signals that are inside a given condition.
+  // TODO: Now it is also possible to use ApplyCut and <cut definitions?
+  if (fInputSignalEvent->GetNumberOfSignals() <= 0)
+    return NULL;
+  if (fInputSignalEvent->GetNumberOfSignals() > 8)
+    return NULL;
 
-    Int_t dominantSignal = -1;
-    Double_t maxPeak = 0;
-    //   Double_t maxTime = 0;
-    for (int n = 0; n < fInputSignalEvent->GetNumberOfSignals(); n++) {
-        if (fInputSignalEvent->GetSignal(n)->GetMaxPeakValue() > maxPeak) {
-            maxPeak = fInputSignalEvent->GetSignal(n)->GetMaxPeakValue();
-            // maxTime = fInputSignalEvent->GetSignal(n)->GetMaxPeakBin();
-            dominantSignal = n;
-        }
+  Int_t dominantSignal = -1;
+  Double_t maxPeak = 0;
+  //   Double_t maxTime = 0;
+  for (int n = 0; n < fInputSignalEvent->GetNumberOfSignals(); n++) {
+    if (fInputSignalEvent->GetSignal(n)->GetMaxPeakValue() > maxPeak) {
+      maxPeak = fInputSignalEvent->GetSignal(n)->GetMaxPeakValue();
+      // maxTime = fInputSignalEvent->GetSignal(n)->GetMaxPeakBin();
+      dominantSignal = n;
     }
+  }
 
-    if (maxPeak < 400 || maxPeak > 600) return NULL;
+  if (maxPeak < 400 || maxPeak > 600)
+    return NULL;
 
-    TRestRawSignal* sgnl = fInputSignalEvent->GetSignal(dominantSignal);
-    sgnl->Scale(1000. / maxPeak);
+  TRestRawSignal *sgnl = fInputSignalEvent->GetSignal(dominantSignal);
+  sgnl->Scale(1000. / maxPeak);
 
-    fOutputSignalEvent->AddSignal(*sgnl);
+  fOutputSignalEvent->AddSignal(*sgnl);
 
-    return fOutputSignalEvent;
+  return fOutputSignalEvent;
 }
 
 ///////////////////////////////////////////////
