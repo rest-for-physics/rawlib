@@ -45,12 +45,15 @@
 ///             Cristina Margalejo/Javier Galan
 ///
 /// 2020-Dec:  Added multi-VETO channel capability
-///             Konrad Altenmuller
+///             Konrad Altenmueller
+///
+/// 2021-Jan:  Added veto groups and observables accordingly
+///		Konrad Altenmueller
 ///
 /// \class      TRestRawVetoAnalysisProcess
 /// \author     Cristina Margalejo
 /// \author     Javier Galan
-/// \author     Konrad Altenmuller
+/// \author     Konrad Altenmueller
 ///
 /// <hr>
 ///
@@ -142,16 +145,6 @@ TRestEvent* TRestRawVetoAnalysisProcess::ProcessEvent(TRestEvent* evInput) {
 
     *fOutputRawSignalEvent = *fInputRawSignalEvent;
 
-    /*
-    cout << "I am in process " << GetProcessName() << endl;
-
-    cout << "With event ID : " << fOutputRawSignalEvent->GetID() << endl;
-
-    fOutputRawSignalEvent->PrintEvent();
-    GetChar();
-    */
-
-    Int_t nVetoes = fVetoSignalId.size();  // how many veto channels are there?
     map<int, Double_t> VetoMaxPeakAmplitude_map;
     map<int, Double_t> VetoPeakTime_map;
 
@@ -161,38 +154,102 @@ TRestEvent* TRestRawVetoAnalysisProcess::ProcessEvent(TRestEvent* evInput) {
     VetoMaxPeakAmplitude_map.clear();
     VetoPeakTime_map.clear();
 
-    // cout << nVetoes << endl;
-
-    // get veto IDs (work in progress...)
-    // TiXmlElement *vetoDefinition = GetElement("veto");
-    //
-    // for (unsigned int i=0; i<fVetoSystem.size(); i++){
-    //  	cout << vetoDefinition->size() << endl;
-    // }
-
-    // iterate over vetoes
-    for (unsigned int i = 0; i < nVetoes; i++) {
-        if (fOutputRawSignalEvent->GetSignalIndex(fVetoSignalId[i]) !=
-            -1) {  // Checks if channel (fVetoSignalID) participated in the event. If not, it is -1
-            // We extract the parameters from the veto signal
-            TRestRawSignal* sgnl = fOutputRawSignalEvent->GetSignalById(fVetoSignalId[i]);
-
-            // And at the end we remove the signal from the event
-            fOutputRawSignalEvent->RemoveSignalWithId(fVetoSignalId[i]);
-
-            // Save two maps with (veto panel ID, max amplitude) and (veto panel ID, peak time)
-            VetoMaxPeakAmplitude_map[fVetoSignalId[i]] = sgnl->GetMaxPeakValue();
-            VetoPeakTime_map[fVetoSignalId[i]] = sgnl->GetMaxPeakBin();
-        }
+    // ***** debugging *****
+    /* cout << "******************" << endl;
+    // cout << "I am in process " << GetProcessName() << endl;
+    cout << "event ID : " << fOutputRawSignalEvent->GetID() << endl;
+    cout << "number of signals: " << fOutputRawSignalEvent->GetNumberOfSignals() << endl;
+    cout << "signal IDs : ";
+    fOutputRawSignalEvent->PrintSignalIds();
+    cout  << endl;
+    for (unsigned int i=0; i< fOutputRawSignalEvent->GetNumberOfSignals(); i++){
+    	TRestRawSignal* debug = fOutputRawSignalEvent->GetSignal(i);
+	cout << "signal ID: " << debug->GetSignalID() << " Amp: " << debug->GetMaxPeakValue() << endl;
     }
+    */
+    // *** end debugging ***
+    
+    // **************************************************************
+    // if list of veto Ids without groups is given ******************
+    // **************************************************************
+    
+    if (fVetoSignalId[0] != -1){
+    // iterate over vetoes
+    	for (unsigned int i = 0; i < fVetoSignalId.size(); i++) {
+       		// cout << "ID: "<< fVetoSignalId[i] << " Index: " << fOutputRawSignalEvent->GetSignalIndex(fVetoSignalId[i]) << "; ";     	
+        	
+		// Checks if channel (fVetoSignalId) participated in the event. If not, it is -1
+		if (fOutputRawSignalEvent->GetSignalIndex(fVetoSignalId[i]) != -1) {  
+            		// We extract the parameters from the veto signal
+            		TRestRawSignal* sgnl = fOutputRawSignalEvent->GetSignalById(fVetoSignalId[i]);
+			// cout << "ID: " << fVetoSignalId[i] << " Amp: " << sgnl->GetMaxPeakValue() << endl;
+
+            		// Save two maps with (veto panel ID, max amplitude) and (veto panel ID, peak time)
+            		VetoMaxPeakAmplitude_map[fVetoSignalId[i]] = sgnl->GetMaxPeakValue();
+            		VetoPeakTime_map[fVetoSignalId[i]] = sgnl->GetMaxPeakBin();
+			// We remove the signal from the event
+			fOutputRawSignalEvent->RemoveSignalWithId(fVetoSignalId[i]);
+			
+			// cout << "ID: " << fVetoSignalId[i] << " Amp: " << sgnl->GetMaxPeakValue() << endl;
+			// cout << "********" << endl;
+
+		}	
+    	}
+
+    // ***** debugging *****	
+    /*
+    cout << endl;
+    cout << "Observables Added: " << endl;
+    cout << "Map size: " << VetoMaxPeakAmplitude_map.size() << endl;
+    for (map<int, double>::const_iterator it = VetoMaxPeakAmplitude_map.begin(); it != VetoMaxPeakAmplitude_map.end(); ++it){
+    	cout << "ID: " << it->first << " Amplitude: " << it->second;
+    	}
+    cout << endl;
+    */
+    // *** end debugging ***
+    
 
     SetObservableValue("PeakTime", VetoPeakTime_map);
     SetObservableValue("MaxPeakAmplitude", VetoMaxPeakAmplitude_map);
+    
+    }
 
-    /*
-    SetObservableValue("PeakTime", VetoPeakTime);                  // Cristina
-    SetObservableValue("MaxPeakAmplitude", VetoMaxPeakAmplitude);  // Cristina
-    */
+    // ***************************************************************
+    // if the veto ids are defined within the veto groups ************
+    // ***************************************************************
+    
+    // create observable names for veto groups
+    for (unsigned int i=0; i<fVetoGroupNames.size(); i++){ 
+	fPeakTime.push_back("PeakTime_" + fVetoGroupNames[i]);
+	fPeakAmp.push_back("MaxPeakAmplitude_" + fVetoGroupNames[i]);
+	}
+    
+    if (fVetoSignalId[0] == -1){
+	// iterate over veto groups
+	for (unsigned int i = 0; i < fVetoGroupNames.size(); i++){
+		// iterate over vetoes in each group
+		vector<double> groupIds = StringToElements(fVetoGroupIds[i],",");
+		for (unsigned int j = 0; j < groupIds.size(); j++){
+			// Checks if channel (fVetoSignalId) participated in the event. If not, it is -1
+        		if (fOutputRawSignalEvent->GetSignalIndex(groupIds[j]) !=-1) { 
+            			// We extract the parameters from the veto signal
+            			TRestRawSignal* sgnl = fOutputRawSignalEvent->GetSignalById(groupIds[j]);
+    				// Save two maps with (veto panel ID, max amplitude) and (veto panel ID, peak time)
+            			VetoMaxPeakAmplitude_map[groupIds[j]] = sgnl->GetMaxPeakValue();
+            			VetoPeakTime_map[groupIds[j]] = sgnl->GetMaxPeakBin();
+        			// We remove the signal from the event
+            			fOutputRawSignalEvent->RemoveSignalWithId(groupIds[j]);
+        		}	
+
+		}
+	  	SetObservableValue(fPeakTime[i], VetoPeakTime_map);
+    		SetObservableValue(fPeakAmp[i], VetoMaxPeakAmplitude_map);
+	
+   		VetoMaxPeakAmplitude_map.clear();
+    		VetoPeakTime_map.clear();
+	}
+	
+    }
 
     /*
     cout << "++++++++++++++++++++++++++" << endl;
@@ -217,11 +274,37 @@ TRestEvent* TRestRawVetoAnalysisProcess::ProcessEvent(TRestEvent* evInput) {
 /// TRestRawVetoAnalysisProcess section
 ///
 void TRestRawVetoAnalysisProcess::InitFromConfigFile() {
-    fVetoSignalId = StringToElements(GetParameter("vetoSignalId", "-1"), ",");
+
     fBaseLineRange = StringTo2DVector(GetParameter("baseLineRange", "(5,55)"));
     fRange = StringTo2DVector(GetParameter("range", "(10,500)"));
-}
+    
+    // **************************************************************
+    // ***** Vetoes are defined as a single list ********************
+    // **************************************************************
 
+    fVetoSignalId = StringToElements(GetParameter("vetoSignalId", "-1"), ",");
+    
+    // **************************************************************
+    // ***** Vetoes are defined in groups ***************************	    
+    // **************************************************************
+    
+    // Read all the info from the veto group definitions
+    
+    TiXmlElement* vetoDefinition = GetElement("vetoGroup");
+    
+    while (vetoDefinition != NULL){
+   	fVetoGroupNames.push_back(GetFieldValue("name",vetoDefinition));
+	fVetoGroupIds.push_back(GetFieldValue("signalIDs",vetoDefinition));
+	vetoDefinition = GetNextElement(vetoDefinition);
+    }
+
+    // Stop, in case signalIDs and groups are defined separately
+    if (fVetoSignalId[0] != -1 && fVetoGroupNames.size()>0 ){
+	cout << "Error: veto groups and veto IDs defined separately!" << endl;
+	GetChar();
+    }
+
+}
 ///////////////////////////////////////////////
 /// \brief It prints out the process parameters stored in the
 /// metadata structure
@@ -230,9 +313,24 @@ void TRestRawVetoAnalysisProcess::PrintMetadata() {
     BeginPrintProcess();
 
     // Print output metadata using, metadata << endl;
+	for (unsigned int i=0; i<fVetoGroupNames.size(); i++){
+		metadata << "Veto group " << fVetoGroupNames[i] << " signal IDs: " << fVetoGroupIds[i] << endl;
+	}
 
-    for (unsigned int i = 0; i < fVetoSignalId.size(); i++)
-        metadata << "Veto signal id : " << fVetoSignalId[i] << endl;
 
+    	if (fVetoSignalId[0] != -1){
+        	for (unsigned int i = 0; i < fVetoSignalId.size(); i++){
+        		metadata << "Veto signal ID: " << fVetoSignalId[i] << endl;
+		}
+	}
+	else {
+		metadata << " " << endl;
+	        metadata << "All veto signal IDs: ";
+        	for (unsigned int i = 0; i < fVetoGroupIds.size()-1; i++){
+        		metadata << fVetoGroupIds[i] << ",";
+		}
+		metadata << fVetoGroupIds[fVetoGroupIds.size()-1] << endl;
+	}
+		
     EndPrintProcess();
 }

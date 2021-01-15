@@ -29,15 +29,20 @@
 //! A template process to serve as an example to create new TRestRawSignalEventProcess
 class TRestRawVetoAnalysisProcess : public TRestEventProcess {
    private:
-    /// The daq channel id that will be considered as a veto signal
-    // Int_t fVetoSignalId;  //<
-    vector<double> fVetoSignalId;
-
     /// The range used to calculate the baseline parameters from the veto signal
     TVector2 fBaseLineRange;  //<
 
     /// The range used to calculate the veto signal parameters
     TVector2 fRange;  //<
+
+    /// Veto definition: IDs and group names
+    vector<double> fVetoSignalId;
+    vector<string> fVetoGroupIds;
+    vector<string> fVetoGroupNames;
+    
+    /// Observable names
+    vector<string> fPeakTime;
+    vector<string> fPeakAmp;
 
     /// A pointer to the specific TRestRawSignalEvent
     TRestRawSignalEvent* fInputRawSignalEvent;   //!
