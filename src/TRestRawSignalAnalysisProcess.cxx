@@ -230,9 +230,9 @@
 ///
 //////////////////////////////////////////////////////////////////////////
 
-#include "TRestDataBase.h"
 #include <TLegend.h>
 #include <TPaveText.h>
+#include "TRestDataBase.h"
 
 #include "TRestRawSignalAnalysisProcess.h"
 using namespace std;
@@ -256,12 +256,10 @@ TRestRawSignalAnalysisProcess::TRestRawSignalAnalysisProcess() { Initialize(); }
 ///
 /// \param cfgFileName A const char* giving the path to an RML file.
 ///
-TRestRawSignalAnalysisProcess::TRestRawSignalAnalysisProcess(
-    char *cfgFileName) {
-  Initialize();
+TRestRawSignalAnalysisProcess::TRestRawSignalAnalysisProcess(char* cfgFileName) {
+    Initialize();
 
-  if (LoadConfigFromFile(cfgFileName))
-    LoadDefaultConfig();
+    if (LoadConfigFromFile(cfgFileName)) LoadDefaultConfig();
 }
 
 ///////////////////////////////////////////////
@@ -272,23 +270,22 @@ TRestRawSignalAnalysisProcess::~TRestRawSignalAnalysisProcess() {}
 ///////////////////////////////////////////////
 /// \brief Function to load the default config in absence of RML input
 ///
-void TRestRawSignalAnalysisProcess::LoadDefaultConfig() {
-  SetTitle("Default config");
-}
+void TRestRawSignalAnalysisProcess::LoadDefaultConfig() { SetTitle("Default config"); }
 
 ///////////////////////////////////////////////
 /// \brief Function to initialize input/output event members and define the
 /// section name
 ///
 void TRestRawSignalAnalysisProcess::Initialize() {
-  SetSectionName(this->ClassName());
+    SetSectionName(this->ClassName());
+    SetLibraryVersion(LIBRARY_VERSION);
 
-  fSignalEvent = NULL;
+    fSignalEvent = NULL;
 
-  fFirstEventTime = -1;
-  fPreviousEventTime.clear();
+    fFirstEventTime = -1;
+    fPreviousEventTime.clear();
 
-  time(&timeStored);
+    time(&timeStored);
 }
 
 ///////////////////////////////////////////////
@@ -303,334 +300,317 @@ void TRestRawSignalAnalysisProcess::Initialize() {
 /// \param name The name of the specific metadata. It will be used to find the
 /// correspondig TRestGeant4AnalysisProcess section inside the RML.
 ///
-void TRestRawSignalAnalysisProcess::LoadConfig(std::string cfgFilename,
-                                               std::string name) {
-  if (LoadConfigFromFile(cfgFilename, name))
-    LoadDefaultConfig();
+void TRestRawSignalAnalysisProcess::LoadConfig(std::string cfgFilename, std::string name) {
+    if (LoadConfigFromFile(cfgFilename, name)) LoadDefaultConfig();
 }
 
 ///////////////////////////////////////////////
 /// \brief Process initialization.
 ///
 void TRestRawSignalAnalysisProcess::InitProcess() {
-  // fSignalAnalysisObservables = TRestEventProcess::ReadObservables();
-  if (fRunInfo->GetStartTimestamp() != 0) {
-    fFirstEventTime = fRunInfo->GetStartTimestamp();
-  } else {
-    fFirstEventTime = -1;
-  }
+    // fSignalAnalysisObservables = TRestEventProcess::ReadObservables();
+    if (fRunInfo->GetStartTimestamp() != 0) {
+        fFirstEventTime = fRunInfo->GetStartTimestamp();
+    } else {
+        fFirstEventTime = -1;
+    }
 }
 
 ///////////////////////////////////////////////
 /// \brief The main processing event function
 ///
-TRestEvent *TRestRawSignalAnalysisProcess::ProcessEvent(TRestEvent *evInput) {
-  // no need for verbose copy now
-  fSignalEvent = (TRestRawSignalEvent *)evInput;
+TRestEvent* TRestRawSignalAnalysisProcess::ProcessEvent(TRestEvent* evInput) {
+    // no need for verbose copy now
+    fSignalEvent = (TRestRawSignalEvent*)evInput;
 
-  ///////////////////previous usage/////////////////////////
-  // fSignalEvent->Initialize();
-  // TRestRawSignalEvent *fInputSignalEvent = (TRestRawSignalEvent *)evInput;
-  // fSignalEvent->SetID(fInputSignalEvent->GetID());
-  // fSignalEvent->SetSubID(fInputSignalEvent->GetSubID());
-  // fSignalEvent->SetTimeStamp(fInputSignalEvent->GetTimeStamp());
-  // fSignalEvent->SetSubEventTag(fInputSignalEvent->GetSubEventTag());
+    ///////////////////previous usage/////////////////////////
+    // fSignalEvent->Initialize();
+    // TRestRawSignalEvent *fInputSignalEvent = (TRestRawSignalEvent *)evInput;
+    // fSignalEvent->SetID(fInputSignalEvent->GetID());
+    // fSignalEvent->SetSubID(fInputSignalEvent->GetSubID());
+    // fSignalEvent->SetTimeStamp(fInputSignalEvent->GetTimeStamp());
+    // fSignalEvent->SetSubEventTag(fInputSignalEvent->GetSubEventTag());
 
-  // Int_t N = fInputSignalEvent->GetNumberOfSignals();
-  // if (GetVerboseLevel() >= REST_Debug) N = 1;
-  // for (int sgnl = 0; sgnl < N; sgnl++)
-  //	fSignalEvent->AddSignal(*fInputSignalEvent->GetSignal(sgnl));
-  ////////////////////////////////////////////
+    // Int_t N = fInputSignalEvent->GetNumberOfSignals();
+    // if (GetVerboseLevel() >= REST_Debug) N = 1;
+    // for (int sgnl = 0; sgnl < N; sgnl++)
+    //	fSignalEvent->AddSignal(*fInputSignalEvent->GetSignal(sgnl));
+    ////////////////////////////////////////////
 
-  // we save some complex typed analysis result
-  map<int, Double_t> baseline;
-  // Double_t baselinemean;
-  map<int, Double_t> baselinesigma;
-  // Double_t baselinesigmamean;
-  map<int, Double_t> ampsgn_maxmethod;
-  // Double_t ampeve_maxmethod;
-  map<int, Double_t> ampsgn_intmethod;
-  // Double_t ampeve_intmethod;
-  map<int, int> risetime;
-  // Double_t risetimemean;
-  map<int, int> npointsot;
+    // we save some complex typed analysis result
+    map<int, Double_t> baseline;
+    // Double_t baselinemean;
+    map<int, Double_t> baselinesigma;
+    // Double_t baselinesigmamean;
+    map<int, Double_t> ampsgn_maxmethod;
+    // Double_t ampeve_maxmethod;
+    map<int, Double_t> ampsgn_intmethod;
+    // Double_t ampeve_intmethod;
+    map<int, int> risetime;
+    // Double_t risetimemean;
+    map<int, int> npointsot;
 
-  baseline.clear();
-  baselinesigma.clear();
-  ampsgn_maxmethod.clear();
-  ampsgn_intmethod.clear();
-  risetime.clear();
-  npointsot.clear();
-  /*
-baselinemean = 0;
-baselinesigmamean = 0;
-ampeve_intmethod = 0;
-ampeve_maxmethod = 0;
-risetimemean = 0;
-Double_t maxeve = 0;
-  */
-  Int_t nGoodSignals = 0;
-
-  /// We define (or re-define) the baseline range and calculation range of our
-  /// raw-signals.
-  // This will affect the calculation of observables, but not the stored
-  // TRestRawSignal data.
-  fSignalEvent->SetBaseLineRange(fBaseLineRange);
-  fSignalEvent->SetRange(fIntegralRange);
-
-  for (int s = 0; s < fSignalEvent->GetNumberOfSignals(); s++) {
-    TRestRawSignal *sgnl = fSignalEvent->GetSignal(s);
-
-    /// Important call we need to initialize the points over threshold in a
-    /// TRestRawSignal
-    sgnl->InitializePointsOverThreshold(
-        TVector2(fPointThreshold, fSignalThreshold), fPointsOverThreshold);
-
-    // We do not want that signals that are not identified as such contribute to
-    // define our
-    // observables
-    // nkx: we still need to store all the signals in baseline/rise time maps in
-    // case for noise analysis
-    // if (sgnl->GetPointsOverThreshold().size() < 2) continue;
-    if (sgnl->GetPointsOverThreshold().size() >= 2)
-      nGoodSignals++;
-
-    /* We skip now intermediate variables
-Double_t _bslval = sgnl->GetBaseLine();
-Double_t _bslsigma = sgnl->GetBaseLineSigma();
-Double_t _ampmax = sgnl->GetMaxPeakValue();
-Double_t _ampint = sgnl->GetThresholdIntegral();
-Double_t _risetime = sgnl->GetRiseTime(); */
-
-    // Now TRestRawSignal returns directly baseline substracted values
-    baseline[sgnl->GetID()] = sgnl->GetBaseLine();
-    baselinesigma[sgnl->GetID()] = sgnl->GetBaseLineSigma();
-    ampsgn_intmethod[sgnl->GetID()] = sgnl->GetThresholdIntegral();
-    ampsgn_maxmethod[sgnl->GetID()] = sgnl->GetMaxPeakValue();
-    risetime[sgnl->GetID()] = sgnl->GetRiseTime();
-    npointsot[sgnl->GetID()] = sgnl->GetPointsOverThreshold().size();
-
-    /* These observables were already being calculated later on
-baselinemean += sgnl->GetBaseLine();
-baselinesigmamean += sgnl->GetBaseLineSigma();
-ampeve_intmethod += sgnl->GetThresholdIntegral();
-ampeve_maxmethod += sgnl->GetMaxPeakValue();
-risetimemean += sgnl->GetRiseTime();
+    baseline.clear();
+    baselinesigma.clear();
+    ampsgn_maxmethod.clear();
+    ampsgn_intmethod.clear();
+    risetime.clear();
+    npointsot.clear();
+    /*
+  baselinemean = 0;
+  baselinesigmamean = 0;
+  ampeve_intmethod = 0;
+  ampeve_maxmethod = 0;
+  risetimemean = 0;
+  Double_t maxeve = 0;
     */
+    Int_t nGoodSignals = 0;
 
-    //  Double_t value = sgnl->GetMaxValue();
-    //  if (value > maxeve) maxeve = value; // Not used?
-  }
+    /// We define (or re-define) the baseline range and calculation range of our
+    /// raw-signals.
+    // This will affect the calculation of observables, but not the stored
+    // TRestRawSignal data.
+    fSignalEvent->SetBaseLineRange(fBaseLineRange);
+    fSignalEvent->SetRange(fIntegralRange);
 
-  // baselinemean /= fSignalEvent->GetNumberOfSignals();
-  // baselinesigmamean /= fSignalEvent->GetNumberOfSignals();
-  // risetimemean /= fSignalEvent->GetNumberOfSignals();
+    for (int s = 0; s < fSignalEvent->GetNumberOfSignals(); s++) {
+        TRestRawSignal* sgnl = fSignalEvent->GetSignal(s);
 
-  // I just comment this. It should be cleaned up soon.
-  // The only new observables that remain are map variables.
-  // We can adopt lower case naming for map variables. But Double_t variables
-  // naming convention was already
-  // fixed. In future case insensitive?
-  SetObservableValue("pointsoverthres_map", npointsot);
-  SetObservableValue("risetime_map", risetime);
-  // SetObservableValue("risetimemean", risetimemean); // Repeated observable :
-  // RiseTimeAvg
-  SetObservableValue("baseline_map", baseline);
-  // SetObservableValue("baselinemean", baselinemean); // Repeated observable:
-  // BaseLineMean
-  SetObservableValue("baselinesigma_map", baselinesigma);
-  // SetObservableValue("baselinesigmamean", baselinesigmamean);  //Repeated
-  // observable: BaseLineSigmaMean
+        /// Important call we need to initialize the points over threshold in a
+        /// TRestRawSignal
+        sgnl->InitializePointsOverThreshold(TVector2(fPointThreshold, fSignalThreshold),
+                                            fPointsOverThreshold);
 
-  // A name like : max_amplitude (or max_amplitude_map) would be a name more
-  // straight forward to understand
-  SetObservableValue("max_amplitude_map", ampsgn_maxmethod);
+        // We do not want that signals that are not identified as such contribute to
+        // define our
+        // observables
+        // nkx: we still need to store all the signals in baseline/rise time maps in
+        // case for noise analysis
+        // if (sgnl->GetPointsOverThreshold().size() < 2) continue;
+        if (sgnl->GetPointsOverThreshold().size() >= 2) nGoodSignals++;
 
-  // SetObservableValue("ampeve_maxmethod", ampeve_maxmethod); // Repeated :
-  // MaxPeakAmplitudeIntegral
+        /* We skip now intermediate variables
+    Double_t _bslval = sgnl->GetBaseLine();
+    Double_t _bslsigma = sgnl->GetBaseLineSigma();
+    Double_t _ampmax = sgnl->GetMaxPeakValue();
+    Double_t _ampint = sgnl->GetThresholdIntegral();
+    Double_t _risetime = sgnl->GetRiseTime(); */
 
-  // This observable is a map of the threshold integral of each pulse. The given
-  // name is not intuitive to
-  // me. It should be just something like : thr_integral  ---> then lower case
-  // tells me that is a map. If
-  // not we should use some convention like : thr_integral_map
-  SetObservableValue("thr_integral_map", ampsgn_intmethod);
+        // Now TRestRawSignal returns directly baseline substracted values
+        baseline[sgnl->GetID()] = sgnl->GetBaseLine();
+        baselinesigma[sgnl->GetID()] = sgnl->GetBaseLineSigma();
+        ampsgn_intmethod[sgnl->GetID()] = sgnl->GetThresholdIntegral();
+        ampsgn_maxmethod[sgnl->GetID()] = sgnl->GetMaxPeakValue();
+        risetime[sgnl->GetID()] = sgnl->GetRiseTime();
+        npointsot[sgnl->GetID()] = sgnl->GetPointsOverThreshold().size();
 
-  //   SetObservableValue("ampeve_intmethod", ampeve_intmethod);  // Repeated
-  //   observable : ThresholdIntegral
+        /* These observables were already being calculated later on
+    baselinemean += sgnl->GetBaseLine();
+    baselinesigmamean += sgnl->GetBaseLineSigma();
+    ampeve_intmethod += sgnl->GetThresholdIntegral();
+    ampeve_maxmethod += sgnl->GetMaxPeakValue();
+    risetimemean += sgnl->GetRiseTime();
+        */
 
-  /* ///////////////////////////////////////////////////////////////////////////////////
-   */
-  // These observables should probably go into an independent process to
-  // register the rate at any
-  // given moment of the data processing chain : TRestRateAnalysisProcess? */
-  if (fFirstEventTime == -1)
-    fFirstEventTime = fSignalEvent->GetTime();
-
-  Double_t secondsFromStart = fSignalEvent->GetTime() - fFirstEventTime;
-  SetObservableValue("SecondsFromStart", secondsFromStart);
-  SetObservableValue("HoursFromStart", secondsFromStart / 3600.);
-
-  Double_t evTimeDelay = 0;
-  if (fPreviousEventTime.size() > 0)
-    evTimeDelay = fSignalEvent->GetTime() - fPreviousEventTime.back();
-  SetObservableValue("EventTimeDelay", evTimeDelay);
-
-  Double_t meanRate = 0;
-  if (fPreviousEventTime.size() == 10)
-    meanRate = 10. / (fSignalEvent->GetTime() - fPreviousEventTime.front());
-  SetObservableValue("MeanRate_InHz", meanRate);
-  /* ///////////////////////////////////////////////////////////////////////////////////
-   */
-
-  Double_t baseLineMean = fSignalEvent->GetBaseLineAverage();
-  SetObservableValue("BaseLineMean", baseLineMean);
-
-  Double_t baseLineSigma = fSignalEvent->GetBaseLineSigmaAverage();
-  SetObservableValue("BaseLineSigmaMean", baseLineSigma);
-
-  Double_t timeDelay = fSignalEvent->GetMaxTime() - fSignalEvent->GetMinTime();
-  SetObservableValue("TimeBinsLength", timeDelay);
-
-  Int_t nSignals = fSignalEvent->GetNumberOfSignals();
-  SetObservableValue("NumberOfSignals", nSignals);
-  SetObservableValue("NumberOfGoodSignals", nGoodSignals);
-
-  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  // SubstractBaselines
-  // After this the signal gets zero-ed, for the following analysis
-  // Keep in mind, to add raw signal analysis, we must write code at before
-  // This is where most of the problems occur
-  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  // Javier: I believe we should not substract baseline in the analysis process
-  // then ...
-  // ... of course we need to consider baseline substraction for each
-  // observable. TRestRawSignal methods
-  // should do that internally. I have updated that to be like that, but we need
-  // to be with open eyes for
-  // some period.
-  // Baseline substraction will always happen when we transfer a TRestRawSignal
-  // to TRestDetectorSignal
-  //
-  // We do not substract baselines then now, as it was done before
-  //
-  // fSignalEvent->SubstractBaselines(fBaseLineRange.X(), fBaseLineRange.Y());
-  //
-  // Methods in TRestRawSignal have been updated to consider baseline.
-  // TRestRawSignal now implements that internally. We need to define the
-  // baseline range, and the range
-  // where calculations take place. All we need is to call at some point to the
-  // following methods.
-  //
-  // TRestRawSignalEvent::SetBaseLineRange and TRestRawSignalEvent::SetRange.
-  //
-  // Then, if any method accepts a different range it will be given in the
-  // method name,
-  // for example: GetIntegralInRange( Int_t startBin, Int_t endBin );
-  //
-
-  Double_t fullIntegral = fSignalEvent->GetIntegral();
-  SetObservableValue("FullIntegral", fullIntegral);
-
-  Double_t thrIntegral = fSignalEvent->GetThresholdIntegral();
-  SetObservableValue("ThresholdIntegral", thrIntegral);
-
-  Double_t riseSlope = fSignalEvent->GetRiseSlope();
-  SetObservableValue("RiseSlopeAvg", riseSlope);
-
-  Double_t slopeIntegral = fSignalEvent->GetSlopeIntegral();
-  SetObservableValue("SlopeIntegral", slopeIntegral);
-
-  Double_t rateOfChange = riseSlope / slopeIntegral;
-  if (slopeIntegral == 0)
-    rateOfChange = 0;
-  SetObservableValue("RateOfChangeAvg", rateOfChange);
-
-  Double_t riseTime = fSignalEvent->GetRiseTime();
-  SetObservableValue("RiseTimeAvg", riseTime);
-
-  Double_t tripleMaxIntegral = fSignalEvent->GetTripleMaxIntegral();
-  SetObservableValue("TripleMaxIntegral", tripleMaxIntegral);
-
-  Double_t integralRatio =
-      (fullIntegral - thrIntegral) / (fullIntegral + thrIntegral);
-  SetObservableValue("IntegralBalance", integralRatio);
-
-  Double_t maxValue = 0;
-  Double_t minValue = 1.e6;
-  Double_t maxValueIntegral = 0;
-  Double_t minDownValue = 1.e6;
-
-  Double_t minPeakTime = 1000; // TODO sustitute this for something better
-  Double_t maxPeakTime = 0;
-  Double_t peakTimeAverage = 0;
-
-  for (int s = 0; s < fSignalEvent->GetNumberOfSignals(); s++) {
-    TRestRawSignal *sgnl = fSignalEvent->GetSignal(s);
-    if (sgnl->GetPointsOverThreshold().size() > 1) {
-      Double_t value = fSignalEvent->GetSignal(s)->GetMaxValue();
-      maxValueIntegral += value;
-
-      if (value > maxValue)
-        maxValue = value;
-      if (value < minValue)
-        minValue = value;
-
-      Double_t peakBin = sgnl->GetMaxPeakBin();
-      peakTimeAverage += peakBin;
-
-      if (minPeakTime > peakBin)
-        minPeakTime = peakBin;
-      if (maxPeakTime < peakBin)
-        maxPeakTime = peakBin;
+        //  Double_t value = sgnl->GetMaxValue();
+        //  if (value > maxeve) maxeve = value; // Not used?
     }
-    Double_t mindownvalue = fSignalEvent->GetSignal(s)->GetMinValue();
-    if (mindownvalue < minDownValue)
-      minDownValue = mindownvalue;
-  }
 
-  if (nGoodSignals > 0)
-    peakTimeAverage /= nGoodSignals;
+    // baselinemean /= fSignalEvent->GetNumberOfSignals();
+    // baselinesigmamean /= fSignalEvent->GetNumberOfSignals();
+    // risetimemean /= fSignalEvent->GetNumberOfSignals();
 
-  Double_t ampIntRatio = thrIntegral / maxValueIntegral;
-  if (maxValueIntegral == 0)
-    ampIntRatio = 0;
+    // I just comment this. It should be cleaned up soon.
+    // The only new observables that remain are map variables.
+    // We can adopt lower case naming for map variables. But Double_t variables
+    // naming convention was already
+    // fixed. In future case insensitive?
+    SetObservableValue("pointsoverthres_map", npointsot);
+    SetObservableValue("risetime_map", risetime);
+    // SetObservableValue("risetimemean", risetimemean); // Repeated observable :
+    // RiseTimeAvg
+    SetObservableValue("baseline_map", baseline);
+    // SetObservableValue("baselinemean", baselinemean); // Repeated observable:
+    // BaseLineMean
+    SetObservableValue("baselinesigma_map", baselinesigma);
+    // SetObservableValue("baselinesigmamean", baselinesigmamean);  //Repeated
+    // observable: BaseLineSigmaMean
 
-  SetObservableValue("AmplitudeIntegralRatio", ampIntRatio);
-  SetObservableValue("MinPeakAmplitude", minValue);
-  SetObservableValue("MaxPeakAmplitude", maxValue);
-  SetObservableValue("PeakAmplitudeIntegral", maxValueIntegral);
+    // A name like : max_amplitude (or max_amplitude_map) would be a name more
+    // straight forward to understand
+    SetObservableValue("max_amplitude_map", ampsgn_maxmethod);
 
-  SetObservableValue("MinEventValue", minDownValue);
+    // SetObservableValue("ampeve_maxmethod", ampeve_maxmethod); // Repeated :
+    // MaxPeakAmplitudeIntegral
 
-  Double_t amplitudeRatio = maxValueIntegral / maxValue;
-  if (maxValue == 0)
-    amplitudeRatio = 0;
+    // This observable is a map of the threshold integral of each pulse. The given
+    // name is not intuitive to
+    // me. It should be just something like : thr_integral  ---> then lower case
+    // tells me that is a map. If
+    // not we should use some convention like : thr_integral_map
+    SetObservableValue("thr_integral_map", ampsgn_intmethod);
 
-  SetObservableValue("AmplitudeRatio", amplitudeRatio);
-  SetObservableValue("MaxPeakTime", maxPeakTime);
-  SetObservableValue("MinPeakTime", minPeakTime);
+    //   SetObservableValue("ampeve_intmethod", ampeve_intmethod);  // Repeated
+    //   observable : ThresholdIntegral
 
-  Double_t peakTimeDelay = maxPeakTime - minPeakTime;
+    /* ///////////////////////////////////////////////////////////////////////////////////
+     */
+    // These observables should probably go into an independent process to
+    // register the rate at any
+    // given moment of the data processing chain : TRestRateAnalysisProcess? */
+    if (fFirstEventTime == -1) fFirstEventTime = fSignalEvent->GetTime();
 
-  SetObservableValue("MaxPeakTimeDelay", peakTimeDelay);
-  SetObservableValue("AveragePeakTime", peakTimeAverage);
+    Double_t secondsFromStart = fSignalEvent->GetTime() - fFirstEventTime;
+    SetObservableValue("SecondsFromStart", secondsFromStart);
+    SetObservableValue("HoursFromStart", secondsFromStart / 3600.);
 
-  if (GetVerboseLevel() >= REST_Debug) {
-    for (auto i : fObservablesDefined) {
-      fAnalysisTree->PrintObservable(i.second);
+    Double_t evTimeDelay = 0;
+    if (fPreviousEventTime.size() > 0) evTimeDelay = fSignalEvent->GetTime() - fPreviousEventTime.back();
+    SetObservableValue("EventTimeDelay", evTimeDelay);
+
+    Double_t meanRate = 0;
+    if (fPreviousEventTime.size() == 10)
+        meanRate = 10. / (fSignalEvent->GetTime() - fPreviousEventTime.front());
+    SetObservableValue("MeanRate_InHz", meanRate);
+    /* ///////////////////////////////////////////////////////////////////////////////////
+     */
+
+    Double_t baseLineMean = fSignalEvent->GetBaseLineAverage();
+    SetObservableValue("BaseLineMean", baseLineMean);
+
+    Double_t baseLineSigma = fSignalEvent->GetBaseLineSigmaAverage();
+    SetObservableValue("BaseLineSigmaMean", baseLineSigma);
+
+    Double_t timeDelay = fSignalEvent->GetMaxTime() - fSignalEvent->GetMinTime();
+    SetObservableValue("TimeBinsLength", timeDelay);
+
+    Int_t nSignals = fSignalEvent->GetNumberOfSignals();
+    SetObservableValue("NumberOfSignals", nSignals);
+    SetObservableValue("NumberOfGoodSignals", nGoodSignals);
+
+    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    // SubstractBaselines
+    // After this the signal gets zero-ed, for the following analysis
+    // Keep in mind, to add raw signal analysis, we must write code at before
+    // This is where most of the problems occur
+    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    // Javier: I believe we should not substract baseline in the analysis process
+    // then ...
+    // ... of course we need to consider baseline substraction for each
+    // observable. TRestRawSignal methods
+    // should do that internally. I have updated that to be like that, but we need
+    // to be with open eyes for
+    // some period.
+    // Baseline substraction will always happen when we transfer a TRestRawSignal
+    // to TRestDetectorSignal
+    //
+    // We do not substract baselines then now, as it was done before
+    //
+    // fSignalEvent->SubstractBaselines(fBaseLineRange.X(), fBaseLineRange.Y());
+    //
+    // Methods in TRestRawSignal have been updated to consider baseline.
+    // TRestRawSignal now implements that internally. We need to define the
+    // baseline range, and the range
+    // where calculations take place. All we need is to call at some point to the
+    // following methods.
+    //
+    // TRestRawSignalEvent::SetBaseLineRange and TRestRawSignalEvent::SetRange.
+    //
+    // Then, if any method accepts a different range it will be given in the
+    // method name,
+    // for example: GetIntegralInRange( Int_t startBin, Int_t endBin );
+    //
+
+    Double_t fullIntegral = fSignalEvent->GetIntegral();
+    SetObservableValue("FullIntegral", fullIntegral);
+
+    Double_t thrIntegral = fSignalEvent->GetThresholdIntegral();
+    SetObservableValue("ThresholdIntegral", thrIntegral);
+
+    Double_t riseSlope = fSignalEvent->GetRiseSlope();
+    SetObservableValue("RiseSlopeAvg", riseSlope);
+
+    Double_t slopeIntegral = fSignalEvent->GetSlopeIntegral();
+    SetObservableValue("SlopeIntegral", slopeIntegral);
+
+    Double_t rateOfChange = riseSlope / slopeIntegral;
+    if (slopeIntegral == 0) rateOfChange = 0;
+    SetObservableValue("RateOfChangeAvg", rateOfChange);
+
+    Double_t riseTime = fSignalEvent->GetRiseTime();
+    SetObservableValue("RiseTimeAvg", riseTime);
+
+    Double_t tripleMaxIntegral = fSignalEvent->GetTripleMaxIntegral();
+    SetObservableValue("TripleMaxIntegral", tripleMaxIntegral);
+
+    Double_t integralRatio = (fullIntegral - thrIntegral) / (fullIntegral + thrIntegral);
+    SetObservableValue("IntegralBalance", integralRatio);
+
+    Double_t maxValue = 0;
+    Double_t minValue = 1.e6;
+    Double_t maxValueIntegral = 0;
+    Double_t minDownValue = 1.e6;
+
+    Double_t minPeakTime = 1000;  // TODO sustitute this for something better
+    Double_t maxPeakTime = 0;
+    Double_t peakTimeAverage = 0;
+
+    for (int s = 0; s < fSignalEvent->GetNumberOfSignals(); s++) {
+        TRestRawSignal* sgnl = fSignalEvent->GetSignal(s);
+        if (sgnl->GetPointsOverThreshold().size() > 1) {
+            Double_t value = fSignalEvent->GetSignal(s)->GetMaxValue();
+            maxValueIntegral += value;
+
+            if (value > maxValue) maxValue = value;
+            if (value < minValue) minValue = value;
+
+            Double_t peakBin = sgnl->GetMaxPeakBin();
+            peakTimeAverage += peakBin;
+
+            if (minPeakTime > peakBin) minPeakTime = peakBin;
+            if (maxPeakTime < peakBin) maxPeakTime = peakBin;
+        }
+        Double_t mindownvalue = fSignalEvent->GetSignal(s)->GetMinValue();
+        if (mindownvalue < minDownValue) minDownValue = mindownvalue;
     }
-  }
 
-  fPreviousEventTime.push_back(fSignalEvent->GetTimeStamp());
-  if (fPreviousEventTime.size() > 10)
-    fPreviousEventTime.erase(fPreviousEventTime.begin());
+    if (nGoodSignals > 0) peakTimeAverage /= nGoodSignals;
 
-  // If cut condition matches the event will be not registered.
-  if (ApplyCut())
-    return NULL;
+    Double_t ampIntRatio = thrIntegral / maxValueIntegral;
+    if (maxValueIntegral == 0) ampIntRatio = 0;
 
-  return fSignalEvent;
+    SetObservableValue("AmplitudeIntegralRatio", ampIntRatio);
+    SetObservableValue("MinPeakAmplitude", minValue);
+    SetObservableValue("MaxPeakAmplitude", maxValue);
+    SetObservableValue("PeakAmplitudeIntegral", maxValueIntegral);
+
+    SetObservableValue("MinEventValue", minDownValue);
+
+    Double_t amplitudeRatio = maxValueIntegral / maxValue;
+    if (maxValue == 0) amplitudeRatio = 0;
+
+    SetObservableValue("AmplitudeRatio", amplitudeRatio);
+    SetObservableValue("MaxPeakTime", maxPeakTime);
+    SetObservableValue("MinPeakTime", minPeakTime);
+
+    Double_t peakTimeDelay = maxPeakTime - minPeakTime;
+
+    SetObservableValue("MaxPeakTimeDelay", peakTimeDelay);
+    SetObservableValue("AveragePeakTime", peakTimeAverage);
+
+    if (GetVerboseLevel() >= REST_Debug) {
+        for (auto i : fObservablesDefined) {
+            fAnalysisTree->PrintObservable(i.second);
+        }
+    }
+
+    fPreviousEventTime.push_back(fSignalEvent->GetTimeStamp());
+    if (fPreviousEventTime.size() > 10) fPreviousEventTime.erase(fPreviousEventTime.begin());
+
+    // If cut condition matches the event will be not registered.
+    if (ApplyCut()) return NULL;
+
+    return fSignalEvent;
 }
 
 ///////////////////////////////////////////////
@@ -638,12 +618,12 @@ risetimemean += sgnl->GetRiseTime();
 /// processed. This method will write the channels histogram.
 ///
 void TRestRawSignalAnalysisProcess::EndProcess() {
-  // Function to be executed once at the end of the process
-  // (after all events have been processed)
+    // Function to be executed once at the end of the process
+    // (after all events have been processed)
 
-  // Start by calling the EndProcess function of the abstract class.
-  // Comment this if you don't want it.
-  // TRestEventProcess::EndProcess();
+    // Start by calling the EndProcess function of the abstract class.
+    // Comment this if you don't want it.
+    // TRestEventProcess::EndProcess();
 }
 
 /* Commented DrawObservables

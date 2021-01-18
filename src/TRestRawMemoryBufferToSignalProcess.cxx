@@ -114,10 +114,10 @@ using namespace std;
 // The union is already defined in sys/sem.h
 #else
 union semun {
-  int val;
-  struct semid_ds *buf;
-  unsigned short int *array;
-  struct seminfo *__buf;
+    int val;
+    struct semid_ds* buf;
+    unsigned short int* array;
+    struct seminfo* __buf;
 };
 #endif
 
@@ -128,9 +128,7 @@ ClassImp(TRestRawMemoryBufferToSignalProcess);
 ///////////////////////////////////////////////
 /// \brief Default constructor
 ///
-TRestRawMemoryBufferToSignalProcess::TRestRawMemoryBufferToSignalProcess() {
-  Initialize();
-}
+TRestRawMemoryBufferToSignalProcess::TRestRawMemoryBufferToSignalProcess() { Initialize(); }
 
 ///////////////////////////////////////////////
 /// \brief Constructor loading data from a config file
@@ -144,30 +142,27 @@ TRestRawMemoryBufferToSignalProcess::TRestRawMemoryBufferToSignalProcess() {
 ///
 /// \param cfgFileName A const char* giving the path to an RML file.
 ///
-TRestRawMemoryBufferToSignalProcess::TRestRawMemoryBufferToSignalProcess(
-    char *cfgFileName) {
-  Initialize();
+TRestRawMemoryBufferToSignalProcess::TRestRawMemoryBufferToSignalProcess(char* cfgFileName) {
+    Initialize();
 
-  LoadConfig(cfgFileName);
+    LoadConfig(cfgFileName);
 }
 
 ///////////////////////////////////////////////
 /// \brief Default destructor
 ///
-TRestRawMemoryBufferToSignalProcess::~TRestRawMemoryBufferToSignalProcess() {
-  delete fOutputRawSignalEvent;
-}
+TRestRawMemoryBufferToSignalProcess::~TRestRawMemoryBufferToSignalProcess() { delete fOutputRawSignalEvent; }
 
 ///////////////////////////////////////////////
 /// \brief This method will increase the semaphore red level to protect shared
 /// memory regions
 ///
 void TRestRawMemoryBufferToSignalProcess::SemaphoreRed(int id) {
-  Operacion.sem_num = 0; // sem_id
-  Operacion.sem_op = -1;
-  Operacion.sem_flg = 0;
+    Operacion.sem_num = 0;  // sem_id
+    Operacion.sem_op = -1;
+    Operacion.sem_flg = 0;
 
-  semop(id, &Operacion, 1);
+    semop(id, &Operacion, 1);
 }
 
 ///////////////////////////////////////////////
@@ -175,23 +170,23 @@ void TRestRawMemoryBufferToSignalProcess::SemaphoreRed(int id) {
 /// memory regions
 ///
 void TRestRawMemoryBufferToSignalProcess::SemaphoreGreen(int id) {
-  Operacion.sem_num = 0; // sem_id
-  Operacion.sem_op = 1;
-  Operacion.sem_flg = 0;
+    Operacion.sem_num = 0;  // sem_id
+    Operacion.sem_op = 1;
+    Operacion.sem_flg = 0;
 
-  semop(id, &Operacion, 1);
+    semop(id, &Operacion, 1);
 }
 
 ///////////////////////////////////////////////
 /// \brief Function to load the default config in absence of RML input
 ///
 void TRestRawMemoryBufferToSignalProcess::LoadDefaultConfig() {
-  SetName("sharedMemoryBufferToSignal-Default");
-  SetTitle("Default config");
+    SetName("sharedMemoryBufferToSignal-Default");
+    SetTitle("Default config");
 
-  cout << "SharedMemoryBufferToSignal metadata not found. Loading default "
-          "values"
-       << endl;
+    cout << "SharedMemoryBufferToSignal metadata not found. Loading default "
+            "values"
+         << endl;
 }
 
 ///////////////////////////////////////////////
@@ -206,10 +201,8 @@ void TRestRawMemoryBufferToSignalProcess::LoadDefaultConfig() {
 /// \param name The name of the specific metadata. It will be used to find the
 /// correspondig TRestGeant4AnalysisProcess section inside the RML.
 ///
-void TRestRawMemoryBufferToSignalProcess::LoadConfig(std::string cfgFilename,
-                                                     std::string name) {
-  if (LoadConfigFromFile(cfgFilename, name))
-    LoadDefaultConfig();
+void TRestRawMemoryBufferToSignalProcess::LoadConfig(std::string cfgFilename, std::string name) {
+    if (LoadConfigFromFile(cfgFilename, name)) LoadDefaultConfig();
 }
 
 ///////////////////////////////////////////////
@@ -217,149 +210,140 @@ void TRestRawMemoryBufferToSignalProcess::LoadConfig(std::string cfgFilename,
 /// section name
 ///
 void TRestRawMemoryBufferToSignalProcess::Initialize() {
-  SetSectionName(this->ClassName());
+    SetSectionName(this->ClassName());
+    SetLibraryVersion(LIBRARY_VERSION);
 
-  fOutputRawSignalEvent = new TRestRawSignalEvent();
+    fOutputRawSignalEvent = new TRestRawSignalEvent();
 
-  fReset = true;
+    fReset = true;
 }
 
 void TRestRawMemoryBufferToSignalProcess::InitProcess() {
-  cout << "TRestRawMemoryBufferToSignalProcess::InitProcess. Creating "
-          "access to shared memory"
-       << endl;
+    cout << "TRestRawMemoryBufferToSignalProcess::InitProcess. Creating "
+            "access to shared memory"
+         << endl;
 
-  key_t MemKey = ftok("/bin/ls", fKeyDaqInfo);
-  int memId = shmget(MemKey, sizeof(daqInfo), 0777);
-  if (memId == -1) {
-    printf("Failed to access daqInfo resource\n");
-    exit(1);
-  }
+    key_t MemKey = ftok("/bin/ls", fKeyDaqInfo);
+    int memId = shmget(MemKey, sizeof(daqInfo), 0777);
+    if (memId == -1) {
+        printf("Failed to access daqInfo resource\n");
+        exit(1);
+    }
 
-  fShMem_daqInfo = (daqInfo *)shmat(memId, (char *)0, 0);
+    fShMem_daqInfo = (daqInfo*)shmat(memId, (char*)0, 0);
 
-  key_t SemaphoreKey = ftok("/bin/ls", fKeySemaphore);
-  fSemaphoreId = semget(SemaphoreKey, 1, 0777);
+    key_t SemaphoreKey = ftok("/bin/ls", fKeySemaphore);
+    fSemaphoreId = semget(SemaphoreKey, 1, 0777);
 
-  if (fSemaphoreId == -1) {
-    printf("Failed to access semaphore resource\n");
-    exit(1);
-  }
+    if (fSemaphoreId == -1) {
+        printf("Failed to access semaphore resource\n");
+        exit(1);
+    }
 
-  if (GetVerboseLevel() >= REST_Debug) {
-    printf("Sem id : %d\n", fSemaphoreId);
+    if (GetVerboseLevel() >= REST_Debug) {
+        printf("Sem id : %d\n", fSemaphoreId);
 
-    printf("Data ready : %d\n", fShMem_daqInfo->dataReady);
+        printf("Data ready : %d\n", fShMem_daqInfo->dataReady);
 
-    printf("Number of signals : %d\n", fShMem_daqInfo->nSignals);
+        printf("Number of signals : %d\n", fShMem_daqInfo->nSignals);
 
-    printf("Timestamp : %lf\n", fShMem_daqInfo->timeStamp);
+        printf("Timestamp : %lf\n", fShMem_daqInfo->timeStamp);
 
-    printf("Event id : %d\n", fShMem_daqInfo->eventId);
+        printf("Event id : %d\n", fShMem_daqInfo->eventId);
 
-    printf("Max signals :  %d\n", fShMem_daqInfo->maxSignals);
-    printf("Max samples : %d\n", fShMem_daqInfo->maxSamples);
-    printf("Buffer size : %d\n", fShMem_daqInfo->bufferSize);
+        printf("Max signals :  %d\n", fShMem_daqInfo->maxSignals);
+        printf("Max samples : %d\n", fShMem_daqInfo->maxSamples);
+        printf("Buffer size : %d\n", fShMem_daqInfo->bufferSize);
 
-    if (GetVerboseLevel() >= REST_Extreme)
-      GetChar();
-  }
+        if (GetVerboseLevel() >= REST_Extreme) GetChar();
+    }
 
-  int N_DATA = fShMem_daqInfo->bufferSize;
+    int N_DATA = fShMem_daqInfo->bufferSize;
 
-  MemKey = ftok("/bin/ls", fKeyBuffer);
-  memId = shmget(MemKey, N_DATA * sizeof(unsigned short int), 0777 | IPC_CREAT);
-  if (memId == -1) {
-    printf("Failed to access buffer resource\n");
-    exit(1);
-  }
+    MemKey = ftok("/bin/ls", fKeyBuffer);
+    memId = shmget(MemKey, N_DATA * sizeof(unsigned short int), 0777 | IPC_CREAT);
+    if (memId == -1) {
+        printf("Failed to access buffer resource\n");
+        exit(1);
+    }
 
-  fShMem_Buffer = (unsigned short int *)shmat(memId, (char *)0, 0);
+    fShMem_Buffer = (unsigned short int*)shmat(memId, (char*)0, 0);
 }
 
 ///////////////////////////////////////////////
 /// \brief Function including required initialization before each event starts
 /// to process.
 ///
-void TRestRawMemoryBufferToSignalProcess::BeginOfEventProcess() {
-  fOutputRawSignalEvent->Initialize();
-}
+void TRestRawMemoryBufferToSignalProcess::BeginOfEventProcess() { fOutputRawSignalEvent->Initialize(); }
 
 ///////////////////////////////////////////////
 /// \brief The main processing event function
 ///
-TRestEvent *
-TRestRawMemoryBufferToSignalProcess::ProcessEvent(TRestEvent *evInput) {
-  while (true) {
-    SemaphoreRed(fSemaphoreId);
-    int dataReady = fShMem_daqInfo->dataReady;
-    int maxSamples = fShMem_daqInfo->maxSamples;
-    SemaphoreGreen(fSemaphoreId);
+TRestEvent* TRestRawMemoryBufferToSignalProcess::ProcessEvent(TRestEvent* evInput) {
+    while (true) {
+        SemaphoreRed(fSemaphoreId);
+        int dataReady = fShMem_daqInfo->dataReady;
+        int maxSamples = fShMem_daqInfo->maxSamples;
+        SemaphoreGreen(fSemaphoreId);
 
-    // We sleep a while to do not saturate/block the daq with the semaphore.
-    usleep(fTimeDelay);
+        // We sleep a while to do not saturate/block the daq with the semaphore.
+        usleep(fTimeDelay);
 
-    if (dataReady == 2) {
-      //// START Getting access to shared resources
-      SemaphoreRed(fSemaphoreId);
+        if (dataReady == 2) {
+            //// START Getting access to shared resources
+            SemaphoreRed(fSemaphoreId);
 
-      for (unsigned int s = 0; s < fShMem_daqInfo->nSignals; s++) {
-        TRestRawSignal sgnl;
-        sgnl.SetSignalID(fShMem_Buffer[s * (maxSamples + 1)]);
+            for (unsigned int s = 0; s < fShMem_daqInfo->nSignals; s++) {
+                TRestRawSignal sgnl;
+                sgnl.SetSignalID(fShMem_Buffer[s * (maxSamples + 1)]);
 
-        if (GetVerboseLevel() >= REST_Debug)
-          cout << "s : " << s << " id : " << sgnl.GetSignalID() << endl;
+                if (GetVerboseLevel() >= REST_Debug)
+                    cout << "s : " << s << " id : " << sgnl.GetSignalID() << endl;
 
-        for (int n = 0; n < maxSamples; n++)
-          sgnl.AddPoint(fShMem_Buffer[s * (maxSamples + 1) + 1 + n]);
-        fOutputRawSignalEvent->AddSignal(sgnl);
+                for (int n = 0; n < maxSamples; n++)
+                    sgnl.AddPoint(fShMem_Buffer[s * (maxSamples + 1) + 1 + n]);
+                fOutputRawSignalEvent->AddSignal(sgnl);
 
-        if (GetVerboseLevel() >= REST_Extreme) {
-          sgnl.Print();
-          GetChar();
+                if (GetVerboseLevel() >= REST_Extreme) {
+                    sgnl.Print();
+                    GetChar();
+                }
+            }
+
+            if (fReset) {
+                for (unsigned int n = 0; n < fShMem_daqInfo->bufferSize; n++) fShMem_Buffer[n] = 0;
+            }
+
+            fShMem_daqInfo->dataReady = 0;
+
+            fOutputRawSignalEvent->SetID(fShMem_daqInfo->eventId);
+            fOutputRawSignalEvent->SetTime(fShMem_daqInfo->timeStamp);
+
+            SemaphoreGreen(fSemaphoreId);
+            //// END Getting access to shared resources
+
+            if (GetVerboseLevel() >= REST_Info) {
+                cout << "------------------------------------------" << endl;
+                cout << "Event ID : " << fOutputRawSignalEvent->GetID() << endl;
+                cout << "Time stamp : " << fOutputRawSignalEvent->GetTimeStamp() << endl;
+                cout << "Number of Signals : " << fOutputRawSignalEvent->GetNumberOfSignals() << endl;
+                cout << "------------------------------------------" << endl;
+
+                if (GetVerboseLevel() >= REST_Debug) {
+                    for (Int_t n = 0; n < fOutputRawSignalEvent->GetNumberOfSignals(); n++)
+                        cout << "Signal N : " << n
+                             << " daq id : " << fOutputRawSignalEvent->GetSignal(n)->GetID() << endl;
+                    GetChar();
+                }
+            }
+
+            if (fOutputRawSignalEvent->GetNumberOfSignals() == 0) return NULL;
+
+            return fOutputRawSignalEvent;
         }
-      }
-
-      if (fReset) {
-        for (unsigned int n = 0; n < fShMem_daqInfo->bufferSize; n++)
-          fShMem_Buffer[n] = 0;
-      }
-
-      fShMem_daqInfo->dataReady = 0;
-
-      fOutputRawSignalEvent->SetID(fShMem_daqInfo->eventId);
-      fOutputRawSignalEvent->SetTime(fShMem_daqInfo->timeStamp);
-
-      SemaphoreGreen(fSemaphoreId);
-      //// END Getting access to shared resources
-
-      if (GetVerboseLevel() >= REST_Info) {
-        cout << "------------------------------------------" << endl;
-        cout << "Event ID : " << fOutputRawSignalEvent->GetID() << endl;
-        cout << "Time stamp : " << fOutputRawSignalEvent->GetTimeStamp()
-             << endl;
-        cout << "Number of Signals : "
-             << fOutputRawSignalEvent->GetNumberOfSignals() << endl;
-        cout << "------------------------------------------" << endl;
-
-        if (GetVerboseLevel() >= REST_Debug) {
-          for (Int_t n = 0; n < fOutputRawSignalEvent->GetNumberOfSignals();
-               n++)
-            cout << "Signal N : " << n
-                 << " daq id : " << fOutputRawSignalEvent->GetSignal(n)->GetID()
-                 << endl;
-          GetChar();
-        }
-      }
-
-      if (fOutputRawSignalEvent->GetNumberOfSignals() == 0)
-        return NULL;
-
-      return fOutputRawSignalEvent;
     }
-  }
 
-  return fOutputRawSignalEvent;
+    return fOutputRawSignalEvent;
 }
 
 ///////////////////////////////////////////////
@@ -367,11 +351,11 @@ TRestRawMemoryBufferToSignalProcess::ProcessEvent(TRestEvent *evInput) {
 /// TRestRawMemoryBufferToSignalProcess metadata section
 ///
 void TRestRawMemoryBufferToSignalProcess::InitFromConfigFile() {
-  fKeyDaqInfo = StringToInteger(GetParameter("daqInfoKey", "3"));
+    fKeyDaqInfo = StringToInteger(GetParameter("daqInfoKey", "3"));
 
-  fKeyBuffer = StringToInteger(GetParameter("bufferKey", "13"));
+    fKeyBuffer = StringToInteger(GetParameter("bufferKey", "13"));
 
-  fKeySemaphore = StringToInteger(GetParameter("semaphoreKey", "14"));
+    fKeySemaphore = StringToInteger(GetParameter("semaphoreKey", "14"));
 
-  fTimeDelay = StringToInteger(GetParameter("timeDelay", "10000"));
+    fTimeDelay = StringToInteger(GetParameter("timeDelay", "10000"));
 }

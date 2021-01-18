@@ -65,153 +65,148 @@ ClassImp(TRestRawToSignalProcess);
 //______________________________________________________________________________
 TRestRawToSignalProcess::TRestRawToSignalProcess() { Initialize(); }
 
-TRestRawToSignalProcess::TRestRawToSignalProcess(char *cfgFileName) {
-  Initialize();
+TRestRawToSignalProcess::TRestRawToSignalProcess(char* cfgFileName) {
+    Initialize();
 
-  if (LoadConfigFromFile(cfgFileName))
-    LoadDefaultConfig();
+    if (LoadConfigFromFile(cfgFileName)) LoadDefaultConfig();
 }
 
 //______________________________________________________________________________
 TRestRawToSignalProcess::~TRestRawToSignalProcess() {
-  // TRestRawToSignalProcess destructor
-  if (fSignalEvent)
-    delete fSignalEvent;
+    // TRestRawToSignalProcess destructor
+    if (fSignalEvent) delete fSignalEvent;
 }
 
 void TRestRawToSignalProcess::LoadConfig(string cfgFilename, string name) {
-  if (LoadConfigFromFile(cfgFilename, name) == -1) {
-    cout << "Loading default" << endl;
-    LoadDefaultConfig();
-  }
+    if (LoadConfigFromFile(cfgFilename, name) == -1) {
+        cout << "Loading default" << endl;
+        LoadDefaultConfig();
+    }
 }
 
 //______________________________________________________________________________
 void TRestRawToSignalProcess::Initialize() {
-  SetSectionName(this->ClassName());
+    SetSectionName(this->ClassName());
+    SetLibraryVersion(LIBRARY_VERSION);
 
-  if (fSignalEvent)
-    delete fSignalEvent;
-  fSignalEvent = new TRestRawSignalEvent();
+    if (fSignalEvent) delete fSignalEvent;
+    fSignalEvent = new TRestRawSignalEvent();
 
-  fInputBinFile = NULL;
+    fInputBinFile = NULL;
 
-  fMinPoints = 512;
+    fMinPoints = 512;
 
-  fSingleThreadOnly = true;
-  fIsExternal = true;
+    fSingleThreadOnly = true;
+    fIsExternal = true;
 
-  totalBytes = 0;
-  totalBytesReaded = 0;
+    totalBytes = 0;
+    totalBytesReaded = 0;
 }
 
 void TRestRawToSignalProcess::InitFromConfigFile() {
-  fElectronicsType = GetParameter("electronics");
-  fShowSamples = StringToInteger(GetParameter("showSamples", "10"));
-  fMinPoints = StringToInteger(GetParameter("minPoints", "512"));
+    fElectronicsType = GetParameter("electronics");
+    fShowSamples = StringToInteger(GetParameter("showSamples", "10"));
+    fMinPoints = StringToInteger(GetParameter("minPoints", "512"));
 
-  PrintMetadata();
+    PrintMetadata();
 
-  if (fElectronicsType == "SingleFeminos" || fElectronicsType == "TCMFeminos")
-    return;
+    if (fElectronicsType == "SingleFeminos" || fElectronicsType == "TCMFeminos") return;
 
-  if (GetVerboseLevel() >= REST_Warning) {
-    cout << "REST WARNING: TRestRawToSignalProcess::InitFromConfigFile" << endl;
-    cout << "Electronic type " << fElectronicsType << " not found " << endl;
-    // cout << "Loading default config" << endl;
-  }
+    if (GetVerboseLevel() >= REST_Warning) {
+        cout << "REST WARNING: TRestRawToSignalProcess::InitFromConfigFile" << endl;
+        cout << "Electronic type " << fElectronicsType << " not found " << endl;
+        // cout << "Loading default config" << endl;
+    }
 
-  LoadDefaultConfig();
+    LoadDefaultConfig();
 }
 
 void TRestRawToSignalProcess::LoadDefaultConfig() {
-  // if (GetVerboseLevel() <= REST_Warning) {
-  //    cout << "REST WARNING: TRestRawToSignalProcess " << endl;
-  //    cout << "Error Loading config file " << endl;
-  //}
+    // if (GetVerboseLevel() <= REST_Warning) {
+    //    cout << "REST WARNING: TRestRawToSignalProcess " << endl;
+    //    cout << "Error Loading config file " << endl;
+    //}
 
-  // if (GetVerboseLevel() >= REST_Debug) GetChar();
+    // if (GetVerboseLevel() >= REST_Debug) GetChar();
 
-  fElectronicsType = "SingleFeminos";
-  fMinPoints = 512;
+    fElectronicsType = "SingleFeminos";
+    fMinPoints = 512;
 }
 
 //______________________________________________________________________________
 void TRestRawToSignalProcess::EndProcess() {
-  // close binary file??? Already done
+    // close binary file??? Already done
 }
 
 Bool_t TRestRawToSignalProcess::OpenInputFiles(vector<string> files) {
-  nFiles = 0;
-  // for (auto a : fInputFiles) { delete a; }
-  fInputFiles.clear();
-  fInputFileNames.clear();
-  totalBytes = 0;
-  totalBytesReaded = 0;
+    nFiles = 0;
+    // for (auto a : fInputFiles) { delete a; }
+    fInputFiles.clear();
+    fInputFileNames.clear();
+    totalBytes = 0;
+    totalBytesReaded = 0;
 
-  for (int i = 0; i < files.size(); i++) {
-    FILE *f = fopen(files[i].c_str(), "rb");
+    for (int i = 0; i < files.size(); i++) {
+        FILE* f = fopen(files[i].c_str(), "rb");
 
-    if (f == NULL) {
-      warning << "REST WARNING. Input file for " << this->ClassName()
-              << " does not exist!" << endl;
-      warning << "File : " << files[i] << endl;
-      continue;
+        if (f == NULL) {
+            warning << "REST WARNING. Input file for " << this->ClassName() << " does not exist!" << endl;
+            warning << "File : " << files[i] << endl;
+            continue;
+        }
+
+        fInputFiles.push_back(f);
+        fInputFileNames.push_back(files[i]);
+
+        struct stat statbuf;
+        stat(files[i].c_str(), &statbuf);
+        totalBytes += statbuf.st_size;
+
+        nFiles++;
     }
 
-    fInputFiles.push_back(f);
-    fInputFileNames.push_back(files[i]);
+    if (nFiles > 0) {
+        fInputBinFile = fInputFiles[0];
+    } else {
+        ferr << "No input file is opened, in process: " << this->ClassName() << "!" << endl;
+        exit(1);
+    }
 
-    struct stat statbuf;
-    stat(files[i].c_str(), &statbuf);
-    totalBytes += statbuf.st_size;
-
-    nFiles++;
-  }
-
-  if (nFiles > 0) {
-    fInputBinFile = fInputFiles[0];
-  } else {
-    ferr << "No input file is opened, in process: " << this->ClassName() << "!"
-         << endl;
-    exit(1);
-  }
-
-  debug << this->GetName() << " : opened " << nFiles << " files" << endl;
-  return nFiles;
+    debug << this->GetName() << " : opened " << nFiles << " files" << endl;
+    return nFiles;
 }
 
 // For debugging
 void TRestRawToSignalProcess::printBits(unsigned short num) {
-  for (unsigned short bit = 0; bit < (sizeof(unsigned short) * 8); bit++) {
-    printf("%i ", num & 0x01);
-    num = num >> 1;
-  }
+    for (unsigned short bit = 0; bit < (sizeof(unsigned short) * 8); bit++) {
+        printf("%i ", num & 0x01);
+        num = num >> 1;
+    }
 
-  printf("\n");
+    printf("\n");
 }
 
 // For debugging
 void TRestRawToSignalProcess::printBits(unsigned int num) {
-  for (unsigned int bit = 0; bit < (sizeof(unsigned int) * 8); bit++) {
-    printf("%i ", num & 0x01);
-    num = num >> 1;
-  }
+    for (unsigned int bit = 0; bit < (sizeof(unsigned int) * 8); bit++) {
+        printf("%i ", num & 0x01);
+        num = num >> 1;
+    }
 
-  printf("\n");
+    printf("\n");
 }
 
 void TRestRawToSignalProcess::PrintMetadata() {
-  BeginPrintProcess();
+    BeginPrintProcess();
 
-  metadata << " " << endl;
-  metadata << " ==================================== " << endl;
-  metadata << "DAQ : " << GetTitle() << endl;
-  metadata << "Electronics type : " << fElectronicsType << endl;
-  metadata << "Minimum number of points : " << fMinPoints << endl;
-  metadata << " ==================================== " << endl;
+    metadata << " " << endl;
+    metadata << " ==================================== " << endl;
+    metadata << "DAQ : " << GetTitle() << endl;
+    metadata << "Electronics type : " << fElectronicsType << endl;
+    metadata << "Minimum number of points : " << fMinPoints << endl;
+    metadata << " ==================================== " << endl;
 
-  metadata << " " << endl;
+    metadata << " " << endl;
 
-  EndPrintProcess();
+    EndPrintProcess();
 }

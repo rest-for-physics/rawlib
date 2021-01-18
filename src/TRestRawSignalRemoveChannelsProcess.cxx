@@ -78,9 +78,7 @@ ClassImp(TRestRawSignalRemoveChannelsProcess);
 ///////////////////////////////////////////////
 /// \brief Default constructor
 ///
-TRestRawSignalRemoveChannelsProcess::TRestRawSignalRemoveChannelsProcess() {
-  Initialize();
-}
+TRestRawSignalRemoveChannelsProcess::TRestRawSignalRemoveChannelsProcess() { Initialize(); }
 
 ///////////////////////////////////////////////
 /// \brief Constructor loading data from a config file
@@ -94,29 +92,25 @@ TRestRawSignalRemoveChannelsProcess::TRestRawSignalRemoveChannelsProcess() {
 ///
 /// \param cfgFileName A const char* giving the path to an RML file.
 ///
-TRestRawSignalRemoveChannelsProcess::TRestRawSignalRemoveChannelsProcess(
-    char *cfgFileName) {
-  Initialize();
+TRestRawSignalRemoveChannelsProcess::TRestRawSignalRemoveChannelsProcess(char* cfgFileName) {
+    Initialize();
 
-  if (LoadConfigFromFile(cfgFileName) == -1)
-    LoadDefaultConfig();
+    if (LoadConfigFromFile(cfgFileName) == -1) LoadDefaultConfig();
 
-  PrintMetadata();
+    PrintMetadata();
 }
 
 ///////////////////////////////////////////////
 /// \brief Default destructor
 ///
-TRestRawSignalRemoveChannelsProcess::~TRestRawSignalRemoveChannelsProcess() {
-  delete fOutputSignalEvent;
-}
+TRestRawSignalRemoveChannelsProcess::~TRestRawSignalRemoveChannelsProcess() { delete fOutputSignalEvent; }
 
 ///////////////////////////////////////////////
 /// \brief Function to load the default config in absence of RML input
 ///
 void TRestRawSignalRemoveChannelsProcess::LoadDefaultConfig() {
-  SetName("removeChannels-Default");
-  SetTitle("Default config");
+    SetName("removeChannels-Default");
+    SetTitle("Default config");
 }
 
 ///////////////////////////////////////////////
@@ -124,10 +118,11 @@ void TRestRawSignalRemoveChannelsProcess::LoadDefaultConfig() {
 /// section name
 ///
 void TRestRawSignalRemoveChannelsProcess::Initialize() {
-  SetSectionName(this->ClassName());
+    SetSectionName(this->ClassName());
+    SetLibraryVersion(LIBRARY_VERSION);
 
-  fInputSignalEvent = NULL;
-  fOutputSignalEvent = new TRestRawSignalEvent();
+    fInputSignalEvent = NULL;
+    fOutputSignalEvent = new TRestRawSignalEvent();
 }
 
 ///////////////////////////////////////////////
@@ -142,41 +137,34 @@ void TRestRawSignalRemoveChannelsProcess::Initialize() {
 /// \param name The name of the specific metadata. It will be used to find the
 /// correspondig TRestGeant4AnalysisProcess section inside the RML.
 ///
-void TRestRawSignalRemoveChannelsProcess::LoadConfig(string cfgFilename,
-                                                     string name) {
-  if (LoadConfigFromFile(cfgFilename, name) == -1)
-    LoadDefaultConfig();
+void TRestRawSignalRemoveChannelsProcess::LoadConfig(string cfgFilename, string name) {
+    if (LoadConfigFromFile(cfgFilename, name) == -1) LoadDefaultConfig();
 }
 
 ///////////////////////////////////////////////
 /// \brief The main processing event function
 ///
-TRestEvent *
-TRestRawSignalRemoveChannelsProcess::ProcessEvent(TRestEvent *evInput) {
-  fInputSignalEvent = (TRestRawSignalEvent *)evInput;
+TRestEvent* TRestRawSignalRemoveChannelsProcess::ProcessEvent(TRestEvent* evInput) {
+    fInputSignalEvent = (TRestRawSignalEvent*)evInput;
 
-  for (int n = 0; n < fInputSignalEvent->GetNumberOfSignals(); n++) {
-    TRestRawSignal *sgnl = fInputSignalEvent->GetSignal(n);
+    for (int n = 0; n < fInputSignalEvent->GetNumberOfSignals(); n++) {
+        TRestRawSignal* sgnl = fInputSignalEvent->GetSignal(n);
 
-    Bool_t removeChannel = false;
-    for (unsigned int x = 0; x < fChannelIds.size() && !removeChannel; x++)
-      if (sgnl->GetID() == fChannelIds[x])
-        removeChannel = true;
+        Bool_t removeChannel = false;
+        for (unsigned int x = 0; x < fChannelIds.size() && !removeChannel; x++)
+            if (sgnl->GetID() == fChannelIds[x]) removeChannel = true;
 
-    if (!removeChannel)
-      fOutputSignalEvent->AddSignal(*sgnl);
+        if (!removeChannel) fOutputSignalEvent->AddSignal(*sgnl);
 
-    if (GetVerboseLevel() >= REST_Extreme)
-      cout << "Channel ID : " << sgnl->GetID() << endl;
+        if (GetVerboseLevel() >= REST_Extreme) cout << "Channel ID : " << sgnl->GetID() << endl;
 
-    if (GetVerboseLevel() >= REST_Debug && removeChannel)
-      cout << "Removing channel id : " << sgnl->GetID() << endl;
-  }
+        if (GetVerboseLevel() >= REST_Debug && removeChannel)
+            cout << "Removing channel id : " << sgnl->GetID() << endl;
+    }
 
-  if (GetVerboseLevel() >= REST_Extreme)
-    GetChar();
+    if (GetVerboseLevel() >= REST_Extreme) GetChar();
 
-  return fOutputSignalEvent;
+    return fOutputSignalEvent;
 }
 
 ///////////////////////////////////////////////
@@ -184,12 +172,11 @@ TRestRawSignalRemoveChannelsProcess::ProcessEvent(TRestEvent *evInput) {
 /// TRestDetectorSignalToRawSignalProcess metadata section
 ///
 void TRestRawSignalRemoveChannelsProcess::InitFromConfigFile() {
-  size_t pos = 0;
+    size_t pos = 0;
 
-  string removeChannelDefinition;
-  while ((removeChannelDefinition = GetKEYDefinition("removeChannel", pos)) !=
-         "") {
-    Int_t id = StringToInteger(GetFieldValue("id", removeChannelDefinition));
-    fChannelIds.push_back(id);
-  }
+    string removeChannelDefinition;
+    while ((removeChannelDefinition = GetKEYDefinition("removeChannel", pos)) != "") {
+        Int_t id = StringToInteger(GetFieldValue("id", removeChannelDefinition));
+        fChannelIds.push_back(id);
+    }
 }

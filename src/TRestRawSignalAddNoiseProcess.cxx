@@ -66,82 +66,77 @@ ClassImp(TRestRawSignalAddNoiseProcess);
 TRestRawSignalAddNoiseProcess::TRestRawSignalAddNoiseProcess() { Initialize(); }
 
 //______________________________________________________________________________
-TRestRawSignalAddNoiseProcess::TRestRawSignalAddNoiseProcess(
-    char *cfgFileName) {
-  Initialize();
+TRestRawSignalAddNoiseProcess::TRestRawSignalAddNoiseProcess(char* cfgFileName) {
+    Initialize();
 
-  if (LoadConfigFromFile(cfgFileName) == -1)
-    LoadDefaultConfig();
+    if (LoadConfigFromFile(cfgFileName) == -1) LoadDefaultConfig();
 
-  PrintMetadata();
-  // TRestRawSignalAddNoiseProcess default constructor
+    PrintMetadata();
+    // TRestRawSignalAddNoiseProcess default constructor
 }
 
 //______________________________________________________________________________
 TRestRawSignalAddNoiseProcess::~TRestRawSignalAddNoiseProcess() {
-  delete fOutputSignalEvent;
-  // TRestRawSignalAddNoiseProcess destructor
+    delete fOutputSignalEvent;
+    // TRestRawSignalAddNoiseProcess destructor
 }
 
 void TRestRawSignalAddNoiseProcess::LoadDefaultConfig() {
-  SetName("addSignalNoiseProcess-Default");
-  SetTitle("Default config");
+    SetName("addSignalNoiseProcess-Default");
+    SetTitle("Default config");
 }
 
 //______________________________________________________________________________
 void TRestRawSignalAddNoiseProcess::Initialize() {
-  SetSectionName(this->ClassName());
+    SetSectionName(this->ClassName());
+    SetLibraryVersion(LIBRARY_VERSION);
 
-  fInputSignalEvent = NULL;
-  fOutputSignalEvent = new TRestRawSignalEvent();
+    fInputSignalEvent = NULL;
+    fOutputSignalEvent = new TRestRawSignalEvent();
 }
 
-void TRestRawSignalAddNoiseProcess::LoadConfig(string cfgFilename,
-                                               string name) {
-  if (LoadConfigFromFile(cfgFilename, name) == -1)
-    LoadDefaultConfig();
+void TRestRawSignalAddNoiseProcess::LoadConfig(string cfgFilename, string name) {
+    if (LoadConfigFromFile(cfgFilename, name) == -1) LoadDefaultConfig();
 }
 
 //______________________________________________________________________________
 void TRestRawSignalAddNoiseProcess::InitProcess() {
-  // Function to be executed once at the beginning of process
-  // (before starting the process of the events)
+    // Function to be executed once at the beginning of process
+    // (before starting the process of the events)
 
-  // Start by calling the InitProcess function of the abstract class.
-  // Comment this if you don't want it.
-  // TRestEventProcess::InitProcess();
+    // Start by calling the InitProcess function of the abstract class.
+    // Comment this if you don't want it.
+    // TRestEventProcess::InitProcess();
 }
 
 //______________________________________________________________________________
-TRestEvent *TRestRawSignalAddNoiseProcess::ProcessEvent(TRestEvent *evInput) {
-  fInputSignalEvent = (TRestRawSignalEvent *)evInput;
+TRestEvent* TRestRawSignalAddNoiseProcess::ProcessEvent(TRestEvent* evInput) {
+    fInputSignalEvent = (TRestRawSignalEvent*)evInput;
 
-  // cout<<"Number of signals "<< fInputSignalEvent->GetNumberOfSignals()<<
-  // endl;
+    // cout<<"Number of signals "<< fInputSignalEvent->GetNumberOfSignals()<<
+    // endl;
 
-  if (fInputSignalEvent->GetNumberOfSignals() <= 0)
-    return NULL;
+    if (fInputSignalEvent->GetNumberOfSignals() <= 0) return NULL;
 
-  for (int n = 0; n < fInputSignalEvent->GetNumberOfSignals(); n++) {
-    TRestRawSignal noiseSignal;
+    for (int n = 0; n < fInputSignalEvent->GetNumberOfSignals(); n++) {
+        TRestRawSignal noiseSignal;
 
-    // Asign ID and add noise
-    fInputSignalEvent->GetSignal(n)->GetWhiteNoiseSignal(&noiseSignal,
-                                                         fNoiseLevel);
-    noiseSignal.SetSignalID(fInputSignalEvent->GetSignal(n)->GetSignalID());
+        // Asign ID and add noise
+        fInputSignalEvent->GetSignal(n)->GetWhiteNoiseSignal(&noiseSignal, fNoiseLevel);
+        noiseSignal.SetSignalID(fInputSignalEvent->GetSignal(n)->GetSignalID());
 
-    fOutputSignalEvent->AddSignal(noiseSignal);
-  }
+        fOutputSignalEvent->AddSignal(noiseSignal);
+    }
 
-  return fOutputSignalEvent;
+    return fOutputSignalEvent;
 }
 
 //______________________________________________________________________________
 void TRestRawSignalAddNoiseProcess::EndProcess() {
-  // Function to be executed once at the end of the process
-  // (after all events have been processed)
+    // Function to be executed once at the end of the process
+    // (after all events have been processed)
 
-  // Start by calling the EndProcess function of the abstract class.
-  // Comment this if you don't want it.
-  // TRestEventProcess::EndProcess();
+    // Start by calling the EndProcess function of the abstract class.
+    // Comment this if you don't want it.
+    // TRestEventProcess::EndProcess();
 }
