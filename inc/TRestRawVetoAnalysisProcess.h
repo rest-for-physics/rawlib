@@ -89,11 +89,6 @@ public:
 
   /// Returns the veto group names and IDs
   std::pair<vector<string>,vector<string>> GetVetoGroups(){
-	   /* map<string,vector<string>> output;
-	    for (unsigned int i=0; i<fVetoGroupNames.size(); i++){
-		    output[fVetoGroupNames[i]]=fVetoGroupIds[i];
-
-	    }*/
 	  pair <vector<string>,vector<string>> output;
 	  output.first = fVetoGroupNames;
 	  output.second = fVetoGroupIds;
