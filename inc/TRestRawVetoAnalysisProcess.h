@@ -36,13 +36,18 @@ private:
   /// The range used to calculate the veto signal parameters
   TVector2 fRange; //<
 
-  /// Veto definition: IDs and group names
+  /// Veto signal IDs 
   vector<double> fVetoSignalId;
+
+  /// Veto signal IDs per group
   vector<string> fVetoGroupIds;
+  
+  /// Veto group Names
   vector<string> fVetoGroupNames;
 
-  /// Observable names
+  /// Peak Time observable names
   vector<string> fPeakTime;
+  /// Max peak amplitude observable names
   vector<string> fPeakAmp;
 
   /// A pointer to the specific TRestRawSignalEvent
@@ -74,13 +79,34 @@ public:
   /// Returns the name of this process
   TString GetProcessName() { return (TString) "vetoAnalysis"; }
 
-  TRestRawVetoAnalysisProcess();
-  TRestRawVetoAnalysisProcess(char *cfgFileName);
+  /// Returns the veto IDs, if they where defined in a list
+  std::vector<double> GetVetoSignalIDs(){return fVetoSignalId;}
+  double GetVetoSignalIDs(Int_t index){
+	  if (index>= fVetoSignalId.size())
+  		return -1;
+	  return fVetoSignalId[index];  
+  }
 
-  ~TRestRawVetoAnalysisProcess();
+  /// Returns the veto group names and IDs
+  std::pair<vector<string>,vector<string>> GetVetoGroups(){
+	   /* map<string,vector<string>> output;
+	    for (unsigned int i=0; i<fVetoGroupNames.size(); i++){
+		    output[fVetoGroupNames[i]]=fVetoGroupIds[i];
 
-  // If new members are added, removed or modified in this class version number
-  // must be increased!
-  ClassDef(TRestRawVetoAnalysisProcess, 1);
+	    }*/
+	  pair <vector<string>,vector<string>> output;
+	  output.first = fVetoGroupNames;
+	  output.second = fVetoGroupIds;
+	  return output;
+    }
+
+    TRestRawVetoAnalysisProcess();
+    TRestRawVetoAnalysisProcess(char *cfgFileName);
+
+    ~TRestRawVetoAnalysisProcess();
+
+    // If new members are added, removed or modified in this class version number
+    // must be increased!
+    ClassDef(TRestRawVetoAnalysisProcess, 1);
 };
 #endif
