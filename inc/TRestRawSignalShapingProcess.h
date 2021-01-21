@@ -30,66 +30,64 @@
 //! A process to convolute the input raw signal event with a given input
 //! response.
 class TRestRawSignalShapingProcess : public TRestEventProcess {
-private:
-  /// A pointer to the specific TRestRawSignalEvent input
-  TRestRawSignalEvent *fInputSignalEvent;
+   private:
+    /// A pointer to the specific TRestRawSignalEvent input
+    TRestRawSignalEvent* fInputSignalEvent;
 
-  /// A pointer to the specific TRestRawSignalEvent output
-  TRestRawSignalEvent *fOutputSignalEvent;
+    /// A pointer to the specific TRestRawSignalEvent output
+    TRestRawSignalEvent* fOutputSignalEvent;
 
-  void InitFromConfigFile();
+    void InitFromConfigFile();
 
-  void Initialize();
+    void Initialize();
 
-  void LoadDefaultConfig();
+    void LoadDefaultConfig();
 
-protected:
-  // add here the members of your event process
-  TString fResponseFilename;
+   protected:
+    // add here the members of your event process
+    TString fResponseFilename;
 
-  TString fShapingType;
+    TString fShapingType;
 
-  Double_t fShapingTime;
-  Double_t fShapingGain;
+    Double_t fShapingTime;
+    Double_t fShapingGain;
 
-public:
-  any GetInputEvent() { return fInputSignalEvent; }
-  any GetOutputEvent() { return fOutputSignalEvent; }
+   public:
+    any GetInputEvent() { return fInputSignalEvent; }
+    any GetOutputEvent() { return fOutputSignalEvent; }
 
-  void InitProcess();
-  TRestEvent *ProcessEvent(TRestEvent *eventInput);
-  void EndProcess();
+    void InitProcess();
+    TRestEvent* ProcessEvent(TRestEvent* eventInput);
+    void EndProcess();
 
-  void LoadConfig(std::string cfgFilename, std::string name = "");
+    void LoadConfig(std::string cfgFilename, std::string name = "");
 
-  /// It prints out the process parameters stored in the metadata structure
-  void PrintMetadata() {
-    BeginPrintProcess();
+    /// It prints out the process parameters stored in the metadata structure
+    void PrintMetadata() {
+        BeginPrintProcess();
 
-    metadata << "Shaping type : " << fShapingType << endl;
+        metadata << "Shaping type : " << fShapingType << endl;
 
-    metadata << "Shaping time : " << fShapingTime << endl;
+        metadata << "Shaping time : " << fShapingTime << endl;
 
-    metadata << "Amplitude gain : " << fShapingGain << endl;
+        metadata << "Amplitude gain : " << fShapingGain << endl;
 
-    if (fShapingType == "responseFile")
-      metadata << "Response file : " << fResponseFilename << endl;
+        if (fShapingType == "responseFile") metadata << "Response file : " << fResponseFilename << endl;
 
-    EndPrintProcess();
-  }
+        EndPrintProcess();
+    }
 
-  /// Returns a new instance of this class
-  TRestEventProcess *Maker() { return new TRestRawSignalShapingProcess; }
+    /// Returns a new instance of this class
+    TRestEventProcess* Maker() { return new TRestRawSignalShapingProcess; }
 
-  /// Returns the name of this process
-  TString GetProcessName() { return (TString) "rawSignalShaping"; }
+    /// Returns the name of this process
+    TString GetProcessName() { return (TString) "rawSignalShaping"; }
 
-  TRestRawSignalShapingProcess();
-  TRestRawSignalShapingProcess(char *cfgFileName);
-  ~TRestRawSignalShapingProcess();
+    TRestRawSignalShapingProcess();
+    TRestRawSignalShapingProcess(char* cfgFileName);
+    ~TRestRawSignalShapingProcess();
 
-  ClassDef(TRestRawSignalShapingProcess,
-           2); // Template for a REST "event process" class inherited from
-               // TRestEventProcess
+    ClassDef(TRestRawSignalShapingProcess, 2);  // Template for a REST "event process" class inherited from
+                                                // TRestEventProcess
 };
 #endif

@@ -32,63 +32,63 @@
 //! An analysis REST process to extract valuable information from RawSignal type
 //! of data.
 class TRestRawSignalConvolutionFittingProcess : public TRestEventProcess {
-private:
-  /// A pointer to the specific TRestRawSignalEvent input
-  TRestRawSignalEvent *fRawSignalEvent; //!
+   private:
+    /// A pointer to the specific TRestRawSignalEvent input
+    TRestRawSignalEvent* fRawSignalEvent;  //!
 
-  /* Metadata members
-TVector2 fBaseLineRange;
-TVector2 fIntegralRange;
-Double_t fPointThreshold;
-Double_t fSignalThreshold;
-Int_t fNPointsOverThreshold; */
+    /* Metadata members
+  TVector2 fBaseLineRange;
+  TVector2 fIntegralRange;
+  Double_t fPointThreshold;
+  Double_t fSignalThreshold;
+  Int_t fNPointsOverThreshold; */
 
-  void InitFromConfigFile();
+    void InitFromConfigFile();
 
-  void Initialize();
+    void Initialize();
 
-  void LoadDefaultConfig();
+    void LoadDefaultConfig();
 
-protected:
-  // add here the members of your event process
+   protected:
+    // add here the members of your event process
 
-public:
-  any GetInputEvent() { return fRawSignalEvent; }
-  any GetOutputEvent() { return fRawSignalEvent; }
+   public:
+    any GetInputEvent() { return fRawSignalEvent; }
+    any GetOutputEvent() { return fRawSignalEvent; }
 
-  void InitProcess();
-  TRestEvent *ProcessEvent(TRestEvent *eventInput);
-  void EndProcess();
+    void InitProcess();
+    TRestEvent* ProcessEvent(TRestEvent* eventInput);
+    void EndProcess();
 
-  void LoadConfig(std::string cfgFilename, std::string name = "");
+    void LoadConfig(std::string cfgFilename, std::string name = "");
 
-  void PrintMetadata() {
-    BeginPrintProcess();
+    void PrintMetadata() {
+        BeginPrintProcess();
 
-    /*
-metadata << "Baseline range : ( " << fBaseLineRange.X() << " , " <<
-fBaseLineRange.Y() << " ) "
-     << endl;
-metadata << "Integral range : ( " << fIntegralRange.X() << " , " <<
-fIntegralRange.Y() << " ) "
-     << endl;
-metadata << "Point Threshold : " << fPointThreshold << " sigmas" << endl;
-metadata << "Signal threshold : " << fSignalThreshold << " sigmas" << endl;
-metadata << "Number of points over threshold : " << fNPointsOverThreshold <<
-endl;
-metadata << " " << endl;
-    */
+        /*
+    metadata << "Baseline range : ( " << fBaseLineRange.X() << " , " <<
+    fBaseLineRange.Y() << " ) "
+         << endl;
+    metadata << "Integral range : ( " << fIntegralRange.X() << " , " <<
+    fIntegralRange.Y() << " ) "
+         << endl;
+    metadata << "Point Threshold : " << fPointThreshold << " sigmas" << endl;
+    metadata << "Signal threshold : " << fSignalThreshold << " sigmas" << endl;
+    metadata << "Number of points over threshold : " << fNPointsOverThreshold <<
+    endl;
+    metadata << " " << endl;
+        */
 
-    EndPrintProcess();
-  }
+        EndPrintProcess();
+    }
 
-  TString GetProcessName() { return (TString) "rawSignalConvolutionFitting"; }
+    TString GetProcessName() { return (TString) "rawSignalConvolutionFitting"; }
 
-  TRestRawSignalConvolutionFittingProcess(); // Constructor
-  TRestRawSignalConvolutionFittingProcess(char *cfgFileName);
-  ~TRestRawSignalConvolutionFittingProcess(); // Destructor
+    TRestRawSignalConvolutionFittingProcess();  // Constructor
+    TRestRawSignalConvolutionFittingProcess(char* cfgFileName);
+    ~TRestRawSignalConvolutionFittingProcess();  // Destructor
 
-  ClassDef(TRestRawSignalConvolutionFittingProcess, 1);
-  // Template for a REST "event process" class inherited from TRestEventProcess
+    ClassDef(TRestRawSignalConvolutionFittingProcess, 1);
+    // Template for a REST "event process" class inherited from TRestEventProcess
 };
 #endif

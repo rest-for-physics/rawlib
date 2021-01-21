@@ -23,78 +23,76 @@
 #ifndef RestCore_TRestRawCommonNoiseReductionProcess
 #define RestCore_TRestRawCommonNoiseReductionProcess
 
+#include <TRestRawSignalEvent.h>
 #include "TRestEventProcess.h"
 #include "TRestRawSignal.h"
-#include <TRestRawSignalEvent.h>
 
 //! A process to substract the common channels noise from RawSignal type of
 //! data.
 class TRestRawCommonNoiseReductionProcess : public TRestEventProcess {
-private:
-  /// A pointer to the specific TRestRawSignalEvent input
-  TRestRawSignalEvent *fInputEvent;
+   private:
+    /// A pointer to the specific TRestRawSignalEvent input
+    TRestRawSignalEvent* fInputEvent;
 
-  /// A pointer to the specific TRestRawSignalEvent output
-  TRestRawSignalEvent *fOutputEvent;
+    /// A pointer to the specific TRestRawSignalEvent output
+    TRestRawSignalEvent* fOutputEvent;
 
-  /// Common noise to all signals or by groups (It can be 0 or 1).
-  Int_t fBlocks = 0;
+    /// Common noise to all signals or by groups (It can be 0 or 1).
+    Int_t fBlocks = 0;
 
-  /// The mode defines the method to be used (It can be 0 or 1).
-  Int_t fMode = 0;
+    /// The mode defines the method to be used (It can be 0 or 1).
+    Int_t fMode = 0;
 
-  /// The percentage of signals taken from the array center to be considered for
-  /// the average.
-  Int_t fcenterWidth = 0;
+    /// The percentage of signals taken from the array center to be considered for
+    /// the average.
+    Int_t fcenterWidth = 0;
 
-  void InitFromConfigFile();
+    void InitFromConfigFile();
 
-  void Initialize();
+    void Initialize();
 
-  void LoadDefaultConfig();
+    void LoadDefaultConfig();
 
-protected:
-  // add here the members of your event process
+   protected:
+    // add here the members of your event process
 
-public:
-  any GetInputEvent() { return fInputEvent; }
-  any GetOutputEvent() { return fOutputEvent; }
+   public:
+    any GetInputEvent() { return fInputEvent; }
+    any GetOutputEvent() { return fOutputEvent; }
 
-  void InitProcess();
+    void InitProcess();
 
-  TRestEvent *ProcessEvent(TRestEvent *eventInput);
+    TRestEvent* ProcessEvent(TRestEvent* eventInput);
 
-  void EndProcess();
+    void EndProcess();
 
-  void LoadConfig(std::string cfgFilename, std::string name = "");
+    void LoadConfig(std::string cfgFilename, std::string name = "");
 
-  void PrintMetadata() {
-    BeginPrintProcess();
+    void PrintMetadata() {
+        BeginPrintProcess();
 
-    metadata << " fMode : [" << fMode << "]";
-    if (fMode == 0)
-      metadata << " --> Mode 0 activated." << endl;
-    if (fMode == 1)
-      metadata << " --> Mode 1 activated." << endl;
-    metadata << " fcenterWidth : " << fcenterWidth << endl;
-    metadata << "fBlocks : [" << fBlocks << "]";
+        metadata << " fMode : [" << fMode << "]";
+        if (fMode == 0) metadata << " --> Mode 0 activated." << endl;
+        if (fMode == 1) metadata << " --> Mode 1 activated." << endl;
+        metadata << " fcenterWidth : " << fcenterWidth << endl;
+        metadata << "fBlocks : [" << fBlocks << "]";
 
-    EndPrintProcess();
-  }
+        EndPrintProcess();
+    }
 
-  /// Returns a new instance of this class
-  TRestEventProcess *Maker() { return new TRestRawCommonNoiseReductionProcess; }
+    /// Returns a new instance of this class
+    TRestEventProcess* Maker() { return new TRestRawCommonNoiseReductionProcess; }
 
-  /// Returns the reduced process name
-  TString GetProcessName() { return (TString) "commonNoiseReduction"; }
+    /// Returns the reduced process name
+    TString GetProcessName() { return (TString) "commonNoiseReduction"; }
 
-  // Constructor
-  TRestRawCommonNoiseReductionProcess();
-  TRestRawCommonNoiseReductionProcess(char *cfgFileName);
+    // Constructor
+    TRestRawCommonNoiseReductionProcess();
+    TRestRawCommonNoiseReductionProcess(char* cfgFileName);
 
-  // Destructor
-  ~TRestRawCommonNoiseReductionProcess();
+    // Destructor
+    ~TRestRawCommonNoiseReductionProcess();
 
-  ClassDef(TRestRawCommonNoiseReductionProcess, 2);
+    ClassDef(TRestRawCommonNoiseReductionProcess, 2);
 };
 #endif

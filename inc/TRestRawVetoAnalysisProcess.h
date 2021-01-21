@@ -29,74 +29,73 @@
 //! A template process to serve as an example to create new
 //! TRestRawSignalEventProcess
 class TRestRawVetoAnalysisProcess : public TRestEventProcess {
-private:
-  /// The range used to calculate the baseline parameters from the veto signal
-  TVector2 fBaseLineRange; //<
+   private:
+    /// The range used to calculate the baseline parameters from the veto signal
+    TVector2 fBaseLineRange;  //<
 
-  /// The range used to calculate the veto signal parameters
-  TVector2 fRange; //<
+    /// The range used to calculate the veto signal parameters
+    TVector2 fRange;  //<
 
-  /// Veto signal IDs 
-  vector<double> fVetoSignalId;
+    /// Veto signal IDs
+    vector<double> fVetoSignalId;
 
-  /// Veto signal IDs per group
-  vector<string> fVetoGroupIds;
-  
-  /// Veto group Names
-  vector<string> fVetoGroupNames;
+    /// Veto signal IDs per group
+    vector<string> fVetoGroupIds;
 
-  /// Peak Time observable names
-  vector<string> fPeakTime;
-  /// Max peak amplitude observable names
-  vector<string> fPeakAmp;
+    /// Veto group Names
+    vector<string> fVetoGroupNames;
 
-  /// A pointer to the specific TRestRawSignalEvent
-  TRestRawSignalEvent *fInputRawSignalEvent;  //!
-  TRestRawSignalEvent *fOutputRawSignalEvent; //!
+    /// Peak Time observable names
+    vector<string> fPeakTime;
+    /// Max peak amplitude observable names
+    vector<string> fPeakAmp;
 
-  void InitProcess();
+    /// A pointer to the specific TRestRawSignalEvent
+    TRestRawSignalEvent* fInputRawSignalEvent;   //!
+    TRestRawSignalEvent* fOutputRawSignalEvent;  //!
 
-  void InitFromConfigFile();
+    void InitProcess();
 
-  void Initialize();
+    void InitFromConfigFile();
 
-  void LoadDefaultConfig();
+    void Initialize();
 
-protected:
-public:
-  any GetInputEvent() { return fInputRawSignalEvent; }
-  any GetOutputEvent() { return fOutputRawSignalEvent; }
+    void LoadDefaultConfig();
 
-  TRestEvent *ProcessEvent(TRestEvent *evInput);
+   protected:
+   public:
+    any GetInputEvent() { return fInputRawSignalEvent; }
+    any GetOutputEvent() { return fOutputRawSignalEvent; }
 
-  void LoadConfig(std::string cfgFilename, std::string name = "");
+    TRestEvent* ProcessEvent(TRestEvent* evInput);
 
-  void PrintMetadata();
+    void LoadConfig(std::string cfgFilename, std::string name = "");
 
-  /// Returns a new instance of this class
-  TRestEventProcess *Maker() { return new TRestRawVetoAnalysisProcess; }
+    void PrintMetadata();
 
-  /// Returns the name of this process
-  TString GetProcessName() { return (TString) "vetoAnalysis"; }
+    /// Returns a new instance of this class
+    TRestEventProcess* Maker() { return new TRestRawVetoAnalysisProcess; }
 
-  /// Returns the veto IDs, if they where defined in a list
-  std::vector<double> GetVetoSignalIDs(){return fVetoSignalId;}
-  double GetVetoSignalIDs(Int_t index){
-	  if (index>= fVetoSignalId.size())
-  		return -1;
-	  return fVetoSignalId[index];  
-  }
+    /// Returns the name of this process
+    TString GetProcessName() { return (TString) "vetoAnalysis"; }
 
-  /// Returns the veto group names and IDs
-  std::pair<vector<string>,vector<string>> GetVetoGroups(){
-	  pair <vector<string>,vector<string>> output;
-	  output.first = fVetoGroupNames;
-	  output.second = fVetoGroupIds;
-	  return output;
+    /// Returns the veto IDs, if they where defined in a list
+    std::vector<double> GetVetoSignalIDs() { return fVetoSignalId; }
+    double GetVetoSignalIDs(Int_t index) {
+        if (index >= fVetoSignalId.size()) return -1;
+        return fVetoSignalId[index];
+    }
+
+    /// Returns the veto group names and IDs
+    std::pair<vector<string>, vector<string>> GetVetoGroups() {
+        pair<vector<string>, vector<string>> output;
+        output.first = fVetoGroupNames;
+        output.second = fVetoGroupIds;
+        return output;
     }
 
     TRestRawVetoAnalysisProcess();
-    TRestRawVetoAnalysisProcess(char *cfgFileName);
+    TRestRawVetoAnalysisProcess(char* cfgFileName);
 
     ~TRestRawVetoAnalysisProcess();
 

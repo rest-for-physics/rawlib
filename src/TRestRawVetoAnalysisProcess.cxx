@@ -340,4 +340,3 @@ void TRestRawVetoAnalysisProcess::PrintMetadata() {
 
     EndPrintProcess();
 }
-
