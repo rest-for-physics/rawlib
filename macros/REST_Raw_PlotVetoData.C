@@ -1,4 +1,6 @@
-// A Macro that generates histograms for veto_MaxPeakAmplitude and veto_PeakTime for each veto channel (signal ID). Required input is the filename.
+//*** A Macro that generates histograms for veto_MaxPeakAmplitude
+//*** and veto_PeakTime for each veto channel (signal ID). 
+//*** Required input is the filename.
 // 
 // Author: Konrad Altenmüller, January 2021
 //
