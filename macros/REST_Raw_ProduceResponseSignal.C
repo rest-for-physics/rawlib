@@ -46,15 +46,16 @@ Int_t REST_Raw_ProduceResponseSignal(TString inputFileName, TString outputFileNa
 
     for (int n = 0; n < 512; n++) cout << "n : " << n << " Data : " << dataArray[n] / N << endl;
 
-    TRestSignal* responseSignal = new TRestSignal();
+    TRestRawSignal* responseSignal = new TRestRawSignal();
     responseSignal->Initialize();
 
     dataArray[0] = dataArray[1];
 
-    for (int i = 0; i < 512; i++) responseSignal->NewPoint((Float_t)i, (Float_t)(dataArray[i] / N));
+    for (int i = 0; i < 512; i++) responseSignal->AddPoint( (Float_t)(dataArray[i] / N));
 
     Double_t integral = responseSignal->GetIntegral();
 
+    /**** TODO Needs to be reviewed to adapt from old TRestSignal to TRestRawSignal ...
     responseSignal->MultiplySignalBy(1. / integral);
 
     cout << "Normalized integral : " << responseSignal->GetIntegral() << endl;
@@ -65,6 +66,7 @@ Int_t REST_Raw_ProduceResponseSignal(TString inputFileName, TString outputFileNa
     //   responseSignal->GetGraph()->Draw();
 
     f->Close();
+    */
 
     cout << "Number of entries : " << run->GetEntries() << endl;
     cout << "Number of good signals : " << N << endl;
