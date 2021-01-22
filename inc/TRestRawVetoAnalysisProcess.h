@@ -26,8 +26,9 @@
 #include "TRestEventProcess.h"
 #include "TRestRawSignalEvent.h"
 
-//! A template process to serve as an example to create new
-//! TRestRawSignalEventProcess
+//! A process that allows to define several signal IDs as veto channels.
+//! The data from the vetoes is then removed from the events and stored 
+//! as separate observables.
 class TRestRawVetoAnalysisProcess : public TRestEventProcess {
    private:
     /// The range used to calculate the baseline parameters from the veto signal
