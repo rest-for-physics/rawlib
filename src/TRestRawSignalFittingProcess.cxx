@@ -33,20 +33,20 @@
 ///
 /// Analytic expression to fit:
 ///
+/// \code
 /// [0]+[1]*TMath::Exp(-3. * (x-[3])/[2]) * (x-[3])/[2] * (x-[3])/[2] *
-/// (x-[3])/[2] *
-/// sin((x-[3])/[2])/(1+TMath::Exp(-x+[3]))
+/// (x-[3])/[2] * sin((x-[3])/[2])/(1+TMath::Exp(-x+[3]))
 ///
 /// [0] = "Baseline",
 /// [1] = "Amplitude",
 /// [2] = "ShapingTime",
 /// [3] = "PeakPosition"
+/// \endcode
 ///
 /// \htmlonly <style>div.image img[src="Fit600.png"]{width:500px;}</style>
 /// \endhtmlonly
 ///
 /// ![Example of fitted pulse](Fit600.png)
-///
 ///
 /// ### Observables
 ///
@@ -86,8 +86,8 @@
 /// forum](http://ezpc10.unizar.es). You are welcome to contribute fixing typos,
 /// updating
 /// information or adding/proposing new contributions. See also our
-/// [Contribution
-/// Guide](https://github.com/rest-for-physics/framework/blob/master/CONTRIBUTING.md)
+/// <a href="https://github.com/rest-for-physics/framework/blob/master/CONTRIBUTING.md">Contribution
+/// Guide</a>.
 ///
 ///_______________________________________________________________________________
 ///

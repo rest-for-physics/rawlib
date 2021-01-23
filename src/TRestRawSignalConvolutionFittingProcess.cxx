@@ -34,18 +34,21 @@
 /// Analytic expression to fit:
 ///
 /// AGET function:
-/// [0]*TMath::Exp(-3. * (x-[2])/[1]) * (x-[2])/[1] * (x-[2])/[1] * (x-[2])/[1]
-/// *
+/// \code
+/// [0]*TMath::Exp(-3. * (x-[2])/[1]) * (x-[2])/[1] * (x-[2])/[1] * (x-[2])/[1] *
 /// sin((x-[2])/[1])/(1+TMath::Exp(-10000*(x-[2])))
 ///
 /// [0] = "Amplitude",
 /// [1] = "ShapingTime",
 /// [2] = "PeakPosition"
+/// \endcode
 ///
 /// Gauss function:
+/// \code
 /// exp(-0.5*((x)/[0])*((x)/[0]))
 ///
 /// [0] = "VarianceGauss"
+/// \endcode
 ///
 ///
 /// ### Observables
@@ -86,8 +89,8 @@
 /// forum](http://ezpc10.unizar.es). You are welcome to contribute fixing typos,
 /// updating
 /// information or adding/proposing new contributions. See also our
-/// [Contribution
-/// Guide](https://github.com/rest-for-physics/framework/blob/master/CONTRIBUTING.md)
+/// <a href="https://github.com/rest-for-physics/framework/blob/master/CONTRIBUTING.md">Contribution
+/// Guide</a>.
 ///
 ///_______________________________________________________________________________
 ///
@@ -101,9 +104,8 @@
 /// \class      TRestRawSignalConvolutionFittingProcess
 /// \author     David Diez
 ///
-///______________________________________________________________________________
+/// <hr>
 ///
-//////////////////////////////////////////////////////////////////////////
 
 #include "TRestRawSignalConvolutionFittingProcess.h"
 using namespace std;

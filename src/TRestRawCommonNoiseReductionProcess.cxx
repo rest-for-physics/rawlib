@@ -61,8 +61,8 @@
 /// forum](http://ezpc10.unizar.es). You are welcome to contribute fixing typos,
 /// updating
 /// information or adding/proposing new contributions. See also our
-/// [Contribution
-/// Guide](https://github.com/rest-for-physics/framework/blob/master/CONTRIBUTING.md)
+/// <a href="https://github.com/rest-for-physics/framework/blob/master/CONTRIBUTING.md">Contribution
+/// Guide</a>.
 ///
 ///_______________________________________________________________________________
 ///

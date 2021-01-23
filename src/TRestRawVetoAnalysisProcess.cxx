@@ -21,19 +21,21 @@
  *************************************************************************/
 
 //////////////////////////////////////////////////////////////////////////
-/// TRestRawVetoAnalysisProcess allows to define several signal IDs as 
-/// vetoes and to group them. This process adds the observables veto_PeakTime 
+/// TRestRawVetoAnalysisProcess allows to define several signal IDs as
+/// vetoes and to group them. This process adds the observables veto_PeakTime
 /// and veto_MaxPeakAmplitude to the analysis tree.
 ///
 /// ### RML file structure
 ///
 /// To define a veto you have two options:
 ///
-/// Option 1: Define the veto by adding a parameter "vetoSignalId" with a comma-separated list of the veto signal IDs. 
-/// In this case the observables "veto_PeakTime" and "veto_MaxPeakAmplitude" are added 
+/// Option 1: Define the veto by adding a parameter "vetoSignalId" with a comma-separated list of the veto
+/// signal IDs.
+/// In this case the observables "veto_PeakTime" and "veto_MaxPeakAmplitude" are added
 /// to the analysis tree. Each observable contains a map with a different key for each signal ID.
 /// \code
-/// <addProcess type="TRestRawVetoAnalysisProcess" name="veto" value='ON' verboseLevel="info" vetoSignalId="4622,4624,..." >
+/// <addProcess type="TRestRawVetoAnalysisProcess" name="veto" value='ON' verboseLevel="info"
+/// vetoSignalId="4622,4624,..." >
 /// \endcode
 /// You can add parameters "baseLineRange" and "range":
 /// \code
@@ -42,44 +44,41 @@
 /// <parameter name="range" value="(10,500)" />
 /// \endcode
 ///
-/// Option 2: Put the vetoes in groups by adding xml blocks "vetoGroup" with the parameters "name" and "signalIDs".
+/// Option 2: Put the vetoes in groups by adding xml blocks "vetoGroup" with the parameters "name" and
+/// "signalIDs".
 /// \code
 /// <vetoGroup name="top" signalIDs="4624,4626" />
 ///
 /// <vetoGroup name="front" signalIDs="4660" />
 ///
-/// <vetoGroup name="left" signalIDs="1,2,3,4,5,6" /> 
+/// <vetoGroup name="left" signalIDs="1,2,3,4,5,6" />
 /// \endcode
-/// In this case, for each group a different pair of observables is saved. 
-/// In this example they would be named "veto_PeakTime_top", "veto_PeakTime_front","veto_PeakTime_left" 
+/// In this case, for each group a different pair of observables is saved.
+/// In this example they would be named "veto_PeakTime_top", "veto_PeakTime_front","veto_PeakTime_left"
 /// (and the same for "MaxPeakAmplitude"), where each again contains a map with the signal ID as key.
 ///
 /// ### Methods to retrieve metadata
 ///
-/// The method GetVetoSignalIDs() returns a vector<double> of the veto signal IDs, if the vetoes were defined using option 1.
-/// In case the vetoes were defined in groups, one can use the method GetVetoGroups(), 
-/// which returns a std::pair<vector<string>,vector<string>>, which contains in the first entry the name of the veto group, 
-/// and in the second the comma separated string of the corresponding signal IDs. The signal IDs can susequently be converted 
+/// The method GetVetoSignalIDs() returns a vector<double> of the veto signal IDs, if the vetoes were defined
+/// using option 1.
+/// In case the vetoes were defined in groups, one can use the method GetVetoGroups(),
+/// which returns a std::pair<vector<string>,vector<string>>, which contains in the first entry the name of
+/// the veto group,
+/// and in the second the comma separated string of the corresponding signal IDs. The signal IDs can
+/// susequently be converted
 /// into a vector<double> by using the TRestStringHelper::StringToElements() method.
-///
-///
-///
-///
 ///
 /// <hr>
 ///
-/// \warning **⚠ WARNING: REST is under continous development.** This
-/// documentation
-/// is offered to you by the REST community. Your HELP is needed to keep this
-/// code
-/// up to date. Your feedback will be worth to support this software, please
-/// report
+/// \warning **⚠ WARNING: REST is under continous development.** This documentation
+/// is offered to you by the REST community. Your HELP is needed to keep this code
+/// up to date. Your feedback will be worth to support this software, please report
 /// any problems/suggestions you may find while using it at [The REST Framework
 /// forum](http://ezpc10.unizar.es). You are welcome to contribute fixing typos,
 /// updating
 /// information or adding/proposing new contributions. See also our
-/// [Contribution
-/// Guide](https://github.com/rest-for-physics/framework/blob/master/CONTRIBUTING.md)
+/// <a href="https://github.com/rest-for-physics/framework/blob/master/CONTRIBUTING.md">Contribution
+/// Guide</a>.
 ///
 ///--------------------------------------------------------------------------
 ///
