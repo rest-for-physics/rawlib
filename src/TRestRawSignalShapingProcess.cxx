@@ -48,7 +48,7 @@
 ///
 /// <hr>
 ///
-/// \warning **⚠ WARNING: REST is under continous development.** This
+/// \warning **⚠ REST is under continous development.** This
 /// documentation
 /// is offered to you by the REST community. Your HELP is needed to keep this
 /// code
@@ -60,6 +60,7 @@
 /// information or adding/proposing new contributions. See also our
 /// <a href="https://github.com/rest-for-physics/framework/blob/master/CONTRIBUTING.md">Contribution
 /// Guide</a>.
+///
 ///
 ///--------------------------------------------------------------------------
 ///
