@@ -27,7 +27,7 @@
 #include "TRestRawSignalEvent.h"
 
 //! A process that allows to define several signal IDs as veto channels.
-//! The data from the vetoes is then removed from the events and stored 
+//! The data from the vetoes is then removed from the events and stored
 //! as separate observables.
 class TRestRawVetoAnalysisProcess : public TRestEventProcess {
    private:

@@ -51,7 +51,7 @@ Int_t REST_Raw_ProduceResponseSignal(TString inputFileName, TString outputFileNa
 
     dataArray[0] = dataArray[1];
 
-    for (int i = 0; i < 512; i++) responseSignal->AddPoint( (Float_t)(dataArray[i] / N));
+    for (int i = 0; i < 512; i++) responseSignal->AddPoint((Float_t)(dataArray[i] / N));
 
     Double_t integral = responseSignal->GetIntegral();
 
