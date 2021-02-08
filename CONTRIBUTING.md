@@ -1,8 +1,8 @@
-Contributions to this library can be made directly to the `master` branch when the process, metadata, or any code, is stable enough to be integrated at the next official release. This does not mean it is bug free, but that the state of the new process will be used soon in an official data processing chain.
+Contributions to this library can be made directly to the `master` branch when the process, metadata, or any code, is stable enough to be integrated at the next official release. This does not mean it is 100% bug free, but that the new process it is in a final state and its used would be acceptable in an official data processing chain.
 
-Experimental developments, or developments taking longer periods of time, are encouraged to create a dedicated branch to avoid adding to an official tag/release unfinished job.
+Experimental developments, or developments taking longer periods of time, are encouraged to create a dedicated branch to be merged to master in the future to avoid adding to an official tag/release an unfinished job.
 
-# Using GitHub issue tracker
+### Using GitHub issue tracker
 
 New contributions are encouraged to create a new issue entry at the GitHub issue tracker in order to explain the nature of the developments, allow tracking of those developments, and invite other developers to join the discussion, evaluation and testing of the new code.
 
@@ -16,14 +16,14 @@ git commit -m "ClassName. Fixed initalization bug. Issue #1"
 
 As soon as any issues remain open (and commits connected to this issue have been already added to master) those issues should be closed before fixing a new library release.
 
-# Contribution requirements
+### Contribution requirements
 
 Authors pusing new processes or metadata classes to this library will be encouraged to prompty include at least:
 
 1. Doxygen in-code documentation describing the process pourpose and scope, including examples, and if possible, a figure ilustrating the effect of the process on event data.
 2. A validation test with a minimal running test to be included at the pipeline file `.gitlab-ci.yml`. Tests will be running at https://lfna.unizar.es/rest-for-physics/rawlib.
 
-# Fixing a new library release
+### Fixing a new library release
 
 In a last commit we will update manually the version found at the `CMakeLists.txt` file. I.e. from `1.0` to `1.1`,
 
@@ -55,6 +55,6 @@ git commit -m "Updating raw library submodule to version 1.1"
 git push
 ```
 
-# Versioning
+### Versioning
 
 Please, notice that the central versioning system, which guarantees code traceability, is only managed by the framework. The library version number is only used for users to identify the changes and access the release updates at the corresponding libraries repository.
