@@ -57,6 +57,12 @@
 /// In this example they would be named "veto_PeakTime_top", "veto_PeakTime_front","veto_PeakTime_left"
 /// (and the same for "MaxPeakAmplitude"), where each again contains a map with the signal ID as key.
 ///
+/// ### Including a threshold for the vetoes
+/// 
+/// Two observable "VetoAboveThreshold" and "NVetoAboveThreshold" can be added to the analysis tree by adding a parameter "threshold" to the rml. 
+/// If for an event any of the veto signals is above the specified threshold, "VetoAboveThreshold" is set to 1, else it is 0. 
+/// "NVetoAboveThreshold" contains the number of vetoes which have a signal above threshold. 
+///
 /// ### Methods to retrieve metadata
 ///
 /// The method GetVetoSignalIDs() returns a vector<double> of the veto signal IDs, if the vetoes were defined
@@ -94,6 +100,9 @@
 ///             Konrad Altenmueller
 ///
 /// 2021-Jan:  Added veto groups and observables accordingly
+///		Konrad Altenmueller
+///
+/// 2021-Mar:  Added threshold parameter and observables "VetoAboveThreshold" and "NVetoAboveThreshold"
 ///		Konrad Altenmueller
 ///
 /// \class      TRestRawVetoAnalysisProcess
@@ -194,6 +203,9 @@ TRestEvent* TRestRawVetoAnalysisProcess::ProcessEvent(TRestEvent* evInput) {
     map<int, Double_t> VetoMaxPeakAmplitude_map;
     map<int, Double_t> VetoPeakTime_map;
 
+    Int_t VetoAboveThreshold = 0;
+    Int_t NVetoAboveThreshold = 0;
+
     fOutputRawSignalEvent->SetBaseLineRange(fBaseLineRange);
     fOutputRawSignalEvent->SetRange(fRange);
 
@@ -245,7 +257,13 @@ TRestEvent* TRestRawVetoAnalysisProcess::ProcessEvent(TRestEvent* evInput) {
                 // cout << "ID: " << fVetoSignalId[i] << " Amp: " <<
                 // sgnl->GetMaxPeakValue() << endl;
                 // cout << "********" << endl;
-            }
+            
+	    	// check if signal is above threshold
+	    	if (sgnl->GetMaxPeakValue()>fThreshold){
+			VetoAboveThreshold = 1;
+			NVetoAboveThreshold += 1;
+		}
+	    }
         }
 
         // ***** debugging *****
@@ -263,6 +281,10 @@ TRestEvent* TRestRawVetoAnalysisProcess::ProcessEvent(TRestEvent* evInput) {
 
         SetObservableValue("PeakTime", VetoPeakTime_map);
         SetObservableValue("MaxPeakAmplitude", VetoMaxPeakAmplitude_map);
+	if (fThreshold != -1){
+		SetObservableValue("VetoAboveThreshold", VetoAboveThreshold);
+		SetObservableValue("NvetoAboveThreshold", NVetoAboveThreshold);
+   	}
     }
 
     // ***************************************************************
@@ -292,6 +314,12 @@ TRestEvent* TRestRawVetoAnalysisProcess::ProcessEvent(TRestEvent* evInput) {
                     VetoPeakTime_map[groupIds[j]] = sgnl->GetMaxPeakBin();
                     // We remove the signal from the event
                     fOutputRawSignalEvent->RemoveSignalWithId(groupIds[j]);
+
+	    	    // check if signal is above threshold
+	    	    if (sgnl->GetMaxPeakValue()>fThreshold){
+			VetoAboveThreshold = 1;
+			NVetoAboveThreshold += 1;
+		    }
                 }
             }
             SetObservableValue(fPeakTime[i], VetoPeakTime_map);
@@ -300,12 +328,20 @@ TRestEvent* TRestRawVetoAnalysisProcess::ProcessEvent(TRestEvent* evInput) {
             VetoMaxPeakAmplitude_map.clear();
             VetoPeakTime_map.clear();
         }
+    
+    
+    	if (fThreshold != -1){
+		SetObservableValue("VetoAboveThreshold", VetoAboveThreshold);
+		SetObservableValue("NvetoAboveThreshold", NVetoAboveThreshold);
+        }
+    
     }
 
     /*
     cout << "++++++++++++++++++++++++++" << endl;
     cout << "Signal removed" << endl;
     fOutputRawSignalEvent->PrintEvent();
+    Int_t Threshold = 0;
     cout << "Signal removed" << endl;
     cout << "++++++++++++++++++++++++++" << endl;
     GetChar();
@@ -327,7 +363,7 @@ TRestEvent* TRestRawVetoAnalysisProcess::ProcessEvent(TRestEvent* evInput) {
 void TRestRawVetoAnalysisProcess::InitFromConfigFile() {
     fBaseLineRange = StringTo2DVector(GetParameter("baseLineRange", "(5,55)"));
     fRange = StringTo2DVector(GetParameter("range", "(10,500)"));
-
+    fThreshold = StringToInteger(GetParameter("threshold","-1"));
     // **************************************************************
     // ***** Vetoes are defined as a single list ********************
     // **************************************************************
