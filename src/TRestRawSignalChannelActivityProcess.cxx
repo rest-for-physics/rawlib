@@ -127,7 +127,7 @@ TRestRawSignalChannelActivityProcess::TRestRawSignalChannelActivityProcess(char*
 ///////////////////////////////////////////////
 /// \brief Default destructor
 ///
-TRestRawSignalChannelActivityProcess::~TRestRawSignalChannelActivityProcess() {}
+TRestRawSignalChannelActivityProcess::~TRestRawSignalChannelActivityProcess() { delete fSignalEvent; }
 
 ///////////////////////////////////////////////
 /// \brief Function to load the default config in absence of RML input
