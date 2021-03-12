@@ -141,6 +141,8 @@ void TRestRawSignalChannelActivityProcess::LoadDefaultConfig() { SetTitle("Defau
 void TRestRawSignalChannelActivityProcess::Initialize() {
     SetSectionName(this->ClassName());
     SetLibraryVersion(LIBRARY_VERSION);
+
+    fSignalEvent = new TRestRawSignalEvent();
 }
 
 ///////////////////////////////////////////////
