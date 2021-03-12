@@ -414,6 +414,9 @@ void TRestRawVetoAnalysisProcess::PrintMetadata() {
         }
         metadata << fVetoGroupIds[fVetoGroupIds.size() - 1] << endl;
     }
+    if (fThreshold != 1)
+	    metadata << "Veto threshold: " << fThreshold << endl;
+
 
     EndPrintProcess();
 }
