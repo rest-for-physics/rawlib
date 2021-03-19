@@ -127,7 +127,7 @@ TRestRawSignalChannelActivityProcess::TRestRawSignalChannelActivityProcess(char*
 ///////////////////////////////////////////////
 /// \brief Default destructor
 ///
-TRestRawSignalChannelActivityProcess::~TRestRawSignalChannelActivityProcess() { delete fSignalEvent; }
+TRestRawSignalChannelActivityProcess::~TRestRawSignalChannelActivityProcess() {}
 
 ///////////////////////////////////////////////
 /// \brief Function to load the default config in absence of RML input
@@ -142,7 +142,7 @@ void TRestRawSignalChannelActivityProcess::Initialize() {
     SetSectionName(this->ClassName());
     SetLibraryVersion(LIBRARY_VERSION);
 
-    fSignalEvent = new TRestRawSignalEvent();
+    fSignalEvent = NULL;
 }
 
 ///////////////////////////////////////////////

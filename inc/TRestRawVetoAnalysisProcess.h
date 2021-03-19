@@ -37,6 +37,12 @@ class TRestRawVetoAnalysisProcess : public TRestEventProcess {
     /// The range used to calculate the veto signal parameters
     TVector2 fRange;  //<
 
+    /// Threshold of the vetoes
+    Int_t fThreshold;
+
+    /// Peak time window for cut
+    vector<double> fTimeWindow;
+
     /// Veto signal IDs
     vector<double> fVetoSignalId;
 

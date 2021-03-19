@@ -57,6 +57,23 @@
 /// In this example they would be named "veto_PeakTime_top", "veto_PeakTime_front","veto_PeakTime_left"
 /// (and the same for "MaxPeakAmplitude"), where each again contains a map with the signal ID as key.
 ///
+/// ### Including a threshold for the vetoes
+///
+/// Two observable "VetoAboveThreshold" and "NVetoAboveThreshold" can be added to the analysis tree by adding
+/// a parameter "threshold" to the rml.
+/// If for an event any of the veto signals is above the specified threshold, "VetoAboveThreshold" is set to
+/// 1, else it is 0.
+/// "NVetoAboveThreshold" contains the number of vetoes which have a signal above threshold.
+///
+/// ### Including a peak time window
+///
+/// By adding a parameter "timeWindow" with two comma-separated values (e.g. "300,500") to the rml, two
+/// additional observables are added to the analysis Tree:
+/// "VetoInTimeWindow" is set to 1, when the peak time of at least one veto signal is within the specified
+/// time window, else it is 0.
+/// "NVetoInTimeWindow" contains the number of veto signals per event, where the peak time is within the
+/// window.
+///
 /// ### Methods to retrieve metadata
 ///
 /// The method GetVetoSignalIDs() returns a vector<double> of the veto signal IDs, if the vetoes were defined
@@ -94,6 +111,9 @@
 ///             Konrad Altenmueller
 ///
 /// 2021-Jan:  Added veto groups and observables accordingly
+///		Konrad Altenmueller
+///
+/// 2021-Mar:  Added threshold parameter and observables "VetoAboveThreshold" and "NVetoAboveThreshold"
 ///		Konrad Altenmueller
 ///
 /// \class      TRestRawVetoAnalysisProcess
@@ -194,6 +214,11 @@ TRestEvent* TRestRawVetoAnalysisProcess::ProcessEvent(TRestEvent* evInput) {
     map<int, Double_t> VetoMaxPeakAmplitude_map;
     map<int, Double_t> VetoPeakTime_map;
 
+    Int_t VetoAboveThreshold = 0;
+    Int_t NVetoAboveThreshold = 0;
+    Int_t VetoInTimeWindow = 0;
+    Int_t NVetoInTimeWindow = 0;
+
     fOutputRawSignalEvent->SetBaseLineRange(fBaseLineRange);
     fOutputRawSignalEvent->SetRange(fRange);
 
@@ -210,8 +235,8 @@ TRestEvent* TRestRawVetoAnalysisProcess::ProcessEvent(TRestEvent* evInput) {
     fOutputRawSignalEvent->PrintSignalIds();
     cout  << endl;
     for (unsigned int i=0; i< fOutputRawSignalEvent->GetNumberOfSignals(); i++){
-        TRestRawSignal* debug = fOutputRawSignalEvent->GetSignal(i);
-        cout << "signal ID: " << debug->GetSignalID() << " Amp: " <<
+    TRestRawSignal* debug = fOutputRawSignalEvent->GetSignal(i);
+    cout << "signal ID: " << debug->GetSignalID() << " Amp: " <<
     debug->GetMaxPeakValue() << endl;
     }
     */
@@ -245,24 +270,43 @@ TRestEvent* TRestRawVetoAnalysisProcess::ProcessEvent(TRestEvent* evInput) {
                 // cout << "ID: " << fVetoSignalId[i] << " Amp: " <<
                 // sgnl->GetMaxPeakValue() << endl;
                 // cout << "********" << endl;
+
+                // check if signal is above threshold
+                if (sgnl->GetMaxPeakValue() > fThreshold) {
+                    VetoAboveThreshold = 1;
+                    NVetoAboveThreshold += 1;
+                }
+                // check if signal is in time window
+                if (sgnl->GetMaxPeakBin() > fTimeWindow[0] && sgnl->GetMaxPeakBin() < fTimeWindow[1]) {
+                    VetoInTimeWindow = 1;
+                    NVetoInTimeWindow += 1;
+                }
             }
         }
 
         // ***** debugging *****
         /*
-        cout << endl;
-        cout << "Observables Added: " << endl;
-        cout << "Map size: " << VetoMaxPeakAmplitude_map.size() << endl;
-        for (map<int, double>::const_iterator it = VetoMaxPeakAmplitude_map.begin();
-        it != VetoMaxPeakAmplitude_map.end(); ++it){
-            cout << "ID: " << it->first << " Amplitude: " << it->second;
-            }
-        cout << endl;
-        */
+           cout << endl;
+           cout << "Observables Added: " << endl;
+           cout << "Map size: " << VetoMaxPeakAmplitude_map.size() << endl;
+           for (map<int, double>::const_iterator it = VetoMaxPeakAmplitude_map.begin();
+           it != VetoMaxPeakAmplitude_map.end(); ++it){
+           cout << "ID: " << it->first << " Amplitude: " << it->second;
+           }
+           cout << endl;
+           */
         // *** end debugging ***
 
         SetObservableValue("PeakTime", VetoPeakTime_map);
         SetObservableValue("MaxPeakAmplitude", VetoMaxPeakAmplitude_map);
+        if (fThreshold != -1) {
+            SetObservableValue("VetoAboveThreshold", VetoAboveThreshold);
+            SetObservableValue("NvetoAboveThreshold", NVetoAboveThreshold);
+        }
+        if (fTimeWindow[0] != -1) {
+            SetObservableValue("VetoInTimeWindow", VetoInTimeWindow);
+            SetObservableValue("NVetoInTimeWindow", NVetoInTimeWindow);
+        }
     }
 
     // ***************************************************************
@@ -292,6 +336,17 @@ TRestEvent* TRestRawVetoAnalysisProcess::ProcessEvent(TRestEvent* evInput) {
                     VetoPeakTime_map[groupIds[j]] = sgnl->GetMaxPeakBin();
                     // We remove the signal from the event
                     fOutputRawSignalEvent->RemoveSignalWithId(groupIds[j]);
+
+                    // check if signal is above threshold
+                    if (sgnl->GetMaxPeakValue() > fThreshold) {
+                        VetoAboveThreshold = 1;
+                        NVetoAboveThreshold += 1;
+                    }
+                    // check if signal is in time window
+                    if (sgnl->GetMaxPeakBin() > fTimeWindow[0] && sgnl->GetMaxPeakBin() < fTimeWindow[1]) {
+                        VetoInTimeWindow = 1;
+                        NVetoInTimeWindow += 1;
+                    }
                 }
             }
             SetObservableValue(fPeakTime[i], VetoPeakTime_map);
@@ -300,16 +355,26 @@ TRestEvent* TRestRawVetoAnalysisProcess::ProcessEvent(TRestEvent* evInput) {
             VetoMaxPeakAmplitude_map.clear();
             VetoPeakTime_map.clear();
         }
+
+        if (fThreshold != -1) {
+            SetObservableValue("VetoAboveThreshold", VetoAboveThreshold);
+            SetObservableValue("NvetoAboveThreshold", NVetoAboveThreshold);
+        }
+        if (fTimeWindow[0] != -1) {
+            SetObservableValue("VetoInTimeWindow", VetoInTimeWindow);
+            SetObservableValue("NVetoInTimeWindow", NVetoInTimeWindow);
+        }
     }
 
     /*
-    cout << "++++++++++++++++++++++++++" << endl;
-    cout << "Signal removed" << endl;
-    fOutputRawSignalEvent->PrintEvent();
-    cout << "Signal removed" << endl;
-    cout << "++++++++++++++++++++++++++" << endl;
-    GetChar();
-    */
+       cout << "++++++++++++++++++++++++++" << endl;
+       cout << "Signal removed" << endl;
+       fOutputRawSignalEvent->PrintEvent();
+       Int_t Threshold = 0;
+       cout << "Signal removed" << endl;
+       cout << "++++++++++++++++++++++++++" << endl;
+       GetChar();
+       */
 
     if (GetVerboseLevel() >= REST_Debug) {
         fOutputRawSignalEvent->PrintEvent();
@@ -327,7 +392,12 @@ TRestEvent* TRestRawVetoAnalysisProcess::ProcessEvent(TRestEvent* evInput) {
 void TRestRawVetoAnalysisProcess::InitFromConfigFile() {
     fBaseLineRange = StringTo2DVector(GetParameter("baseLineRange", "(5,55)"));
     fRange = StringTo2DVector(GetParameter("range", "(10,500)"));
-
+    fThreshold = StringToInteger(GetParameter("threshold", "-1"));
+    fTimeWindow = StringToElements(GetParameter("timeWindow", "-1,-1"), ",");
+    if (fTimeWindow.size() != 2) {
+        cout << "Error: timeWindow has to consist of two comma-separated values." << endl;
+        GetChar();
+    }
     // **************************************************************
     // ***** Vetoes are defined as a single list ********************
     // **************************************************************
@@ -378,6 +448,11 @@ void TRestRawVetoAnalysisProcess::PrintMetadata() {
         }
         metadata << fVetoGroupIds[fVetoGroupIds.size() - 1] << endl;
     }
-
+    if (fThreshold != -1) {
+        metadata << "Veto threshold: " << fThreshold << endl;
+    }
+    if (fTimeWindow[0] != -1) {
+        metadata << "Peak time window: (" << fTimeWindow[0] << ", " << fTimeWindow[1] << ")" << endl;
+    }
     EndPrintProcess();
 }
