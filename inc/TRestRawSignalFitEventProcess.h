@@ -24,27 +24,26 @@
 #define RestCore_TRestRawSignalFitEventProcess
 
 #include <TRestRawSignalEvent.h>
-#include "TMath.h"
 #include "TF1Convolution.h"
 #include "TH1D.h"
+#include "TMath.h"
 #include "TRestEventProcess.h"
-
 
 //! An analysis REST process to extract valuable information from RawSignal type of data.
 class TRestRawSignalFitEventProcess : public TRestEventProcess {
    private:
     /// A pointer to the specific TRestRawSignalEvent input
     TRestRawSignalEvent* fRawSignalEvent;  //!
-    
+
     // parameters
-    TVector2 fBaseLineRange = TVector2(0,0);
+    TVector2 fBaseLineRange = TVector2(0, 0);
     Double_t fPointThreshold = 0;
     Double_t fSignalThreshold = 0;
     Int_t fPointsOverThreshold = 0;
     Bool_t fAgetFit = false;
     Double_t fShaping = 0;
 
-    //void InitFromConfigFile();
+    // void InitFromConfigFile();
 
     void Initialize();
 
@@ -67,23 +66,27 @@ class TRestRawSignalFitEventProcess : public TRestEventProcess {
         BeginPrintProcess();
 
         metadata << "Baseline range : ( " << fBaseLineRange.X() << " , " << fBaseLineRange.Y() << " ) "
-         << endl;
+                 << endl;
         metadata << "Point Threshold : " << fPointThreshold << " sigmas" << endl;
         metadata << "Signal threshold : " << fSignalThreshold << " sigmas" << endl;
         metadata << "Number of points over threshold : " << fPointsOverThreshold << endl;
         metadata << " " << endl;
-        if (fShaping!=0){
+        if (fShaping != 0) {
             metadata << "Shaping fixed : " << fShaping << endl;
             metadata << " " << endl;
-        }        
-        if (fAgetFit==true){metadata << "Fitting mode : AGET" << endl;}
-        if (fAgetFit==false){metadata << "Fitting mode : Convolution" << endl;} 
+        }
+        if (fAgetFit == true) {
+            metadata << "Fitting mode : AGET" << endl;
+        }
+        if (fAgetFit == false) {
+            metadata << "Fitting mode : Convolution" << endl;
+        }
 
         EndPrintProcess();
     }
-    
+
     TString GetProcessName() { return (TString) "rawSignalFitEvent"; }
-    
+
     TRestRawSignalFitEventProcess();  // Constructor
     TRestRawSignalFitEventProcess(char* cfgFileName);
     ~TRestRawSignalFitEventProcess();  // Destructor
