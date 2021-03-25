@@ -22,15 +22,15 @@
 
 //////////////////////////////////////////////////////////////////////////
 ///
-/// \brief Process to fit pulses (TRestRawSignal) with the electronic response function  
-/// or with the convolution of the electronic response function with a gaussian pulse. 
-/// 
+/// \brief Process to fit pulses (TRestRawSignal) with the electronic response function
+/// or with the convolution of the electronic response function with a gaussian pulse.
+///
 /// ### Fitting functions:
 ///
 /// **AGET function:**
 /// (electronic response function of AGET chip)
 ///
-/// TMath::Exp(-3. * (x-[1])/[0] ) * (x-[1])/[0] * (x-[1])/[0] * (x-[1])/[0] 
+/// TMath::Exp(-3. * (x-[1])/[0] ) * (x-[1])/[0] * (x-[1])/[0] * (x-[1])/[0]
 /// * sin((x-[1])/[0])/(1+TMath::Exp(-10000*(x-[1])))
 ///
 /// [0] = "ShapingTime"
@@ -44,7 +44,7 @@
 ///
 ///
 /// ### Options:
-/// 
+///
 /// * **AgetFit**: Select fitting mode:
 ///                * False (Default) -> Convolution fit.
 ///                                     Pulse fitted with convolution of both functions.
@@ -58,15 +58,15 @@
 /// * **Good signal's selection**: Convolution mode only.
 /// Parameters to select good signals can be provided and only good ones will be fitted.
 /// Parameters needed are:
-///                * BaseLineRange  
-///                * PointsOverThreshold  
+///                * BaseLineRange
+///                * PointsOverThreshold
 ///                * PointThreshold
 ///                * SignalThreshold
 ///
 /// Example in rml file:
 /// \code
-/// <addProcess type="TRestRawSignalFitEventProcess" name="rawFitEvent" value="ON" 
-///        observable="all" verboseLevel="info"  agetFit= "false" shaping = "32" 
+/// <addProcess type="TRestRawSignalFitEventProcess" name="rawFitEvent" value="ON"
+///        observable="all" verboseLevel="info"  agetFit= "false" shaping = "32"
 ///        baseLineRange="(20,150)"  pointsOverThreshold="40" pointThreshold="6" signalThreshold="3" >
 /// </addProcess>
 /// \endcode
@@ -91,7 +91,7 @@
 ///
 /// * **FitVarianceGaussWMean**: Only in Convolution mode. Weighted mean of VarianceGauss parameter.
 ///
-/// * **FitVarianceGaussWStdDev**: Only in Convolution mode. Weighted standard deviation of 
+/// * **FitVarianceGaussWStdDev**: Only in Convolution mode. Weighted standard deviation of
 /// VarianceGauss parameter.
 ///
 /// * **FitSigmaMean**: Mean over all pulses in the event of square root of the squared
@@ -199,8 +199,7 @@ TRestEvent* TRestRawSignalFitEventProcess::ProcessEvent(TRestEvent* evInput) {
     // no need for verbose copy now
     fRawSignalEvent = (TRestRawSignalEvent*)evInput;
 
-    debug << "TRestRawSignalFitEventProcess::ProcessEvent. Event ID : " << fRawSignalEvent->GetID()
-          << endl;
+    debug << "TRestRawSignalFitEventProcess::ProcessEvent. Event ID : " << fRawSignalEvent->GetID() << endl;
 
     Double_t SigmaMean = 0;
     Double_t Sigma[fRawSignalEvent->GetNumberOfSignals()] = {};
@@ -216,7 +215,7 @@ TRestEvent* TRestRawSignalFitEventProcess::ProcessEvent(TRestEvent* evInput) {
     map<int, Double_t> shapingtimeFit;
     map<int, Double_t> StartPositionFit;
     map<int, Double_t> variancegaussFit;
-    
+
     map<int, Double_t> ratiosigmaamplitudeFit;
 
     amplitudeFit.clear();
@@ -226,217 +225,224 @@ TRestEvent* TRestRawSignalFitEventProcess::ProcessEvent(TRestEvent* evInput) {
 
     int MinBinRange = 45;
     int MaxBinRange = 70;
-    
+
     int goodSig = 0;
-    
+
     /////----- Fit with convoluted function -----/////
-    
-    if (fAgetFit == false){
+
+    if (fAgetFit == false) {
         /// Fit all signals ///
-        if (fPointThreshold == 0 && fSignalThreshold == 0 && fPointsOverThreshold == 0 && fBaseLineRange.X() == 0 && fBaseLineRange.Y() == 0) {
-          
+        if (fPointThreshold == 0 && fSignalThreshold == 0 && fPointsOverThreshold == 0 &&
+            fBaseLineRange.X() == 0 && fBaseLineRange.Y() == 0) {
             for (int s = 0; s < fRawSignalEvent->GetNumberOfSignals(); s++) {
                 TRestRawSignal* singleSignal = fRawSignalEvent->GetSignal(s);
                 singleSignal->CalculateBaseLine(20, 150);
                 int MaxPeakBin = singleSignal->GetMaxPeakBin();
-        
+
                 // ShaperSin function (AGET theoretical curve) times logistic function
                 TF1* f = new TF1("Aget",
                                  "TMath::Exp(-3. * (x-[1])/[0] ) * (x-[1])/[0] * (x-[1])/[0] * (x-[1])/[0] "
-                                  " * sin((x-[1])/[0])/(1+TMath::Exp(-10000*(x-[1])))",
+                                 " * sin((x-[1])/[0])/(1+TMath::Exp(-10000*(x-[1])))",
                                  0, 511);
                 f->SetParNames("ShapingTime", "StartPosition");
-        
+
                 // Gaussian pulse
                 TF1* g = new TF1("pulse", "exp(-0.5*x*x/[0])*[1]", 0, 511);
                 g->SetParNames("VarianceGauss", "Amplitude");
-        
+
                 // Convolution of AGET and gaussian functions
                 TF1Convolution* conv = new TF1Convolution("Aget", "pulse", 0, 511, true);
                 conv->SetRange(0, 511);
                 conv->SetNofPointsFFT(10000);
-        
+
                 TF1* fit_conv = new TF1("fit", *conv, 0, 511, conv->GetNpar());
                 fit_conv->SetParNames("ShapingTime", "StartPosition", "VarianceGauss", "Amplitude");
-        
+
                 // Create histogram from signal
                 Int_t nBins = singleSignal->GetNumberOfPoints();
                 TH1D* h = new TH1D("histo", "Signal to histo", nBins, 0, nBins);
-        
+
                 for (int i = 0; i < nBins; i++) {
-                    //h->Fill(i, (singleSignal->GetRawData(i)-singleSignal->GetBaseLine())*100/singleSignal->GetData(MaxPeakBin));
-                    //h->SetBinError(i, singleSignal->GetBaseLineSigma()*100/singleSignal->GetData(MaxPeakBin));
-                    h->Fill(i, singleSignal->GetRawData(i)-singleSignal->GetBaseLine()) ;
+                    // h->Fill(i,
+                    // (singleSignal->GetRawData(i)-singleSignal->GetBaseLine())*100/singleSignal->GetData(MaxPeakBin));
+                    // h->SetBinError(i,
+                    // singleSignal->GetBaseLineSigma()*100/singleSignal->GetData(MaxPeakBin));
+                    h->Fill(i, singleSignal->GetRawData(i) - singleSignal->GetBaseLine());
                     h->SetBinError(i, singleSignal->GetBaseLineSigma());
                 }
-                
+
                 // Fit histogram with convolution
-                fit_conv->SetParameters(32., MaxPeakBin-25., 1, singleSignal->GetData(MaxPeakBin));
-                if (fShaping != 0){fit_conv->FixParameter(0, fShaping);}
-                fit_conv->FixParameter(3,singleSignal->GetData(MaxPeakBin)*10);
-                
+                fit_conv->SetParameters(32., MaxPeakBin - 25., 1, singleSignal->GetData(MaxPeakBin));
+                if (fShaping != 0) {
+                    fit_conv->FixParameter(0, fShaping);
+                }
+                fit_conv->FixParameter(3, singleSignal->GetData(MaxPeakBin) * 10);
+
                 h->Fit(fit_conv, "RMNQ", "", MaxPeakBin - MinBinRange, MaxPeakBin + MaxBinRange);
                 // Options: L->Likelihood minimization, R->fit in range, N->No draw, Q->Quiet
-                
+
                 Double_t sigma = 0;
                 for (int j = MaxPeakBin - MinBinRange; j < MaxPeakBin + MaxBinRange; j++) {
-                    sigma += (h->GetBinContent(j) - fit_conv->Eval(j)) *
-                             (h->GetBinContent(j) - fit_conv->Eval(j));
+                    sigma +=
+                        (h->GetBinContent(j) - fit_conv->Eval(j)) * (h->GetBinContent(j) - fit_conv->Eval(j));
                 }
                 Sigma[s] = TMath::Sqrt(sigma / (MinBinRange + MaxBinRange));
-                RatioSigmaMaxPeak[s] = Sigma[s] / h->GetBinContent(MaxPeakBin+1);
+                RatioSigmaMaxPeak[s] = Sigma[s] / h->GetBinContent(MaxPeakBin + 1);
                 RatioSigmaMaxPeakMean += RatioSigmaMaxPeak[s];
                 SigmaMean += Sigma[s];
                 ChiSquare[s] = fit_conv->GetChisquare();
                 ChiSquareMean += ChiSquare[s];
-        
+
                 amplitudeFit[singleSignal->GetID()] = fit_conv->GetParameter("Amplitude");
                 shapingtimeFit[singleSignal->GetID()] = fit_conv->GetParameter("ShapingTime");
                 StartPositionFit[singleSignal->GetID()] = fit_conv->GetParameter("StartPosition");
                 variancegaussFit[singleSignal->GetID()] = fit_conv->GetParameter("VarianceGauss");
-                
+
                 ratiosigmaamplitudeFit[singleSignal->GetID()] = RatioSigmaMaxPeak[s];
-                
+
                 VGmean += fit_conv->GetParameter("VarianceGauss") / fit_conv->GetParError(2);
-                VGvariance += fit_conv->GetParameter("VarianceGauss") * fit_conv->GetParameter(2) / fit_conv->GetParError(2);
-                VGweights += 1/fit_conv->GetParError(2);
-                
-        
+                VGvariance += fit_conv->GetParameter("VarianceGauss") * fit_conv->GetParameter(2) /
+                              fit_conv->GetParError(2);
+                VGweights += 1 / fit_conv->GetParError(2);
+
                 h->Delete();
             }
         }
-        
+
         /// Fit good signal's selection ///
         else {
             fRawSignalEvent->SetBaseLineRange(fBaseLineRange);
             for (int s = 0; s < fRawSignalEvent->GetNumberOfSignals(); s++) {
                 TRestRawSignal* singleSignal = fRawSignalEvent->GetSignal(s);
                 singleSignal->CalculateBaseLine(fBaseLineRange.X(), fBaseLineRange.Y());
-                singleSignal->InitializePointsOverThreshold(TVector2(fPointThreshold, fSignalThreshold), fPointsOverThreshold);
-                
-                if (singleSignal->GetPointsOverThreshold().size() >= 2 ){
+                singleSignal->InitializePointsOverThreshold(TVector2(fPointThreshold, fSignalThreshold),
+                                                            fPointsOverThreshold);
+
+                if (singleSignal->GetPointsOverThreshold().size() >= 2) {
                     goodSig++;
                     int MaxPeakBin = singleSignal->GetMaxPeakBin();
-                    
+
                     // ShaperSin function (AGET theoretical curve) times logistic function
-                    TF1* f = new TF1("Aget",
-                                     "TMath::Exp(-3. * (x-[1])/[0] ) * (x-[1])/[0] * (x-[1])/[0] * (x-[1])/[0] "
-                                      " * sin((x-[1])/[0])/(1+TMath::Exp(-10000*(x-[1])))",
-                                     0, 511);
+                    TF1* f =
+                        new TF1("Aget",
+                                "TMath::Exp(-3. * (x-[1])/[0] ) * (x-[1])/[0] * (x-[1])/[0] * (x-[1])/[0] "
+                                " * sin((x-[1])/[0])/(1+TMath::Exp(-10000*(x-[1])))",
+                                0, 511);
                     f->SetParNames("ShapingTime", "StartPosition");
-            
+
                     // Gaussian pulse
                     TF1* g = new TF1("pulse", "exp(-0.5*x*x/[0])*[1]", 0, 511);
                     g->SetParNames("VarianceGauss", "Amplitude");
-            
+
                     // Convolution of AGET and gaussian functions
                     TF1Convolution* conv = new TF1Convolution("Aget", "pulse", 0, 511, true);
                     conv->SetRange(0, 511);
                     conv->SetNofPointsFFT(10000);
-            
+
                     TF1* fit_conv = new TF1("fit", *conv, 0, 511, conv->GetNpar());
                     fit_conv->SetParNames("ShapingTime", "StartPosition", "VarianceGauss", "Amplitude");
-            
+
                     // Create histogram from signal
                     Int_t nBins = singleSignal->GetNumberOfPoints();
                     TH1D* h = new TH1D("histo", "Signal to histo", nBins, 0, nBins);
-            
+
                     for (int i = 0; i < nBins; i++) {
-                        //h->Fill(i, (singleSignal->GetRawData(i)-singleSignal->GetBaseLine())*100/singleSignal->GetData(MaxPeakBin));
-                        //h->SetBinError(i, singleSignal->GetBaseLineSigma()*100/singleSignal->GetData(MaxPeakBin));
-                        h->Fill(i, singleSignal->GetRawData(i)-singleSignal->GetBaseLine()) ;
+                        // h->Fill(i,
+                        // (singleSignal->GetRawData(i)-singleSignal->GetBaseLine())*100/singleSignal->GetData(MaxPeakBin));
+                        // h->SetBinError(i,
+                        // singleSignal->GetBaseLineSigma()*100/singleSignal->GetData(MaxPeakBin));
+                        h->Fill(i, singleSignal->GetRawData(i) - singleSignal->GetBaseLine());
                         h->SetBinError(i, singleSignal->GetBaseLineSigma());
                     }
-                    
+
                     // Fit histogram with convolution
-                    fit_conv->SetParameters(32., MaxPeakBin-25., 1, singleSignal->GetData(MaxPeakBin));
-                    if (fShaping != 0){fit_conv->FixParameter(0, fShaping);}
-                    fit_conv->FixParameter(3,singleSignal->GetData(MaxPeakBin)*10);
-                    
+                    fit_conv->SetParameters(32., MaxPeakBin - 25., 1, singleSignal->GetData(MaxPeakBin));
+                    if (fShaping != 0) {
+                        fit_conv->FixParameter(0, fShaping);
+                    }
+                    fit_conv->FixParameter(3, singleSignal->GetData(MaxPeakBin) * 10);
+
                     h->Fit(fit_conv, "RMNQ", "", MaxPeakBin - MinBinRange, MaxPeakBin + MaxBinRange);
                     // Options: L->Likelihood minimization, R->fit in range, N->No draw, Q->Quiet
-                    
+
                     Double_t sigma = 0;
                     for (int j = MaxPeakBin - MinBinRange; j < MaxPeakBin + MaxBinRange; j++) {
                         sigma += (h->GetBinContent(j) - fit_conv->Eval(j)) *
                                  (h->GetBinContent(j) - fit_conv->Eval(j));
                     }
                     Sigma[s] = TMath::Sqrt(sigma / (MinBinRange + MaxBinRange));
-                    RatioSigmaMaxPeak[s] = Sigma[s] / h->GetBinContent(MaxPeakBin+1);
+                    RatioSigmaMaxPeak[s] = Sigma[s] / h->GetBinContent(MaxPeakBin + 1);
                     RatioSigmaMaxPeakMean += RatioSigmaMaxPeak[s];
                     SigmaMean += Sigma[s];
                     ChiSquare[s] = fit_conv->GetChisquare();
                     ChiSquareMean += ChiSquare[s];
-            
+
                     amplitudeFit[singleSignal->GetID()] = fit_conv->GetParameter("Amplitude");
                     shapingtimeFit[singleSignal->GetID()] = fit_conv->GetParameter("ShapingTime");
                     StartPositionFit[singleSignal->GetID()] = fit_conv->GetParameter("StartPosition");
                     variancegaussFit[singleSignal->GetID()] = fit_conv->GetParameter("VarianceGauss");
-                    
+
                     ratiosigmaamplitudeFit[singleSignal->GetID()] = RatioSigmaMaxPeak[s];
-                    
+
                     VGmean += fit_conv->GetParameter("VarianceGauss") / fit_conv->GetParError(2);
-                    VGvariance += fit_conv->GetParameter("VarianceGauss") * fit_conv->GetParameter(2) / fit_conv->GetParError(2);
-                    VGweights += 1/fit_conv->GetParError(2);
-            
+                    VGvariance += fit_conv->GetParameter("VarianceGauss") * fit_conv->GetParameter(2) /
+                                  fit_conv->GetParError(2);
+                    VGweights += 1 / fit_conv->GetParError(2);
+
                     h->Delete();
-                
-                }
-                else {
+
+                } else {
                     amplitudeFit[singleSignal->GetID()] = -1;
                     shapingtimeFit[singleSignal->GetID()] = -1;
                     StartPositionFit[singleSignal->GetID()] = -1;
                     variancegaussFit[singleSignal->GetID()] = -1;
-                    
+
                     ratiosigmaamplitudeFit[singleSignal->GetID()] = -1;
                 }
-                
-                
             }
         }
-        
-    
+
         //////////// Fitted parameters Map Observables /////////////
         SetObservableValue("FitAmplitude_map", amplitudeFit);
         SetObservableValue("FitShapingTime_map", shapingtimeFit);
         SetObservableValue("FitStartPosition_map", StartPositionFit);
         SetObservableValue("FitVarianceGauss_map", variancegaussFit);
-        
+
         SetObservableValue("FitRatioSigmaMaxPeak_map", ratiosigmaamplitudeFit);
-        
+
         Double_t maxVarianceGauss = 0;
         for (int k = 0; k < fRawSignalEvent->GetNumberOfSignals(); k++) {
             debug << variancegaussFit[fRawSignalEvent->GetSignal(k)->GetID()] << endl;
-            if (variancegaussFit[fRawSignalEvent->GetSignal(k)->GetID()] > maxVarianceGauss){
+            if (variancegaussFit[fRawSignalEvent->GetSignal(k)->GetID()] > maxVarianceGauss) {
                 maxVarianceGauss = variancegaussFit[fRawSignalEvent->GetSignal(k)->GetID()];
             }
         }
         SetObservableValue("FitMaxVarianceGauss", maxVarianceGauss);
-        
+
         Double_t SigmaMeanStdDev = 0;
         Double_t sigmaMeanStdDev = 0;
-    
+
         //////////// Fitted event Observables /////////////
-        if (fPointThreshold == 0 && fSignalThreshold == 0 && fPointsOverThreshold == 0 && fBaseLineRange.X() == 0 && fBaseLineRange.Y() == 0) {
-            
-            /// Sigma Mean Observable 
+        if (fPointThreshold == 0 && fSignalThreshold == 0 && fPointsOverThreshold == 0 &&
+            fBaseLineRange.X() == 0 && fBaseLineRange.Y() == 0) {
+            /// Sigma Mean Observable
             SigmaMean = SigmaMean / (fRawSignalEvent->GetNumberOfSignals());
-            /// Sigma Mean Standard Deviation Observable 
+            /// Sigma Mean Standard Deviation Observable
             sigmaMeanStdDev = 0;
             for (int k = 0; k < fRawSignalEvent->GetNumberOfSignals(); k++) {
                 sigmaMeanStdDev += (Sigma[k] - SigmaMean) * (Sigma[k] - SigmaMean);
             }
             SigmaMeanStdDev = TMath::Sqrt(sigmaMeanStdDev / fRawSignalEvent->GetNumberOfSignals());
-            /// Chi Square Mean Observable 
+            /// Chi Square Mean Observable
             ChiSquareMean = ChiSquareMean / fRawSignalEvent->GetNumberOfSignals();
-            /// Ratio Sigma MaxPeak Mean Observable 
+            /// Ratio Sigma MaxPeak Mean Observable
             RatioSigmaMaxPeakMean = RatioSigmaMaxPeakMean / fRawSignalEvent->GetNumberOfSignals();
         }
-        
+
         else {
-            /// Sigma Mean Observable 
+            /// Sigma Mean Observable
             SigmaMean = SigmaMean / goodSig;
-            /// Sigma Mean Standard Deviation  Observable 
+            /// Sigma Mean Standard Deviation  Observable
             sigmaMeanStdDev = 0;
             for (int k = 0; k < fRawSignalEvent->GetNumberOfSignals(); k++) {
                 if (Sigma[k] != 0) {
@@ -444,22 +450,21 @@ TRestEvent* TRestRawSignalFitEventProcess::ProcessEvent(TRestEvent* evInput) {
                 }
             }
             SigmaMeanStdDev = TMath::Sqrt(sigmaMeanStdDev / goodSig);
-            /// Chi Square Mean Observable 
+            /// Chi Square Mean Observable
             ChiSquareMean = ChiSquareMean / goodSig;
-            /// Ratio Sigma MaxPeak Mean Observable 
+            /// Ratio Sigma MaxPeak Mean Observable
             RatioSigmaMaxPeakMean = RatioSigmaMaxPeakMean / goodSig;
         }
-        
+
         SetObservableValue("FitSigmaMean", SigmaMean);
         SetObservableValue("FitSigmaStdDev", SigmaMeanStdDev);
         SetObservableValue("FitChiSquareMean", ChiSquareMean);
         SetObservableValue("FitRatioSigmaMaxPeakMean", RatioSigmaMaxPeakMean);
-        
-        SetObservableValue("FitVarianceGaussWMean", VGmean/VGweights);
-        SetObservableValue("FitVarianceGaussWStdDev", TMath::Sqrt(VGvariance/VGweights - (VGmean/VGweights)*(VGmean/VGweights)));
-        
-        
-    
+
+        SetObservableValue("FitVarianceGaussWMean", VGmean / VGweights);
+        SetObservableValue("FitVarianceGaussWStdDev",
+                           TMath::Sqrt(VGvariance / VGweights - (VGmean / VGweights) * (VGmean / VGweights)));
+
         debug << "SigmaMean: " << SigmaMean << endl;
         debug << "SigmaMeanStdDev: " << SigmaMeanStdDev << endl;
         debug << "ChiSquareMean: " << ChiSquareMean << endl;
@@ -470,112 +475,109 @@ TRestEvent* TRestRawSignalFitEventProcess::ProcessEvent(TRestEvent* evInput) {
             debug << "Sandard deviation divided by amplitude of signal number " << k << ": "
                   << RatioSigmaMaxPeak[k] << endl;
         }
-    
+
         // If cut condition matches the event will be not registered.
         if (ApplyCut()) return NULL;
-    
+
         return fRawSignalEvent;
     }
-    
-    
-    
+
     /////----- Fit with AGET function -----/////
-    
-    if (fAgetFit == true){
+
+    if (fAgetFit == true) {
         for (int s = 0; s < fRawSignalEvent->GetNumberOfSignals(); s++) {
-        TRestRawSignal* singleSignal = fRawSignalEvent->GetSignal(s);
-        singleSignal->CalculateBaseLine(20, 150);
-        int MaxPeakBin = singleSignal->GetMaxPeakBin();
+            TRestRawSignal* singleSignal = fRawSignalEvent->GetSignal(s);
+            singleSignal->CalculateBaseLine(20, 150);
+            int MaxPeakBin = singleSignal->GetMaxPeakBin();
 
-        // ShaperSin function (AGET theoretical curve) times logistic function
-        TF1* f = new TF1("Aget",
-                         "[2]*TMath::Exp(-3. * (x-[1])/[0] ) * (x-[1])/[0] * (x-[1])/[0] * (x-[1])/[0] "
-                          " * sin((x-[1])/[0])/(1+TMath::Exp(-10000*(x-[1])))",
-                         0, 511);
-        f->SetParNames("ShapingTime", "StartPosition", "Amplitude");
-        
+            // ShaperSin function (AGET theoretical curve) times logistic function
+            TF1* f = new TF1("Aget",
+                             "[2]*TMath::Exp(-3. * (x-[1])/[0] ) * (x-[1])/[0] * (x-[1])/[0] * (x-[1])/[0] "
+                             " * sin((x-[1])/[0])/(1+TMath::Exp(-10000*(x-[1])))",
+                             0, 511);
+            f->SetParNames("ShapingTime", "StartPosition", "Amplitude");
 
-        // Create histogram from signal
-        Int_t nBins = singleSignal->GetNumberOfPoints();
-        TH1D* h = new TH1D("histo", "Signal to histo", nBins, 0, nBins);
+            // Create histogram from signal
+            Int_t nBins = singleSignal->GetNumberOfPoints();
+            TH1D* h = new TH1D("histo", "Signal to histo", nBins, 0, nBins);
 
-        for (int i = 0; i < nBins; i++) {
-            h->Fill(i, singleSignal->GetRawData(i)-singleSignal->GetBaseLine());
-            h->SetBinError(i, singleSignal->GetBaseLineSigma());
+            for (int i = 0; i < nBins; i++) {
+                h->Fill(i, singleSignal->GetRawData(i) - singleSignal->GetBaseLine());
+                h->SetBinError(i, singleSignal->GetBaseLineSigma());
+            }
+
+            // Fit histogram with ShaperSin
+            f->SetParameters(32., 200, singleSignal->GetData(MaxPeakBin));
+            if (fShaping != 0) {
+                f->FixParameter(0, fShaping);
+            }
+
+            h->Fit(f, "RMNQ", "", MaxPeakBin - MinBinRange, MaxPeakBin + MaxBinRange);
+            // Options: R->fit in range, N->No draw, Q->Quiet
+
+            Double_t sigma = 0;
+            for (int j = MaxPeakBin - 145; j < MaxPeakBin + 165; j++) {
+                sigma += (h->GetBinContent(j) - f->Eval(j)) * (h->GetBinContent(j) - f->Eval(j));
+            }
+            Sigma[s] = TMath::Sqrt(sigma / (145 + 165));
+            RatioSigmaMaxPeak[s] = Sigma[s] / h->GetBinContent(MaxPeakBin + 1);
+            RatioSigmaMaxPeakMean += RatioSigmaMaxPeak[s];
+            SigmaMean += Sigma[s];
+            ChiSquare[s] = f->GetChisquare();
+            ChiSquareMean += ChiSquare[s];
+
+            amplitudeFit[singleSignal->GetID()] = f->GetParameter(2);
+            shapingtimeFit[singleSignal->GetID()] = f->GetParameter(0);
+            StartPositionFit[singleSignal->GetID()] = f->GetParameter(1);
+
+            ratiosigmaamplitudeFit[singleSignal->GetID()] = RatioSigmaMaxPeak[s];
+
+            h->Delete();
         }
 
-        // Fit histogram with ShaperSin
-        f->SetParameters(32., 200,  singleSignal->GetData(MaxPeakBin));
-        if (fShaping != 0){f->FixParameter(0, fShaping);}
-        
-        h->Fit(f, "RMNQ", "", MaxPeakBin - MinBinRange, MaxPeakBin + MaxBinRange);  
-        // Options: R->fit in range, N->No draw, Q->Quiet
+        //////////// Fitted parameters Map Observables /////////////
+        SetObservableValue("FitAmplitude_map", amplitudeFit);
+        SetObservableValue("FitShapingTime_map", shapingtimeFit);
+        SetObservableValue("FitStartPosition_map", StartPositionFit);
 
-        Double_t sigma = 0;
-        for (int j = MaxPeakBin - 145; j < MaxPeakBin + 165; j++) {
-            sigma += (h->GetBinContent(j) - f->Eval(j)) * (h->GetBinContent(j) - f->Eval(j));
+        SetObservableValue("FitRatioSigmaMaxPeak_map", ratiosigmaamplitudeFit);
+
+        //////////// Sigma Mean Observable /////////////
+        SigmaMean = SigmaMean / (fRawSignalEvent->GetNumberOfSignals());
+        SetObservableValue("FitSigmaMean", SigmaMean);
+
+        //////////// Sigma Mean Standard Deviation  Observable /////////////
+        Double_t sigmaMeanStdDev = 0;
+        for (int k = 0; k < fRawSignalEvent->GetNumberOfSignals(); k++) {
+            sigmaMeanStdDev += (Sigma[k] - SigmaMean) * (Sigma[k] - SigmaMean);
         }
-        Sigma[s] = TMath::Sqrt(sigma / (145 + 165));
-        RatioSigmaMaxPeak[s] = Sigma[s] / h->GetBinContent(MaxPeakBin+1);
-        RatioSigmaMaxPeakMean += RatioSigmaMaxPeak[s];
-        SigmaMean += Sigma[s];
-        ChiSquare[s] = f->GetChisquare();
-        ChiSquareMean += ChiSquare[s];
+        Double_t SigmaMeanStdDev = TMath::Sqrt(sigmaMeanStdDev / fRawSignalEvent->GetNumberOfSignals());
+        SetObservableValue("FitSigmaStdDev", SigmaMeanStdDev);
 
-        amplitudeFit[singleSignal->GetID()] = f->GetParameter(2);
-        shapingtimeFit[singleSignal->GetID()] = f->GetParameter(0);
-        StartPositionFit[singleSignal->GetID()] = f->GetParameter(1);
-        
-        ratiosigmaamplitudeFit[singleSignal->GetID()] = RatioSigmaMaxPeak[s];
+        //////////// Chi Square Mean Observable /////////////
+        ChiSquareMean = ChiSquareMean / fRawSignalEvent->GetNumberOfSignals();
+        SetObservableValue("FitChiSquareMean", ChiSquareMean);
 
-        h->Delete();
+        //////////// Ratio Sigma MaxPeak Mean Observable /////////////
+        RatioSigmaMaxPeakMean = RatioSigmaMaxPeakMean / fRawSignalEvent->GetNumberOfSignals();
+        SetObservableValue("FitRatioSigmaMaxPeakMean", RatioSigmaMaxPeakMean);
+
+        debug << "SigmaMean: " << SigmaMean << endl;
+        debug << "SigmaMeanStdDev: " << SigmaMeanStdDev << endl;
+        debug << "ChiSquareMean: " << ChiSquareMean << endl;
+        debug << "RatioSigmaMaxPeakMean: " << RatioSigmaMaxPeakMean << endl;
+        for (int k = 0; k < fRawSignalEvent->GetNumberOfSignals(); k++) {
+            debug << "Standard deviation of signal number " << k << ": " << Sigma[k] << endl;
+            debug << "Chi square of fit signal number " << k << ": " << ChiSquare[k] << endl;
+            debug << "Sandard deviation divided by amplitude of signal number " << k << ": "
+                  << RatioSigmaMaxPeak[k] << endl;
+        }
+
+        // If cut condition matches the event will be not registered.
+        if (ApplyCut()) return NULL;
+
+        return fRawSignalEvent;
     }
-
-    //////////// Fitted parameters Map Observables /////////////
-    SetObservableValue("FitAmplitude_map", amplitudeFit);
-    SetObservableValue("FitShapingTime_map", shapingtimeFit);
-    SetObservableValue("FitStartPosition_map", StartPositionFit);
-    
-    SetObservableValue("FitRatioSigmaMaxPeak_map", ratiosigmaamplitudeFit);
-
-    //////////// Sigma Mean Observable /////////////
-    SigmaMean = SigmaMean / (fRawSignalEvent->GetNumberOfSignals());
-    SetObservableValue("FitSigmaMean", SigmaMean);
-
-    //////////// Sigma Mean Standard Deviation  Observable /////////////
-    Double_t sigmaMeanStdDev = 0;
-    for (int k = 0; k < fRawSignalEvent->GetNumberOfSignals(); k++) {
-        sigmaMeanStdDev += (Sigma[k] - SigmaMean) * (Sigma[k] - SigmaMean);
-    }
-    Double_t SigmaMeanStdDev = TMath::Sqrt(sigmaMeanStdDev / fRawSignalEvent->GetNumberOfSignals());
-    SetObservableValue("FitSigmaStdDev", SigmaMeanStdDev);
-
-    //////////// Chi Square Mean Observable /////////////
-    ChiSquareMean = ChiSquareMean / fRawSignalEvent->GetNumberOfSignals();
-    SetObservableValue("FitChiSquareMean", ChiSquareMean);
-
-    //////////// Ratio Sigma MaxPeak Mean Observable /////////////
-    RatioSigmaMaxPeakMean = RatioSigmaMaxPeakMean / fRawSignalEvent->GetNumberOfSignals();
-    SetObservableValue("FitRatioSigmaMaxPeakMean", RatioSigmaMaxPeakMean);
-
-    debug << "SigmaMean: " << SigmaMean << endl;
-    debug << "SigmaMeanStdDev: " << SigmaMeanStdDev << endl;
-    debug << "ChiSquareMean: " << ChiSquareMean << endl;
-    debug << "RatioSigmaMaxPeakMean: " << RatioSigmaMaxPeakMean << endl;
-    for (int k = 0; k < fRawSignalEvent->GetNumberOfSignals(); k++) {
-        debug << "Standard deviation of signal number " << k << ": " << Sigma[k] << endl;
-        debug << "Chi square of fit signal number " << k << ": " << ChiSquare[k] << endl;
-        debug << "Sandard deviation divided by amplitude of signal number " << k << ": "
-              << RatioSigmaMaxPeak[k] << endl;
-    }
-
-
-    // If cut condition matches the event will be not registered.
-    if (ApplyCut()) return NULL;
-
-    return fRawSignalEvent;
-    }
-        
 }
 
 ///////////////////////////////////////////////
