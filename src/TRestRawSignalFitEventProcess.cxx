@@ -165,6 +165,7 @@ void TRestRawSignalFitEventProcess::LoadDefaultConfig() { SetTitle("Default conf
 ///
 void TRestRawSignalFitEventProcess::Initialize() {
     SetSectionName(this->ClassName());
+    SetLibraryVersion(LIBRARY_VERSION);
 
     fRawSignalEvent = NULL;
 }
