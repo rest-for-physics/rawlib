@@ -14,8 +14,8 @@ import subprocess
 
 
 def validateClass(className):
-    print ""
-    print "++++ Validating class : " + className
+    print ("")
+    print ("++++ Validating class : " + className)
     with open(className, 'r') as file:
         data = file.read()
 
@@ -26,7 +26,7 @@ def validateClass(className):
         #print (data)
         #print data.find("SETLIBRARYVERSION(LIBRARY_VERSION);")
         if data.find("SETLIBRARYVERSION(LIBRARY_VERSION);") >= 0:
-            print "OK"
+            print ("OK")
             return
         else:
             print( "Problem found at class : " + className )
@@ -48,7 +48,7 @@ def getObservablePositions(data):
            break
 
         name = data[pos1:pos2]
-        if(not obsposes.has_key(name)):
+        if(not name in obsposes):
             obsposes[name] = pos1
 
         pos = pos2 + 1
@@ -74,7 +74,7 @@ def getMethodDefinition(text):
                 counter = counter - 1
                 start = pos2 + 1
         elif pos1 != -1:
-                print "Big error!!"
+                print ("Big error!!")
         else:
                 counter = counter - 1
                 start = pos2 + 1
