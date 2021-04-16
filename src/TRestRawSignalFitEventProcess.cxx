@@ -579,6 +579,7 @@ TRestEvent* TRestRawSignalFitEventProcess::ProcessEvent(TRestEvent* evInput) {
 
         return fRawSignalEvent;
     }
+    return NULL;
 }
 
 ///////////////////////////////////////////////

@@ -314,6 +314,7 @@ TRestEvent* TRestRawCommonNoiseReductionProcess::ProcessEvent(TRestEvent* evInpu
         }
         return fOutputEvent;
     }
+    return NULL;
 }
 
 ///////////////////////////////////////////////
