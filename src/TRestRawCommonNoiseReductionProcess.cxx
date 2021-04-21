@@ -330,11 +330,3 @@ void TRestRawCommonNoiseReductionProcess::EndProcess() {
     // TRestEventProcess::EndProcess();
 }
 
-///////////////////////////////////////////////
-/// \brief Function to read input parameters.
-///
-void TRestRawCommonNoiseReductionProcess::InitFromConfigFile() {
-    fMode = StringToInteger(GetParameter("mode", "0"));
-    fcenterWidth = StringToInteger(GetParameter("centerWidth", "10"));
-    fBlocks = StringToInteger(GetParameter("blocks", "0"));
-}

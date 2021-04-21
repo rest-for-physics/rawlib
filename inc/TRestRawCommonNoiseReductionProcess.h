@@ -47,8 +47,6 @@ class TRestRawCommonNoiseReductionProcess : public TRestEventProcess {
     /// the average.
     Int_t fCenterWidth = 10;
 
-    void InitFromConfigFile();
-
     void Initialize();
 
     void LoadDefaultConfig();
