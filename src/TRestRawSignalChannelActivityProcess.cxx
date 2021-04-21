@@ -179,36 +179,35 @@ void TRestRawSignalChannelActivityProcess::InitProcess() {
 #endif
 
     if (!fReadOnly) {
-        fDaqChannelsHisto = new TH1D("daqChannelActivityRaw", "daqChannelActivityRaw", fDaqHistogramChannels,
+        fDaqChannelsHisto = new TH1D("daqChannelActivityRaw", "daqChannelActivityRaw", fDaqChannels,
                                      fDaqStartChannel, fDaqEndChannel);
 #ifdef REST_DetectorLib
         if (fReadout) {
-            fReadoutChannelsHisto =
-                new TH1D("rChannelActivityRaw", "readoutChannelActivity", fReadoutHistogramChannels,
-                         fReadoutStartChannel, fReadoutEndChannel);
+            fReadoutChannelsHisto = new TH1D("rChannelActivityRaw", "readoutChannelActivity",
+                                             fReadoutChannels, fReadoutStartChannel, fReadoutEndChannel);
             fReadoutChannelsHisto_OneSignal =
-                new TH1D("rChannelActivityRaw_1", "readoutChannelActivity", fReadoutHistogramChannels,
+                new TH1D("rChannelActivityRaw_1", "readoutChannelActivity", fReadoutChannels,
                          fReadoutStartChannel, fReadoutEndChannel);
             fReadoutChannelsHisto_OneSignal_High =
-                new TH1D("rChannelActivityRaw_1H", "readoutChannelActivity", fReadoutHistogramChannels,
+                new TH1D("rChannelActivityRaw_1H", "readoutChannelActivity", fReadoutChannels,
                          fReadoutStartChannel, fReadoutEndChannel);
             fReadoutChannelsHisto_TwoSignals =
-                new TH1D("rChannelActivityRaw_2", "readoutChannelActivity", fReadoutHistogramChannels,
+                new TH1D("rChannelActivityRaw_2", "readoutChannelActivity", fReadoutChannels,
                          fReadoutStartChannel, fReadoutEndChannel);
             fReadoutChannelsHisto_TwoSignals_High =
-                new TH1D("rChannelActivityRaw_2H", "readoutChannelActivity", fReadoutHistogramChannels,
+                new TH1D("rChannelActivityRaw_2H", "readoutChannelActivity", fReadoutChannels,
                          fReadoutStartChannel, fReadoutEndChannel);
             fReadoutChannelsHisto_ThreeSignals =
-                new TH1D("rChannelActivityRaw_3", "readoutChannelActivity", fReadoutHistogramChannels,
+                new TH1D("rChannelActivityRaw_3", "readoutChannelActivity", fReadoutChannels,
                          fReadoutStartChannel, fReadoutEndChannel);
             fReadoutChannelsHisto_ThreeSignals_High =
-                new TH1D("rChannelActivityRaw_3H", "readoutChannelActivity", fReadoutHistogramChannels,
+                new TH1D("rChannelActivityRaw_3H", "readoutChannelActivity", fReadoutChannels,
                          fReadoutStartChannel, fReadoutEndChannel);
             fReadoutChannelsHisto_MultiSignals =
-                new TH1D("rChannelActivityRaw_M", "readoutChannelActivity", fReadoutHistogramChannels,
+                new TH1D("rChannelActivityRaw_M", "readoutChannelActivity", fReadoutChannels,
                          fReadoutStartChannel, fReadoutEndChannel);
             fReadoutChannelsHisto_MultiSignals_High =
-                new TH1D("rChannelActivityRaw_MH", "readoutChannelActivity", fReadoutHistogramChannels,
+                new TH1D("rChannelActivityRaw_MH", "readoutChannelActivity", fReadoutChannels,
                          fReadoutStartChannel, fReadoutEndChannel);
         }
 #endif
@@ -294,18 +293,3 @@ void TRestRawSignalChannelActivityProcess::EndProcess() {
     }
 }
 
-///////////////////////////////////////////////
-/// \brief Function to read input parameters from the RML
-/// TRestRawSignalChannelActivityProcess metadata section
-///
-void TRestRawSignalChannelActivityProcess::InitFromConfigFile() {
-    fLowThreshold = StringToDouble(GetParameter("lowThreshold", "25"));
-    fHighThreshold = StringToDouble(GetParameter("highThreshold", "50"));
-
-    fDaqHistogramChannels = StringToInteger(GetParameter("daqChannels", "300"));
-    fDaqStartChannel = StringToInteger(GetParameter("daqStartCh", "4320"));
-    fDaqEndChannel = StringToInteger(GetParameter("daqEndCh", "4620"));
-    fReadoutHistogramChannels = StringToInteger(GetParameter("readoutChannels", "128"));
-    fReadoutStartChannel = StringToInteger(GetParameter("readoutStartCh", "0"));
-    fReadoutEndChannel = StringToInteger(GetParameter("readoutEndCh", "128"));
-}
