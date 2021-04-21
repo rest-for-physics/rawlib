@@ -594,10 +594,3 @@ void TRestRawSignalFitEventProcess::EndProcess() {
     // Comment this if you don't want it.
     // TRestEventProcess::EndProcess();
 }
-
-///////////////////////////////////////////////
-/// \brief Function to read input parameters.
-///
-/*void TRestRawSignalFitEventProcess::InitFromConfigFile() {
-    TRestEventProcess::InitFromConfigFile();
-}*/

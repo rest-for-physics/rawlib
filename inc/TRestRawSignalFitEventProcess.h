@@ -43,8 +43,6 @@ class TRestRawSignalFitEventProcess : public TRestEventProcess {
     Bool_t fAgetFit = false;
     Double_t fShaping = 0;
 
-    // void InitFromConfigFile();
-
     void Initialize();
 
     void LoadDefaultConfig();
