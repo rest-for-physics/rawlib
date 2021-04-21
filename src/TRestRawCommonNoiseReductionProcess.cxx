@@ -207,8 +207,8 @@ TRestEvent* TRestRawCommonNoiseReductionProcess::ProcessEvent(TRestEvent* evInpu
                 norm = 1.;
             } else if (fMode == 1) {
                 // We take the average of the TRestDetectorSignals at the Center
-                begin = middle - (Int_t)(N * fcenterWidth * 0.01);
-                end = middle + (Int_t)(N * fcenterWidth * 0.01);
+                begin = middle - (Int_t)(N * fCenterWidth * 0.01);
+                end = middle + (Int_t)(N * fCenterWidth * 0.01);
                 norm = (Double_t)end - begin;
             }
 
@@ -287,8 +287,8 @@ TRestEvent* TRestRawCommonNoiseReductionProcess::ProcessEvent(TRestEvent* evInpu
                     norm = 1.;
                 } else if (fMode == 1) {
                     // We take the average of the TRestDetectorSignals at the Center
-                    begin = middle - (Int_t)(nSign * fcenterWidth * 0.01);
-                    end = middle + (Int_t)(nSign * fcenterWidth * 0.01);
+                    begin = middle - (Int_t)(nSign * fCenterWidth * 0.01);
+                    end = middle + (Int_t)(nSign * fCenterWidth * 0.01);
                     norm = (Double_t)end - begin;
                 }
 
