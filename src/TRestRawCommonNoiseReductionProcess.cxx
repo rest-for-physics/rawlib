@@ -329,4 +329,3 @@ void TRestRawCommonNoiseReductionProcess::EndProcess() {
     // Comment this if you don't want it.
     // TRestEventProcess::EndProcess();
 }
-
