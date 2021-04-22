@@ -52,8 +52,36 @@
 ///                * True -> AGET fit.
 ///                          Pulse fitted only with AGET funcion.
 ///
-/// * **Shaping**: Fix shaping parameter to desired value.
+/// * **shapingFixed**: Fix ShapingTime parameter to desired value.
 ///                If not provided it is a free parameter of the fit.
+///
+/// * **startPositionFixed**: Fix StartPosition parameter to MaxPeakBin - startPositionFixed.
+///                If not provided it is a free parameter of the fit.
+///
+/// * **varianceFixed**: Fix VarianceGauss parameter to desired value.
+///                If not provided it is a free parameter of the fit.
+///
+/// * **amplitudeFixed**: Fix Amplitude parameter to amplitudeFixed * singleSignal->GetData(MaxPeakBin).
+///                If not provided it is a free parameter of the fit.
+///
+/// * **shapingInitialValue**: Initial value for ShapingTime parameter.
+///
+/// * **startPositionInitialValue**: Initial value for StartPosition parameter.
+///
+/// * **varianceInitialValue**: Initial value for VarianceGauss parameter.
+///
+/// * **amplitudeInitialValue**: Initial value for Amplitude parameter.
+///
+/// Convolution mode default initial parameters are:
+///  * ShapingTime = 32.
+///  * StartPosition = MaxPeakBin - 25.
+///  * VarianceGauss = 1.
+///  * Amplitude = singleSignal->GetData(MaxPeakBin)* 10
+///
+/// AGET mode default initial parameters are:
+///  * ShapingTime = 32.
+///  * StartPosition = MaxPeakBin - 25.
+///  * Amplitude = singleSignal->GetData(MaxPeakBin)
 ///
 /// * **Good signal's selection**: Convolution mode only.
 /// Parameters to select good signals can be provided and only good ones will be fitted.
@@ -66,7 +94,7 @@
 /// Example in rml file:
 /// \code
 /// <addProcess type="TRestRawSignalFitEventProcess" name="rawFitEvent" value="ON"
-///        observable="all" verboseLevel="info"  agetFit= "false" shaping = "32"
+///        observable="all" verboseLevel="info"  agetFit= "false" shapingFixed = "32"
 ///        baseLineRange="(20,150)"  pointsOverThreshold="40" pointThreshold="6" signalThreshold="3" >
 /// </addProcess>
 /// \endcode
@@ -273,11 +301,30 @@ TRestEvent* TRestRawSignalFitEventProcess::ProcessEvent(TRestEvent* evInput) {
                 }
 
                 // Fit histogram with convolution
-                fit_conv->SetParameters(32., MaxPeakBin - 25., 1, singleSignal->GetData(MaxPeakBin));
-                if (fShaping != 0) {
-                    fit_conv->FixParameter(0, fShaping);
+                //fit_conv->SetParameters(32., MaxPeakBin - 25., 1., singleSignal->GetData(MaxPeakBin)* 10);
+                
+                // Read initial parameters 
+                if (fShapingInitialValue != 0) { fit_conv->SetParameter(0, fShapingInitialValue); }
+                else { fit_conv->SetParameter(0, 32.); }
+                if (fStartPositionInitialValue != 0) { fit_conv->SetParameter(1, MaxPeakBin - fStartPositionInitialValue); }
+                else { fit_conv->SetParameter(1, MaxPeakBin - 25); }
+                if (fVarianceInitialValue != 0) { fit_conv->SetParameter(2, fVarianceInitialValue); }
+                else { fit_conv->SetParameter(2, 1.); }
+                if (fAmplitudeInitialValue != 0) {
+                    fit_conv->SetParameter(3, singleSignal->GetData(MaxPeakBin) * fAmplitudeInitialValue);
                 }
-                fit_conv->FixParameter(3, singleSignal->GetData(MaxPeakBin) * 10);
+                else { fit_conv->SetParameter(3, singleSignal->GetData(MaxPeakBin)* 10);}
+                
+                // Read fixed parameters
+                if (fShapingFixed != 0) { fit_conv->FixParameter(0, fShapingFixed); }
+                if (fStartPositionFixed != 0) { fit_conv->FixParameter(1, MaxPeakBin - fStartPositionFixed); }
+                if (fVarianceFixed != 0) { fit_conv->FixParameter(2, fVarianceFixed); }
+                if (fAmplitudeFixed != 0) {
+                    fit_conv->FixParameter(3, singleSignal->GetData(MaxPeakBin) * fAmplitudeFixed);
+                }
+                //fit_conv->FixParameter(3, singleSignal->GetData(MaxPeakBin) * 100);
+                //fit_conv->FixParameter(3, singleSignal->GetIntegralInRange(MaxPeakBin - MinBinRange, MaxPeakBin + MaxBinRange));
+                
 
                 h->Fit(fit_conv, "RMNQ", "", MaxPeakBin - MinBinRange, MaxPeakBin + MaxBinRange);
                 // Options: L->Likelihood minimization, R->fit in range, N->No draw, Q->Quiet
@@ -357,11 +404,29 @@ TRestEvent* TRestRawSignalFitEventProcess::ProcessEvent(TRestEvent* evInput) {
                     }
 
                     // Fit histogram with convolution
-                    fit_conv->SetParameters(32., MaxPeakBin - 25., 1, singleSignal->GetData(MaxPeakBin));
-                    if (fShaping != 0) {
-                        fit_conv->FixParameter(0, fShaping);
+                    //fit_conv->SetParameters(32., MaxPeakBin - 25., 1., singleSignal->GetData(MaxPeakBin)* 10);
+                    
+                    // Read initial parameters 
+                    if (fShapingInitialValue != 0) { fit_conv->SetParameter(0, fShapingInitialValue); }
+                    else { fit_conv->SetParameter(0, 32.); }
+                    if (fStartPositionInitialValue != 0) { fit_conv->SetParameter(1, MaxPeakBin - fStartPositionInitialValue); }
+                    else { fit_conv->SetParameter(1, MaxPeakBin - 25); }
+                    if (fVarianceInitialValue != 0) { fit_conv->SetParameter(2, fVarianceInitialValue); }
+                    else { fit_conv->SetParameter(2, 1.); }
+                    if (fAmplitudeInitialValue != 0) {
+                        fit_conv->SetParameter(3, singleSignal->GetData(MaxPeakBin) * fAmplitudeInitialValue);
                     }
-                    fit_conv->FixParameter(3, singleSignal->GetData(MaxPeakBin) * 10);
+                    else { fit_conv->SetParameter(3, singleSignal->GetData(MaxPeakBin)* 10);}
+                    
+                    // Read fixed parameters
+                    if (fShapingFixed != 0) { fit_conv->FixParameter(0, fShapingFixed); }
+                    if (fStartPositionFixed != 0) { fit_conv->FixParameter(1, MaxPeakBin - fStartPositionFixed); }
+                    if (fVarianceFixed != 0) { fit_conv->FixParameter(2, fVarianceFixed); }
+                    if (fAmplitudeFixed != 0) {
+                        fit_conv->FixParameter(3, singleSignal->GetData(MaxPeakBin) * fAmplitudeFixed);
+                    }
+                    //fit_conv->FixParameter(3, singleSignal->GetData(MaxPeakBin) * 100);
+                    //fit_conv->FixParameter(3, singleSignal->GetIntegralInRange(MaxPeakBin - MinBinRange, MaxPeakBin + MaxBinRange));
 
                     h->Fit(fit_conv, "RMNQ", "", MaxPeakBin - MinBinRange, MaxPeakBin + MaxBinRange);
                     // Options: L->Likelihood minimization, R->fit in range, N->No draw, Q->Quiet
@@ -508,9 +573,23 @@ TRestEvent* TRestRawSignalFitEventProcess::ProcessEvent(TRestEvent* evInput) {
             }
 
             // Fit histogram with ShaperSin
-            f->SetParameters(32., 200, singleSignal->GetData(MaxPeakBin));
-            if (fShaping != 0) {
-                f->FixParameter(0, fShaping);
+            //f->SetParameters(32., 200, singleSignal->GetData(MaxPeakBin));
+            
+            // Read initial parameters 
+            if (fShapingInitialValue != 0) { f->SetParameter(0, fShapingInitialValue); }
+            else { f->SetParameter(0, 32.); }
+            if (fStartPositionInitialValue != 0) { f->SetParameter(1, MaxPeakBin - fStartPositionInitialValue); }
+            else { f->SetParameter(1, MaxPeakBin - 25); }
+            if (fAmplitudeInitialValue != 0) {
+                f->SetParameter(2, singleSignal->GetData(MaxPeakBin) * fAmplitudeInitialValue);
+            }
+            else { f->SetParameter(2, singleSignal->GetData(MaxPeakBin)); }
+            
+            // Read fixed parameters
+            if (fShapingFixed != 0) { f->FixParameter(0, fShapingFixed); }
+            if (fStartPositionFixed != 0) { f->FixParameter(1, MaxPeakBin - fStartPositionFixed); }
+            if (fAmplitudeFixed != 0) {
+                f->FixParameter(2, singleSignal->GetData(MaxPeakBin) * fAmplitudeFixed);
             }
 
             h->Fit(f, "RMNQ", "", MaxPeakBin - MinBinRange, MaxPeakBin + MaxBinRange);
