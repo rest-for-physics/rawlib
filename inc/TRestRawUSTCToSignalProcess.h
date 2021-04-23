@@ -93,12 +93,12 @@ class TRestRawUSTCToSignalProcess : public TRestRawToSignalProcess {
     int fCurrentFile = 0;                        //!
     int fCurrentEvent = -1;                      //!
     int fCurrentBuffer = 0;                      //!
-    Long64_t fTimeOffset = 0;
     int fLastBufferedId = 0;  //!
-
     vector<int> errorevents;  //!
     int unknownerrors = 0;    //!
 
+    Long64_t fTimeOffset = 0;
+    std::set<int> fChannelOffset;
 #endif
 
    public:
@@ -131,7 +131,7 @@ class TRestRawUSTCToSignalProcess : public TRestRawToSignalProcess {
     // Destructor
     ~TRestRawUSTCToSignalProcess();
 
-    ClassDef(TRestRawUSTCToSignalProcess, 2);  // Template for a REST "event process" class inherited from
+    ClassDef(TRestRawUSTCToSignalProcess, 3);  // Template for a REST "event process" class inherited from
                                                // TRestEventProcess
 };
 #endif
