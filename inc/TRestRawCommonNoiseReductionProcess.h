@@ -45,9 +45,7 @@ class TRestRawCommonNoiseReductionProcess : public TRestEventProcess {
 
     /// The percentage of signals taken from the array center to be considered for
     /// the average.
-    Int_t fcenterWidth = 0;
-
-    void InitFromConfigFile();
+    Int_t fCenterWidth = 10;
 
     void Initialize();
 
@@ -71,11 +69,11 @@ class TRestRawCommonNoiseReductionProcess : public TRestEventProcess {
     void PrintMetadata() {
         BeginPrintProcess();
 
-        metadata << " fMode : [" << fMode << "]";
+        metadata << " mode : [" << fMode << "]";
         if (fMode == 0) metadata << " --> Mode 0 activated." << endl;
         if (fMode == 1) metadata << " --> Mode 1 activated." << endl;
-        metadata << " fcenterWidth : " << fcenterWidth << endl;
-        metadata << "fBlocks : [" << fBlocks << "]";
+        metadata << " centerWidth : " << fCenterWidth << endl;
+        metadata << "blocks : [" << fBlocks << "]";
 
         EndPrintProcess();
     }

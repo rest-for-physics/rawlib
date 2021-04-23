@@ -41,9 +41,16 @@ class TRestRawSignalFitEventProcess : public TRestEventProcess {
     Double_t fSignalThreshold = 0;
     Int_t fPointsOverThreshold = 0;
     Bool_t fAgetFit = false;
-    Double_t fShaping = 0;
-
-    // void InitFromConfigFile();
+    
+    Double_t fShapingFixed = 0;
+    Double_t fStartPositionFixed = 0;
+    Double_t fVarianceFixed = 0;
+    Double_t fAmplitudeFixed = 0;
+    
+    Double_t fShapingInitialValue = 0;
+    Double_t fStartPositionInitialValue = 0;
+    Double_t fVarianceInitialValue = 0;
+    Double_t fAmplitudeInitialValue = 0;
 
     void Initialize();
 
@@ -71,10 +78,17 @@ class TRestRawSignalFitEventProcess : public TRestEventProcess {
         metadata << "Signal threshold : " << fSignalThreshold << " sigmas" << endl;
         metadata << "Number of points over threshold : " << fPointsOverThreshold << endl;
         metadata << " " << endl;
-        if (fShaping != 0) {
-            metadata << "Shaping fixed : " << fShaping << endl;
-            metadata << " " << endl;
-        }
+
+        if (fShapingFixed != 0) { metadata << "Shaping fixed : " << fShapingFixed << endl; }
+        if (fStartPositionFixed != 0) { metadata << "Start position fixed : " << fStartPositionFixed << endl; }
+        if (fVarianceFixed != 0) { metadata << "Variance gauss fixed : " << fVarianceFixed << endl; }
+        if (fAmplitudeFixed != 0) { metadata << "Amplitude gauss fixed : " << fAmplitudeFixed << endl; }
+        
+        if (fShapingInitialValue != 0) { metadata << "Shaping initial value : " << fShapingInitialValue << endl; }
+        if (fStartPositionInitialValue != 0) { metadata << "Start position initial value : " << fStartPositionInitialValue << endl; }
+        if (fVarianceInitialValue != 0) { metadata << "Variance gauss initial value : " << fVarianceInitialValue << endl; }
+        if (fAmplitudeInitialValue != 0) { metadata << "Amplitude gauss initial value : " << fAmplitudeInitialValue << endl; }
+        
         if (fAgetFit == true) {
             metadata << "Fitting mode : AGET" << endl;
         }
@@ -91,7 +105,7 @@ class TRestRawSignalFitEventProcess : public TRestEventProcess {
     TRestRawSignalFitEventProcess(char* cfgFileName);
     ~TRestRawSignalFitEventProcess();  // Destructor
 
-    ClassDef(TRestRawSignalFitEventProcess, 1);
+    ClassDef(TRestRawSignalFitEventProcess, 2);
     // Template for a REST "event process" class inherited from TRestEventProcess
 };
 #endif
