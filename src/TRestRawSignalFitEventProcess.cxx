@@ -326,7 +326,7 @@ TRestEvent* TRestRawSignalFitEventProcess::ProcessEvent(TRestEvent* evInput) {
                 //fit_conv->FixParameter(3, singleSignal->GetIntegralInRange(MaxPeakBin - MinBinRange, MaxPeakBin + MaxBinRange));
                 
 
-                h->Fit(fit_conv, "RMNQ", "", MaxPeakBin - MinBinRange, MaxPeakBin + MaxBinRange);
+                h->Fit(fit_conv, "RMNQWW", "", MaxPeakBin - MinBinRange, MaxPeakBin + MaxBinRange);
                 // Options: L->Likelihood minimization, R->fit in range, N->No draw, Q->Quiet
 
                 Double_t sigma = 0;
@@ -428,7 +428,7 @@ TRestEvent* TRestRawSignalFitEventProcess::ProcessEvent(TRestEvent* evInput) {
                     //fit_conv->FixParameter(3, singleSignal->GetData(MaxPeakBin) * 100);
                     //fit_conv->FixParameter(3, singleSignal->GetIntegralInRange(MaxPeakBin - MinBinRange, MaxPeakBin + MaxBinRange));
 
-                    h->Fit(fit_conv, "RMNQ", "", MaxPeakBin - MinBinRange, MaxPeakBin + MaxBinRange);
+                    h->Fit(fit_conv, "RMNQWW", "", MaxPeakBin - MinBinRange, MaxPeakBin + MaxBinRange);
                     // Options: L->Likelihood minimization, R->fit in range, N->No draw, Q->Quiet
 
                     Double_t sigma = 0;
@@ -592,7 +592,7 @@ TRestEvent* TRestRawSignalFitEventProcess::ProcessEvent(TRestEvent* evInput) {
                 f->FixParameter(2, singleSignal->GetData(MaxPeakBin) * fAmplitudeFixed);
             }
 
-            h->Fit(f, "RMNQ", "", MaxPeakBin - MinBinRange, MaxPeakBin + MaxBinRange);
+            h->Fit(f, "RMNQWW", "", MaxPeakBin - MinBinRange, MaxPeakBin + MaxBinRange);
             // Options: R->fit in range, N->No draw, Q->Quiet
 
             Double_t sigma = 0;
