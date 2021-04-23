@@ -478,16 +478,17 @@ bool TRestRawUSTCToSignalProcess::ReadFrameData(USTCDataFrame& frame) {
     frame.evId = id_high * 0x10000 + id_low;
 
     // the signal frame
-    // AC0F        | 0404         | C000                               |
-    // (3163)(316C)...         | 0000 BCEB
-    // 5742 0~1Protocol | 2~3 not used | 4~5: 11+card(5)+chip(2)+channel(7) |
+    // AC0F  | 0404   | C000  | (3163)(316C)...    | 0000 BCEB 5742
+    // 0~1Protocol | 2~3 not used | 4~5: 11+card(5)+chip(2)+channel(7) |
     // [0011+data(0~4095)]*512 | ending
     // event info(time, id, etc.) is in event header
-    frame.boardId = frame.data[4] & 0x3e;
+    frame.boardId = (frame.data[4] & 0x3e) >> 1;
     frame.chipId = (frame.data[4] & 0x01) * 2 + (frame.data[5] >> 7);
     frame.channelId = frame.data[5] & 0x7f;
 
-    frame.signalId = frame.boardId * 4 * 64 + frame.chipId * 68 + frame.channelId;
+    frame.signalId = frame.boardId * 4 * 68 + frame.chipId * 68 + frame.channelId;
+
+    fChannelOffset.insert(frame.boardId * 4 * 68 + frame.chipId * 68);
 #endif
 
     // sampling point data
