@@ -348,6 +348,7 @@ TRestEvent* TRestRawSignalAnalysisProcess::ProcessEvent(TRestEvent* evInput) {
     map<int, int> risetime;
     // Double_t risetimemean;
     map<int, int> npointsot;
+    vector<int> saturatedchnId;
 
     baseline.clear();
     baselinesigma.clear();
@@ -402,7 +403,7 @@ TRestEvent* TRestRawSignalAnalysisProcess::ProcessEvent(TRestEvent* evInput) {
         ampsgn_maxmethod[sgnl->GetID()] = sgnl->GetMaxPeakValue();
         risetime[sgnl->GetID()] = sgnl->GetRiseTime();
         npointsot[sgnl->GetID()] = sgnl->GetPointsOverThreshold().size();
-
+        if (sgnl->IsACDSaturation()) saturatedchnId.push_back(sgnl->GetID());
         /* These observables were already being calculated later on
     baselinemean += sgnl->GetBaseLine();
     baselinesigmamean += sgnl->GetBaseLineSigma();
@@ -448,6 +449,9 @@ TRestEvent* TRestRawSignalAnalysisProcess::ProcessEvent(TRestEvent* evInput) {
     // tells me that is a map. If
     // not we should use some convention like : thr_integral_map
     SetObservableValue("thr_integral_map", ampsgn_intmethod);
+
+    // This observable contains a vector of saturated channel ids
+    SetObservableValue("SaturatedChannelID", saturatedchnId);
 
     //   SetObservableValue("ampeve_intmethod", ampeve_intmethod);  // Repeated
     //   observable : ThresholdIntegral
