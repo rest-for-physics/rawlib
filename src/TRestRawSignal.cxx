@@ -525,8 +525,7 @@ Bool_t TRestRawSignal::IsACDSaturation(int Nflat, int OverThres) {
     if (index + Nflat <= fSignalData.size()) {
         for (int i = index; i < index + Nflat; i++) {
             if (fSignalData[index + i] > OverThres && fSignalData[index] == fSignalData[index + i]) {
-            }
-            else {
+            } else {
                 sat = false;
             }
         }
