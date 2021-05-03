@@ -186,6 +186,8 @@ class TRestRawSignal : public TObject {
 
     Int_t GetMinPeakBin();
 
+    Bool_t IsACDSaturation(int Nflat = 3, int OverThres = 3600);
+
     void GetDifferentialSignal(TRestRawSignal* diffSgnl, Int_t smearPoints);
 
     void GetSignalSmoothed(TRestRawSignal* smthSignal, Int_t averagingPoints);

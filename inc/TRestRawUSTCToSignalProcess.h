@@ -93,9 +93,9 @@ class TRestRawUSTCToSignalProcess : public TRestRawToSignalProcess {
     int fCurrentFile = 0;                        //!
     int fCurrentEvent = -1;                      //!
     int fCurrentBuffer = 0;                      //!
-    int fLastBufferedId = 0;  //!
-    vector<int> errorevents;  //!
-    int unknownerrors = 0;    //!
+    int fLastBufferedId = 0;                     //!
+    vector<int> errorevents;                     //!
+    int unknownerrors = 0;                       //!
 
     Long64_t fTimeOffset = 0;
     std::set<int> fChannelOffset;
