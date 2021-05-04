@@ -755,13 +755,9 @@ TPad* TRestRawSignalEvent::DrawSignal(Int_t signal, TString option) {
     fPad = new TPad(this->GetName(), " ", 0, 0, 1, 1);
     fPad->Draw();
     fPad->cd();
- 
-    //fDrawingObjects.push_back((TObject*)fPad);
 
     TGraph* gr = new TGraph();
-    //fDrawingObjects.push_back((TObject*)gr);
 
-    //TRestRawSignal* sgnl = &fSignal[signal];
     TRestRawSignal* sgnl = this->GetSignalById(signal);
     sgnl->CalculateBaseLine(baseLineRangeInit, baseLineRangeEnd);
     sgnl->InitializePointsOverThreshold(TVector2(pointTh, signalTh), nOver);
@@ -774,13 +770,12 @@ TPad* TRestRawSignalEvent::DrawSignal(Int_t signal, TString option) {
     gr->Draw("AC*");
 
     TGraph* gr2 = new TGraph();
-    //fDrawingObjects.push_back((TObject*)gr2);
 
     gr2->SetLineWidth(2);
     gr2->SetLineColor(2); // Red
     
     for (int n = baseLineRangeInit; n < baseLineRangeEnd; n++)
-        gr2->SetPoint(n - fBaseLineRange.X(), n, sgnl->GetData(n));
+        gr2->SetPoint(n - baseLineRangeInit, n, sgnl->GetData(n));
 
     gr2->Draw("CP");
 
@@ -789,7 +784,6 @@ TPad* TRestRawSignalEvent::DrawSignal(Int_t signal, TString option) {
     TGraph* gr3[5];
     Int_t nGraphs = 0;
     gr3[nGraphs] = new TGraph();
-    //fDrawingObjects.push_back((TObject*)gr3[nGraphs]);
     gr3[nGraphs]->SetLineWidth(2);
     gr3[nGraphs]->SetLineColor(3);
     Int_t point = 0;
@@ -803,7 +797,6 @@ TPad* TRestRawSignalEvent::DrawSignal(Int_t signal, TString option) {
             if (nGraphs > 4) cout << "Ngraphs : " << nGraphs << endl;
             point = 0;
             gr3[nGraphs] = new TGraph();
-            //fDrawingObjects.push_back((TObject*)gr3[nGraphs]);
             gr3[nGraphs]->SetLineWidth(2);
             gr3[nGraphs]->SetLineColor(3); // Green
         }
