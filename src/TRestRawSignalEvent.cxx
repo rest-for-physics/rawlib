@@ -669,3 +669,140 @@ TPad* TRestRawSignalEvent::DrawEvent(TString option) {
 
     return fPad;
 }
+
+///////////////////////////////////////////////
+/// \brief This method draws selected signal by ID, with baseline range and 
+/// points over threshold highlighted.
+///
+/// In order to compute points over threshold the following parameters should
+/// be provided:
+///
+/// **goodSignals[pointTh,signalTh,nOver]**: These parameters are the ones needed
+/// to call the method TRestRawSignal::InitializePointsOverThreshold.
+///    \warning When using this option **baseLineRange** option must also be
+///    defined.
+///
+/// **baseLineRange[start,end]**: It defines the bin range (start,end) where
+/// the baseline will be calculated.
+///
+/// Example 1:
+/// \code
+/// DrawEvent(100,"goodSignals[3.5,1.5,7]:baseLineRange[20,150]");
+/// \endcode
+///
+TPad* TRestRawSignalEvent::DrawSignal(Int_t signal, TString option) {
+    int nSignals = this->GetNumberOfSignals();
+
+    if (fPad != NULL) {
+        for (int n = 0; n < nSignals; n++) {
+            delete fSignal[n].fGraph;
+            fSignal[n].fGraph = NULL;
+        }
+        delete fPad;
+        fPad = NULL;
+    }
+
+    if (nSignals == 0) {
+        cout << "Empty event " << endl;
+        return NULL;
+    }
+    
+    vector<TString> optList = Vector_cast<string, TString>(TRestTools::GetOptions((string)option));
+    
+    bool ThresCheck = false;
+    bool BLCheck = false;
+
+    double signalTh = 0, pointTh = 0, nOver = 0;
+    int baseLineRangeInit = 0, baseLineRangeEnd = 0;
+    
+    for (int j = 0; j < optList.size(); j++) {
+        string str = (string)optList[j];
+
+        // Read threshold option
+        size_t goodSigOpt = str.find("goodSignals[");
+
+        if (goodSigOpt != string::npos) {
+            size_t startPos = str.find("[");
+            size_t endPos = str.find("]");
+            TString tmpStr = optList[j](startPos + 1, endPos - startPos - 1);
+            vector<TString> optList_2 = Vector_cast<string, TString>(Split((string)tmpStr, ","));
+
+            pointTh = StringToDouble((string)optList_2[0]);
+            signalTh = StringToDouble((string)optList_2[1]);
+            nOver = StringToDouble((string)optList_2[2]);
+
+            ThresCheck = true;
+        }
+
+        // Read base line option
+        size_t BLOpt = str.find("baseLineRange[");
+
+        if (BLOpt != string::npos) {
+            size_t startPos2 = str.find("[");
+            size_t endPos2 = str.find("]");
+            TString tmpStr2 = optList[j](startPos2 + 1, endPos2 - startPos2 - 1);
+            vector<TString> optList_3 = Vector_cast<string, TString>(Split((string)tmpStr2, ","));
+
+            baseLineRangeInit = StringToInteger((string)optList_3[0]);
+            baseLineRangeEnd = StringToInteger((string)optList_3[1]);
+
+            BLCheck = true;
+        }
+    }
+    
+    
+    
+    fPad = new TPad(this->GetName(), " ", 0, 0, 1, 1);
+    fPad->Draw();
+    fPad->cd();
+
+    TGraph* gr = new TGraph();
+
+    TRestRawSignal* sgnl = this->GetSignalById(signal);
+    sgnl->CalculateBaseLine(baseLineRangeInit, baseLineRangeEnd);
+    sgnl->InitializePointsOverThreshold(TVector2(pointTh, signalTh), nOver);
+
+    info << "Drawing signal. Event ID : " << this->GetID() << " Signal ID : " << sgnl->GetID()
+         << endl;
+
+    for (int n = 0; n < sgnl->GetNumberOfPoints(); n++) gr->SetPoint(n, n, sgnl->GetData(n));
+
+    gr->Draw("AC*");
+
+    TGraph* gr2 = new TGraph();
+
+    gr2->SetLineWidth(2);
+    gr2->SetLineColor(2); // Red
+    
+    for (int n = baseLineRangeInit; n < baseLineRangeEnd; n++)
+        gr2->SetPoint(n - baseLineRangeInit, n, sgnl->GetData(n));
+
+    gr2->Draw("CP");
+
+    vector<Int_t> pOver = sgnl->GetPointsOverThreshold();
+
+    TGraph* gr3[5];
+    Int_t nGraphs = 0;
+    gr3[nGraphs] = new TGraph();
+    gr3[nGraphs]->SetLineWidth(2);
+    gr3[nGraphs]->SetLineColor(3);
+    Int_t point = 0;
+    Int_t nPoints = pOver.size();
+    for (int n = 0; n < nPoints; n++) {
+        gr3[nGraphs]->SetPoint(point, pOver[n], sgnl->GetData(pOver[n]));
+        point++;
+        if (n + 1 < nPoints && pOver[n + 1] - pOver[n] > 1) {
+            gr3[nGraphs]->Draw("CP");
+            nGraphs++;
+            if (nGraphs > 4) cout << "Ngraphs : " << nGraphs << endl;
+            point = 0;
+            gr3[nGraphs] = new TGraph();
+            gr3[nGraphs]->SetLineWidth(2);
+            gr3[nGraphs]->SetLineColor(3); // Green
+        }
+    }
+
+    if (nPoints > 0) gr3[nGraphs]->Draw("CP");
+
+    return fPad;
+ }

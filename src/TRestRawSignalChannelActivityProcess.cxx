@@ -292,4 +292,3 @@ void TRestRawSignalChannelActivityProcess::EndProcess() {
 #endif
     }
 }
-
