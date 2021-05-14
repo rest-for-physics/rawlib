@@ -8,6 +8,21 @@ stages:
 
 before_script:
     - export USER="raw"
+    - pwd
+    - echo $CI_SERVER_HOST
+    - echo $CRONJOB
+    - export HOME=${CI_PROJECT_DIR}/install/
+    - if [ -d $HOME/.rest ]; then rm -Rf $HOME/.rest; fi
+    - if [ -f "/opt/root/install/bin/thisroot.sh" ]; then source /opt/root/install/bin/thisroot.sh; fi
+    - root-config --version
+    - if [ -f "/opt/geant4/install/bin/geant4.sh" ]; then source /opt/geant4/install/bin/geant4.sh; fi
+    - geant4-config --version
+    - if [ -d "/opt/garfieldpp/install" ]; then export GARFIELD_HOME=/opt/garfieldpp/install; fi
+    - if [ -d "/opt/garfieldpp/install" ]; then export HEED_DATABASE=$GARFIELD_HOME/Heed/heed++/database; fi
+    - if [ -d "/opt/garfieldpp/install" ]; then export LD_LIBRARY_PATH=$GARFIELD_HOME/lib:$LD_LIBRARY_PATH; fi
+    - ls $GARFIELD_HOME
+    - python3 --version
+    - apt update && apt install -y wget
 
 clang-format:
     stage: pre-build
