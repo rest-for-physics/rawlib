@@ -1,7 +1,7 @@
 - label: "PR Size"
   message: "Large"
   color: "red"
-  when: "$additions > 50"
+  when: "$additions > 200"
 - label: "PR submitted by:"
   message: "$payload.pull_request.user.login"
   color: "blue"
