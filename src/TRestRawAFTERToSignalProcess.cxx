@@ -174,10 +174,10 @@ TRestEvent* TRestRawAFTERToSignalProcess::ProcessEvent(TRestEvent* evInput) {
     int asicN;
     int physChannel;
 
-    unsigned int eventTime, deltaTime;
-    unsigned int ts, th, tl;
+    uint32_t eventTime, deltaTime;
+    uint32_t th, tl;
     int tempAsic1, tempAsic2, sampleCountRead, pay;
-    unsigned short data, dat;
+    uint16_t data, dat;
 
     bool isData = false;
 
@@ -190,16 +190,9 @@ TRestEvent* TRestRawAFTERToSignalProcess::ProcessEvent(TRestEvent* evInput) {
 
         if (first)  // Timestamping (A. Tomas, 30th June 2011)
         {
-            // th = (unsigned int) pHeader.ts_h;  //extend zeros;
             th = ntohs(pHeader.ts_h);
-            // cout<<th<<endl;
-            // tl = (unsigned int)pHeader.ts_l; //extend zeros;
             tl = ntohs(pHeader.ts_l);
-            // cout<<tl<<endl;
-            ts = th << (sizeof(unsigned short) * 8);  // shift half a 32-bit word
-            // cout<<ts<<endl;
-            eventTime = ts | tl;  // concatenation
-            // cout<<ts<<endl;
+            eventTime = th <<16 | tl;  // built time from MSB and LSB
 
             if (eventTime > prevTime)
                 deltaTime = eventTime - prevTime;
@@ -312,7 +305,7 @@ TRestEvent* TRestRawAFTERToSignalProcess::ProcessEvent(TRestEvent* evInput) {
 
         if (sampleCountRead < 9) isData = false;
         for (int i = 0; i < sampleCountRead; i++) {
-            fread(&dat, sizeof(unsigned short), 1, fInputBinFile);
+            fread(&dat, sizeof(uint16_t), 1, fInputBinFile);
             frameBits += sizeof(dat);
             data = ntohs(dat);
 

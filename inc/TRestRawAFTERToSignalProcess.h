@@ -32,41 +32,32 @@
 // Structure acquisition data
 //--------------------------------------------------------
 struct EventHeader {
-    int eventSize;
-    int eventNumb;
+    uint32_t eventSize;
+    uint32_t eventNumb;
     // int eventTime;
-    // unsigned short dummy;
+    // uint16_t dummy;
 };
 
-#ifdef NEW_DAQ_T2K_2_X
+
 // ATENTION!!!!!
 // New verison of the DaqT2K (2.x)
 // added 30th July 2012 (JuanAn)
 struct DataPacketHeader {
-    unsigned short size;
-    unsigned short dcc;
-    unsigned short hdr;
-    unsigned short args;
-    unsigned short ts_h;
-    unsigned short ts_l;
-    unsigned short ecnt;
-    unsigned short scnt;
-};
-#else
-struct DataPacketHeader {
-    unsigned short size;
-    unsigned short hdr;
-    unsigned short args;
-    unsigned short ts_h;
-    unsigned short ts_l;
-    unsigned short ecnt;
-    unsigned short scnt;
-};
+    uint16_t size;
+#ifdef NEW_DAQ_T2K_2_X
+    uint16_t dcc;
 #endif
+    uint16_t hdr;
+    uint16_t args;
+    uint16_t ts_h;
+    uint16_t ts_l;
+    uint16_t ecnt;
+    uint16_t scnt;
+};
 
 struct DataPacketEnd {
-    unsigned short crc1;
-    unsigned short crc2;
+    uint16_t crc1;
+    uint16_t crc2;
 };
 
 //! A process to read binary files produced with AFTER electronics
