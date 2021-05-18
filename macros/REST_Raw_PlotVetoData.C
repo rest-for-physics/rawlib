@@ -13,7 +13,7 @@
 #include <TRestStringHelper.h>
 #include <chrono>
 
-Int_t Macro_Veto_Plot_2(string fileName = "data/R01133_000_RawToSignal_Ar2Iso_BackgroundWith9Vetos_konrad_2.3.1.root", int starVal = 0, int endVal = 4000, int bins = 100){
+Int_t REST_Raw_PlotVetoData(string fileName = "data/R01133_000_RawToSignal_Ar2Iso_BackgroundWith9Vetos_konrad_2.3.1.root", int starVal = 0, int endVal = 4000, int bins = 100){
 
 	
 	// initiate clock for testing
