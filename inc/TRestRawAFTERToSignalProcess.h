@@ -76,7 +76,6 @@ class TRestRawAFTERToSignalProcess : public TRestRawToSignalProcess {
     Bool_t isExternal() { return true; }
 
     TRestRawAFTERToSignalProcess();
-    TRestRawAFTERToSignalProcess(char* cfgFileName);
     ~TRestRawAFTERToSignalProcess();
 
     ClassDef(TRestRawAFTERToSignalProcess, 1);
