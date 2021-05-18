@@ -58,7 +58,8 @@
 ///
 
 #include "TRestRawAFTERToSignalProcess.h"
-using namespace std;
+#include <bitset> 
+
 #include "TTimeStamp.h"
 #ifdef WIN32
 #include <Windows.h>
@@ -86,7 +87,6 @@ TRestRawAFTERToSignalProcess::TRestRawAFTERToSignalProcess() { Initialize(); }
 ///
 /// \param cfgFileName A const char* giving the path to an RML file.
 ///
-TRestRawAFTERToSignalProcess::TRestRawAFTERToSignalProcess(char* cfgFileName) { Initialize(); }
 
 ///////////////////////////////////////////////
 /// \brief Default destructor
@@ -299,7 +299,10 @@ TRestEvent* TRestRawAFTERToSignalProcess::ProcessEvent(TRestEvent* evInput) {
             frameBits += sizeof(dat);
             data = ntohs(dat);
 
-            if (this->GetVerboseLevel() == REST_Debug) printBits(data);
+            if (this->GetVerboseLevel() == REST_Debug){
+              std::bitset<16> bs(data);
+              std::cout<<bs<<std::endl;
+            }
             if (((data & 0xFE00) >> 9) == 8) {
                 timeBin = GET_CELL_INDEX(data);
                 if (timeBin == 511) isData = false;
