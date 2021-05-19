@@ -1,5 +1,5 @@
 // A Macro that generates histograms for veto_MaxPeakAmplitude and veto_PeakTime for each veto channel (signal ID). Required input is the filename.
-// 
+//
 // Author: Konrad Altenmüller, May 2021
 //
 //
@@ -13,7 +13,7 @@
 #include <TRestStringHelper.h>
 #include <chrono>
 
-Int_t REST_Raw_PlotVetoData(string fileName = "data/R01133_000_RawToSignal_Ar2Iso_BackgroundWith9Vetos_konrad_2.3.1.root", int starVal = 0, int endVal = 4000, int bins = 100){
+Int_t REST_Raw_PlotVetoData(string fileName = "data/R01133_000_RawToSignal_Ar2Iso_BackgroundWith9Vetos_konrad_2.3.1.root", string group="all", int starVal = 0, int endVal = 4000, int bins = 100){
 
 	
 	// initiate clock for testing
@@ -40,13 +40,26 @@ Int_t REST_Raw_PlotVetoData(string fileName = "data/R01133_000_RawToSignal_Ar2Is
 	vector<string> groupNames;
 	vector<string> groupIds;
 	
-	// vector<int> nVeto; // number of vetoes in group
-
 	// check if signal IDs are defined as a single list or in groups
 	if (vetoSignalId[0] == -1.){
 		pair<vector<string>,vector<string>> vetoGroups = veto->GetVetoGroups();
 		groupNames = std::get<0>(vetoGroups);
 		groupIds   = std::get<1>(vetoGroups);
+		if (group !="all"){
+			if (std::find(groupNames.begin(),groupNames.end(),group) != groupNames.end()){
+				ptrdiff_t pos = distance(groupNames.begin(), find(groupNames.begin(), groupNames.end(), group));			
+				groupNames.clear();
+				groupNames.push_back(group);
+				string temp = groupIds[pos];	
+				groupIds.clear();
+				groupIds.push_back(temp);
+			} else {
+			cout << "\nERROR: specified veto group does not exist!\n" << endl;
+			return 0;
+			}	
+		
+		}
+
 		for (unsigned int i=0; i<groupIds.size(); i++){
 			vector<double> id  =  StringToElements(groupIds[i],",");
 			// nVeto.push_back(id.size());
@@ -57,6 +70,7 @@ Int_t REST_Raw_PlotVetoData(string fileName = "data/R01133_000_RawToSignal_Ar2Is
 		}
 	}
 	else signalIddouble = vetoSignalId;
+
 
 	// convert vector from double to int
 	vector<int> signalId(signalIddouble.begin(), signalIddouble.end());
