@@ -101,6 +101,9 @@ class TRestRawVetoAnalysisProcess : public TRestEventProcess {
         return output;
     }
 
+    Int_t GetGroupIndex(std::string groupName);
+    string GetGroupIds(std::string groupName);
+
     TRestRawVetoAnalysisProcess();
     TRestRawVetoAnalysisProcess(char* cfgFileName);
 
