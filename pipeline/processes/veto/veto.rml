@@ -18,8 +18,8 @@
 	<parameter name="verboseLevel" value="0"/>
 	<parameter name="overwrite" value="off" />
 	
-	<parameter name="inputFormat" value="R[fRunNumber]_[fRunTag]-[fParentRunNumber].aqs"/> -->
-	<parameter name="outputFile" value="R[fRunNumber]_output.root" /> -->
+	<parameter name="inputFormat" value="R[fRunNumber]_[fRunTag]-[fParentRunNumber].aqs"/>
+	<parameter name="outputFileName" value="R[fRunNumber]_output.root" />
 
 	<parameter name="readOnly" value="false" />
 
