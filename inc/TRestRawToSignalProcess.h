@@ -47,8 +47,10 @@ class TRestRawToSignalProcess : public TRestEventProcess {
     Int_t fSubRunOrigin;  //!
 
     Int_t nFiles;                    //!
+    Int_t iCurFile;                  //!
     std::vector<FILE*> fInputFiles;  //!
     std::vector<string> fInputFileNames;
+    bool fgKeepFileOpen;  //! true if need to open all raw files at the beginning
 
     Int_t fShowSamples;  //!
 #endif
@@ -85,6 +87,8 @@ class TRestRawToSignalProcess : public TRestEventProcess {
     //  Int_t GetRunNumber(){return fRunNumber;}
     //  Int_t GetRunIndex(){return fRunIndex;}
     virtual string GetElectronicsType() { return fElectronicsType; }
+
+    Bool_t GoToNextFile();
 
     // Constructor
     TRestRawToSignalProcess();

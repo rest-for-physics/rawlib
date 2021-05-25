@@ -99,6 +99,7 @@ void TRestRawToSignalProcess::Initialize() {
 
     fSingleThreadOnly = true;
     fIsExternal = true;
+    fgKeepFileOpen = true;
 
     totalBytes = 0;
     totalBytesReaded = 0;
@@ -112,6 +113,11 @@ void TRestRawToSignalProcess::InitFromConfigFile() {
     PrintMetadata();
 
     if (fElectronicsType == "SingleFeminos" || fElectronicsType == "TCMFeminos") return;
+
+    if (fElectronicsType == "Dream") {
+        fgKeepFileOpen = false;
+        return;
+    }
 
     if (GetVerboseLevel() >= REST_Warning) {
         cout << "REST WARNING: TRestRawToSignalProcess::InitFromConfigFile" << endl;
@@ -141,6 +147,7 @@ void TRestRawToSignalProcess::EndProcess() {
 
 Bool_t TRestRawToSignalProcess::OpenInputFiles(vector<string> files) {
     nFiles = 0;
+    iCurFile = 0;
     // for (auto a : fInputFiles) { delete a; }
     fInputFiles.clear();
     fInputFileNames.clear();
@@ -205,9 +212,29 @@ void TRestRawToSignalProcess::PrintMetadata() {
     metadata << "DAQ : " << GetTitle() << endl;
     metadata << "Electronics type : " << fElectronicsType << endl;
     metadata << "Minimum number of points : " << fMinPoints << endl;
+    metadata << "All raw files open at beginning : " << fgKeepFileOpen << endl;
     metadata << " ==================================== " << endl;
 
     metadata << " " << endl;
 
     EndPrintProcess();
+}
+
+Bool_t TRestRawToSignalProcess::GoToNextFile() {
+    iCurFile++;
+    if (iCurFile < nFiles) {
+        if (fgKeepFileOpen) {
+            fInputBinFile = fInputFiles[iCurFile];
+        } else {
+            fclose(fInputBinFile);
+            fInputBinFile = fopen(fInputFileNames[iCurFile].c_str(), "rb");
+        }
+        info << "GoToNextFile(): Going to the next raw input file number " << iCurFile << " over " << nFiles
+             << endl;
+        info << "                Reading file name:  " << fInputFileNames[iCurFile] << endl;
+        return true;
+    } else {
+        info << "GoToNextFile(): No more file to read" << endl;
+    }
+    return false;
 }
