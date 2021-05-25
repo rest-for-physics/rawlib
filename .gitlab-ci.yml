@@ -78,7 +78,7 @@ addSignalNoise:
   script:
     - . ${CI_PROJECT_DIR}/install/thisREST.sh
     - cd ${CI_PROJECT_DIR}/pipeline/processes/noise
-    - ./addNoise.py
+    - python addNoise.py
 
 vetoAnalysis: 
   type: process
@@ -86,4 +86,4 @@ vetoAnalysis:
     - . ${CI_PROJECT_DIR}/install/thisREST.sh
     - cd ${CI_PROJECT_DIR}/pipeline/processes/veto
     - restManager --c veto.rml --f "*.aqs"
-    - ./vetoValidation.py 
+    - python vetoValidation.py 
