@@ -16,7 +16,7 @@ import subprocess
 def validateClass(className):
     print ("")
     print ("++++ Validating class : " + className)
-    with open(className, 'r') as file:
+    with open(className, 'r', encoding="utf-8") as file:
         data = file.read()
 
         data = data[data.find("::Initialize"):]
