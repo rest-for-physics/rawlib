@@ -154,13 +154,13 @@ for r, d, f in os.walk(sys.argv[1]):
             validate = 0
             if '.cxx' in file:
 #                print ( file )
-                with open(os.path.join(r, file)) as fin:
+                with open(os.path.join(r, file), encoding="utf-8") as fin:
                     if '::InitFromConfigFile' in fin.read():
                         validate = 1
-                with open(os.path.join(r, file)) as fin:
+                with open(os.path.join(r, file), encoding="utf-8") as fin:
                     if '::LoadDefaultConfig' in fin.read():
                         validate = 1
-                with open(os.path.join(r, file)) as fin:
+                with open(os.path.join(r, file), encoding="utf-8") as fin:
                     if '::Initialize' in fin.read():
                         validate = validate + 1
             if validate == 2:
