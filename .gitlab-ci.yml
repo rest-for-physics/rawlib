@@ -85,5 +85,5 @@ vetoAnalysis:
   script:
     - . ${CI_PROJECT_DIR}/install/thisREST.sh
     - cd ${CI_PROJECT_DIR}/pipeline/processes/veto
-    - restManager --c veto.rml --f *.aqs
+    - restManager --c veto.rml --f R01208_Ar2Iso_Background14h_14Vetos_IccubFEC-000.aqs
     - python vetoValidation.py 
