@@ -156,7 +156,7 @@ TRestRawVetoAnalysisProcess::TRestRawVetoAnalysisProcess(char* cfgFileName) {
 ///////////////////////////////////////////////
 /// \brief Default destructor
 ///
-TRestRawVetoAnalysisProcess::~TRestRawVetoAnalysisProcess() { delete fOutputRawSignalEvent; }
+TRestRawVetoAnalysisProcess::~TRestRawVetoAnalysisProcess() {}
 
 ///////////////////////////////////////////////
 /// \brief Function to load the default config in absence of RML input
@@ -199,17 +199,14 @@ void TRestRawVetoAnalysisProcess::Initialize() {
     SetSectionName(this->ClassName());
     SetLibraryVersion(LIBRARY_VERSION);
 
-    fInputRawSignalEvent = NULL;
-    fOutputRawSignalEvent = new TRestRawSignalEvent();
+    fSignalEvent = NULL;
 }
 
 ///////////////////////////////////////////////
 /// \brief The main processing event function
 ///
 TRestEvent* TRestRawVetoAnalysisProcess::ProcessEvent(TRestEvent* evInput) {
-    fInputRawSignalEvent = (TRestRawSignalEvent*)evInput;
-
-    *fOutputRawSignalEvent = *fInputRawSignalEvent;
+    fSignalEvent = (TRestRawSignalEvent*)evInput;
 
     map<int, Double_t> VetoMaxPeakAmplitude_map;
     map<int, Double_t> VetoPeakTime_map;
@@ -219,8 +216,8 @@ TRestEvent* TRestRawVetoAnalysisProcess::ProcessEvent(TRestEvent* evInput) {
     Int_t VetoInTimeWindow = 0;
     Int_t NVetoInTimeWindow = 0;
 
-    fOutputRawSignalEvent->SetBaseLineRange(fBaseLineRange);
-    fOutputRawSignalEvent->SetRange(fRange);
+    fSignalEvent->SetBaseLineRange(fBaseLineRange);
+    fSignalEvent->SetRange(fRange);
 
     VetoMaxPeakAmplitude_map.clear();
     VetoPeakTime_map.clear();
@@ -228,14 +225,14 @@ TRestEvent* TRestRawVetoAnalysisProcess::ProcessEvent(TRestEvent* evInput) {
     // ***** debugging *****
     /* cout << "******************" << endl;
     // cout << "I am in process " << GetProcessName() << endl;
-    cout << "event ID : " << fOutputRawSignalEvent->GetID() << endl;
-    cout << "number of signals: " << fOutputRawSignalEvent->GetNumberOfSignals()
+    cout << "event ID : " << fSignalEvent->GetID() << endl;
+    cout << "number of signals: " << fSignalEvent->GetNumberOfSignals()
     << endl;
     cout << "signal IDs : ";
-    fOutputRawSignalEvent->PrintSignalIds();
+    fSignalEvent->PrintSignalIds();
     cout  << endl;
-    for (unsigned int i=0; i< fOutputRawSignalEvent->GetNumberOfSignals(); i++){
-    TRestRawSignal* debug = fOutputRawSignalEvent->GetSignal(i);
+    for (unsigned int i=0; i< fSignalEvent->GetNumberOfSignals(); i++){
+    TRestRawSignal* debug = fSignalEvent->GetSignal(i);
     cout << "signal ID: " << debug->GetSignalID() << " Amp: " <<
     debug->GetMaxPeakValue() << endl;
     }
@@ -250,13 +247,13 @@ TRestEvent* TRestRawVetoAnalysisProcess::ProcessEvent(TRestEvent* evInput) {
         // iterate over vetoes
         for (unsigned int i = 0; i < fVetoSignalId.size(); i++) {
             // cout << "ID: "<< fVetoSignalId[i] << " Index: " <<
-            // fOutputRawSignalEvent->GetSignalIndex(fVetoSignalId[i]) << "; ";
+            // fSignalEvent->GetSignalIndex(fVetoSignalId[i]) << "; ";
 
             // Checks if channel (fVetoSignalId) participated in the event. If not, it
             // is -1
-            if (fOutputRawSignalEvent->GetSignalIndex(fVetoSignalId[i]) != -1) {
+            if (fSignalEvent->GetSignalIndex(fVetoSignalId[i]) != -1) {
                 // We extract the parameters from the veto signal
-                TRestRawSignal* sgnl = fOutputRawSignalEvent->GetSignalById(fVetoSignalId[i]);
+                TRestRawSignal* sgnl = fSignalEvent->GetSignalById(fVetoSignalId[i]);
                 // cout << "ID: " << fVetoSignalId[i] << " Amp: " <<
                 // sgnl->GetMaxPeakValue() << endl;
 
@@ -265,7 +262,7 @@ TRestEvent* TRestRawVetoAnalysisProcess::ProcessEvent(TRestEvent* evInput) {
                 VetoMaxPeakAmplitude_map[fVetoSignalId[i]] = sgnl->GetMaxPeakValue();
                 VetoPeakTime_map[fVetoSignalId[i]] = sgnl->GetMaxPeakBin();
                 // We remove the signal from the event
-                fOutputRawSignalEvent->RemoveSignalWithId(fVetoSignalId[i]);
+                fSignalEvent->RemoveSignalWithId(fVetoSignalId[i]);
 
                 // cout << "ID: " << fVetoSignalId[i] << " Amp: " <<
                 // sgnl->GetMaxPeakValue() << endl;
@@ -327,15 +324,15 @@ TRestEvent* TRestRawVetoAnalysisProcess::ProcessEvent(TRestEvent* evInput) {
             for (unsigned int j = 0; j < groupIds.size(); j++) {
                 // Checks if channel (fVetoSignalId) participated in the event. If not,
                 // it is -1
-                if (fOutputRawSignalEvent->GetSignalIndex(groupIds[j]) != -1) {
+                if (fSignalEvent->GetSignalIndex(groupIds[j]) != -1) {
                     // We extract the parameters from the veto signal
-                    TRestRawSignal* sgnl = fOutputRawSignalEvent->GetSignalById(groupIds[j]);
+                    TRestRawSignal* sgnl = fSignalEvent->GetSignalById(groupIds[j]);
                     // Save two maps with (veto panel ID, max amplitude) and (veto panel
                     // ID, peak time)
                     VetoMaxPeakAmplitude_map[groupIds[j]] = sgnl->GetMaxPeakValue();
                     VetoPeakTime_map[groupIds[j]] = sgnl->GetMaxPeakBin();
                     // We remove the signal from the event
-                    fOutputRawSignalEvent->RemoveSignalWithId(groupIds[j]);
+                    fSignalEvent->RemoveSignalWithId(groupIds[j]);
 
                     // check if signal is above threshold
                     if (sgnl->GetMaxPeakValue() > fThreshold) {
@@ -369,7 +366,7 @@ TRestEvent* TRestRawVetoAnalysisProcess::ProcessEvent(TRestEvent* evInput) {
     /*
        cout << "++++++++++++++++++++++++++" << endl;
        cout << "Signal removed" << endl;
-       fOutputRawSignalEvent->PrintEvent();
+       fSignalEvent->PrintEvent();
        Int_t Threshold = 0;
        cout << "Signal removed" << endl;
        cout << "++++++++++++++++++++++++++" << endl;
@@ -377,12 +374,12 @@ TRestEvent* TRestRawVetoAnalysisProcess::ProcessEvent(TRestEvent* evInput) {
        */
 
     if (GetVerboseLevel() >= REST_Debug) {
-        fOutputRawSignalEvent->PrintEvent();
+        fSignalEvent->PrintEvent();
 
         if (GetVerboseLevel() >= REST_Extreme) GetChar();
     }
 
-    return fOutputRawSignalEvent;
+    return fSignalEvent;
 }
 
 /// \brief Function that returns the index of a specified veto group within the group name vector and ID vector
