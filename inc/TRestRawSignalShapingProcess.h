@@ -37,8 +37,6 @@ class TRestRawSignalShapingProcess : public TRestEventProcess {
     /// A pointer to the specific TRestRawSignalEvent output
     TRestRawSignalEvent* fOutputSignalEvent;
 
-    void InitFromConfigFile();
-
     void Initialize();
 
     void LoadDefaultConfig();
@@ -47,9 +45,11 @@ class TRestRawSignalShapingProcess : public TRestEventProcess {
     // add here the members of your event process
     TString fResponseFilename;
 
+    /// Types are : gaus, shaper, shaperSin, responseFile
     TString fShapingType;
-
+    /// The characteristic time of the shaping
     Double_t fShapingTime;
+    /// A value used to scale the input signal
     Double_t fShapingGain;
 
    public:

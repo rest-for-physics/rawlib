@@ -280,18 +280,3 @@ void TRestRawSignalShapingProcess::EndProcess() {
     // TRestEventProcess::EndProcess();
 }
 
-///////////////////////////////////////////////
-/// \brief Function to read input parameters from the RML
-/// TRestGeant4AnalysisProcess metadata section
-///
-void TRestRawSignalShapingProcess::InitFromConfigFile() {
-    // It is not used for the moment
-    fResponseFilename = GetParameter("responseFile");
-
-    // gaus, responseFile, etc
-    fShapingType = GetParameter("shapingType", "gaus");
-
-    fShapingTime = StringToDouble(GetParameter("shapingTime", "10"));
-
-    fShapingGain = StringToDouble(GetParameter("gain", "1"));
-}
