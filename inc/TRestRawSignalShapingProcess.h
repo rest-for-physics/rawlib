@@ -46,11 +46,11 @@ class TRestRawSignalShapingProcess : public TRestEventProcess {
     TString fResponseFilename;
 
     /// Types are : gaus, shaper, shaperSin, responseFile
-    TString fShapingType;
+    TString fShapingType = "shaperSin";
     /// The characteristic time of the shaping
-    Double_t fShapingTime;
+    Double_t fShapingTime = 10;
     /// A value used to scale the input signal
-    Double_t fShapingGain;
+    Double_t fShapingGain = 1;
 
    public:
     any GetInputEvent() { return fInputSignalEvent; }
