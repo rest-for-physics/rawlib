@@ -89,3 +89,13 @@ addSignalNoise:
   except:
       variables:
         - $CRONJOB
+
+commonNoise: 
+  type: process
+  script:
+    - . ${CI_PROJECT_DIR}/install/thisREST.sh
+    - cd ${CI_PROJECT_DIR}/pipeline/processes/commonNoise
+    - restRoot -b -q commonNoise.C
+  except:
+      variables:
+        - $CRONJOB
