@@ -612,12 +612,9 @@ void TRestRawSignal::CalculateBaseLine(Int_t startBin, Int_t endBin) {
     if (endBin - startBin <= 0) {
         fBaseLine = 0.;
     } else if (endBin > fSignalData.size()) {
-        if (isOk()) {
-            SetOk(false);
-            cout << "TRestRawSignal::CalculateBaseLine. Error! Baseline range exceeds the rawdata depth!!"
-                 << endl;
-            endBin = fSignalData.size();
-        }
+        cout << "TRestRawSignal::CalculateBaseLine. Error! Baseline range exceeds the rawdata depth!!"
+             << endl;
+        endBin = fSignalData.size();
     } else {
         Double_t baseLine = 0;
         for (int i = startBin; i < endBin; i++) baseLine += fSignalData[i];
