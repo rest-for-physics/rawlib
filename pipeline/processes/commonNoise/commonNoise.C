@@ -27,23 +27,23 @@ Int_t commonNoise() {
     // TCanvas* c2 = new TCanvas("c2", "", 640, 320);
     // noisyEvent->DrawEvent();
 
-    noisyEvent->GetSignal(0)->CalculateBaseLine(50, 540);
-    Double_t bLineSigmaNoisy = noisyEvent->GetSignal(0)->GetBaseLineSigma();
+    // noisyEvent->GetSignal(0)->CalculateBaseLine(50, 540);
 
+    noisyEvent->SetBaseLineRange(50, 500);
+    Double_t bLineSigmaNoisy = noisyEvent->GetBaseLineSigmaAverage();
     cout << "BL(noisy): " << bLineSigmaNoisy << endl;
 
-    cleanEvent->GetSignal(0)->CalculateBaseLine(50, 540);
-    Double_t bLineSigmaClean = cleanEvent->GetSignal(0)->GetBaseLineSigma();
-
+    cleanEvent->SetBaseLineRange(50, 500);
+    Double_t bLineSigmaClean = cleanEvent->GetBaseLineSigmaAverage();
     cout << "BL(clean): " << bLineSigmaClean << endl;
 
-    if (bLineSigmaClean > 200) {
-        cout << "The base line sigma clean is higher than 200!" << endl;
+    if (bLineSigmaClean > 10) {
+        cout << "The base line sigma clean is higher than 10!" << endl;
         return 1;
     }
 
-    if (bLineSigmaNoisy < 1000) {
-        cout << "The base line sigma clean is lower than 1000!" << endl;
+    if (bLineSigmaNoisy < 30) {
+        cout << "The base line sigma clean is lower than 30!" << endl;
         return 2;
     }
 
