@@ -23,10 +23,8 @@
 //////////////////////////////////////////////////////////////////////////
 ///
 /// Fit every TRestRawSignal in a TRestRawSignalEvent with AGET theoretical
-/// curve
-/// times a logistic function. This logistic function acts like a step function
-/// to select
-/// only the positive range of the AGET function.
+/// curve times a logistic function. This logistic function acts like a step function
+/// to select only the positive range of the AGET function.
 /// Working with raw signal (without substracting baseline).
 ///
 /// From TRestRawSignal -> TH1 -> Measure goodness of fit
@@ -76,19 +74,14 @@
 ///
 /// <hr>
 ///
-/// \warning **⚠ REST is under continous development.** This
-/// documentation
+/// \warning **⚠ REST is under continous development.** This documentation
 /// is offered to you by the REST community. Your HELP is needed to keep this
-/// code
-/// up to date. Your feedback will be worth to support this software, please
-/// report
-/// any problems/suggestions you may find while using it at [The REST Framework
+/// code up to date. Your feedback will be worth to support this software, please
+/// report any problems/suggestions you may find while using it at [The REST Framework
 /// forum](http://ezpc10.unizar.es). You are welcome to contribute fixing typos,
-/// updating
-/// information or adding/proposing new contributions. See also our
+/// updating information or adding/proposing new contributions. See also our
 /// <a href="https://github.com/rest-for-physics/framework/blob/master/CONTRIBUTING.md">Contribution
 /// Guide</a>.
-///
 ///
 ///_______________________________________________________________________________
 ///
@@ -333,16 +326,3 @@ void TRestRawSignalFittingProcess::EndProcess() {
     // TRestEventProcess::EndProcess();
 }
 
-///////////////////////////////////////////////
-/// \brief Function to read input parameters.
-///
-void TRestRawSignalFittingProcess::InitFromConfigFile() {
-    /* Parameters to initialize from RML
-  fBaseLineRange = StringTo2DVector(GetParameter("baseLineRange", "(5,55)"));
-  fIntegralRange = StringTo2DVector(GetParameter("integralRange", "(10,500)"));
-  fPointThreshold = StringToDouble(GetParameter("pointThreshold", "2"));
-  fNPointsOverThreshold = StringToInteger(GetParameter("pointsOverThreshold",
-  "5"));
-  fSignalThreshold = StringToDouble(GetParameter("signalThreshold", "5"));
-    */
-}
