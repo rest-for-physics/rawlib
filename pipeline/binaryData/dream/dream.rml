@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+
+<TRestManager>
+
+	<globals>
+		<parameter name="mainDataPath" value="." />
+	</globals>
+
+	<TRestRun name="DREAM" title="Dream validation" verboseLevel="silent">
+		<parameter name="experiment" value="DreamTest"/>
+		<parameter name="runNumber" value="auto"/>
+		<parameter name="runTag" value="preserve"/>
+		<parameter name="runType" value="RawData"/>
+		<parameter name="runDescription" value=""/>
+		<parameter name="user" value="${USER}"/>
+		<parameter name="overwrite" value="on" />
+		<parameter name="inputFormat" value="[fRunTag].fdf"/>
+		<parameter name="outputFileName" value="dream_signals.root" />
+		<parameter name="readOnly" value="false" />
+	</TRestRun>
+
+	<TRestProcessRunner name="RawSignals" title="Raw processing and analysis">
+
+		<parameter name="eventsToProcess" value="1" />
+
+		<addProcess type="TRestRawDreamToSignalProcess" name="virtualDAQ" value="ON" verboseLevel="warning">
+			<parameter name="pedScript" value="ped"/>
+			<parameter name="runScript" value="run"/>
+			<parameter name="electronics" value="Dream"/>
+			<parameter name="minPoints" value="200"/>
+		</addProcess>
+
+	</TRestProcessRunner>
+
+	<addTask type="processEvents" value="ON" />
+
+</TRestManager>

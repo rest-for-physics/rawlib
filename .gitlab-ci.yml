@@ -6,6 +6,7 @@ stages:
   - build
   - loadRESTLibs
   - process
+  - binaryData
 
 before_script:
     - export USER="raw"
@@ -89,3 +90,11 @@ addSignalNoise:
   except:
       variables:
         - $CRONJOB
+
+dreamData:
+  type: binaryData
+  script:
+    - . ${CI_PROJECT_DIR}/install/thisREST.sh
+    - cd ${CI_PROJECT_DIR}/pipeline/binaryData/dream
+    - restManager --c dream.rml --f dummyDreamData.fdf
+    - restRoot -b -q dream.C
