@@ -74,8 +74,8 @@ class TRestRawDreamToSignalProcess : public TRestRawToSignalProcess {
         //#define GET_FINETSTP(word)      (word & 0x0007)
         uint32_t get_sample_ID() const { return (((data)&0xFF8) >> 3); }
         uint32_t get_channel_ID() const { return (((data)&0x3F)); }
-        uint32_t get_dream_ID() const { return (((data)&0xE00) >> 9); }  // non-zS mode
-        uint32_t get_dream_iD() const { return (((data)&0xE00) >> 6); }  // for zS mode
+        uint32_t get_dream_ID() const { return (((data)&0xE00) >> 9); }     // non-zS mode
+        uint32_t get_dream_ID_ZS() const { return (((data)&0xE00) >> 6); }  // zS mode
         uint32_t get_TimeStamp_Op() const { return (((data)&0x1FF)); }
         uint32_t get_data() const { return (((data)&0xFFF)); }
         uint16_t data;
