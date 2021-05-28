@@ -79,6 +79,13 @@ addSignalNoise:
     - . ${CI_PROJECT_DIR}/install/thisREST.sh
     - cd ${CI_PROJECT_DIR}/pipeline/processes/noise
     - python addNoise.py
+    
+commonNoise: 
+  type: process
+  script:
+    - . ${CI_PROJECT_DIR}/install/thisREST.sh
+    - cd ${CI_PROJECT_DIR}/pipeline/processes/commonNoise
+    - restRoot -b -q commonNoise.C
 
 vetoAnalysis: 
   type: process
@@ -87,3 +94,4 @@ vetoAnalysis:
     - cd ${CI_PROJECT_DIR}/pipeline/processes/veto
     - restManager --c veto.rml --f R01208_Ar2Iso_Background14h_14Vetos_IccubFEC-000.aqs
     - python vetoValidation.py 
+
