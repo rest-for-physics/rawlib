@@ -117,7 +117,7 @@ class TRestRawDreamToSignalProcess : public TRestRawToSignalProcess {
         uint32_t isample_prev = -2;
         bool zs_mode = false;
 
-        FeuReadOut() : {}
+        FeuReadOut() {}
 
         void NewEvent() {
             FeuHeaderLoaded = false;
@@ -165,4 +165,3 @@ class TRestRawDreamToSignalProcess : public TRestRawToSignalProcess {
 };
 
 #endif
-
