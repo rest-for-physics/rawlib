@@ -83,71 +83,41 @@ class TRestRawDreamToSignalProcess : public TRestRawToSignalProcess {
 
     class FeuReadOut {
        public:
-        uint32_t Id;
-        uint32_t N;
+        uint32_t Id = -1;
+        uint32_t N = -1;
         DataLineDream current_data;
-        bool data_to_treat;
-        bool event_completed;
-        bool last_event;
+        bool data_to_treat = false;
+        bool event_completed = false;
+        bool last_event = false;
         bool FeuHeaderLoaded;
-        uint32_t FeuHeaderLine;
-        uint32_t DataHeaderLine;
-        uint32_t DataTrailerLine;
-        uint32_t asicN;
-        uint32_t channelN;
+        uint32_t FeuHeaderLine = 0;
+        uint32_t DataHeaderLine = 0;
+        uint32_t DataTrailerLine = 0;
+        uint32_t asicN = -1;
+        uint32_t channelN = 0;
         uint32_t channel_data;
-        uint32_t physChannel;
-        uint32_t EventID;
-        uint32_t EventID_Op;
-        uint64_t TriggerID;
-        uint32_t TriggerID_ISB;
-        uint32_t TriggerID_LSB;
-        uint32_t CMN;
-        uint32_t CMN_rest;
-        uint64_t Cell_ID;
-        uint32_t Cell_ID_ISB;
-        uint32_t Cell_ID_LSB;
-        uint32_t Cell_ID_MSB;
-        uint64_t TimeStamp;
-        uint64_t TimeStamp_Op1;
-        uint64_t TimeStamp_Op2;
-        uint64_t TimeStamp_Op3;
-        uint64_t FineTimeStamp;
-        uint32_t isample;
-        uint32_t isample_prev;
-        bool zs_mode;
+        uint32_t physChannel = 0;
+        uint32_t EventID = -1;
+        uint32_t EventID_Op = -1;
+        uint64_t TriggerID = -1;
+        uint32_t TriggerID_ISB = -1;
+        uint32_t TriggerID_LSB = -1;
+        uint32_t CMN = -1;
+        uint32_t CMN_rest = -1;
+        uint64_t Cell_ID = -1;
+        uint32_t Cell_ID_ISB = -1;
+        uint32_t Cell_ID_LSB = -1;
+        uint32_t Cell_ID_MSB = -1;
+        uint64_t TimeStamp = -1;
+        uint64_t TimeStamp_Op1 = -1;
+        uint64_t TimeStamp_Op2 = -1;
+        uint64_t TimeStamp_Op3 = -1;
+        uint64_t FineTimeStamp = -1;
+        uint32_t isample = -1;
+        uint32_t isample_prev = -2;
+        bool zs_mode = false;
 
-        FeuReadOut()
-            : Id(-1),
-              N(-1),
-              data_to_treat(false),
-              event_completed(false),
-              last_event(false),
-              FeuHeaderLine(0),
-              DataHeaderLine(0),
-              DataTrailerLine(0),
-              asicN(-1),
-              channelN(0),
-              physChannel(0),
-              CMN(-1),
-              CMN_rest(-1),
-              Cell_ID(-1),
-              Cell_ID_ISB(-1),
-              Cell_ID_LSB(-1),
-              Cell_ID_MSB(-1),
-              TriggerID(-1),
-              TriggerID_ISB(-1),
-              TriggerID_LSB(-1),
-              EventID_Op(-1),
-              EventID(-1),
-              TimeStamp(-1),
-              TimeStamp_Op1(-1),
-              TimeStamp_Op2(-1),
-              TimeStamp_Op3(-1),
-              FineTimeStamp(-1),
-              isample(-1),
-              isample_prev(-2),
-              zs_mode(false) {}
+        FeuReadOut() : {}
 
         void NewEvent() {
             FeuHeaderLoaded = false;
