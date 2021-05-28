@@ -58,10 +58,7 @@ class TRestRawVetoAnalysisProcess : public TRestEventProcess {
     vector<string> fPeakAmp;
 
     /// A pointer to the specific TRestRawSignalEvent
-    TRestRawSignalEvent* fInputRawSignalEvent;   //!
-    TRestRawSignalEvent* fOutputRawSignalEvent;  //!
-
-    void InitProcess();
+    TRestRawSignalEvent* fSignalEvent;  //!
 
     void InitFromConfigFile();
 
@@ -71,9 +68,10 @@ class TRestRawVetoAnalysisProcess : public TRestEventProcess {
 
    protected:
    public:
-    any GetInputEvent() { return fInputRawSignalEvent; }
-    any GetOutputEvent() { return fOutputRawSignalEvent; }
+    any GetInputEvent() { return fSignalEvent; }
+    any GetOutputEvent() { return fSignalEvent; }
 
+    void InitProcess();
     TRestEvent* ProcessEvent(TRestEvent* evInput);
 
     void LoadConfig(std::string cfgFilename, std::string name = "");
@@ -100,6 +98,9 @@ class TRestRawVetoAnalysisProcess : public TRestEventProcess {
         output.second = fVetoGroupIds;
         return output;
     }
+
+    Int_t GetGroupIndex(std::string groupName);
+    string GetGroupIds(std::string groupName);
 
     TRestRawVetoAnalysisProcess();
     TRestRawVetoAnalysisProcess(char* cfgFileName);

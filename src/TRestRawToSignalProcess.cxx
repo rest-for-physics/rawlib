@@ -184,26 +184,6 @@ Bool_t TRestRawToSignalProcess::OpenInputFiles(vector<string> files) {
     return nFiles;
 }
 
-// For debugging
-void TRestRawToSignalProcess::printBits(unsigned short num) {
-    for (unsigned short bit = 0; bit < (sizeof(unsigned short) * 8); bit++) {
-        printf("%i ", num & 0x01);
-        num = num >> 1;
-    }
-
-    printf("\n");
-}
-
-// For debugging
-void TRestRawToSignalProcess::printBits(unsigned int num) {
-    for (unsigned int bit = 0; bit < (sizeof(unsigned int) * 8); bit++) {
-        printf("%i ", num & 0x01);
-        num = num >> 1;
-    }
-
-    printf("\n");
-}
-
 void TRestRawToSignalProcess::PrintMetadata() {
     BeginPrintProcess();
 

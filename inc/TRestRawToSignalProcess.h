@@ -79,9 +79,6 @@ class TRestRawToSignalProcess : public TRestEventProcess {
 
     virtual Bool_t OpenInputFiles(vector<string> files);
 
-    virtual void printBits(unsigned short num);
-    virtual void printBits(unsigned int num);
-
     virtual Long64_t GetTotalBytesReaded() { return totalBytesReaded; }
     virtual Long64_t GetTotalBytes() { return totalBytes; }
     //  Int_t GetRunNumber(){return fRunNumber;}

@@ -58,7 +58,8 @@
 ///
 
 #include "TRestRawAFTERToSignalProcess.h"
-using namespace std;
+#include <bitset> 
+
 #include "TTimeStamp.h"
 #ifdef WIN32
 #include <Windows.h>
@@ -66,8 +67,6 @@ using namespace std;
 #include <arpa/inet.h>
 #endif
 #include "mygblink.h"
-
-#define MAX_UNSIGNED_INT 4294967295
 
 ClassImp(TRestRawAFTERToSignalProcess);
 
@@ -88,7 +87,6 @@ TRestRawAFTERToSignalProcess::TRestRawAFTERToSignalProcess() { Initialize(); }
 ///
 /// \param cfgFileName A const char* giving the path to an RML file.
 ///
-TRestRawAFTERToSignalProcess::TRestRawAFTERToSignalProcess(char* cfgFileName) { Initialize(); }
 
 ///////////////////////////////////////////////
 /// \brief Default destructor
@@ -122,7 +120,7 @@ void TRestRawAFTERToSignalProcess::InitProcess() {
     // The binary starts here
     char runUid[21], initTime[21];
     fread(runUid, 1, 20, fInputBinFile);
-
+    runUid[20]='\0';
     sprintf(initTime, "%s", runUid);
     printf("File UID is %s \n", initTime);
     totalBytesReaded = sizeof(runUid);
@@ -149,21 +147,19 @@ TRestEvent* TRestRawAFTERToSignalProcess::ProcessEvent(TRestEvent* evInput) {
         fclose(fInputBinFile);
         cout << "Error reading event header :-(" << endl;
         cout << "... or end of file found :-)" << endl;
-        return NULL;
+        return nullptr;
     }
 
     head.eventSize = ntohl(head.eventSize);
     head.eventNumb = ntohl(head.eventNumb);
-
+    
     payload = head.eventSize;
     frameBits = sizeof(head);
 
-    if (this->GetVerboseLevel() == REST_Debug) {
-        cout << "Event number from header --> " << head.eventNumb << endl;
-        cout << " event header size " << sizeof(head) << endl;
-        cout << " total rawdata size " << head.eventSize << endl;
-        cout << "Payload " << payload << endl;
-    }
+        debug << "Event number from header --> 0x"<< std::hex<< head.eventNumb<<std::dec << endl;
+        debug << " event header size " << sizeof(head) << endl;
+        debug << " total rawdata size 0x" << std::hex<< head.eventSize<< std::dec << endl;
+        debug << "Payload " << payload << endl;
 
     fSignalEvent->SetID(head.eventNumb);
 
@@ -174,10 +170,10 @@ TRestEvent* TRestRawAFTERToSignalProcess::ProcessEvent(TRestEvent* evInput) {
     int asicN;
     int physChannel;
 
-    unsigned int eventTime, deltaTime;
-    unsigned int ts, th, tl;
+    uint32_t eventTime, deltaTime;
+    uint32_t th, tl;
     int tempAsic1, tempAsic2, sampleCountRead, pay;
-    unsigned short data, dat;
+    uint16_t data, dat;
 
     bool isData = false;
 
@@ -190,85 +186,66 @@ TRestEvent* TRestRawAFTERToSignalProcess::ProcessEvent(TRestEvent* evInput) {
 
         if (first)  // Timestamping (A. Tomas, 30th June 2011)
         {
-            // th = (unsigned int) pHeader.ts_h;  //extend zeros;
             th = ntohs(pHeader.ts_h);
-            // cout<<th<<endl;
-            // tl = (unsigned int)pHeader.ts_l; //extend zeros;
             tl = ntohs(pHeader.ts_l);
-            // cout<<tl<<endl;
-            ts = th << (sizeof(unsigned short) * 8);  // shift half a 32-bit word
-            // cout<<ts<<endl;
-            eventTime = ts | tl;  // concatenation
-            // cout<<ts<<endl;
+            eventTime = th <<16 | tl;  // built time from MSB and LSB
 
             if (eventTime > prevTime)
                 deltaTime = eventTime - prevTime;
             else
-                deltaTime = (MAX_UNSIGNED_INT - prevTime) + eventTime;
+                deltaTime = (0xFFFFFFFF - prevTime) + eventTime;
 
             reducedTime += deltaTime;
 
             // Set timestamp and event ID
-            fSignalEvent->SetTime(tStart + reducedTime * 2.E-8);  // timeStamp
-
-            // printf("Event time read %.3lf\n",tStart+reducedTime*2.E-8);
+            fSignalEvent->SetTime(tStart + reducedTime * 2.E-8);  // Set TimeStamp
 
             prevTime = eventTime;
             first = false;
 
-            if (this->GetVerboseLevel() == REST_Debug) {
-                cout << "Timestamp: " << endl;
-                cout << "-----------" << endl;
-                cout << "directamente : " << endl;
-                // cout<<ntohs(pHeader.ts_h)<<endl;
-                // cout<<ntohs(pHeader.ts_l)<<endl;
-                cout << pHeader.ts_h << " -> " << ntohs(pHeader.ts_h) << " -> " << th << endl;
-                cout << pHeader.ts_l << " -> " << ntohs(pHeader.ts_l) << " -> " << tl << endl;
-                cout << "concatenados: " << endl;
-                cout << ts << endl;
-                cout << eventTime << endl;
-                // cout<<ntohl(timestamp)<<endl;
-            }
+            debug << "Timestamp: " << eventTime << endl;
         }
 
-        if (this->GetVerboseLevel() == REST_Debug) {
-            cout << "Event data packet header: " << endl;
-            cout << "Size " << ntohs(pHeader.size) << endl;
+            debug << "******Event data packet header:******" << endl;
+
+            debug << "Size " << ntohs(pHeader.size) << endl;
+
+            debug << "Event data packet header: " << endl;
+            debug << std::hex<<"Size 0x" << ntohs(pHeader.size) << endl;
+#ifdef NEW_DAQ_T2K_2_X
+            debug <<"DCC 0x" << ntohs(pHeader.dcc) << endl;
+#endif
+            debug <<"Hdr word 0x" << ntohs(pHeader.hdr) << endl;
+            debug <<"Args 0x" << ntohs(pHeader.args) << endl;
+            debug <<"TS_H 0x" << ntohs(pHeader.ts_h) << endl;
+            debug <<"TS_L 0x" << ntohs(pHeader.ts_l) << endl;
+            debug <<"Ecnt 0x" << ntohs(pHeader.ecnt) << endl;
+            debug <<"Scnt 0x" << ntohs(pHeader.scnt) <<std::dec<< endl;
 
 #ifdef NEW_DAQ_T2K_2_X
-            cout << "RawDCC Head " << ntohs(pHeader.dcc) << " Version " << GET_EVENT_TYPE(ntohs(pHeader.dcc));
-            cout << " Flag " << ((ntohs(pHeader.dcc) & 0x3000) >> 12);
-            cout << " RT " << ((ntohs(pHeader.dcc) & 0x0C00) >> 10) << " DCCInd "
+        debug << "RawDCC Head 0x" <<std::hex << ntohs(pHeader.dcc)<<std::dec << " Version " << GET_EVENT_TYPE(ntohs(pHeader.dcc));
+        debug << " Flag " << ((ntohs(pHeader.dcc) & 0x3000) >> 12);
+        debug << " RT " << ((ntohs(pHeader.dcc) & 0x0C00) >> 10) << " DCCInd "
                  << ((ntohs(pHeader.dcc) & 0x03F0) >> 4);
-            cout << " FEMInd " << (ntohs(pHeader.dcc) & 0x000F) << endl;
+        debug << " FEMInd " << (ntohs(pHeader.dcc) & 0x000F) << endl;
 
-            cout << "FEM0Ind " << ntohs(pHeader.hdr) << " Type " << ((ntohs(pHeader.hdr) & 0xF000) >> 12);
-            cout << " L " << ((ntohs(pHeader.hdr) & 0x0800) >> 11);
-            cout << " U " << ((ntohs(pHeader.hdr) & 0x0800) >> 10) << " FECFlags "
+        debug << "FEM0Ind " << ntohs(pHeader.hdr) << " Type " << ((ntohs(pHeader.hdr) & 0xF000) >> 12);
+        debug << " L " << ((ntohs(pHeader.hdr) & 0x0800) >> 11);
+        debug << " U " << ((ntohs(pHeader.hdr) & 0x0800) >> 10) << " FECFlags "
                  << ((ntohs(pHeader.hdr) & 0x03F0) >> 4);
-            cout << " Index " << (ntohs(pHeader.hdr) & 0x000F) << endl;
+        debug << " Index " << (ntohs(pHeader.hdr) & 0x000F) << endl;
 
-            cout << "RawFEM " << ntohs(pHeader.args) << " M " << ((ntohs(pHeader.args) & 0x8000) >> 15);
-            cout << " N " << ((ntohs(pHeader.args) & 0x4000) >> 14) << " Zero "
+        debug << "RawFEM 0x"<<std::hex << ntohs(pHeader.args)<<std::dec << " M " << ((ntohs(pHeader.args) & 0x8000) >> 15);
+        debug << " N " << ((ntohs(pHeader.args) & 0x4000) >> 14) << " Zero "
                  << ((ntohs(pHeader.args) & 0x1000) >> 13);
-            cout << " Arg2 " << GET_RB_ARG2(ntohs(pHeader.args)) << " Arg2 "
+        debug << " Arg2 " << GET_RB_ARG2(ntohs(pHeader.args)) << " Arg2 "
                  << GET_RB_ARG1(ntohs(pHeader.args)) << endl;
-            cout << "TimeStampH " << ntohs(pHeader.ts_h) << endl;
-            cout << "TimeStampL " << ntohs(pHeader.ts_l) << endl;
-            cout << "RawEvType " << ntohs(pHeader.ecnt) << " EvTy " << GET_EVENT_TYPE(ntohs(pHeader.ecnt));
-            cout << " EventCount " << GET_EVENT_COUNT(ntohs(pHeader.ecnt)) << endl;
-            cout << "Samples " << ntohs(pHeader.scnt) << endl;
-#else
-            cout << "Event data packet header: " << endl;
-            cout << ntohs(pHeader.size) << endl;
-            cout << ntohs(pHeader.hdr) << endl;
-            cout << ntohs(pHeader.args) << endl;
-            cout << ntohs(pHeader.ts_h) << endl;
-            cout << ntohs(pHeader.ts_l) << endl;
-            cout << ntohs(pHeader.ecnt) << endl;
-            cout << ntohs(pHeader.scnt) << endl;
+        debug << "TimeStampH " << ntohs(pHeader.ts_h) << endl;
+        debug << "TimeStampL " << ntohs(pHeader.ts_l) << endl;
+        debug << "RawEvType 0x"<<std::hex << ntohs(pHeader.ecnt)<<std::dec << " EvTy " << GET_EVENT_TYPE(ntohs(pHeader.ecnt));
+        debug << " EventCount " << GET_EVENT_COUNT(ntohs(pHeader.ecnt)) << endl;
+        debug << "Samples " << ntohs(pHeader.scnt) << endl;
 #endif
-        }
 
         tempAsic1 = GET_RB_ARG1(ntohs(pHeader.args));
         tempAsic2 = GET_RB_ARG2(ntohs(pHeader.args));
@@ -276,9 +253,7 @@ TRestEvent* TRestRawAFTERToSignalProcess::ProcessEvent(TRestEvent* evInput) {
         asicN = (10 * (tempAsic1 % 6) / 2 + tempAsic2) % 4;
         fecN = (10 * (tempAsic1 % 6) / 2 + tempAsic2) / 4;
 
-        if (this->GetVerboseLevel() == REST_Debug) {
-            cout << " channel " << channel << " asic " << asicN << " fec " << fecN << endl;
-        }
+        debug << " channel " << channel << " asic " << asicN << " fec " << fecN << endl;
 
         sampleCountRead = ntohs(pHeader.scnt);
         pay = sampleCountRead % 2;
@@ -312,48 +287,42 @@ TRestEvent* TRestRawAFTERToSignalProcess::ProcessEvent(TRestEvent* evInput) {
 
         if (sampleCountRead < 9) isData = false;
         for (int i = 0; i < sampleCountRead; i++) {
-            fread(&dat, sizeof(unsigned short), 1, fInputBinFile);
+            fread(&dat, sizeof(uint16_t), 1, fInputBinFile);
             frameBits += sizeof(dat);
             data = ntohs(dat);
 
-            if (this->GetVerboseLevel() == REST_Debug) printBits(data);
+              std::bitset<16> bs(data);
+              debug<<bs<<endl;
+
             if (((data & 0xFE00) >> 9) == 8) {
                 timeBin = GET_CELL_INDEX(data);
                 if (timeBin == 511) isData = false;
-                if (this->GetVerboseLevel() == REST_Debug) cout << data << " Time bin " << timeBin << endl;
+                debug << data << " Time bin " << timeBin << endl;
             } else if ((((data & 0xF000) >> 12) == 0) && isData) {
                 fSignalEvent->AddChargeToSignal(physChannel, timeBin, data);
-                if (this->GetVerboseLevel() == REST_Debug)
-                    cout << "Time bin " << timeBin << " ADC: " << data << endl;
+                debug << "Time bin " << timeBin << " ADC: " << data << endl;
                 timeBin++;
             }
         }
 
-        if (this->GetVerboseLevel() == REST_Debug) cout << pay << endl;
+        debug << pay << endl;
         if (pay) {
-            fread(&dat, sizeof(unsigned short), 1, fInputBinFile);
-            frameBits += sizeof(unsigned short);
+            fread(&dat, sizeof(uint16_t), 1, fInputBinFile);
+            frameBits += sizeof(uint16_t);
         }
 
         fread(&pEnd, sizeof(DataPacketEnd), 1, fInputBinFile);
         frameBits += sizeof(DataPacketEnd);
 
-        if (this->GetVerboseLevel() == REST_Debug) {
-            th = ntohs(pEnd.crc1);
-            tl = ntohs(pEnd.crc2);
-            ts = th << (sizeof(unsigned short) * 8);  // shift half a 32-bit word
-            eventTime = ts | tl;
-
-            cout << "Readed "
-                 << sampleCountRead * sizeof(unsigned short) + sizeof(DataPacketHeader) +
-                        sizeof(DataPacketEnd) + sampleCountRead % 2 * sizeof(unsigned short)
-                 << " vs HeadSize " << ntohs(pHeader.size) << " Diff "
-                 << ntohs(pHeader.size) - (sampleCountRead + sizeof(DataPacketHeader) +
-                                           sizeof(DataPacketEnd) + sampleCountRead % 2)
-                 << endl;
-            cout << "Trailer_H " << ntohs(pEnd.crc1) << " Trailer_L " << ntohs(pEnd.crc2) << endl;
-            cout << "Trailer " << eventTime << "\n" << endl;
-        }
+        debug << "Read "
+             << sampleCountRead * sizeof(uint16_t) + sizeof(DataPacketHeader) +
+                sizeof(DataPacketEnd) + sampleCountRead % 2 * sizeof(uint16_t)
+             << " vs HeadSize " << ntohs(pHeader.size) << " Diff "
+             << ntohs(pHeader.size) - (sampleCountRead + sizeof(DataPacketHeader) +
+                sizeof(DataPacketEnd) + sampleCountRead % 2)
+             << endl;
+            debug << "Trailer_H " << ntohs(pEnd.crc1) << " Trailer_L " << ntohs(pEnd.crc2) << endl;
+            debug << "Trailer " << eventTime << "\n" << endl;
 
     }  // end while
     totalBytesReaded += frameBits;
@@ -361,10 +330,7 @@ TRestEvent* TRestRawAFTERToSignalProcess::ProcessEvent(TRestEvent* evInput) {
     // printf("Event ID %d time stored
     // %.3lf\n",fSignalEvent->GetID(),fSignalEvent->GetTime());
 
-    if (this->GetVerboseLevel() == REST_Debug) {
-        cout << "End of event " << endl;
-    }
-    // cout<<"Ev ID "<<fSignalEvent->GetID()<<" " <<endl;
+    debug << "End of event " << endl;
 
     return fSignalEvent;
 }
