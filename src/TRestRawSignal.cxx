@@ -611,6 +611,10 @@ void TRestRawSignal::GetSignalSmoothed(TRestRawSignal* smthSignal, Int_t averagi
 void TRestRawSignal::CalculateBaseLine(Int_t startBin, Int_t endBin) {
     if (endBin - startBin <= 0) {
         fBaseLine = 0.;
+    } else if (endBin > fSignalData.size()) {
+        cout << "TRestRawSignal::CalculateBaseLine. Error! Baseline range exceeds the rawdata depth!!"
+             << endl;
+        endBin = fSignalData.size();
     } else {
         Double_t baseLine = 0;
         for (int i = startBin; i < endBin; i++) baseLine += fSignalData[i];
@@ -683,8 +687,11 @@ void TRestRawSignal::WriteSignalToTextFile(TString filename) {
 void TRestRawSignal::Print() {
     cout << "---------------------" << endl;
     cout << "Signal id : " << this->GetSignalID() << endl;
+    cout << "Baseline : " << fBaseLine << endl;
+    cout << "Baseline sigma : " << fBaseLineSigma << endl;
     cout << "+++++++++++++++++++++" << endl;
-    for (int i = 0; i < GetNumberOfPoints(); i++) cout << "Bin : " << i << " Charge : " << GetData(i) << endl;
+    for (int i = 0; i < GetNumberOfPoints(); i++)
+        cout << "Bin : " << i << " amplitude : " << GetRawData(i) << endl;
     cout << "---------------------" << endl;
 }
 

@@ -1,5 +1,5 @@
 // A Macro that generates histograms for veto_MaxPeakAmplitude and veto_PeakTime for each veto channel (signal ID). Required input is the filename.
-// 
+//
 // Author: Konrad Altenmüller, May 2021
 //
 //
@@ -11,18 +11,10 @@
 #include <map>
 #include <TRestRawVetoAnalysisProcess.h>
 #include <TRestStringHelper.h>
-#include <chrono>
+#include <string.h>
 
-Int_t REST_Raw_PlotVetoData(string fileName = "data/R01133_000_RawToSignal_Ar2Iso_BackgroundWith9Vetos_konrad_2.3.1.root", int starVal = 0, int endVal = 4000, int bins = 100){
+Int_t REST_Raw_PlotVetoData(string fileName = "data/R01133_000_RawToSignal_Ar2Iso_BackgroundWith9Vetos_konrad_2.3.1.root", string group="all", string processName="veto", int starVal = 0, int endVal = 4000, int bins = 100){
 
-	
-	// initiate clock for testing
-	// using std::chrono::high_resolution_clock;
-	// using std::chrono::duration_cast;
-	// using std::chrono::duration;
-	// using std::chrono::seconds;	
-
-	// auto t0 = high_resolution_clock::now();	
 	
 	TRestRun* run = new TRestRun(fileName);
 	TRestAnalysisTree* aTree = run->GetAnalysisTree();
@@ -40,13 +32,25 @@ Int_t REST_Raw_PlotVetoData(string fileName = "data/R01133_000_RawToSignal_Ar2Is
 	vector<string> groupNames;
 	vector<string> groupIds;
 	
-	// vector<int> nVeto; // number of vetoes in group
-
 	// check if signal IDs are defined as a single list or in groups
+	// if vetoes are defined in groups:
 	if (vetoSignalId[0] == -1.){
-		pair<vector<string>,vector<string>> vetoGroups = veto->GetVetoGroups();
-		groupNames = std::get<0>(vetoGroups);
-		groupIds   = std::get<1>(vetoGroups);
+		// check if all groups or only a selected group should be plotted
+		if (group == "all"){
+			pair<vector<string>,vector<string>> vetoGroups = veto->GetVetoGroups();
+			groupNames = std::get<0>(vetoGroups);
+			groupIds   = std::get<1>(vetoGroups);
+		} else {
+			groupNames.push_back(group);
+			groupIds.push_back(veto->GetGroupIds(group));
+			// In case group name doesn't exist:
+			if (std::strcmp(string(groupIds[0]).c_str(),string("-1").c_str())==0){
+				cout << "\nERROR: specified veto group does not exist!\n" << endl;
+				return 0;
+			}
+
+		}
+		// create vector of group name with same length as signal IDs (to print it out below)	
 		for (unsigned int i=0; i<groupIds.size(); i++){
 			vector<double> id  =  StringToElements(groupIds[i],",");
 			// nVeto.push_back(id.size());
@@ -55,29 +59,28 @@ Int_t REST_Raw_PlotVetoData(string fileName = "data/R01133_000_RawToSignal_Ar2Is
 				vetoName.push_back(groupNames[i]);
 			}	
 		}
+		
+	// if vetoes are defined in a single list:
+	} else {
+		signalIddouble = vetoSignalId;
+		groupNames.push_back("standard");
+		for (unsigned int i=0; i<signalIddouble.size(); i++)
+			vetoName.push_back("standard");
 	}
-	else signalIddouble = vetoSignalId;
 
-	// convert vector from double to int
+
+	// convert ID vector from double to int
 	vector<int> signalId(signalIddouble.begin(), signalIddouble.end());
 
-	cout << "Signal IDs:";
+	// Print Names and IDs
+	cout << "Signal IDs:\tVeto names:\n";
 	for (unsigned int i=0; i<signalId.size(); i++)
-		cout << " " << std::fixed <<  std::setprecision(0) << signalId[i] << ",";
-	cout << '\b' << "." << endl;
-	
-	cout << "Veto names:";
-	for (unsigned int i=0; i<signalId.size(); i++)
-		cout << " " << vetoName[i] << ",";
+		cout << " " << std::fixed <<  std::setprecision(0) << signalId[i] << " -  -  -  -  - " << vetoName[i] << "\n";
 	cout << '\b' << "." << endl;
 	
 	// *******************************************************************************
 	// Create canvases and histograms for each signalId
 	// *******************************************************************************
-
-	// auto t1 = high_resolution_clock::now();
-	// duration<double> s_double = t1 - t0;
-	// cout << "start up duration = " << s_double.count() << "s\n";
 
 	vector<TH1D*> peakTimeHist;
 	vector<TH1D*> maxPeakAmplitudeHist;
@@ -112,12 +115,6 @@ Int_t REST_Raw_PlotVetoData(string fileName = "data/R01133_000_RawToSignal_Ar2Is
 	}
 
 
-	// t1 = high_resolution_clock::now();
-	// s_double = t1 - t0;
-	// cout << "start to iterate over branches = " << s_double.count() << "s\n";
-	
-	
-
 	// *******************************************************************************
 	
 	string obsName;
@@ -130,23 +127,22 @@ Int_t REST_Raw_PlotVetoData(string fileName = "data/R01133_000_RawToSignal_Ar2Is
 	double value_time;
 
 	// construct observable names 
-	for (unsigned int i=0; i<groupNames.size(); i++){	
-		obsName = "veto_PeakTime_"+groupNames[i];
-		obsNameTime.push_back(obsName);
-		obsName = "veto_MaxPeakAmplitude_"+groupNames[i];
-		obsNameAmp.push_back(obsName);
+	if (vetoSignalId[0]==-1){
+		for (unsigned int i=0; i<groupNames.size(); i++){	
+			obsName = processName+"_PeakTime_"+groupNames[i];
+			obsNameTime.push_back(obsName);
+			obsName = processName+"_MaxPeakAmplitude_"+groupNames[i];
+			obsNameAmp.push_back(obsName);
+		}
+	} else {
+		obsNameTime.push_back(processName+"_PeakTime");
+		obsNameAmp.push_back(processName+"_MaxPeakAmplitude");
 	}
+
 
 	// *******************************************************************************
 	// Iterate over entries
 	// *******************************************************************************
-
-	// *** debug
-	
-	// TH1F *source = new TH1F("source","source hist",100,-3,3);
-	// source->FillRandom("gaus",1000);
-	// TH1F *final = new TH1F("final","final hist",100,-3,3);
-	// ***
 
 	for (unsigned int n=0; n<run->GetEntries(); n++){
 		run->GetEntry(n);
@@ -154,29 +150,38 @@ Int_t REST_Raw_PlotVetoData(string fileName = "data/R01133_000_RawToSignal_Ar2Is
 		// iterate over observables
 		for (unsigned int i=0; i<groupNames.size(); i++){
 			// cout << "Observable Name: " << obsNameTime[i] << "\n";
-		
-			// Peak Time
+			
+			// ***********************
+			// Peak Time Histograms
+			// ***********************
 			obsID = aTree->GetObservableID(obsNameTime[i]);
 			peakTimeMap.clear();
 			
 			any a = aTree->GetObservable(obsID);
+			
 			a >> peakTimeMap;
 
 			id.clear();
-			id  =  StringToElements(groupIds[i],",");
+			// if vetoes are defined in groups
+			if (vetoSignalId[0]==-1){
+				id  =  StringToElements(groupIds[i],",");
+			} else {
+				id = vetoSignalId;
+			}
+			
 			// iterate over signal IDs
 			for (unsigned int j=0; j<id.size(); j++){
 			//	cout << "signal ID: " << id[j] << "\n";
 				value_time = peakTimeMap[id[j]];
 				// put in correct histogram
 				if (value_time > 0.1){
-					peakTimeHist[nHist+j]->Fill(value_time); //j ist falsch --> + anzahl an vorherigen histogrammen muss draufgerechnet werden
+					peakTimeHist[nHist+j]->Fill(value_time); 
 				}
-				// int nentries = peakTimeHist[j]->GetEntries();
-				// cout << nentries << "\n";
 			}
 	
-			// Max Peak Amplitude
+			// ***********************
+			// Max Peak Amplitude Histrograms
+			// ***********************
 			obsID = aTree->GetObservableID(obsNameAmp[i]);
 			maxPeakAmplitudeMap.clear();
 			
@@ -184,10 +189,14 @@ Int_t REST_Raw_PlotVetoData(string fileName = "data/R01133_000_RawToSignal_Ar2Is
 			a >> maxPeakAmplitudeMap;
 
 			id.clear();
-			id  =  StringToElements(groupIds[i],",");
+			// if vetoes are defined in groups
+			if (vetoSignalId[0]==-1){
+				id  =  StringToElements(groupIds[i],",");
+			} else {
+			id = vetoSignalId;
+			}
 			// iterate over signal IDs
 			for (unsigned int j=0; j<id.size(); j++){
-				//cout << "signal ID: " << id[j] << "\n";
 				double value_amp = maxPeakAmplitudeMap[id[j]];
 				// put in correct histogram
 				if (value_time>0.1){
@@ -195,35 +204,20 @@ Int_t REST_Raw_PlotVetoData(string fileName = "data/R01133_000_RawToSignal_Ar2Is
 				}
 
 			}
-			
 			nHist += id.size();
-
-			// ***debug
-			// final->Fill(source->GetRandom());
-			// ***
-		
 		}
 
 	}
 
-
 	// Draw the histograms in correct canvas
 	for (unsigned int i=0; i<canvas.size(); i++){
 		TVirtualPad* c1 = canvas[i]->cd(1);
-		// source->Draw();
 		peakTimeHist[i]->Draw();
-		// int nEntries = peakTimeHist[i]->GetEntries();
-		// cout << "N Entries =" << nEntries << "\n";
 
 		TVirtualPad* c2 = canvas[i]->cd(2);
 		maxPeakAmplitudeHist[i]->Draw();
-		// final->Draw();
 		c2->SetLogy();
 	}
-
-
-
-
 
 	return 0;
 }
