@@ -304,10 +304,8 @@ bool TRestRawDreamToSignalProcess::ReadFeuHeaders(FeuReadOut& Feu) {
         } else if (Feu.FeuHeaderLine > 3 && !Feu.current_data.is_Feu_header())
             break;  // header finished
 
-        if (fread((void*)&(Feu.current_data), sizeof(Feu.current_data), 1, fInputBinFile) == 0) {
-            totalBytesReaded += sizeof(Feu.current_data);
-            return true;
-        }
+        if (fread((void*)&(Feu.current_data), sizeof(Feu.current_data), 1, fInputBinFile) == 0) return true;
+        totalBytesReaded += sizeof(Feu.current_data);
         Feu.current_data.ntohs_();
         Feu.data_to_treat = true;
 
@@ -518,10 +516,8 @@ bool TRestRawDreamToSignalProcess::ReadDreamData(FeuReadOut& Feu) {
                 break;  // Dream raw data finished
         }
 
-        if (fread((char*)&(Feu.current_data), sizeof(Feu.current_data), 1, fInputBinFile) == 0) {
-            totalBytesReaded += sizeof(Feu.current_data);
-            return true;  // failed
-        }
+        if (fread((char*)&(Feu.current_data), sizeof(Feu.current_data), 1, fInputBinFile) == 0) return true;
+        totalBytesReaded += sizeof(Feu.current_data);
         Feu.current_data.ntohs_();
         Feu.data_to_treat = true;
 
@@ -577,10 +573,8 @@ bool TRestRawDreamToSignalProcess::ReadFeuTrailer(FeuReadOut& Feu) {
             break;
         }
 
-        if (fread((void*)&(Feu.current_data), sizeof(Feu.current_data), 1, fInputBinFile) == 0) {
-            totalBytesReaded += sizeof(Feu.current_data);
-            return true;
-        }
+        if (fread((void*)&(Feu.current_data), sizeof(Feu.current_data), 1, fInputBinFile) == 0) return true;
+        totalBytesReaded += sizeof(Feu.current_data);
         Feu.current_data.ntohs_();
         Feu.data_to_treat = true;
 
