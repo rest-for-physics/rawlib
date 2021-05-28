@@ -69,52 +69,52 @@ class TRestRawDreamToSignalProcess : public TRestRawToSignalProcess {
         bool is_Feu_header() const { return (((data)&0x7000) >> 12) == 6; }      // X110
         bool is_data_header() const { return (((data)&0x6000) >> 13) == 1; }     // X01X
         bool get_zs_mode() const { return (((data)&0x400) >> 10); }
-        uint32_t get_Feu_ID() const { return (((data)&0xFF)); }
-        uint64_t get_finetstp() const { return (((data)&0x0007)); }
+        int get_Feu_ID() const { return (((data)&0xFF)); }
+        long int get_finetstp() const { return (((data)&0x0007)); }
         //#define GET_FINETSTP(word)      (word & 0x0007)
-        uint32_t get_sample_ID() const { return (((data)&0xFF8) >> 3); }
-        uint32_t get_channel_ID() const { return (((data)&0x3F)); }
-        uint32_t get_dream_ID() const { return (((data)&0xE00) >> 9); }     // non-zS mode
-        uint32_t get_dream_ID_ZS() const { return (((data)&0xE00) >> 6); }  // zS mode
-        uint32_t get_TimeStamp_Op() const { return (((data)&0x1FF)); }
-        uint32_t get_data() const { return (((data)&0xFFF)); }
-        uint16_t data;
+        int get_sample_ID() const { return (((data)&0xFF8) >> 3); }
+        int get_channel_ID() const { return (((data)&0x3F)); }
+        int get_dream_ID() const { return (((data)&0xE00) >> 9); }     // non-zS mode
+        int get_dream_ID_ZS() const { return (((data)&0xE00) >> 6); }  // zS mode
+        int get_TimeStamp_Op() const { return (((data)&0x1FF)); }
+        int get_data() const { return (((data)&0xFFF)); }
+        unsigned short int data;
     };
 
     class FeuReadOut {
        public:
-        uint32_t Id = -1;
-        uint32_t N = -1;
+        int Id = -1;
+        int N = -1;
         DataLineDream current_data;
         bool data_to_treat = false;
         bool event_completed = false;
         bool last_event = false;
         bool FeuHeaderLoaded;
-        uint32_t FeuHeaderLine = 0;
-        uint32_t DataHeaderLine = 0;
-        uint32_t DataTrailerLine = 0;
-        uint32_t asicN = -1;
-        uint32_t channelN = 0;
-        uint32_t channel_data;
-        uint32_t physChannel = 0;
-        uint32_t EventID = -1;
-        uint32_t EventID_Op = -1;
-        uint64_t TriggerID = -1;
-        uint32_t TriggerID_ISB = -1;
-        uint32_t TriggerID_LSB = -1;
-        uint32_t CMN = -1;
-        uint32_t CMN_rest = -1;
-        uint64_t Cell_ID = -1;
-        uint32_t Cell_ID_ISB = -1;
-        uint32_t Cell_ID_LSB = -1;
-        uint32_t Cell_ID_MSB = -1;
-        uint64_t TimeStamp = -1;
-        uint64_t TimeStamp_Op1 = -1;
-        uint64_t TimeStamp_Op2 = -1;
-        uint64_t TimeStamp_Op3 = -1;
-        uint64_t FineTimeStamp = -1;
-        uint32_t isample = -1;
-        uint32_t isample_prev = -2;
+        int FeuHeaderLine = 0;
+        int DataHeaderLine = 0;
+        int DataTrailerLine = 0;
+        int asicN = -1;
+        int channelN = 0;
+        int channel_data;
+        int physChannel = 0;
+        int EventID = -1;
+        int EventID_Op = -1;
+        int TriggerID = -1;
+        int TriggerID_ISB = -1;
+        int TriggerID_LSB = -1;
+        int CMN = -1;
+        int CMN_rest = -1;
+        long int Cell_ID = -1;
+        int Cell_ID_ISB = -1;
+        int Cell_ID_LSB = -1;
+        int Cell_ID_MSB = -1;
+        long int TimeStamp = -1;
+        long int TimeStamp_Op1 = -1;
+        long int TimeStamp_Op2 = -1;
+        long int TimeStamp_Op3 = -1;
+        long int FineTimeStamp = -1;
+        int isample = -1;
+        int isample_prev = -2;
         bool zs_mode = false;
 
         FeuReadOut() {}
@@ -133,15 +133,15 @@ class TRestRawDreamToSignalProcess : public TRestRawToSignalProcess {
         }
     };
 
-    // unsigned uint32_t fLastEventId;
+    // unsigned int fLastEventId;
     // Double_t fLastTimeStamp;
-    const uint32_t NstripMax = 64;  // number of strips on each chip
-    const uint32_t MaxPhysChannel = 512;
-    bool bad_event;              // flag to tag bad event
-    uint32_t line;               // line number
-    uint32_t Nevent, Nbadevent;  // current event number
-    uint32_t IDEvent = 0;        // ID of event in Feu header
-                                 // double MaxThreshold;
+    const int NstripMax = 64;  // number of strips on each chip
+    const int MaxPhysChannel = 512;
+    bool bad_event;         // flag to tag bad event
+    int line;               // line number
+    int Nevent, Nbadevent;  // current event number
+    int IDEvent = 0;        // ID of event in Feu header
+                            // double MaxThreshold;
 
    public:
     bool ReadFeuHeaders(FeuReadOut& feu);
