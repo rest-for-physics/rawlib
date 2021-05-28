@@ -25,6 +25,9 @@
 //
 // DOCUMENTATION TO BE WRITTEN (main description, methods, data members)
 //
+// TODO: This process requires optimization to improve the data processing
+// rate.
+//
 // \warning This process might be obsolete today. It may need additional
 // revision, validation, and documentation. Use it under your own risk. If you
 // find this process useful for your work feel free to use it, improve it,
