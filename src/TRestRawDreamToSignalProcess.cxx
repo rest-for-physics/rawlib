@@ -104,7 +104,7 @@ void TRestRawDreamToSignalProcess::InitProcess() {
 
 TRestEvent* TRestRawDreamToSignalProcess::ProcessEvent(TRestEvent* evInput) {
     FeuReadOut Feu;
-    register bool badreadfg = false;
+    bool badreadfg = false;
 
     debug << "---------------Start of TRestRawDreamToSignalProcess::ProcessEvent------------" << endl;
 
@@ -182,7 +182,7 @@ TRestEvent* TRestRawDreamToSignalProcess::ProcessEvent(TRestEvent* evInput) {
 //______________________________________________________________________________
 //			Definition of decoding methods
 bool TRestRawDreamToSignalProcess::ReadEvent(FeuReadOut& Feu) {
-    register bool badreadfg = false;
+    bool badreadfg = false;
 
     while (!Feu.event_completed) {
         badreadfg = ReadFeuHeaders(Feu);  // read feu header if not done
@@ -219,7 +219,7 @@ bool TRestRawDreamToSignalProcess::ReadFeuHeaders(FeuReadOut& Feu) {
 
     if (!Feu.data_to_treat) {  // data not loaded
 
-        register int nbytes = fread((void*)&(Feu.current_data), sizeof(Feu.current_data), 1, fInputBinFile);
+        int nbytes = fread((void*)&(Feu.current_data), sizeof(Feu.current_data), 1, fInputBinFile);
         totalBytesReaded += sizeof(Feu.current_data);
         if (nbytes == 0) {
             //       perror("TRestRawDreamToSignalProcess::ReadFeuHeaders: Error in reading FeuHeaders !");
@@ -321,9 +321,9 @@ bool TRestRawDreamToSignalProcess::ReadFeuHeaders(FeuReadOut& Feu) {
 }
 
 bool TRestRawDreamToSignalProcess::ReadDreamData(FeuReadOut& Feu) {
-    register bool got_raw_data_header = false;
-    register bool got_channel_id = false;
-    register int ichannel = 0;
+    bool got_raw_data_header = false;
+    bool got_channel_id = false;
+    int ichannel = 0;
 
     if (!Feu.FeuHeaderLoaded) {  // already loaded
         ferr << "TRestRawDreamToSignalProcess::ReadDreamData: error in ReadDreamData, Feu header not loaded"
@@ -332,7 +332,7 @@ bool TRestRawDreamToSignalProcess::ReadDreamData(FeuReadOut& Feu) {
     }
 
     if (!Feu.data_to_treat) {  // no data to treat
-        register int nbytes = fread((void*)&(Feu.current_data), sizeof(Feu.current_data), 1, fInputBinFile);
+        int nbytes = fread((void*)&(Feu.current_data), sizeof(Feu.current_data), 1, fInputBinFile);
         totalBytesReaded += sizeof(Feu.current_data);
         if (nbytes == 0) {
             perror("TRestRawDreamToSignalProcess::ReadDreamData: no Dream data to read in file");
@@ -399,7 +399,7 @@ bool TRestRawDreamToSignalProcess::ReadDreamData(FeuReadOut& Feu) {
 
                     // loop on samples
                     if (Feu.physChannel < MaxPhysChannel) {
-                        register Int_t sgnlIndex = fSignalEvent->GetSignalIndex(Feu.physChannel);
+                        Int_t sgnlIndex = fSignalEvent->GetSignalIndex(Feu.physChannel);
                         if (sgnlIndex == -1) {
                             sgnlIndex = fSignalEvent->GetNumberOfSignals();
                             TRestRawSignal sgnl(fMinPoints);
@@ -448,7 +448,7 @@ bool TRestRawDreamToSignalProcess::ReadDreamData(FeuReadOut& Feu) {
                 }
 
                 if (Feu.physChannel < MaxPhysChannel) {
-                    register Int_t sgnlIndex = fSignalEvent->GetSignalIndex(Feu.physChannel);
+                    Int_t sgnlIndex = fSignalEvent->GetSignalIndex(Feu.physChannel);
                     if (sgnlIndex == -1) {
                         sgnlIndex = fSignalEvent->GetNumberOfSignals();
                         TRestRawSignal sgnl(fMinPoints);
@@ -530,7 +530,7 @@ bool TRestRawDreamToSignalProcess::ReadDreamData(FeuReadOut& Feu) {
 
 bool TRestRawDreamToSignalProcess::ReadFeuTrailer(FeuReadOut& Feu) {
     if (!Feu.data_to_treat) {
-        register int nbytes = fread((void*)&(Feu.current_data), sizeof(Feu.current_data), 1, fInputBinFile);
+        int nbytes = fread((void*)&(Feu.current_data), sizeof(Feu.current_data), 1, fInputBinFile);
         totalBytesReaded += sizeof(Feu.current_data);
         if (nbytes == 0) {
             perror("TRestRawDreamToSignalProcess::ReadFeuTrailer: can't read new data from file");
