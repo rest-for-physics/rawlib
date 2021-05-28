@@ -131,7 +131,7 @@ TRestEvent* TRestRawDreamToSignalProcess::ProcessEvent(TRestEvent* evInput) {
                 debug << "TRestRawDreamToSignalProcess::ProcessEvent: event to read EventID " << Feu.EventID
                       << " Time " << Feu.TimeStamp << " isample " << Feu.isample << endl;
             } else {
-                return NULL;
+                return nullptr;
             }
         }
 
@@ -167,7 +167,7 @@ TRestEvent* TRestRawDreamToSignalProcess::ProcessEvent(TRestEvent* evInput) {
 
         if (fSignalEvent->GetNumberOfSignals() == 0) {
             ferr << "TRestRawDreamToSignalProcess::ProcessEvent: no signal in event" << endl;
-            return NULL;
+            return nullptr;
         }
 
         debug << "TRestRawDreamToSignalProcess::ProcessEvent: returning signal event fSignalEvent "
@@ -176,7 +176,7 @@ TRestEvent* TRestRawDreamToSignalProcess::ProcessEvent(TRestEvent* evInput) {
         return fSignalEvent;
     }
 
-    return NULL;  // can't read data
+    return nullptr;  // can't read data
 }
 
 //______________________________________________________________________________
