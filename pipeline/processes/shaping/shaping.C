@@ -68,6 +68,7 @@ TCanvas* c = new TCanvas("c0", "", 800, 600);
 combinedEv->DrawEvent();
     */
 
+    delete shaper1, shaper2;
     delete sgnl;
     delete ev;
 
