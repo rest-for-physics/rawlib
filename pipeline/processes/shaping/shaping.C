@@ -1,8 +1,7 @@
 Int_t shaping() {
     TRestRawSignalEvent* ev = new TRestRawSignalEvent();
 
-    TRestRawSignal* sgnl = new TRestRawSignal();
-    for (int n = 0; n < 512; n++) sgnl->AddPoint(0);
+    TRestRawSignal* sgnl = new TRestRawSignal(512);
 
     sgnl->IncreaseBinBy(170, 100);
     sgnl->IncreaseBinBy(250, 250);
