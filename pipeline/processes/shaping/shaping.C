@@ -69,6 +69,9 @@ TCanvas* c = new TCanvas("c0", "", 800, 600);
 combinedEv->DrawEvent();
     */
 
+    delete sgnl;
+    delete ev;
+
     cout << "[\033[92m OK \x1b[0m]" << endl;
     return 0;
 }
