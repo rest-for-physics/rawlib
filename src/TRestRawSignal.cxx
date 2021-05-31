@@ -77,12 +77,11 @@ TRestRawSignal::TRestRawSignal() {
 /// \brief Default constructor initializing fSignalData with a number of points
 /// equal to nBins.
 ///
-TRestRawSignal::TRestRawSignal(Int_t nBins) {
-    fGraph = NULL;
+TRestRawSignal::TRestRawSignal(Int_t nBins) : fSignalData(nBins) {
+    fGraph = nullptr;
 
     Initialize();
 
-    for (int n = 0; n < nBins; n++) fSignalData.push_back(0);
 }
 
 ///////////////////////////////////////////////
@@ -94,7 +93,8 @@ TRestRawSignal::~TRestRawSignal() {}
 /// \brief Initialization of TRestRawSignal members
 ///
 void TRestRawSignal::Initialize() {
-    fSignalData.clear();
+
+    std::fill(fSignalData.begin(),fSignalData.end(), 0);
     fPointsOverThreshold.clear();
     fSignalID = -1;
 
@@ -114,7 +114,6 @@ void TRestRawSignal::Initialize() {
 void TRestRawSignal::Reset() {
     Int_t nBins = GetNumberOfPoints();
     Initialize();
-    for (int n = 0; n < nBins; n++) fSignalData.push_back(0);
 }
 
 ///////////////////////////////////////////////
@@ -611,6 +610,10 @@ void TRestRawSignal::GetSignalSmoothed(TRestRawSignal* smthSignal, Int_t averagi
 void TRestRawSignal::CalculateBaseLine(Int_t startBin, Int_t endBin) {
     if (endBin - startBin <= 0) {
         fBaseLine = 0.;
+    } else if (endBin > fSignalData.size()) {
+        cout << "TRestRawSignal::CalculateBaseLine. Error! Baseline range exceeds the rawdata depth!!"
+             << endl;
+        endBin = fSignalData.size();
     } else {
         Double_t baseLine = 0;
         for (int i = startBin; i < endBin; i++) baseLine += fSignalData[i];
@@ -683,8 +686,11 @@ void TRestRawSignal::WriteSignalToTextFile(TString filename) {
 void TRestRawSignal::Print() {
     cout << "---------------------" << endl;
     cout << "Signal id : " << this->GetSignalID() << endl;
+    cout << "Baseline : " << fBaseLine << endl;
+    cout << "Baseline sigma : " << fBaseLineSigma << endl;
     cout << "+++++++++++++++++++++" << endl;
-    for (int i = 0; i < GetNumberOfPoints(); i++) cout << "Bin : " << i << " Charge : " << GetData(i) << endl;
+    for (int i = 0; i < GetNumberOfPoints(); i++)
+        cout << "Bin : " << i << " amplitude : " << GetRawData(i) << endl;
     cout << "---------------------" << endl;
 }
 

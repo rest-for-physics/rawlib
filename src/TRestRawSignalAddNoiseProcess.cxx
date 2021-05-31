@@ -71,9 +71,6 @@ TRestRawSignalAddNoiseProcess::TRestRawSignalAddNoiseProcess(char* cfgFileName) 
     Initialize();
 
     if (LoadConfigFromFile(cfgFileName) == -1) LoadDefaultConfig();
-
-    PrintMetadata();
-    // TRestRawSignalAddNoiseProcess default constructor
 }
 
 //______________________________________________________________________________

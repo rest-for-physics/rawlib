@@ -1,0 +1,5 @@
+<metadata>
+<TRestRawSignalAddNoiseProcess noiseLevel="10"/>
+
+<TRestRawCommonNoiseReductionProcess mode="0" blocks="0" centerWidth="10" verboseLevel="info"/>
+</metadata>
