@@ -1,2 +1,2 @@
 
-<TRestRawSignalShapingProcess shapingType="shaper" shapingGain="25" shapingTime="40"/>
+<TRestRawSignalShapingProcess shapingType="shaper" shapingGain="40" shapingTime="40"/>
