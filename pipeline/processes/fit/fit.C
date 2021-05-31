@@ -23,11 +23,38 @@ Int_t fit() {
     TRestRawSignalEvent* noisyEvent = (TRestRawSignalEvent*)noise->ProcessEvent(shapedEvent);
 
     TRestRawSignalEvent* fittedEvent = (TRestRawSignalEvent*)fit->ProcessEvent(noisyEvent);
+    
+    
+    TF1* f = new TF1("fit1",
+                         "[0]+[1]*TMath::Exp(-3. * (x-[3])/[2]) * "
+                         "(x-[3])/[2] * (x-[3])/[2] * (x-[3])/[2] * "
+                         "sin((x-[3])/[2])/(1+TMath::Exp(-10000*(x-[3])))", 0, 511);
+    
+    
+    cout << fit->GetBaseline() << endl;
+    cout << fit->GetAmplitude() << endl;
+    cout << fit->GetShaping() << endl;
+    cout << fit->GetStartPosition() << endl;
 
     /// Debugging output
-    TCanvas* c = new TCanvas("c1", "", 800, 600);
-    // shapedEvent->DrawEvent();
+    TCanvas* c = new TCanvas();
     noisyEvent->DrawEvent();
+    // shapedEvent->DrawEvent();
+    f->SetParameters(fit->GetBaseline(), fit->GetAmplitude(), fit->GetShaping(), fit->GetStartPosition());
+    f->Draw("same");
+    f->SetLineColor(kOrange);
+    
+    // Before noise
+    TCanvas* c2 = new TCanvas();
+    TRestRawSignal* singleSignal = shapedEvent->GetSignal(0);  
+    Int_t nBins = singleSignal->GetNumberOfPoints();
+    TH1D* h = new TH1D("histo", "", nBins, 0, nBins);
+
+    for (int i = 0; i < nBins; i++) {
+        h->Fill(i, singleSignal->GetRawData(i) - f->Eval(i));
+    }
+    h->Draw("hist");
+
 
     cout << "[\033[92m OK \x1b[0m]" << endl;
     return 0;

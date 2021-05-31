@@ -39,6 +39,11 @@ class TRestRawSignalFittingProcess : public TRestEventProcess {
     void Initialize();
 
     void LoadDefaultConfig();
+    
+    Double_t fShaping = 0;
+    Double_t fStartPosition = 0;
+    Double_t fBaseline = 0;
+    Double_t fAmplitude = 0;
 
    protected:
     // add here the members of your event process
@@ -46,6 +51,11 @@ class TRestRawSignalFittingProcess : public TRestEventProcess {
    public:
     any GetInputEvent() { return fRawSignalEvent; }
     any GetOutputEvent() { return fRawSignalEvent; }
+    
+    Double_t GetShaping() { return fShaping; }
+    Double_t GetStartPosition() { return fStartPosition; }
+    Double_t GetBaseline() { return fBaseline; }
+    Double_t GetAmplitude() { return fAmplitude; }
 
     void InitProcess();
     TRestEvent* ProcessEvent(TRestEvent* eventInput);
@@ -65,7 +75,7 @@ class TRestRawSignalFittingProcess : public TRestEventProcess {
     TRestRawSignalFittingProcess(char* cfgFileName);
     ~TRestRawSignalFittingProcess();  // Destructor
 
-    ClassDef(TRestRawSignalFittingProcess, 1);
+    ClassDef(TRestRawSignalFittingProcess, 2);
     // Template for a REST "event process" class inherited from TRestEventProcess
 };
 #endif

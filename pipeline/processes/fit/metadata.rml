@@ -1,6 +1,6 @@
 <metadata>
 
-<TRestRawSignalShapingProcess shapingType="shaper" shapingTime="75" shapingGain="90"/>
+<TRestRawSignalShapingProcess shapingType="shaperSin" shapingTime="75" shapingGain="90" />
 
 <TRestRawSignalAddNoiseProcess noiseLevel="5"/>
 
