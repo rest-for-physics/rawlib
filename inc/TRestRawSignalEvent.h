@@ -61,7 +61,7 @@ class TRestRawSignalEvent : public TRestEvent {
     }
 
     // Setters
-    void AddSignal(TRestRawSignal s);
+    void AddSignal(TRestRawSignal &s);
 
     void RemoveSignalWithId(Int_t sId);
 

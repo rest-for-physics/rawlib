@@ -1,8 +1,7 @@
 Int_t shaping(Bool_t draw = false) {
     TRestRawSignalEvent* ev = new TRestRawSignalEvent();
 
-    TRestRawSignal* sgnl = new TRestRawSignal();
-    for (int n = 0; n < 512; n++) sgnl->AddPoint(0);
+    TRestRawSignal* sgnl = new TRestRawSignal(512);
 
     sgnl->IncreaseBinBy(170, 100);
     sgnl->IncreaseBinBy(250, 250);
@@ -74,6 +73,10 @@ Int_t shaping(Bool_t draw = false) {
              << endl;
         return 4;
     }
+
+    delete shaper1, shaper2;
+    delete sgnl;
+    delete ev;
 
     cout << "[\033[92m OK \x1b[0m]" << endl;
     return 0;
