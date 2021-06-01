@@ -23,10 +23,8 @@
 //////////////////////////////////////////////////////////////////////////
 ///
 /// Fit every TRestRawSignal in a TRestRawSignalEvent with AGET theoretical
-/// curve
-/// times a logistic function. This logistic function acts like a step function
-/// to select
-/// only the positive range of the AGET function.
+/// curve times a logistic function. This logistic function acts like a step function
+/// to select only the positive range of the AGET function.
 /// Working with raw signal (without substracting baseline).
 ///
 /// From TRestRawSignal -> TH1 -> Measure goodness of fit
@@ -76,19 +74,14 @@
 ///
 /// <hr>
 ///
-/// \warning **⚠ REST is under continous development.** This
-/// documentation
+/// \warning **⚠ REST is under continous development.** This documentation
 /// is offered to you by the REST community. Your HELP is needed to keep this
-/// code
-/// up to date. Your feedback will be worth to support this software, please
-/// report
-/// any problems/suggestions you may find while using it at [The REST Framework
+/// code up to date. Your feedback will be worth to support this software, please
+/// report any problems/suggestions you may find while using it at [The REST Framework
 /// forum](http://ezpc10.unizar.es). You are welcome to contribute fixing typos,
-/// updating
-/// information or adding/proposing new contributions. See also our
+/// updating information or adding/proposing new contributions. See also our
 /// <a href="https://github.com/rest-for-physics/framework/blob/master/CONTRIBUTING.md">Contribution
 /// Guide</a>.
-///
 ///
 ///_______________________________________________________________________________
 ///
@@ -211,16 +204,17 @@ TRestEvent* TRestRawSignalFittingProcess::ProcessEvent(TRestEvent* evInput) {
         TF1* f = new TF1("fit",
                          "[0]+[1]*TMath::Exp(-3. * (x-[3])/[2]) * "
                          "(x-[3])/[2] * (x-[3])/[2] * (x-[3])/[2] * "
-                         "sin((x-[3])/[2])/(1+TMath::Exp(-x+[3]))",
-                         MaxPeakBin - 145, MaxPeakBin + 165);
-        f->SetParameters(0, 250);  // Initial values adjusted from Desmos
-        f->SetParLimits(0, 150, 350);
-        f->SetParameters(1, 8400);
-        f->SetParLimits(1, 30, 90000);
-        f->SetParameters(2, 34);
-        f->SetParLimits(2, 10, 80);
-        f->SetParameters(3, 174);
-        f->SetParLimits(3, 150, 250);
+                         "sin((x-[3])/[2])/(1+TMath::Exp(-10000*(x-[3])))",
+                         0, 511);
+        f->SetParameters(0, 2000, 70, 80);
+        //f->SetParameters(0, 0);  // Initial values adjusted from Desmos
+        //f->SetParLimits(0, 150, 350);
+        //f->SetParameters(1, 2000);
+        //f->SetParLimits(1, 30, 90000);
+        //f->SetParameters(2, 70);
+        //f->SetParLimits(2, 10, 80);
+        //f->SetParameters(3, 80);
+        //f->SetParLimits(3, 150, 250);
         f->SetParNames("Baseline", "Amplitude", "ShapingTime", "PeakPosition");
 
         // Create histogram from signal
@@ -232,8 +226,7 @@ TRestEvent* TRestRawSignalFittingProcess::ProcessEvent(TRestEvent* evInput) {
         }
 
         // Fit histogram with ShaperSin
-        h->Fit(f, "RNQ", "", MaxPeakBin - 145,
-               MaxPeakBin + 165);  // Options: R->fit in range, N->No draw, Q->Quiet
+        h->Fit(f, "NWW", "", 0, 511);  // Options: R->fit in range, N->No draw, Q->Quiet
 
         Double_t sigma = 0;
         for (int j = MaxPeakBin - 145; j < MaxPeakBin + 165; j++) {
@@ -250,6 +243,11 @@ TRestEvent* TRestRawSignalFittingProcess::ProcessEvent(TRestEvent* evInput) {
         amplitudeFit[singleSignal->GetID()] = f->GetParameter(1);
         shapingtimeFit[singleSignal->GetID()] = f->GetParameter(2);
         peakpositionFit[singleSignal->GetID()] = f->GetParameter(3);
+        
+        fShaping = f->GetParameter(2);
+        fStartPosition = f->GetParameter(3);
+        fBaseline = f->GetParameter(0);
+        fAmplitude = f->GetParameter(1);
 
         h->Delete();
     }
@@ -333,16 +331,3 @@ void TRestRawSignalFittingProcess::EndProcess() {
     // TRestEventProcess::EndProcess();
 }
 
-///////////////////////////////////////////////
-/// \brief Function to read input parameters.
-///
-void TRestRawSignalFittingProcess::InitFromConfigFile() {
-    /* Parameters to initialize from RML
-  fBaseLineRange = StringTo2DVector(GetParameter("baseLineRange", "(5,55)"));
-  fIntegralRange = StringTo2DVector(GetParameter("integralRange", "(10,500)"));
-  fPointThreshold = StringToDouble(GetParameter("pointThreshold", "2"));
-  fNPointsOverThreshold = StringToInteger(GetParameter("pointsOverThreshold",
-  "5"));
-  fSignalThreshold = StringToDouble(GetParameter("signalThreshold", "5"));
-    */
-}

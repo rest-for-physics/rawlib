@@ -1,0 +1,3 @@
+<metadata>
+	<TRestRawSignalShapingProcess shapingType="gaus" shapingGain="40" shapingTime="20"/>
+</metadata>

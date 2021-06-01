@@ -109,8 +109,6 @@ TRestRawSignalShapingProcess::TRestRawSignalShapingProcess(char* cfgFileName) {
     Initialize();
 
     if (LoadConfigFromFile(cfgFileName) == -1) LoadDefaultConfig();
-
-    PrintMetadata();
 }
 
 ///////////////////////////////////////////////
@@ -207,6 +205,8 @@ TRestEvent* TRestRawSignalShapingProcess::ProcessEvent(TRestEvent* evInput) {
     double* rsp;
     Int_t Nr = 0;
 
+    /// This is done for every event however we could do it inside InitProcess!
+    /// It is the response function. Does not change from event ot event
     if (fShapingType == "gaus") {
         Int_t cBin = (Int_t)(fShapingTime * 3.5);
         Nr = 2 * cBin;
@@ -250,9 +250,15 @@ TRestEvent* TRestRawSignalShapingProcess::ProcessEvent(TRestEvent* evInput) {
         Int_t nBins = inSignal.GetNumberOfPoints();
 
         vector<double> out(nBins);
+        for (int m = 0; m < nBins; m++) out[m] = 0;
+
         for (int m = 0; m < nBins; m++) {
-            if (inSignal.GetData(m) > 0) {
-                for (int n = 0; n < Nr && m + n < nBins; n++) out[m + n] += rsp[n] * inSignal.GetData(m);
+            if (inSignal.GetData(m) >= 0) {
+                if (fShapingType == "gaus") {
+                    for (int n = -Nr / 2; m + n < nBins && n < Nr / 2; n++)
+                        if (m + n >= 0) out[m + n] += rsp[n + Nr / 2] * inSignal.GetData(m);
+                } else
+                    for (int n = 0; m + n < nBins && n < Nr; n++) out[m + n] += rsp[n] * inSignal.GetData(m);
             }
         }
 
@@ -280,18 +286,3 @@ void TRestRawSignalShapingProcess::EndProcess() {
     // TRestEventProcess::EndProcess();
 }
 
-///////////////////////////////////////////////
-/// \brief Function to read input parameters from the RML
-/// TRestGeant4AnalysisProcess metadata section
-///
-void TRestRawSignalShapingProcess::InitFromConfigFile() {
-    // It is not used for the moment
-    fResponseFilename = GetParameter("responseFile");
-
-    // gaus, responseFile, etc
-    fShapingType = GetParameter("shapingType", "gaus");
-
-    fShapingTime = StringToDouble(GetParameter("shapingTime", "10"));
-
-    fShapingGain = StringToDouble(GetParameter("gain", "1"));
-}

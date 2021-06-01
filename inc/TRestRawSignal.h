@@ -143,6 +143,8 @@ class TRestRawSignal : public TObject {
     /// It sets/constrains the range for any calculation.
     void SetRange(TVector2 rng) { fRange = rng; }
 
+    void SetRangeToMax() { fRange = TVector2(0, GetNumberOfPoints()); }
+
     /// It sets/constrains the range for any calculation.
     void SetRange(Int_t from, Int_t to) { fRange = TVector2(from, to); }
 

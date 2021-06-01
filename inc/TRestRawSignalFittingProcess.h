@@ -36,18 +36,14 @@ class TRestRawSignalFittingProcess : public TRestEventProcess {
     /// A pointer to the specific TRestRawSignalEvent input
     TRestRawSignalEvent* fRawSignalEvent;  //!
 
-    /* Metadata members
-  TVector2 fBaseLineRange;
-  TVector2 fIntegralRange;
-  Double_t fPointThreshold;
-  Double_t fSignalThreshold;
-  Int_t fNPointsOverThreshold; */
-
-    void InitFromConfigFile();
-
     void Initialize();
 
     void LoadDefaultConfig();
+    
+    Double_t fShaping = 0;
+    Double_t fStartPosition = 0;
+    Double_t fBaseline = 0;
+    Double_t fAmplitude = 0;
 
    protected:
     // add here the members of your event process
@@ -55,6 +51,11 @@ class TRestRawSignalFittingProcess : public TRestEventProcess {
    public:
     any GetInputEvent() { return fRawSignalEvent; }
     any GetOutputEvent() { return fRawSignalEvent; }
+    
+    Double_t GetShaping() { return fShaping; }
+    Double_t GetStartPosition() { return fStartPosition; }
+    Double_t GetBaseline() { return fBaseline; }
+    Double_t GetAmplitude() { return fAmplitude; }
 
     void InitProcess();
     TRestEvent* ProcessEvent(TRestEvent* eventInput);
@@ -65,20 +66,6 @@ class TRestRawSignalFittingProcess : public TRestEventProcess {
     void PrintMetadata() {
         BeginPrintProcess();
 
-        /*
-    metadata << "Baseline range : ( " << fBaseLineRange.X() << " , " <<
-    fBaseLineRange.Y() << " ) "
-         << endl;
-    metadata << "Integral range : ( " << fIntegralRange.X() << " , " <<
-    fIntegralRange.Y() << " ) "
-         << endl;
-    metadata << "Point Threshold : " << fPointThreshold << " sigmas" << endl;
-    metadata << "Signal threshold : " << fSignalThreshold << " sigmas" << endl;
-    metadata << "Number of points over threshold : " << fNPointsOverThreshold <<
-    endl;
-    metadata << " " << endl;
-        */
-
         EndPrintProcess();
     }
 
@@ -88,7 +75,7 @@ class TRestRawSignalFittingProcess : public TRestEventProcess {
     TRestRawSignalFittingProcess(char* cfgFileName);
     ~TRestRawSignalFittingProcess();  // Destructor
 
-    ClassDef(TRestRawSignalFittingProcess, 1);
+    ClassDef(TRestRawSignalFittingProcess, 2);
     // Template for a REST "event process" class inherited from TRestEventProcess
 };
 #endif
