@@ -87,7 +87,7 @@ void TRestRawSignalEvent::Initialize() {
     fMaxTime = -1E10;
 }
 
-void TRestRawSignalEvent::AddSignal(TRestRawSignal &s) {
+void TRestRawSignalEvent::AddSignal(TRestRawSignal s) {
     if (signalIDExists(s.GetSignalID())) {
         cout << "Warning. Signal ID : " << s.GetSignalID()
              << " already exists. Signal will not be added to signal event" << endl;
@@ -97,7 +97,7 @@ void TRestRawSignalEvent::AddSignal(TRestRawSignal &s) {
     s.CalculateBaseLine(fBaseLineRange.X(), fBaseLineRange.Y());
     s.SetRange(fRange);
 
-    fSignal.emplace_back(s);
+    fSignal.push_back(s);
 }
 
 void TRestRawSignalEvent::RemoveSignalWithId(Int_t sId) {
