@@ -28,7 +28,7 @@ Int_t fit(Bool_t draw = false) {
     cout << "Amplitude: " << fit->GetAmplitude() << endl;
     cout << "Shaping: " << fit->GetShaping() << endl;
     cout << "Start position: " << fit->GetStartPosition() << endl;
-    
+
     TF1* f = new TF1("fit1",
                      "[0]+[1]*TMath::Exp(-3. * (x-[3])/[2]) * "
                      "(x-[3])/[2] * (x-[3])/[2] * (x-[3])/[2] * "
@@ -63,19 +63,18 @@ Int_t fit(Bool_t draw = false) {
         }
         h->Draw("hist");
     }
-    
+
     Double_t sum = 0;
-    for (int i = 0; i < shapedEvent->GetSignal(0)->GetNumberOfPoints(); i++){
-        sum+=abs(shapedEvent->GetSignal(0)->GetRawData(i) - f->Eval(i));
+    for (int i = 0; i < shapedEvent->GetSignal(0)->GetNumberOfPoints(); i++) {
+        sum += abs(shapedEvent->GetSignal(0)->GetRawData(i) - f->Eval(i));
     }
-    
+
     cout << "Absolute value of difference original-fitted: " << sum << endl;
-    
-    if (sum > 5000){
+
+    if (sum > 15000) {
         cout << "Probably fitted fuction far from original." << endl;
         return 1;
     }
-    
 
     cout << "[\033[92m OK \x1b[0m]" << endl;
     return 0;
