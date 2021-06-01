@@ -101,3 +101,10 @@ signalShaping:
     - . ${CI_PROJECT_DIR}/install/thisREST.sh
     - cd ${CI_PROJECT_DIR}/pipeline/processes/shaping
     - restRoot -b -q shaping.C
+    
+fittingProcess: 
+  type: process
+  script:
+    - . ${CI_PROJECT_DIR}/install/thisREST.sh
+    - cd ${CI_PROJECT_DIR}/pipeline/processes/fit
+    - restRoot -b -q fit.C
