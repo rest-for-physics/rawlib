@@ -109,8 +109,6 @@ TRestRawSignalShapingProcess::TRestRawSignalShapingProcess(char* cfgFileName) {
     Initialize();
 
     if (LoadConfigFromFile(cfgFileName) == -1) LoadDefaultConfig();
-
-    PrintMetadata();
 }
 
 ///////////////////////////////////////////////

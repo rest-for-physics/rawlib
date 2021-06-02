@@ -1,4 +1,4 @@
-Int_t shaping() {
+Int_t shaping(Bool_t draw = false) {
     TRestRawSignalEvent* ev = new TRestRawSignalEvent();
 
     TRestRawSignal* sgnl = new TRestRawSignal(512);
@@ -28,45 +28,51 @@ Int_t shaping() {
     Double_t agetMaxPeakPosition = agetEvent->GetSignal(0)->GetMaxPeakBin();
     Double_t agetMaxPeakValue = agetEvent->GetSignal(0)->GetMaxPeakValue();
 
-    if (gausMaxPeakPosition != 248) {
+    cout << "Gaus Max Peak Position: " << gausMaxPeakPosition << endl;
+    cout << "Gaus Max Peak Value: " << gausMaxPeakValue << endl;
+    cout << "AGET Max Peak Position: " << agetMaxPeakPosition << endl;
+    cout << "AGET Max Peak Value: " << agetMaxPeakValue << endl;
+
+    /* Used to generate a combined plot */
+    if (draw) {
+        TRestRawSignalEvent* combinedEv = new TRestRawSignalEvent();
+
+        TRestRawSignal sgnl1 = *ev->GetSignal(0);
+        sgnl1.SetID(0);
+        combinedEv->AddSignal(sgnl1);
+
+        TRestRawSignal sgnl2 = *gausEvent->GetSignal(0);
+        sgnl2.SetID(1);
+        combinedEv->AddSignal(sgnl2);
+
+        TRestRawSignal sgnl3 = *agetEvent->GetSignal(0);
+        sgnl3.SetID(2);
+        combinedEv->AddSignal(sgnl3);
+
+        TCanvas* c = new TCanvas("c0", "", 800, 600);
+        combinedEv->DrawEvent();
+    }
+
+    if (gausMaxPeakPosition != 249) {
         cout << "Problem on gaussian convolution! Position of the most intense peak should be 248!!" << endl;
         return 1;
     }
 
-    if (gausMaxPeakValue != 124) {
+    if (gausMaxPeakValue != 199) {
         cout << "Problem on gaussian convolution! Ampltude of the most intense peak should be 124!!" << endl;
         return 2;
     }
 
-    if (agetMaxPeakPosition != 287) {
+    if (agetMaxPeakPosition != 288) {
         cout << "Problem on shaperSin convolution! Position of the most intense peak should be 287!!" << endl;
         return 3;
     }
 
-    if (agetMaxPeakValue != 107) {
+    if (agetMaxPeakValue != 172) {
         cout << "Problem on shaperSin convolution! Amplitude of the most intense peak should be 107!!"
              << endl;
         return 4;
     }
-
-    /* Used to generate a combined plot
-TRestRawSignalEvent* combinedEv = new TRestRawSignalEvent();
-
-TRestRawSignal sgnl1 = *ev->GetSignal(0);
-sgnl1.SetID(0);
-combinedEv->AddSignal(sgnl1);
-
-TRestRawSignal sgnl2 = *gausEvent->GetSignal(0);
-sgnl2.SetID(1);
-combinedEv->AddSignal(sgnl2);
-
-TRestRawSignal sgnl3 = *agetEvent->GetSignal(0);
-sgnl3.SetID(2);
-combinedEv->AddSignal(sgnl3);
-
-TCanvas* c = new TCanvas("c0", "", 800, 600);
-combinedEv->DrawEvent();
-    */
 
     delete shaper1, shaper2;
     delete sgnl;

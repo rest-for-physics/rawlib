@@ -5,6 +5,7 @@ stages:
   - build
   - loadRESTLibs
   - process
+  - binaryData
 
 before_script:
     - export USER="raw"
@@ -46,7 +47,7 @@ build:
   script:
     - echo "**${CI_PROJECT_DIR}**"
     - rm -rf ${CI_PROJECT_DIR}/install
-    - git clone --single-branch --branch development https://github.com/rest-for-physics/framework.git framework
+    - git clone --single-branch --branch master https://github.com/rest-for-physics/framework.git framework
     - cd framework
     - git submodule init source/libraries/raw
     - git submodule update source/libraries/raw
@@ -101,3 +102,18 @@ signalShaping:
     - . ${CI_PROJECT_DIR}/install/thisREST.sh
     - cd ${CI_PROJECT_DIR}/pipeline/processes/shaping
     - restRoot -b -q shaping.C
+    
+fittingProcess: 
+  type: process
+  script:
+    - . ${CI_PROJECT_DIR}/install/thisREST.sh
+    - cd ${CI_PROJECT_DIR}/pipeline/processes/fit
+    - restRoot -b -q fit.C
+
+dreamData:
+  type: binaryData
+  script:
+    - . ${CI_PROJECT_DIR}/install/thisREST.sh
+    - cd ${CI_PROJECT_DIR}/pipeline/binaryData/dream
+    - restManager --c dream.rml --f dummyDreamData.fdf
+    - restRoot -b -q dream.C
