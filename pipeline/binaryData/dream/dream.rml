@@ -23,7 +23,7 @@
 
 		<parameter name="eventsToProcess" value="1" />
 
-		<addProcess type="TRestRawDreamToSignalProcess" name="virtualDAQ" value="ON" verboseLevel="warning">
+		<addProcess type="TRestRawFEUDreamToSignalProcess" name="virtualDAQ" value="ON" verboseLevel="warning">
 			<parameter name="pedScript" value="ped"/>
 			<parameter name="runScript" value="run"/>
 			<parameter name="electronics" value="Dream"/>
