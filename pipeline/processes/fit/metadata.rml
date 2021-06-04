@@ -6,6 +6,6 @@
 
 <TRestRawSignalFittingProcess verboseLevel="debug" />
 
-<TRestRawSignalGeneralFitProcess function="[0=0]+[1=2000]*TMath::Exp(-3. * (x-[3=80])/[2=70]) * ((x-[3=80])/[2=70])^3  * sin((x-[3=80])/[2=70])/(1+TMath::Exp(-10000*(x-[3=80])))" functionRange="(0,511)" verboseLevel="debug" />
+<TRestRawSignalGeneralFitProcess function="[0=0(-100,100)]+[1=2000]*TMath::Exp(-3. * (x-[3=80])/[2=70]) * ((x-[3=80])/[2=70])^3  * sin((x-[3=80])/[2=70])/(1+TMath::Exp(-10000*(x-[3=80])))" functionRange="(0,511)" verboseLevel="debug" />
 
 </metadata>

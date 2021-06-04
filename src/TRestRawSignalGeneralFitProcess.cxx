@@ -25,6 +25,13 @@
 /// Fit every TRestRawSignal in a TRestRawSignalEvent with fuction provided
 /// in the RML file.
 /// It uses ExtractTF1FromString function from TRestStringHelper.
+/// Examples: 
+/// -- Initial value: [0=3.5]
+/// -- Fixed value: [0==3.5]
+/// -- Range: [0=3.5(1,5)] The parameter 0 begin at 3.5 and it can move between 1 and 5.
+/// 
+/// -- Complete function example: [0=0(-100,100)]+[1=2000]*TMath::Exp(-3. * (x-[3=80])/[2=70]) 
+///                               * ((x-[3=80])/[2=70])^3  * sin((x-[3=80])/[2=70])
 ///
 /// <hr>
 ///
