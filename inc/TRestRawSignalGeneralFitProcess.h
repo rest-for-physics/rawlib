@@ -43,6 +43,8 @@ class TRestRawSignalGeneralFitProcess : public TRestEventProcess {
     TVector2 fFunctionRange = TVector2(0, 0);
     string fFunction;
     
+    TF1* f;
+    
     /*Double_t fShaping = 0;
     Double_t fStartPosition = 0;
     Double_t fBaseline = 0;
@@ -54,6 +56,8 @@ class TRestRawSignalGeneralFitProcess : public TRestEventProcess {
    public:
     any GetInputEvent() { return fRawSignalEvent; }
     any GetOutputEvent() { return fRawSignalEvent; }
+    
+    TF1* GetFunction() { return f; }
     
     /*Double_t GetShaping() { return fShaping; }
     Double_t GetStartPosition() { return fStartPosition; }
@@ -81,7 +85,7 @@ class TRestRawSignalGeneralFitProcess : public TRestEventProcess {
     TRestRawSignalGeneralFitProcess(char* cfgFileName);
     ~TRestRawSignalGeneralFitProcess();  // Destructor
 
-    ClassDef(TRestRawSignalGeneralFitProcess, 1);
+    ClassDef(TRestRawSignalGeneralFitProcess, 2);
     // Template for a REST "event process" class inherited from TRestEventProcess
 };
 #endif

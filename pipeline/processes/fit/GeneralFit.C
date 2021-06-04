@@ -1,4 +1,4 @@
-int GeneralFit() {
+Int_t GeneralFit(Bool_t draw = false) {
     TRestRawSignalEvent* ev = new TRestRawSignalEvent();
 
     TRestRawSignal* sgnl = new TRestRawSignal();
@@ -35,17 +35,27 @@ int GeneralFit() {
                      "sin((x-[3])/[2])/(1+TMath::Exp(-10000*(x-[3])))",
                      0, 511);
     f->SetParameters(fit->GetBaseline(), fit->GetAmplitude(), fit->GetShaping(), fit->GetStartPosition());*/
+    
+    /*TCanvas* c = new TCanvas();
 
-    /*if (draw) {
+    // Drawing the noisy event with fit result and original signal
+    noisyEvent->DrawEvent();
+    // shapedEvent->DrawEvent();
+
+    fit->GetFunction()->SetLineColor(kOrange);
+    fit->GetFunction()->SetLineWidth(6);
+    fit->GetFunction()->Draw("same");*/
+
+    if (draw) {
         TCanvas* c = new TCanvas();
 
         // Drawing the noisy event with fit result and original signal
         noisyEvent->DrawEvent();
         // shapedEvent->DrawEvent();
 
-        f->SetLineColor(kOrange);
-        f->SetLineWidth(6);
-        f->Draw("same");
+        fit->GetFunction()->SetLineColor(kOrange);
+        fit->GetFunction()->SetLineWidth(6);
+        fit->GetFunction()->Draw("same");
 
         TGraph* originalSignalGraph = shapedEvent->GetSignal(0)->GetGraph();
         originalSignalGraph->SetLineColor(kBlue);
@@ -59,14 +69,14 @@ int GeneralFit() {
         TH1D* h = new TH1D("histo", "", nBins, 0, nBins);
 
         for (int i = 0; i < nBins; i++) {
-            h->Fill(i, singleSignal->GetRawData(i) - f->Eval(i));
+            h->Fill(i, singleSignal->GetRawData(i) - fit->GetFunction()->Eval(i));
         }
         h->Draw("hist");
     }
     
     Double_t sum = 0;
     for (int i = 0; i < shapedEvent->GetSignal(0)->GetNumberOfPoints(); i++){
-        sum+=abs(shapedEvent->GetSignal(0)->GetRawData(i) - f->Eval(i));
+        sum+=abs(shapedEvent->GetSignal(0)->GetRawData(i) - fit->GetFunction()->Eval(i));
     }
     
     cout << "Absolute value of difference original-fitted: " << sum << endl;
@@ -74,7 +84,7 @@ int GeneralFit() {
     if (sum > 5000){
         cout << "Probably fitted fuction far from original." << endl;
         return 1;
-    }*/
+    }
     
 
     cout << "[\033[92m OK \x1b[0m]" << endl;

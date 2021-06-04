@@ -150,7 +150,7 @@ TRestEvent* TRestRawSignalGeneralFitProcess::ProcessEvent(TRestEvent* evInput) {
     peakpositionFit.clear();*/
     
     
-    TF1* f = ExtractTF1FromString(fFunction, fFunctionRange.X(), fFunctionRange.Y());
+    f = ExtractTF1FromString(fFunction, fFunctionRange.X(), fFunctionRange.Y());
     
     std::vector<map<int, Double_t>> param (f->GetNpar());
     std::vector<map<int, Double_t>> paramErr (f->GetNpar());
