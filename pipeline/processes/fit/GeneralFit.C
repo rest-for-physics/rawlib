@@ -24,27 +24,6 @@ Int_t GeneralFit(Bool_t draw = false) {
 
     TRestRawSignalEvent* fittedEvent = (TRestRawSignalEvent*)fit->ProcessEvent(noisyEvent);
 
-    /*cout << "Baseline: " << fit->GetBaseline() << endl;
-    cout << "Amplitude: " << fit->GetAmplitude() << endl;
-    cout << "Shaping: " << fit->GetShaping() << endl;
-    cout << "Start position: " << fit->GetStartPosition() << endl;*/
-    
-    /*TF1* f = new TF1("fit1",
-                     "[0]+[1]*TMath::Exp(-3. * (x-[3])/[2]) * "
-                     "(x-[3])/[2] * (x-[3])/[2] * (x-[3])/[2] * "
-                     "sin((x-[3])/[2])/(1+TMath::Exp(-10000*(x-[3])))",
-                     0, 511);
-    f->SetParameters(fit->GetBaseline(), fit->GetAmplitude(), fit->GetShaping(), fit->GetStartPosition());*/
-    
-    /*TCanvas* c = new TCanvas();
-
-    // Drawing the noisy event with fit result and original signal
-    noisyEvent->DrawEvent();
-    // shapedEvent->DrawEvent();
-
-    fit->GetFunction()->SetLineColor(kOrange);
-    fit->GetFunction()->SetLineWidth(6);
-    fit->GetFunction()->Draw("same");*/
 
     if (draw) {
         TCanvas* c = new TCanvas();
