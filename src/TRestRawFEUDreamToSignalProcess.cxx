@@ -21,7 +21,7 @@
  *************************************************************************/
 
 ///////////////////////////////////////////////////////////////////////
-// The TRestRawDreamToSignalProcess ...
+// The TRestRawFEUDreamToSignalProcess ...
 //
 // DOCUMENTATION TO BE WRITTEN (main description, methods, data members)
 //
@@ -62,30 +62,30 @@
 // 2021-May: Readapted to compile in REST v2.3.X
 //           Damien Neyret
 //
-// \class      TRestRawDreamToSignalProcess
+// \class      TRestRawFEUDreamToSignalProcess
 // \author     Damien Neyret
 // \author     Javier Galan
 //
 // <hr>
 /////
-#include "TRestRawDreamToSignalProcess.h"
+#include "TRestRawFEUDreamToSignalProcess.h"
 using namespace std;
 #include "TTimeStamp.h"
 
-ClassImp(TRestRawDreamToSignalProcess);
+ClassImp(TRestRawFEUDreamToSignalProcess);
 
-TRestRawDreamToSignalProcess::TRestRawDreamToSignalProcess() { Initialize(); }
+TRestRawFEUDreamToSignalProcess::TRestRawFEUDreamToSignalProcess() { Initialize(); }
 
-TRestRawDreamToSignalProcess::TRestRawDreamToSignalProcess(char* cfgFileName)
+TRestRawFEUDreamToSignalProcess::TRestRawFEUDreamToSignalProcess(char* cfgFileName)
     : TRestRawToSignalProcess(cfgFileName) {
     Initialize();
 }
 
-TRestRawDreamToSignalProcess::~TRestRawDreamToSignalProcess() {
-    // TRestRawDreamToSignalProcess destructor
+TRestRawFEUDreamToSignalProcess::~TRestRawFEUDreamToSignalProcess() {
+    // TRestRawFEUDreamToSignalProcess destructor
 }
 
-void TRestRawDreamToSignalProcess::Initialize() {
+void TRestRawFEUDreamToSignalProcess::Initialize() {
     TRestRawToSignalProcess::Initialize();
 
     // MaxThreshold = 4000;
@@ -95,18 +95,18 @@ void TRestRawDreamToSignalProcess::Initialize() {
     IDEvent = 0;
 }
 
-void TRestRawDreamToSignalProcess::InitProcess() {
+void TRestRawFEUDreamToSignalProcess::InitProcess() {
     tStart = 0;  // timeStamp of the run initially set to 0
-    info << "TRestRawDreamToSignalProcess::InitProcess" << endl;
+    info << "TRestRawFEUDreamToSignalProcess::InitProcess" << endl;
 
     totalBytesReaded = 0;
 }
 
-TRestEvent* TRestRawDreamToSignalProcess::ProcessEvent(TRestEvent* evInput) {
+TRestEvent* TRestRawFEUDreamToSignalProcess::ProcessEvent(TRestEvent* evInput) {
     FeuReadOut Feu;
     bool badreadfg = false;
 
-    debug << "---------------Start of TRestRawDreamToSignalProcess::ProcessEvent------------" << endl;
+    debug << "---------------Start of TRestRawFEUDreamToSignalProcess::ProcessEvent------------" << endl;
 
     fSignalEvent->Initialize();
 
@@ -116,20 +116,22 @@ TRestEvent* TRestRawDreamToSignalProcess::ProcessEvent(TRestEvent* evInput) {
 
         // Check header and fill Event IDs and TimeStamps
         badreadfg = ReadFeuHeaders(Feu);
-        debug << "TRestRawDreamToSignalProcess::ProcessEvent: header read, badreadfg " << badreadfg << endl;
-        debug << "TRestRawDreamToSignalProcess::ProcessEvent: event to read EventID " << Feu.EventID
+        debug << "TRestRawFEUDreamToSignalProcess::ProcessEvent: header read, badreadfg " << badreadfg
+              << endl;
+        debug << "TRestRawFEUDreamToSignalProcess::ProcessEvent: event to read EventID " << Feu.EventID
               << " Time " << Feu.TimeStamp << " isample " << Feu.isample << endl;
 
         if (badreadfg) {
-            warning << "TRestRawDreamToSignalProcess::ProcessEvent: Error in reading feu header (bad file or "
-                       "end of file), trying to go to the next file"
-                    << endl;
+            warning
+                << "TRestRawFEUDreamToSignalProcess::ProcessEvent: Error in reading feu header (bad file or "
+                   "end of file), trying to go to the next file"
+                << endl;
             if (GoToNextFile()) {
                 badreadfg = ReadFeuHeaders(Feu);  // reading event from the next file
-                debug << "TRestRawDreamToSignalProcess::ProcessEvent: header read, badreadfg " << badreadfg
+                debug << "TRestRawFEUDreamToSignalProcess::ProcessEvent: header read, badreadfg " << badreadfg
                       << endl;
-                debug << "TRestRawDreamToSignalProcess::ProcessEvent: event to read EventID " << Feu.EventID
-                      << " Time " << Feu.TimeStamp << " isample " << Feu.isample << endl;
+                debug << "TRestRawFEUDreamToSignalProcess::ProcessEvent: event to read EventID "
+                      << Feu.EventID << " Time " << Feu.TimeStamp << " isample " << Feu.isample << endl;
             } else {
                 return nullptr;
             }
@@ -137,10 +139,10 @@ TRestEvent* TRestRawDreamToSignalProcess::ProcessEvent(TRestEvent* evInput) {
 
         // Read event
         badreadfg = ReadEvent(Feu);
-        debug << "TRestRawDreamToSignalProcess::ProcessEvent: event read, badreadfg " << badreadfg << endl;
+        debug << "TRestRawFEUDreamToSignalProcess::ProcessEvent: event read, badreadfg " << badreadfg << endl;
         if (badreadfg) {
-            ferr << "TRestRawDreamToSignalProcess::ProcessEvent: Error in event reading at event " << Nevent
-                 << endl;
+            ferr << "TRestRawFEUDreamToSignalProcess::ProcessEvent: Error in event reading at event "
+                 << Nevent << endl;
             break;
         }
 
@@ -148,11 +150,11 @@ TRestEvent* TRestRawDreamToSignalProcess::ProcessEvent(TRestEvent* evInput) {
         if (badreadfg) break;  // break from loop
         if (bad_event) Nbadevent++;
         if ((Nevent % 100) == 0)
-            cout << "TRestRawDreamToSignalProcess::ProcessEvent: " << Nevent
+            cout << "TRestRawFEUDreamToSignalProcess::ProcessEvent: " << Nevent
                  << " events processed in file, and " << Nbadevent << " bad events skipped " << endl;
 
         if (GetVerboseLevel() >= REST_Info) {
-            info << "-- TRestRawDreamToSignalProcess::ProcessEvent ---" << endl;
+            info << "-- TRestRawFEUDreamToSignalProcess::ProcessEvent ---" << endl;
             info << "Event ID : " << fSignalEvent->GetID() << endl;
             info << "Time stamp : " << fSignalEvent->GetTimeStamp() << endl;
             info << "Number of Signals : " << fSignalEvent->GetNumberOfSignals() << endl;
@@ -166,11 +168,11 @@ TRestEvent* TRestRawDreamToSignalProcess::ProcessEvent(TRestEvent* evInput) {
         bad_event = false;
 
         if (fSignalEvent->GetNumberOfSignals() == 0) {
-            ferr << "TRestRawDreamToSignalProcess::ProcessEvent: no signal in event" << endl;
+            ferr << "TRestRawFEUDreamToSignalProcess::ProcessEvent: no signal in event" << endl;
             return nullptr;
         }
 
-        debug << "TRestRawDreamToSignalProcess::ProcessEvent: returning signal event fSignalEvent "
+        debug << "TRestRawFEUDreamToSignalProcess::ProcessEvent: returning signal event fSignalEvent "
               << fSignalEvent << endl;
         if (GetVerboseLevel() > REST_Debug) fSignalEvent->PrintEvent();
         return fSignalEvent;
@@ -181,40 +183,40 @@ TRestEvent* TRestRawDreamToSignalProcess::ProcessEvent(TRestEvent* evInput) {
 
 //______________________________________________________________________________
 //			Definition of decoding methods
-bool TRestRawDreamToSignalProcess::ReadEvent(FeuReadOut& Feu) {
+bool TRestRawFEUDreamToSignalProcess::ReadEvent(FeuReadOut& Feu) {
     bool badreadfg = false;
 
     while (!Feu.event_completed) {
         badreadfg = ReadFeuHeaders(Feu);  // read feu header if not done
-        debug << "TRestRawDreamToSignalProcess::ReadEvent: header read, badreadfg " << badreadfg << endl;
+        debug << "TRestRawFEUDreamToSignalProcess::ReadEvent: header read, badreadfg " << badreadfg << endl;
         if (badreadfg) {
-            warning << "TRestRawDreamToSignalProcess::ReadEvent: error in reading FEU headers "
+            warning << "TRestRawFEUDreamToSignalProcess::ReadEvent: error in reading FEU headers "
                     << endl;  // failed
             return true;
         }
 
         badreadfg = ReadDreamData(Feu);  // read dream data
-        debug << "TRestRawDreamToSignalProcess::ReadEvent: data read, badreadfg " << badreadfg << endl;
+        debug << "TRestRawFEUDreamToSignalProcess::ReadEvent: data read, badreadfg " << badreadfg << endl;
         if (badreadfg) {
-            ferr << "TRestRawDreamToSignalProcess::ReadEvent: error in reading Dream data " << endl;
+            ferr << "TRestRawFEUDreamToSignalProcess::ReadEvent: error in reading Dream data " << endl;
             return true;
         }
 
         badreadfg = ReadFeuTrailer(Feu);  // read feu trailer
-        debug << "TRestRawDreamToSignalProcess::ReadEvent: trailer read, badreadfg " << badreadfg << endl;
+        debug << "TRestRawFEUDreamToSignalProcess::ReadEvent: trailer read, badreadfg " << badreadfg << endl;
         if (badreadfg) {
-            ferr << "TRestRawDreamToSignalProcess::ReadEvent: error in reading FEU trailer" << endl;
+            ferr << "TRestRawFEUDreamToSignalProcess::ReadEvent: error in reading FEU trailer" << endl;
             return true;
         }
 
     }  // end loop
-    info << "TRestRawDreamToSignalProcess::ReadEvent: Event ID " << Feu.EventID
+    info << "TRestRawFEUDreamToSignalProcess::ReadEvent: Event ID " << Feu.EventID
          << " processed successfully, Time " << Feu.TimeStamp << " isample  " << Feu.isample << endl;
 
     return false;
 }
 
-bool TRestRawDreamToSignalProcess::ReadFeuHeaders(FeuReadOut& Feu) {
+bool TRestRawFEUDreamToSignalProcess::ReadFeuHeaders(FeuReadOut& Feu) {
     if (Feu.FeuHeaderLoaded) return false;  // already done
 
     if (!Feu.data_to_treat) {  // data not loaded
@@ -222,8 +224,8 @@ bool TRestRawDreamToSignalProcess::ReadFeuHeaders(FeuReadOut& Feu) {
         int nbytes = fread((void*)&(Feu.current_data), sizeof(Feu.current_data), 1, fInputBinFile);
         totalBytesReaded += sizeof(Feu.current_data);
         if (nbytes == 0) {
-            //       perror("TRestRawDreamToSignalProcess::ReadFeuHeaders: Error in reading FeuHeaders !");
-            warning << "TRestRawDreamToSignalProcess::ReadFeuHeaders: Problem in reading raw file, ferror "
+            //       perror("TRestRawFEUDreamToSignalProcess::ReadFeuHeaders: Error in reading FeuHeaders !");
+            warning << "TRestRawFEUDreamToSignalProcess::ReadFeuHeaders: Problem in reading raw file, ferror "
                     << ferror(fInputBinFile) << " feof " << feof(fInputBinFile) << " fInputBinFile "
                     << fInputBinFile << endl;
             //      fclose(fInputBinFile);
@@ -263,9 +265,10 @@ bool TRestRawDreamToSignalProcess::ReadFeuHeaders(FeuReadOut& Feu) {
                             fMinPoints - 2) {  // finishing the current event and starting the next one
                                                // fprintf(stderr, "Event ID %d, processed \n", Feu.EventID-1);
                     } else {
-                        ferr << "TRestRawDreamToSignalProcess::ReadFeuHeaders: non continuous sample index "
-                                "number, isample = "
-                             << Feu.isample << " prev_isample = " << Feu.isample_prev << endl;
+                        ferr
+                            << "TRestRawFEUDreamToSignalProcess::ReadFeuHeaders: non continuous sample index "
+                               "number, isample = "
+                            << Feu.isample << " prev_isample = " << Feu.isample_prev << endl;
                         bad_event = true;
                     }
                 }
@@ -301,7 +304,7 @@ bool TRestRawDreamToSignalProcess::ReadFeuHeaders(FeuReadOut& Feu) {
             Feu.FeuHeaderLine++;
 
         } else if (Feu.FeuHeaderLine > 8 && Feu.current_data.is_Feu_header()) {
-            ferr << "TRestRawDreamToSignalProcess::ReadFeuHeaders: too long Feu header part  "
+            ferr << "TRestRawFEUDreamToSignalProcess::ReadFeuHeaders: too long Feu header part  "
                  << Feu.FeuHeaderLine << endl;
             bad_event = true;
         } else if (Feu.FeuHeaderLine > 3 && !Feu.current_data.is_Feu_header())
@@ -320,14 +323,15 @@ bool TRestRawDreamToSignalProcess::ReadFeuHeaders(FeuReadOut& Feu) {
     return false;
 }
 
-bool TRestRawDreamToSignalProcess::ReadDreamData(FeuReadOut& Feu) {
+bool TRestRawFEUDreamToSignalProcess::ReadDreamData(FeuReadOut& Feu) {
     bool got_raw_data_header = false;
     bool got_channel_id = false;
     int ichannel = 0;
 
     if (!Feu.FeuHeaderLoaded) {  // already loaded
-        ferr << "TRestRawDreamToSignalProcess::ReadDreamData: error in ReadDreamData, Feu header not loaded"
-             << endl;
+        ferr
+            << "TRestRawFEUDreamToSignalProcess::ReadDreamData: error in ReadDreamData, Feu header not loaded"
+            << endl;
         return true;
     }
 
@@ -335,8 +339,9 @@ bool TRestRawDreamToSignalProcess::ReadDreamData(FeuReadOut& Feu) {
         int nbytes = fread((void*)&(Feu.current_data), sizeof(Feu.current_data), 1, fInputBinFile);
         totalBytesReaded += sizeof(Feu.current_data);
         if (nbytes == 0) {
-            perror("TRestRawDreamToSignalProcess::ReadDreamData: no Dream data to read in file");
-            ferr << "TRestRawDreamToSignalProcess::ReadDreamData:  problem in reading raw data file, ferror "
+            perror("TRestRawFEUDreamToSignalProcess::ReadDreamData: no Dream data to read in file");
+            ferr << "TRestRawFEUDreamToSignalProcess::ReadDreamData:  problem in reading raw data file, "
+                    "ferror "
                  << ferror(fInputBinFile) << " feof " << feof(fInputBinFile) << " fInputBinFile "
                  << fInputBinFile << endl;
             fclose(fInputBinFile);
@@ -379,7 +384,7 @@ bool TRestRawDreamToSignalProcess::ReadDreamData(FeuReadOut& Feu) {
 
             } else if (Feu.DataHeaderLine > 3 && Feu.current_data.is_data_header()) {
                 bad_event = true;
-                ferr << "TRestRawDreamToSignalProcess::ReadDreamData: too many data header lines, "
+                ferr << "TRestRawFEUDreamToSignalProcess::ReadDreamData: too many data header lines, "
                         "DataHeaderLine "
                      << Feu.DataHeaderLine << endl;
                 return true;
@@ -388,7 +393,7 @@ bool TRestRawDreamToSignalProcess::ReadDreamData(FeuReadOut& Feu) {
                        !Feu.zs_mode) {  // data lines treatment, non-zero suppression mode
                 if (!got_raw_data_header) {
                     bad_event = true;
-                    ferr << "TRestRawDreamToSignalProcess::ReadDreamData: data lines without header in "
+                    ferr << "TRestRawFEUDreamToSignalProcess::ReadDreamData: data lines without header in "
                             "non-ZS mode "
                          << endl;
                 }
@@ -409,7 +414,8 @@ bool TRestRawDreamToSignalProcess::ReadDreamData(FeuReadOut& Feu) {
                         fSignalEvent->AddChargeToSignal(Feu.physChannel, Feu.isample,
                                                         Feu.current_data.get_data());
                     } else
-                        ferr << "TRestRawDreamToSignalProcess::ReadDreamData: too large physical Channel in "
+                        ferr << "TRestRawFEUDreamToSignalProcess::ReadDreamData: too large physical Channel "
+                                "in "
                                 "non-ZS mode , Feu.physChannel=  "
                              << Feu.physChannel << " > MaxPhysChannel " << MaxPhysChannel << endl;
                     extreme << "ReadDreamData: nonZS physChannel " << Feu.physChannel << " get_data "
@@ -421,7 +427,8 @@ bool TRestRawDreamToSignalProcess::ReadDreamData(FeuReadOut& Feu) {
             } else if (Feu.current_data.is_data_zs() && Feu.zs_mode) {  // zero-suppression mode
                 if (got_raw_data_header) {
                     bad_event = true;
-                    ferr << "TRestRawDreamToSignalProcess::ReadDreamData: data lines with header in ZS mode "
+                    ferr << "TRestRawFEUDreamToSignalProcess::ReadDreamData: data lines with header in ZS "
+                            "mode "
                          << endl;
                 }
                 if (!got_channel_id && Feu.current_data.is_channel_ID()) {  // get channelID and dreamID
@@ -431,7 +438,8 @@ bool TRestRawDreamToSignalProcess::ReadDreamData(FeuReadOut& Feu) {
                     Feu.physChannel = Feu.asicN * NstripMax + Feu.channelN;  // channel's number on the DREAM
                     got_channel_id = true;
                     if (Feu.channelN < 0 || Feu.channelN >= NstripMax) {
-                        ferr << "TRestRawDreamToSignalProcess::ReadDreamData: too large channel number in ZS "
+                        ferr << "TRestRawFEUDreamToSignalProcess::ReadDreamData: too large channel number in "
+                                "ZS "
                                 "mode , Feu.channelN=  "
                              << Feu.channelN << " > MaxPhysChannel " << MaxPhysChannel << endl;
                         bad_event = true;
@@ -457,23 +465,24 @@ bool TRestRawDreamToSignalProcess::ReadDreamData(FeuReadOut& Feu) {
                     }
                     fSignalEvent->AddChargeToSignal(Feu.physChannel, Feu.isample, Feu.channel_data);
                 } else
-                    ferr << "TRestRawDreamToSignalProcess::ReadDreamData: too large physical Channel in ZS "
-                            "mode , Feu.physChannel=  "
-                         << Feu.physChannel << " > MaxPhysChannel " << MaxPhysChannel << endl;
+                    ferr
+                        << "TRestRawFEUDreamToSignalProcess::ReadDreamData: too large physical Channel in ZS "
+                           "mode , Feu.physChannel=  "
+                        << Feu.physChannel << " > MaxPhysChannel " << MaxPhysChannel << endl;
                 Feu.data_to_treat = false;
 
             } else if (Feu.current_data.is_data_trailer()) {  // data trailer treatment
 
                 if (ichannel != NstripMax && !Feu.zs_mode) {
                     bad_event = true;
-                    ferr << "TRestRawDreamToSignalProcess::ReadDreamData: trailer with missing channel "
+                    ferr << "TRestRawFEUDreamToSignalProcess::ReadDreamData: trailer with missing channel "
                             "numbers in non-ZS mode, ichannel "
                          << ichannel << endl;
                     return true;
                 }
                 if (got_channel_id && Feu.zs_mode) {
                     bad_event = true;
-                    ferr << "TRestRawDreamToSignalProcess::ReadDreamData: trailer with channel Id without "
+                    ferr << "TRestRawFEUDreamToSignalProcess::ReadDreamData: trailer with channel Id without "
                             "channel data in ZS data, got_channel_id true"
                          << endl;
                     return true;
@@ -510,7 +519,7 @@ bool TRestRawDreamToSignalProcess::ReadDreamData(FeuReadOut& Feu) {
 
             } else if (Feu.DataTrailerLine > 4 && Feu.current_data.is_data_trailer()) {
                 bad_event = true;
-                ferr << "TRestRawDreamToSignalProcess::ReadDreamData: too many data trailer lines, "
+                ferr << "TRestRawFEUDreamToSignalProcess::ReadDreamData: too many data trailer lines, "
                         "DataTrailerLine "
                      << Feu.DataTrailerLine << endl;
                 return true;
@@ -528,19 +537,19 @@ bool TRestRawDreamToSignalProcess::ReadDreamData(FeuReadOut& Feu) {
     return false;
 }
 
-bool TRestRawDreamToSignalProcess::ReadFeuTrailer(FeuReadOut& Feu) {
+bool TRestRawFEUDreamToSignalProcess::ReadFeuTrailer(FeuReadOut& Feu) {
     if (!Feu.data_to_treat) {
         int nbytes = fread((void*)&(Feu.current_data), sizeof(Feu.current_data), 1, fInputBinFile);
         totalBytesReaded += sizeof(Feu.current_data);
         if (nbytes == 0) {
-            perror("TRestRawDreamToSignalProcess::ReadFeuTrailer: can't read new data from file");
-            ferr << "TRestRawDreamToSignalProcess::ReadFeuTrailer: can't read new data from file, ferror "
+            perror("TRestRawFEUDreamToSignalProcess::ReadFeuTrailer: can't read new data from file");
+            ferr << "TRestRawFEUDreamToSignalProcess::ReadFeuTrailer: can't read new data from file, ferror "
                  << ferror(fInputBinFile) << " feof " << feof(fInputBinFile) << " fInputBinFile "
                  << fInputBinFile << endl;
             fclose(fInputBinFile);
             return true;  // failed
         }
-        debug << "TRestRawDreamToSignalProcess::ReadFeuTrailer: Reading FeuTrailer ok, nbytes " << nbytes
+        debug << "TRestRawFEUDreamToSignalProcess::ReadFeuTrailer: Reading FeuTrailer ok, nbytes " << nbytes
               << endl;
         Feu.current_data.ntohs_();
         Feu.data_to_treat = true;
@@ -550,16 +559,18 @@ bool TRestRawDreamToSignalProcess::ReadFeuTrailer(FeuReadOut& Feu) {
         if (Feu.current_data.is_final_trailer()) {
             if (Feu.channelN != 0) {
                 bad_event = true;
-                ferr << "TRestRawDreamToSignalProcess::ReadFeuTrailer: channel number not null in trailer, "
-                        "Feu.channelN "
-                     << Feu.channelN << endl;
+                ferr
+                    << "TRestRawFEUDreamToSignalProcess::ReadFeuTrailer: channel number not null in trailer, "
+                       "Feu.channelN "
+                    << Feu.channelN << endl;
                 return true;
             }
             if (Feu.current_data.is_end_of_event()) {
                 if (Feu.isample != (fMinPoints - 1)) {
-                    warning << "TRestRawDreamToSignalProcess::ReadFeuTrailer: not all samples read at end of "
-                               "event, isample "
-                            << Feu.isample << " MinPoints " << fMinPoints << endl;
+                    warning
+                        << "TRestRawFEUDreamToSignalProcess::ReadFeuTrailer: not all samples read at end of "
+                           "event, isample "
+                        << Feu.isample << " MinPoints " << fMinPoints << endl;
                 }
                 //         Feu.isample=-1; Feu.isample_prev=-2;
                 Feu.event_completed = true;
