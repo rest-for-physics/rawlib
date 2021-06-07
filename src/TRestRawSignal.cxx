@@ -82,7 +82,8 @@ TRestRawSignal::TRestRawSignal(Int_t nBins) {
 
     Initialize();
 
-    for (int n = 0; n < nBins; n++) fSignalData.push_back(0);
+    fSignalData.resize(nBins,0);
+
 }
 
 ///////////////////////////////////////////////
@@ -114,7 +115,7 @@ void TRestRawSignal::Initialize() {
 void TRestRawSignal::Reset() {
     Int_t nBins = GetNumberOfPoints();
     Initialize();
-    for (int n = 0; n < nBins; n++) fSignalData.push_back(0);
+    fSignalData.resize(nBins,0);
 }
 
 ///////////////////////////////////////////////

@@ -52,7 +52,7 @@
 #include "math.h"
 
 //! An process to read binary data from FEUDream electronics
-class TRestRawDreamToSignalProcess : public TRestRawToSignalProcess {
+class TRestRawFEUDreamToSignalProcess : public TRestRawToSignalProcess {
    protected:
     class DataLineDream {
        public:
@@ -155,13 +155,13 @@ class TRestRawDreamToSignalProcess : public TRestRawToSignalProcess {
     TString GetProcessName() { return (TString) "DreamToSignal"; }
 
     // Constructor
-    TRestRawDreamToSignalProcess();
-    TRestRawDreamToSignalProcess(char* cfgFileName);
+    TRestRawFEUDreamToSignalProcess();
+    TRestRawFEUDreamToSignalProcess(char* cfgFileName);
 
     // Destructor
-    ~TRestRawDreamToSignalProcess();
+    ~TRestRawFEUDreamToSignalProcess();
 
-    ClassDef(TRestRawDreamToSignalProcess, 1);
+    ClassDef(TRestRawFEUDreamToSignalProcess, 1);
 };
 
 #endif

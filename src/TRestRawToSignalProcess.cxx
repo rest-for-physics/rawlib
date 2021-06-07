@@ -114,7 +114,7 @@ void TRestRawToSignalProcess::InitFromConfigFile() {
 
     if (fElectronicsType == "SingleFeminos" || fElectronicsType == "TCMFeminos") return;
 
-    if (fElectronicsType == "Dream") {
+    if (fElectronicsType == "FEUDream") {
         fgKeepFileOpen = false;
         return;
     }
