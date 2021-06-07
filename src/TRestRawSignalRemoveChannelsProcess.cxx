@@ -29,7 +29,7 @@
 /// response due to the absence of signal on some channels, or dead channels.
 ///
 /// The following example will remove the channels with signal ids 17,19,27
-/// and 67 from the TRestRawSignalEvent output.
+/// and all the signals between 67 and 76 from the TRestRawSignalEvent output.
 ///
 /// \code
 /// <TRestRawSignalRemoveChannelsProcess name="rmChannels" title="Removing few
@@ -37,7 +37,7 @@
 ///     <removeChannel id="17" />
 ///     <removeChannel id="19" />
 ///     <removeChannel id="27" />
-///     <removeChannel id="67" />
+///     <removeChannels range="(67,76)" />
 /// </TRestRawSignalRemoveChannelsProcess>
 /// \endcode
 ///
@@ -179,5 +179,12 @@ void TRestRawSignalRemoveChannelsProcess::InitFromConfigFile() {
     while ((removeChannelDefinition = GetKEYDefinition("removeChannel", pos)) != "") {
         Int_t id = StringToInteger(GetFieldValue("id", removeChannelDefinition));
         fChannelIds.push_back(id);
+    }
+
+    size_t pos = 0;
+    while ((removeChannelDefinition = GetKEYDefinition("removeChannels", pos)) != "") {
+        TVector2 v = StringTo2DVector(GetFieldValue("range", removeChannelDefinition));
+        if (v.X() >= 0 && v.Y() >= 0 && v.Y() > v.X())
+            for (int n = (Int_t)v.X(); n <= (Int_t)v.Y(); n++) fChannelIds.push_back(n);
     }
 }
