@@ -181,7 +181,7 @@ void TRestRawSignalRemoveChannelsProcess::InitFromConfigFile() {
         fChannelIds.push_back(id);
     }
 
-    size_t pos = 0;
+    pos = 0;
     while ((removeChannelDefinition = GetKEYDefinition("removeChannels", pos)) != "") {
         TVector2 v = StringTo2DVector(GetFieldValue("range", removeChannelDefinition));
         if (v.X() >= 0 && v.Y() >= 0 && v.Y() > v.X())
