@@ -40,12 +40,18 @@ class TRestRawSignalAnalysisProcess : public TRestEventProcess {
 
     time_t timeStored;  //!
 
+    /// Just a flag to quickly determine if we have to apply the range filter
+    Bool_t fRangeEnabled = false;  //!
+
     // parameters
     TVector2 fBaseLineRange = TVector2(5, 55);
     TVector2 fIntegralRange = TVector2(10, 500);
     Double_t fPointThreshold = 2;
     Double_t fSignalThreshold = 5;
     Int_t fPointsOverThreshold = 5;
+
+    /// It defines the signals id range where analysis is applied
+    TVector2 fSignalsRange = TVector2(-1, -1);  //<
 
     void Initialize();
 
@@ -84,7 +90,7 @@ class TRestRawSignalAnalysisProcess : public TRestEventProcess {
     TRestRawSignalAnalysisProcess(char* cfgFileName);
     ~TRestRawSignalAnalysisProcess();  // Destructor
 
-    ClassDef(TRestRawSignalAnalysisProcess, 3);
+    ClassDef(TRestRawSignalAnalysisProcess, 4);
     // Template for a REST "event process" class inherited from TRestEventProcess
 };
 #endif

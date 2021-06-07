@@ -313,6 +313,8 @@ void TRestRawSignalAnalysisProcess::InitProcess() {
     } else {
         fFirstEventTime = -1;
     }
+
+    if (fSignalsRange.X() != -1 && fSignalsRange.Y() != -1) fRangeEnabled = true;
 }
 
 ///////////////////////////////////////////////
@@ -371,6 +373,9 @@ TRestEvent* TRestRawSignalAnalysisProcess::ProcessEvent(TRestEvent* evInput) {
 
     for (int s = 0; s < fSignalEvent->GetNumberOfSignals(); s++) {
         TRestRawSignal* sgnl = fSignalEvent->GetSignal(s);
+
+        if (fRangeEnabled && (sgnl->GetID() < fSignalsRange.X() || sgnl->GetID() > fSignalsRange.Y()))
+            continue;
 
         /// Important call we need to initialize the points over threshold in a TRestRawSignal
         sgnl->InitializePointsOverThreshold(TVector2(fPointThreshold, fSignalThreshold),
@@ -507,6 +512,10 @@ TRestEvent* TRestRawSignalAnalysisProcess::ProcessEvent(TRestEvent* evInput) {
 
     for (int s = 0; s < fSignalEvent->GetNumberOfSignals(); s++) {
         TRestRawSignal* sgnl = fSignalEvent->GetSignal(s);
+
+        if (fRangeEnabled && (sgnl->GetID() < fSignalsRange.X() || sgnl->GetID() > fSignalsRange.Y()))
+            continue;
+
         if (sgnl->GetPointsOverThreshold().size() > 1) {
             Double_t value = fSignalEvent->GetSignal(s)->GetMaxValue();
             maxValueIntegral += value;
