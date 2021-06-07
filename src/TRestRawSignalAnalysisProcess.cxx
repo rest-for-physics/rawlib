@@ -338,15 +338,11 @@ TRestEvent* TRestRawSignalAnalysisProcess::ProcessEvent(TRestEvent* evInput) {
 
     // we save some complex typed analysis result
     map<int, Double_t> baseline;
-    // Double_t baselinemean;
     map<int, Double_t> baselinesigma;
-    // Double_t baselinesigmamean;
     map<int, Double_t> ampsgn_maxmethod;
-    // Double_t ampeve_maxmethod;
     map<int, Double_t> ampsgn_intmethod;
-    // Double_t ampeve_intmethod;
     map<int, int> risetime;
-    // Double_t risetimemean;
+    map<int, int> peak_time;
     map<int, int> npointsot;
     vector<int> saturatedchnId;
 
@@ -393,12 +389,15 @@ TRestEvent* TRestRawSignalAnalysisProcess::ProcessEvent(TRestEvent* evInput) {
         ampsgn_intmethod[sgnl->GetID()] = sgnl->GetThresholdIntegral();
         ampsgn_maxmethod[sgnl->GetID()] = sgnl->GetMaxPeakValue();
         risetime[sgnl->GetID()] = sgnl->GetRiseTime();
+        peak_time[sgnl->GetID()] = sgnl->GetMaxPeakBin();
         npointsot[sgnl->GetID()] = sgnl->GetPointsOverThreshold().size();
+        Double_t peakBin = sgnl->GetMaxPeakBin();
         if (sgnl->IsACDSaturation()) saturatedchnId.push_back(sgnl->GetID());
     }
 
     SetObservableValue("pointsoverthres_map", npointsot);
     SetObservableValue("risetime_map", risetime);
+    SetObservableValue("peak_time_map", peak_time);
     SetObservableValue("baseline_map", baseline);
     SetObservableValue("baselinesigma_map", baselinesigma);
     SetObservableValue("max_amplitude_map", ampsgn_maxmethod);
