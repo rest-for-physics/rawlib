@@ -396,7 +396,6 @@ TRestEvent* TRestRawSignalAnalysisProcess::ProcessEvent(TRestEvent* evInput) {
         risetime[sgnl->GetID()] = sgnl->GetRiseTime();
         peak_time[sgnl->GetID()] = sgnl->GetMaxPeakBin();
         npointsot[sgnl->GetID()] = sgnl->GetPointsOverThreshold().size();
-        Double_t peakBin = sgnl->GetMaxPeakBin();
         if (sgnl->IsACDSaturation()) saturatedchnId.push_back(sgnl->GetID());
     }
 
