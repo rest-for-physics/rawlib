@@ -44,7 +44,7 @@ class TRestRawSignal : public TObject {
     Int_t fSignalID;
 
     /// Vector with the data of the signal
-    std::vector<Short_t> fSignalData;
+    std::vector<UShort_t> fSignalData;
 
    public:
     /// A TGraph pointer used to store the TRestRawSignal drawing
@@ -126,7 +126,7 @@ class TRestRawSignal : public TObject {
 
     Double_t GetRawData(Int_t n);
 
-    Short_t operator[](Int_t n);
+    UShort_t operator[](Int_t n);
 
     /// It sets the id number of the signal
     void SetSignalID(Int_t sID) { fSignalID = sID; }
@@ -152,11 +152,11 @@ class TRestRawSignal : public TObject {
 
     void Initialize();
 
-    void AddPoint(Short_t d);
+    void AddPoint(UShort_t d);
 
-    void AddCharge(Short_t d);
+    void AddCharge(UShort_t d);
 
-    void AddDeposit(Short_t d);
+    void AddDeposit(UShort_t d);
 
     void IncreaseBinBy(Int_t bin, Double_t data);
 
@@ -200,7 +200,7 @@ class TRestRawSignal : public TObject {
 
     //   Double_t GetStandardDeviation(Int_t startBin, Int_t endBin);
 
-    void AddOffset(Short_t offset);
+    void AddOffset(UShort_t offset);
 
     void SignalAddition(TRestRawSignal* inSgnl);
 
