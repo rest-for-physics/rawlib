@@ -553,7 +553,7 @@ void TRestRawSignal::GetDifferentialSignal(TRestRawSignal* diffSgnl, Int_t smear
     for (int i = smearPoints; i < this->GetNumberOfPoints() - smearPoints; i++) {
         Double_t value = 0.5 * (this->GetData(i + smearPoints) - GetData(i - smearPoints)) / smearPoints;
 
-        diffSgnl->AddPoint((Short_t)value);
+        diffSgnl->AddPoint((UShort_t)value);
     }
 
     for (int i = GetNumberOfPoints() - smearPoints; i < GetNumberOfPoints(); i++) diffSgnl->AddPoint(0);
@@ -574,7 +574,7 @@ void TRestRawSignal::GetWhiteNoiseSignal(TRestRawSignal* noiseSgnl, Double_t noi
     TRandom3* fRandom = new TRandom3(seed);
 
     for (int i = 0; i < GetNumberOfPoints(); i++) {
-        noiseSgnl->AddPoint(this->GetData(i) + (UShort_t)fRandom->Gaus(0, noiseLevel));
+        noiseSgnl->AddPoint(this->GetData(i) + (Short_t)fRandom->Gaus(0, noiseLevel));
     }
     delete fRandom;
 }
@@ -592,12 +592,12 @@ void TRestRawSignal::GetSignalSmoothed(TRestRawSignal* smthSignal, Int_t averagi
     averagingPoints = (averagingPoints / 2) * 2 + 1;  // make it odd >= averagingPoints
 
     Double_t sumAvg = GetIntegralInRange(0, averagingPoints) / averagingPoints;
-    for (int i = 0; i <= averagingPoints / 2; i++) smthSignal->AddPoint((UShort_t)sumAvg);
+    for (int i = 0; i <= averagingPoints / 2; i++) smthSignal->AddPoint((Int_t)sumAvg);
 
     for (int i = averagingPoints / 2 + 1; i < GetNumberOfPoints() - averagingPoints / 2; i++) {
         sumAvg -= this->GetData(i - (averagingPoints / 2 + 1)) / averagingPoints;
         sumAvg += this->GetData(i + averagingPoints / 2) / averagingPoints;
-        smthSignal->AddPoint((UShort_t)sumAvg);
+        smthSignal->AddPoint(sumAvg);
     }
 
     for (int i = GetNumberOfPoints() - averagingPoints / 2; i < GetNumberOfPoints(); i++)
@@ -643,7 +643,7 @@ void TRestRawSignal::CalculateBaseLineSigma(Int_t startBin, Int_t endBin) {
 ///////////////////////////////////////////////
 /// \brief This method adds an offset to the signal data
 ///
-void TRestRawSignal::AddOffset(UShort_t offset) {
+void TRestRawSignal::AddOffset(Int_t offset) {
     if (fBaseLine != 0 || fBaseLineSigma != 0) fBaseLineSigma += (Double_t)offset;
     for (int i = 0; i < GetNumberOfPoints(); i++) fSignalData[i] = fSignalData[i] + offset;
 }
