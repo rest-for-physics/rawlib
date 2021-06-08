@@ -121,26 +121,26 @@ void TRestRawSignal::Reset() {
 ///////////////////////////////////////////////
 /// \brief Adds a new point to the end of the signal data array
 ///
-void TRestRawSignal::AddPoint(UShort_t d) { fSignalData.push_back(d); }
+void TRestRawSignal::AddPoint(Int_t d) { fSignalData.push_back(d); }
 
 ///////////////////////////////////////////////
 /// \brief Adds a new point to the end of the signal data array. Same as
 /// AddPoint.
 ///
-void TRestRawSignal::AddCharge(UShort_t d) { AddPoint(d); }
+void TRestRawSignal::AddCharge(Int_t d) { AddPoint(d); }
 
 ///////////////////////////////////////////////
 /// \brief Adds a new point to the end of the signal data array. Same as
 /// AddPoint.
 ///
-void TRestRawSignal::AddDeposit(UShort_t d) { AddPoint(d); }
+void TRestRawSignal::AddDeposit(Int_t d) { AddPoint(d); }
 
 ///////////////////////////////////////////////
 /// \brief It overloads the operator [] so that we can retrieve a particular
 /// point *n* in the form
 /// rawSignal[n].
 ///
-UShort_t TRestRawSignal::operator[](Int_t n) {
+Int_t TRestRawSignal::operator[](Int_t n) {
     if (n >= GetNumberOfPoints()) {
         std::cout << "TRestRawSignal::GetSignalData: outside limits" << std::endl;
         return 0xFFFF;
@@ -553,7 +553,7 @@ void TRestRawSignal::GetDifferentialSignal(TRestRawSignal* diffSgnl, Int_t smear
     for (int i = smearPoints; i < this->GetNumberOfPoints() - smearPoints; i++) {
         Double_t value = 0.5 * (this->GetData(i + smearPoints) - GetData(i - smearPoints)) / smearPoints;
 
-        diffSgnl->AddPoint((UShort_t)value);
+        diffSgnl->AddPoint((Int_t)value);
     }
 
     for (int i = GetNumberOfPoints() - smearPoints; i < GetNumberOfPoints(); i++) diffSgnl->AddPoint(0);
@@ -649,12 +649,24 @@ void TRestRawSignal::AddOffset(Int_t offset) {
 }
 
 ///////////////////////////////////////////////
+/// \brief This method adds baseline in case there is no data
+///
+void TRestRawSignal::SetBaseline(const Int_t baseline) {
+    for (int i = 0; i < GetNumberOfPoints(); i++){
+      if(fSignalData[i] == 0){
+        fSignalData[i] = baseline;
+      }
+      //cout<<i<<" "<<fSignalData[i]<<endl;
+    }
+}
+
+///////////////////////////////////////////////
 /// \brief This method scales the signal by a given value
 ///
 void TRestRawSignal::Scale(Double_t value) {
     for (int i = 0; i < GetNumberOfPoints(); i++) {
         Double_t scaledValue = value * fSignalData[i];
-        fSignalData[i] = (UShort_t)scaledValue;
+        fSignalData[i] = (Int_t)scaledValue;
     }
 }
 
