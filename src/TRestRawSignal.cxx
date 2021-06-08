@@ -82,8 +82,7 @@ TRestRawSignal::TRestRawSignal(Int_t nBins) {
 
     Initialize();
 
-    fSignalData.resize(nBins,0);
-
+    fSignalData.resize(nBins, 0);
 }
 
 ///////////////////////////////////////////////
@@ -115,7 +114,7 @@ void TRestRawSignal::Initialize() {
 void TRestRawSignal::Reset() {
     Int_t nBins = GetNumberOfPoints();
     Initialize();
-    fSignalData.resize(nBins,0);
+    fSignalData.resize(nBins, 0);
 }
 
 ///////////////////////////////////////////////
@@ -142,7 +141,11 @@ void TRestRawSignal::AddDeposit(Short_t d) { AddPoint(d); }
 ///
 Short_t TRestRawSignal::operator[](Int_t n) {
     if (n >= GetNumberOfPoints()) {
-        std::cout << "TRestRawSignal::GetSignalData: outside limits" << std::endl;
+        if (fShowWarnings) {
+            std::cout << "TRestRawSignal::GetSignalData: outside limits" << std::endl;
+            std::cout << "Warnings at TRestRawSignal have been disabled" << std::endl;
+            fShowWarnings = false;
+        }
         return 0xFFFF;
     }
     return fSignalData[n];
@@ -170,7 +173,12 @@ Double_t TRestRawSignal::GetRawData(Int_t n) { return (Double_t)fSignalData[n]; 
 ///
 void TRestRawSignal::IncreaseBinBy(Int_t bin, Double_t data) {
     if (bin >= GetNumberOfPoints()) {
-        std::cout << "TRestRawSignal::IncreaseBinBy: outside limits" << std::endl;
+        if (fShowWarnings) {
+            std::cout << "TRestRawSignal::IncreaseBinBy: outside limits" << std::endl;
+            std::cout << "Warnings at TRestRawSignal have been disabled" << std::endl;
+            fShowWarnings = false;
+        }
+
         return;
     }
 
@@ -313,10 +321,13 @@ Double_t TRestRawSignal::GetIntegralInRange(Int_t startBin, Int_t endBin) {
 ///
 Double_t TRestRawSignal::GetThresholdIntegral() {
     if (fThresholdIntegral == -1)
-        std::cout << "TRestRawSignal::GetThresholdIntegral. "
-                     "InitializePointsOverThreshold should be "
-                     "called first!"
-                  << std::endl;
+        if (fShowWarnings) {
+            std::cout << "TRestRawSignal::GetThresholdIntegral. "
+                         "InitializePointsOverThreshold should be "
+                         "called first!"
+                      << std::endl;
+            fShowWarnings = false;
+        }
     return fThresholdIntegral;
 }
 
