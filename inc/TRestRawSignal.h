@@ -204,6 +204,8 @@ class TRestRawSignal : public TObject {
 
     void SignalAddition(TRestRawSignal* inSgnl);
 
+    void SetBaseline(const Int_t baseline);
+
     void Scale(Double_t value);
 
     void WriteSignalToTextFile(TString filename);
