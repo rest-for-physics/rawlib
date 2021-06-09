@@ -142,6 +142,8 @@ TRestEvent* TRestRawAFTERToSignalProcess::ProcessEvent(TRestEvent* evInput) {
     DataPacketHeader pHeader;
     DataPacketEnd pEnd;
 
+    fSignalEvent->Initialize();
+
     // Read next header or quit of end of file
     if (fread(&head, sizeof(EventHeader), 1, fInputBinFile) != 1) {
         fclose(fInputBinFile);
