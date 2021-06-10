@@ -41,6 +41,7 @@ class TRestRawSignalFitEventProcess : public TRestEventProcess {
     Double_t fSignalThreshold = 0;
     Int_t fPointsOverThreshold = 0;
     Bool_t fAgetFit = false;
+    Bool_t fAddAllPulses = false;
 
     Double_t fShapingFixed = 0;
     Double_t fStartPositionFixed = 0;
@@ -111,6 +112,10 @@ class TRestRawSignalFitEventProcess : public TRestEventProcess {
         if (fAgetFit == false) {
             metadata << "Fitting mode : Convolution" << endl;
         }
+        
+        if (fAddAllPulses == true) {
+            metadata << "Adding all pulses in the event" << endl;
+        }
 
         EndPrintProcess();
     }
@@ -121,7 +126,7 @@ class TRestRawSignalFitEventProcess : public TRestEventProcess {
     TRestRawSignalFitEventProcess(char* cfgFileName);
     ~TRestRawSignalFitEventProcess();  // Destructor
 
-    ClassDef(TRestRawSignalFitEventProcess, 2);
+    ClassDef(TRestRawSignalFitEventProcess, 3);
     // Template for a REST "event process" class inherited from TRestEventProcess
 };
 #endif
