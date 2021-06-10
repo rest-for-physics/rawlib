@@ -110,13 +110,6 @@ fittingProcess:
     - . ${CI_PROJECT_DIR}/install/thisREST.sh
     - cd ${CI_PROJECT_DIR}/pipeline/processes/fit
     - restRoot -b -q fit.C
-    
-generalFitProcess: 
-  type: process
-  script:
-    - . ${CI_PROJECT_DIR}/install/thisREST.sh
-    - cd ${CI_PROJECT_DIR}/pipeline/processes/fit
-    - restRoot -b -q GeneralFit.C
 
 analysisProcess: 
   type: process
