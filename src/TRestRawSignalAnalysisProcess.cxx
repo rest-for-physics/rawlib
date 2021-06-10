@@ -313,6 +313,8 @@ void TRestRawSignalAnalysisProcess::InitProcess() {
     } else {
         fFirstEventTime = -1;
     }
+
+    if (fSignalsRange.X() != -1 && fSignalsRange.Y() != -1) fRangeEnabled = true;
 }
 
 ///////////////////////////////////////////////
@@ -338,15 +340,11 @@ TRestEvent* TRestRawSignalAnalysisProcess::ProcessEvent(TRestEvent* evInput) {
 
     // we save some complex typed analysis result
     map<int, Double_t> baseline;
-    // Double_t baselinemean;
     map<int, Double_t> baselinesigma;
-    // Double_t baselinesigmamean;
     map<int, Double_t> ampsgn_maxmethod;
-    // Double_t ampeve_maxmethod;
     map<int, Double_t> ampsgn_intmethod;
-    // Double_t ampeve_intmethod;
     map<int, int> risetime;
-    // Double_t risetimemean;
+    map<int, int> peak_time;
     map<int, int> npointsot;
     vector<int> saturatedchnId;
 
@@ -376,25 +374,19 @@ TRestEvent* TRestRawSignalAnalysisProcess::ProcessEvent(TRestEvent* evInput) {
     for (int s = 0; s < fSignalEvent->GetNumberOfSignals(); s++) {
         TRestRawSignal* sgnl = fSignalEvent->GetSignal(s);
 
-        /// Important call we need to initialize the points over threshold in a
-        /// TRestRawSignal
+        /// Important call we need to initialize the points over threshold in a TRestRawSignal
         sgnl->InitializePointsOverThreshold(TVector2(fPointThreshold, fSignalThreshold),
                                             fPointsOverThreshold);
 
+        if (fRangeEnabled && (sgnl->GetID() < fSignalsRange.X() || sgnl->GetID() > fSignalsRange.Y()))
+            continue;
+
         // We do not want that signals that are not identified as such contribute to
-        // define our
-        // observables
+        // define our observables
         // nkx: we still need to store all the signals in baseline/rise time maps in
         // case for noise analysis
         // if (sgnl->GetPointsOverThreshold().size() < 2) continue;
         if (sgnl->GetPointsOverThreshold().size() >= 2) nGoodSignals++;
-
-        /* We skip now intermediate variables
-    Double_t _bslval = sgnl->GetBaseLine();
-    Double_t _bslsigma = sgnl->GetBaseLineSigma();
-    Double_t _ampmax = sgnl->GetMaxPeakValue();
-    Double_t _ampint = sgnl->GetThresholdIntegral();
-    Double_t _risetime = sgnl->GetRiseTime(); */
 
         // Now TRestRawSignal returns directly baseline substracted values
         baseline[sgnl->GetID()] = sgnl->GetBaseLine();
@@ -402,62 +394,21 @@ TRestEvent* TRestRawSignalAnalysisProcess::ProcessEvent(TRestEvent* evInput) {
         ampsgn_intmethod[sgnl->GetID()] = sgnl->GetThresholdIntegral();
         ampsgn_maxmethod[sgnl->GetID()] = sgnl->GetMaxPeakValue();
         risetime[sgnl->GetID()] = sgnl->GetRiseTime();
+        peak_time[sgnl->GetID()] = sgnl->GetMaxPeakBin();
         npointsot[sgnl->GetID()] = sgnl->GetPointsOverThreshold().size();
         if (sgnl->IsACDSaturation()) saturatedchnId.push_back(sgnl->GetID());
-        /* These observables were already being calculated later on
-    baselinemean += sgnl->GetBaseLine();
-    baselinesigmamean += sgnl->GetBaseLineSigma();
-    ampeve_intmethod += sgnl->GetThresholdIntegral();
-    ampeve_maxmethod += sgnl->GetMaxPeakValue();
-    risetimemean += sgnl->GetRiseTime();
-        */
-
-        //  Double_t value = sgnl->GetMaxValue();
-        //  if (value > maxeve) maxeve = value; // Not used?
     }
 
-    // baselinemean /= fSignalEvent->GetNumberOfSignals();
-    // baselinesigmamean /= fSignalEvent->GetNumberOfSignals();
-    // risetimemean /= fSignalEvent->GetNumberOfSignals();
-
-    // I just comment this. It should be cleaned up soon.
-    // The only new observables that remain are map variables.
-    // We can adopt lower case naming for map variables. But Double_t variables
-    // naming convention was already
-    // fixed. In future case insensitive?
     SetObservableValue("pointsoverthres_map", npointsot);
     SetObservableValue("risetime_map", risetime);
-    // SetObservableValue("risetimemean", risetimemean); // Repeated observable :
-    // RiseTimeAvg
+    SetObservableValue("peak_time_map", peak_time);
     SetObservableValue("baseline_map", baseline);
-    // SetObservableValue("baselinemean", baselinemean); // Repeated observable:
-    // BaseLineMean
     SetObservableValue("baselinesigma_map", baselinesigma);
-    // SetObservableValue("baselinesigmamean", baselinesigmamean);  //Repeated
-    // observable: BaseLineSigmaMean
-
-    // A name like : max_amplitude (or max_amplitude_map) would be a name more
-    // straight forward to understand
     SetObservableValue("max_amplitude_map", ampsgn_maxmethod);
-
-    // SetObservableValue("ampeve_maxmethod", ampeve_maxmethod); // Repeated :
-    // MaxPeakAmplitudeIntegral
-
-    // This observable is a map of the threshold integral of each pulse. The given
-    // name is not intuitive to
-    // me. It should be just something like : thr_integral  ---> then lower case
-    // tells me that is a map. If
-    // not we should use some convention like : thr_integral_map
     SetObservableValue("thr_integral_map", ampsgn_intmethod);
-
-    // This observable contains a vector of saturated channel ids
     SetObservableValue("SaturatedChannelID", saturatedchnId);
 
-    //   SetObservableValue("ampeve_intmethod", ampeve_intmethod);  // Repeated
-    //   observable : ThresholdIntegral
-
-    /* ///////////////////////////////////////////////////////////////////////////////////
-     */
+    ////////////////////////////////////////////////////////////////////////////////////
     // These observables should probably go into an independent process to
     // register the rate at any
     // given moment of the data processing chain : TRestRateAnalysisProcess? */
@@ -560,6 +511,10 @@ TRestEvent* TRestRawSignalAnalysisProcess::ProcessEvent(TRestEvent* evInput) {
 
     for (int s = 0; s < fSignalEvent->GetNumberOfSignals(); s++) {
         TRestRawSignal* sgnl = fSignalEvent->GetSignal(s);
+
+        if (fRangeEnabled && (sgnl->GetID() < fSignalsRange.X() || sgnl->GetID() > fSignalsRange.Y()))
+            continue;
+
         if (sgnl->GetPointsOverThreshold().size() > 1) {
             Double_t value = fSignalEvent->GetSignal(s)->GetMaxValue();
             maxValueIntegral += value;

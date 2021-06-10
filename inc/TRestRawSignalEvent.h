@@ -97,6 +97,12 @@ class TRestRawSignalEvent : public TRestEvent {
         cout << endl;
     }
 
+    std::vector<int> GetSignalIds() {
+        std::vector<int> ids;
+        for (int n = 0; n < GetNumberOfSignals(); n++) ids.push_back(GetSignal(n)->GetSignalID());
+        return ids;
+    }
+
     Bool_t isBaseLineInitialized() {
         // If one signal is initialized we assume initialization happened for any
         // signal
