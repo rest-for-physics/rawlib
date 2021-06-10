@@ -49,6 +49,7 @@ build:
     - rm -rf ${CI_PROJECT_DIR}/install
     - git clone --single-branch --branch master https://github.com/rest-for-physics/framework.git framework
     - cd framework
+    - ./scripts/checkoutRemoteBranch.sh ${CI_COMMIT_BRANCH}
     - git submodule init source/libraries/raw
     - git submodule update source/libraries/raw
     - cd source/libraries/raw/
