@@ -46,6 +46,8 @@ class TRestRawSignal : public TObject {
     /// Vector with the data of the signal
     std::vector<Short_t> fSignalData;
 
+    Bool_t fShowWarnings = true;
+
    public:
     /// A TGraph pointer used to store the TRestRawSignal drawing
     TGraph* fGraph;  //!
