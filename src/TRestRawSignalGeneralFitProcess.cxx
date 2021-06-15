@@ -24,13 +24,13 @@
 ///
 /// Fit every TRestRawSignal in a TRestRawSignalEvent with fuction provided
 /// in the RML file.
-/// It uses ExtractTF1FromString function from TRestStringHelper.
-/// Examples: 
+/// It uses CreateTF1FromString function from TRestStringHelper.
+/// Examples:
 /// -- Initial value: [0=3.5]
 /// -- Fixed value: [0==3.5]
 /// -- Range: [0=3.5(1,5)] The parameter 0 begin at 3.5 and it can move between 1 and 5.
-/// 
-/// -- Complete function example: [0=0(-100,100)]+[1=2000]*TMath::Exp(-3. * (x-[3=80])/[2=70]) 
+///
+/// -- Complete function example: [0=0(-100,100)]+[1=2000]*TMath::Exp(-3. * (x-[3=80])/[2=70])
 ///                               * ((x-[3=80])/[2=70])^3  * sin((x-[3=80])/[2=70])
 ///
 /// <hr>
@@ -155,12 +155,15 @@ TRestEvent* TRestRawSignalGeneralFitProcess::ProcessEvent(TRestEvent* evInput) {
     amplitudeFit.clear();
     shapingtimeFit.clear();
     peakpositionFit.clear();*/
-    
-    
-    f = ExtractTF1FromString(fFunction, fFunctionRange.X(), fFunctionRange.Y());
-    
-    std::vector<map<int, Double_t>> param (f->GetNpar());
-    std::vector<map<int, Double_t>> paramErr (f->GetNpar());
+
+    if (fFitFunc) {
+        delete fFitFunc;
+        fFitFunc = nullptr;
+    }
+    fFitFunc = CreateTF1FromString(fFunction, fFunctionRange.X(), fFunctionRange.Y());
+
+    std::vector<map<int, Double_t>> param(fFitFunc->GetNpar());
+    std::vector<map<int, Double_t>> paramErr(fFitFunc->GetNpar());
 
     for (int s = 0; s < fRawSignalEvent->GetNumberOfSignals(); s++) {
         TRestRawSignal* singleSignal = fRawSignalEvent->GetSignal(s);
@@ -194,22 +197,23 @@ TRestEvent* TRestRawSignalGeneralFitProcess::ProcessEvent(TRestEvent* evInput) {
         }
 
         // Fit histogram with ShaperSin
-        h->Fit(f, "NWW", "", 0, 511);  // Options: R->fit in range, N->No draw, Q->Quiet
+        h->Fit(fFitFunc, "NWW", "", 0, 511);  // Options: R->fit in range, N->No draw, Q->Quiet
 
         Double_t sigma = 0;
         for (int j = fFunctionRange.X(); j < fFunctionRange.Y(); j++) {
-            sigma += (singleSignal->GetRawData(j) - f->Eval(j)) * (singleSignal->GetRawData(j) - f->Eval(j));
+            sigma += (singleSignal->GetRawData(j) - fFitFunc->Eval(j)) *
+                     (singleSignal->GetRawData(j) - fFitFunc->Eval(j));
         }
-        Sigma[s] = TMath::Sqrt(sigma / (fFunctionRange.Y()-fFunctionRange.X()));
+        Sigma[s] = TMath::Sqrt(sigma / (fFunctionRange.Y() - fFunctionRange.X()));
         RatioSigmaMaxPeak[s] = Sigma[s] / singleSignal->GetRawData(MaxPeakBin);
         RatioSigmaMaxPeakMean += RatioSigmaMaxPeak[s];
         SigmaMean += Sigma[s];
-        ChiSquare[s] = f->GetChisquare();
+        ChiSquare[s] = fFitFunc->GetChisquare();
         ChiSquareMean += ChiSquare[s];
-        
-        for(int i = 0; i < f->GetNpar(); i++){
-            param[i][singleSignal->GetID()] = f->GetParameter(i);
-            paramErr[i][singleSignal->GetID()] = f->GetParError(i);
+
+        for (int i = 0; i < fFitFunc->GetNpar(); i++) {
+            param[i][singleSignal->GetID()] = fFitFunc->GetParameter(i);
+            paramErr[i][singleSignal->GetID()] = fFitFunc->GetParError(i);
             debug << "Parameter " << i << ": " << param[i][singleSignal->GetID()] << endl;
             debug << "Error parameter " << i << ": " << paramErr[i][singleSignal->GetID()] << endl;
         }
@@ -218,7 +222,7 @@ TRestEvent* TRestRawSignalGeneralFitProcess::ProcessEvent(TRestEvent* evInput) {
         amplitudeFit[singleSignal->GetID()] = f->GetParameter(1);
         shapingtimeFit[singleSignal->GetID()] = f->GetParameter(2);
         peakpositionFit[singleSignal->GetID()] = f->GetParameter(3);
-        
+
         fShaping = f->GetParameter(2);
         fStartPosition = f->GetParameter(3);
         fBaseline = f->GetParameter(0);
@@ -232,13 +236,12 @@ TRestEvent* TRestRawSignalGeneralFitProcess::ProcessEvent(TRestEvent* evInput) {
     SetObservableValue("FitAmplitude_map", amplitudeFit);
     SetObservableValue("FitShapingTime_map", shapingtimeFit);
     SetObservableValue("FitPeakPosition_map", peakpositionFit);*/
-    
+
     //////////// Fitted parameters Map Observables /////////////
-    for(int i = 0; i < f->GetNpar(); i++){
-        SetObservableValue("Param_"+ to_string(i) +"_map", param[i]);
-        SetObservableValue("ParamErr_"+ to_string(i) +"_map", paramErr[i]);
+    for (int i = 0; i < fFitFunc->GetNpar(); i++) {
+        SetObservableValue("Param_" + to_string(i) + "_map", param[i]);
+        SetObservableValue("ParamErr_" + to_string(i) + "_map", paramErr[i]);
     }
-    
 
     //////////// Sigma Mean Observable /////////////
     SigmaMean = SigmaMean / (fRawSignalEvent->GetNumberOfSignals());
@@ -311,5 +314,9 @@ void TRestRawSignalGeneralFitProcess::EndProcess() {
     // Start by calling the EndProcess function of the abstract class.
     // Comment this if you don't want it.
     // TRestEventProcess::EndProcess();
+    if (fFitFunc) {
+        delete fFitFunc;
+        fFitFunc = nullptr;
+    }
 }
 
