@@ -49,7 +49,7 @@
 /// RESTsoft - Software for Rare Event Searches with TPCs
 ///
 /// History of developments:
-///
+/
 /// 2021-June First implementation of General Fit Process.
 ///                Created from TRestRawSignalAnalysisProcess.
 ///
@@ -59,7 +59,7 @@
 /// <hr>
 ///
 #include "TRestRawSignalGeneralFitProcess.h"
-using namespace std;
+    using namespace std;
 
 ClassImp(TRestRawSignalGeneralFitProcess);
 
@@ -156,6 +156,10 @@ TRestEvent* TRestRawSignalGeneralFitProcess::ProcessEvent(TRestEvent* evInput) {
     shapingtimeFit.clear();
     peakpositionFit.clear();*/
 
+    if (fFitFunc) {
+        delete fFitFunc;
+        fFitFunc = nullptr;
+    }
     fFitFunc = CreateTF1FromString(fFunction, fFunctionRange.X(), fFunctionRange.Y());
 
     std::vector<map<int, Double_t>> param(fFitFunc->GetNpar());
@@ -239,8 +243,6 @@ TRestEvent* TRestRawSignalGeneralFitProcess::ProcessEvent(TRestEvent* evInput) {
         SetObservableValue("ParamErr_" + to_string(i) + "_map", paramErr[i]);
     }
 
-    delete fFitFunc;
-
     //////////// Sigma Mean Observable /////////////
     SigmaMean = SigmaMean / (fRawSignalEvent->GetNumberOfSignals());
     SetObservableValue("FitSigmaMean", SigmaMean);
@@ -312,5 +314,9 @@ void TRestRawSignalGeneralFitProcess::EndProcess() {
     // Start by calling the EndProcess function of the abstract class.
     // Comment this if you don't want it.
     // TRestEventProcess::EndProcess();
+    if (fFitFunc) {
+        delete fFitFunc;
+        fFitFunc = nullptr;
+    }
 }
 
