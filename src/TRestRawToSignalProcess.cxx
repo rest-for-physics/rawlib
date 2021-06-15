@@ -147,30 +147,13 @@ void TRestRawToSignalProcess::EndProcess() {
 
 Bool_t TRestRawToSignalProcess::OpenInputFiles(vector<string> files) {
     nFiles = 0;
-    iCurFile = 0;
-    // for (auto a : fInputFiles) { delete a; }
     fInputFiles.clear();
     fInputFileNames.clear();
     totalBytes = 0;
     totalBytesReaded = 0;
 
     for (int i = 0; i < files.size(); i++) {
-        FILE* f = fopen(files[i].c_str(), "rb");
-
-        if (f == NULL) {
-            warning << "REST WARNING. Input file for " << this->ClassName() << " does not exist!" << endl;
-            warning << "File : " << files[i] << endl;
-            continue;
-        }
-
-        fInputFiles.push_back(f);
-        fInputFileNames.push_back(files[i]);
-
-        struct stat statbuf;
-        stat(files[i].c_str(), &statbuf);
-        totalBytes += statbuf.st_size;
-
-        nFiles++;
+        AddInputFile(files[i]);
     }
 
     if (nFiles > 0) {
@@ -182,6 +165,45 @@ Bool_t TRestRawToSignalProcess::OpenInputFiles(vector<string> files) {
 
     debug << this->GetName() << " : opened " << nFiles << " files" << endl;
     return nFiles;
+}
+
+Bool_t TRestRawToSignalProcess::AddInputFile(string file) {
+    for (int i = 0; i < fInputFileNames.size(); i++) {
+        if (fInputFileNames[i] == file) {
+            ferr << "file: \"" << file << "\" already added!" << endl;
+            return false;
+        }
+    }
+
+    FILE* f = fopen(file.c_str(), "rb");
+
+    if (f == NULL) {
+        warning << "REST WARNING. Input file for " << this->ClassName() << " does not exist!" << endl;
+        warning << "File : " << file << endl;
+        return false;
+    }
+
+    fInputFiles.push_back(f);
+    fInputFileNames.push_back(file);
+
+    struct stat statbuf;
+    stat(file.c_str(), &statbuf);
+    totalBytes += statbuf.st_size;
+
+    nFiles++;
+
+    return true;
+}
+
+Bool_t TRestRawToSignalProcess::ResetEntry() {
+    for (auto f : fInputFiles) {
+        if (f != NULL) {
+            if (fseek(f, 0, 0) != 0) return false;
+        }
+    }
+    InitProcess();
+
+    return true;
 }
 
 void TRestRawToSignalProcess::PrintMetadata() {
