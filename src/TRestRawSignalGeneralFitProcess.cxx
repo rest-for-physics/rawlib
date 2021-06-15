@@ -49,7 +49,7 @@
 /// RESTsoft - Software for Rare Event Searches with TPCs
 ///
 /// History of developments:
-/
+///
 /// 2021-June First implementation of General Fit Process.
 ///                Created from TRestRawSignalAnalysisProcess.
 ///
@@ -59,7 +59,7 @@
 /// <hr>
 ///
 #include "TRestRawSignalGeneralFitProcess.h"
-    using namespace std;
+using namespace std;
 
 ClassImp(TRestRawSignalGeneralFitProcess);
 
