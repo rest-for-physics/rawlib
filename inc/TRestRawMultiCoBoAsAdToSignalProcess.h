@@ -43,11 +43,15 @@ struct CoBoDataFrame {
     Int_t evId;  // if equals -1, this data frame is used but have not been
                  // re-filled
     Int_t asadId;
+    Bool_t finished;
 };
 
 struct CoBoHeaderFrame {
     CoBoHeaderFrame() {
         for (int m = 0; m < 256; m++) frameHeader[m] = 0;
+        // 4294967295 == -1  --> ends reading
+        // 4294967294 == -2  --> just initialized
+        eventIdx = (unsigned int)4294967294;
     }
     UChar_t frameHeader[256];  // 256: size of header of the cobo data frame
 
@@ -85,7 +89,6 @@ struct CoBoHeaderFrame {
     }
 };
 
-//! A process to read binary format genrerated from CoBo-AsAd cards
 class TRestRawMultiCoBoAsAdToSignalProcess : public TRestRawToSignalProcess {
    private:
 #ifndef __CINT__
@@ -106,6 +109,9 @@ class TRestRawMultiCoBoAsAdToSignalProcess : public TRestRawToSignalProcess {
 
    public:
     void InitProcess();
+
+    Bool_t AddInputFile(string file);
+
     void Initialize();
 
     Bool_t InitializeStartTimeStampFromFilename(TString fName);
@@ -122,10 +128,6 @@ class TRestRawMultiCoBoAsAdToSignalProcess : public TRestRawToSignalProcess {
 
     bool ReadFrameDataP(FILE* f, CoBoHeaderFrame& hdr);
     bool ReadFrameDataF(CoBoHeaderFrame& hdr);
-
-    void ClearBuffer(Int_t n);
-
-    Int_t GetLowestEventId();
 
     Bool_t EndReading();
 
