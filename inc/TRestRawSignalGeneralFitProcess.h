@@ -39,12 +39,12 @@ class TRestRawSignalGeneralFitProcess : public TRestEventProcess {
     void Initialize();
 
     void LoadDefaultConfig();
-    
+
     TVector2 fFunctionRange = TVector2(0, 0);
     string fFunction;
-    
-    TF1* f;
-    
+
+    TF1* fFitFunc;  //!
+
     /*Double_t fShaping = 0;
     Double_t fStartPosition = 0;
     Double_t fBaseline = 0;
@@ -56,9 +56,9 @@ class TRestRawSignalGeneralFitProcess : public TRestEventProcess {
    public:
     any GetInputEvent() { return fRawSignalEvent; }
     any GetOutputEvent() { return fRawSignalEvent; }
-    
-    TF1* GetFunction() { return f; }
-    
+
+    TF1* GetFunction() { return fFitFunc; }
+
     /*Double_t GetShaping() { return fShaping; }
     Double_t GetStartPosition() { return fStartPosition; }
     Double_t GetBaseline() { return fBaseline; }
@@ -72,7 +72,7 @@ class TRestRawSignalGeneralFitProcess : public TRestEventProcess {
 
     void PrintMetadata() {
         BeginPrintProcess();
-        
+
         metadata << "Function string: " << fFunction << endl;
         metadata << "Range: ( " << fFunctionRange.X() << " , " << fFunctionRange.Y() << " ) " << endl;
 
