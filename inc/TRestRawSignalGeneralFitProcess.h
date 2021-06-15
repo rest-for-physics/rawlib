@@ -57,8 +57,6 @@ class TRestRawSignalGeneralFitProcess : public TRestEventProcess {
     any GetInputEvent() { return fRawSignalEvent; }
     any GetOutputEvent() { return fRawSignalEvent; }
 
-    TF1* GetFunction() { return fFitFunc; }
-
     /*Double_t GetShaping() { return fShaping; }
     Double_t GetStartPosition() { return fStartPosition; }
     Double_t GetBaseline() { return fBaseline; }
