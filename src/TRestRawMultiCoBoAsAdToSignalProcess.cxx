@@ -58,14 +58,18 @@
 // int counter = 0;
 
 #include "TRestRawMultiCoBoAsAdToSignalProcess.h"
+
 #include "TRestDataBase.h"
 using namespace std;
 #include <bitset>
+
 #include "TTimeStamp.h"
 
-ClassImp(TRestRawMultiCoBoAsAdToSignalProcess);
-//______________________________________________________________________________
-TRestRawMultiCoBoAsAdToSignalProcess::TRestRawMultiCoBoAsAdToSignalProcess() { Initialize(); }
+ClassImp(TRestRawMultiCoBoAsAdToSignalProcess)
+    //______________________________________________________________________________
+    TRestRawMultiCoBoAsAdToSignalProcess::TRestRawMultiCoBoAsAdToSignalProcess() {
+    Initialize();
+}
 
 TRestRawMultiCoBoAsAdToSignalProcess::TRestRawMultiCoBoAsAdToSignalProcess(char* cfgFileName) {
     Initialize();
@@ -119,15 +123,15 @@ Bool_t TRestRawMultiCoBoAsAdToSignalProcess::InitializeStartTimeStampFromFilenam
 
 vector<int> fileerrors;
 void TRestRawMultiCoBoAsAdToSignalProcess::InitProcess() {
-    fDataFrame.clear();
-    fHeaderFrame.clear();
-    fileerrors.clear();
+    // fDataFrame.clear();
+    // fHeaderFrame.clear();
+    // fileerrors.clear();
 
-    for (int n = 0; n < fInputFiles.size(); n++) {
-        CoBoHeaderFrame hdrtmp;
-        fHeaderFrame.push_back(hdrtmp);
-        fileerrors.push_back(0);
-    }
+    // for (int n = 0; n < fInputFiles.size(); n++) {
+    //    CoBoHeaderFrame hdrtmp;
+    //    fHeaderFrame.push_back(hdrtmp);
+    //    fileerrors.push_back(0);
+    //}
 
     fRunOrigin = fRunInfo->GetRunNumber();
     fCurrentEvent = -1;
@@ -139,16 +143,52 @@ void TRestRawMultiCoBoAsAdToSignalProcess::InitProcess() {
     totalBytesReaded = 0;
 }
 
+Bool_t TRestRawMultiCoBoAsAdToSignalProcess::AddInputFile(string file) {
+    if (file.find(".graw") == -1) {
+        return false;
+    }
+    if (TRestRawToSignalProcess::AddInputFile(file)) {
+        CoBoHeaderFrame hdrtmp;
+        fHeaderFrame.push_back(hdrtmp);
+        fileerrors.push_back(0);
+
+        int i = fHeaderFrame.size() - 1;
+        if (fread(fHeaderFrame[i].frameHeader, 256, 1, fInputFiles[i]) != 1 || feof(fInputFiles[i])) {
+            fclose(fInputFiles[i]);
+            fInputFiles[i] = NULL;
+            fHeaderFrame[i].eventIdx = (unsigned int)4294967295;
+            return kFALSE;
+        }
+        totalBytesReaded += 256;
+        if (!ReadFrameHeader(fHeaderFrame[i])) {
+            cout << "error when reading frame header in file " << i << " \"" << fInputFileNames[i] << "\""
+                 << endl;
+            cout << "event id " << fCurrentEvent + 1 << ". The file will be closed" << endl;
+            fHeaderFrame[i].Show();
+            cout << endl;
+            GetChar();
+            fclose(fInputFiles[i]);
+            fInputFiles[i] = NULL;
+            fHeaderFrame[i].eventIdx = (unsigned int)4294967295;
+            return false;
+        }
+
+        return true;
+    }
+    return false;
+}
+
 TRestEvent* TRestRawMultiCoBoAsAdToSignalProcess::ProcessEvent(TRestEvent* evInput) {
     fSignalEvent->Initialize();
+
     if (EndReading()) {
         return NULL;
     }
-
     if (!fillbuffer()) {
         fSignalEvent->SetOK(false);
         return fSignalEvent;
     }
+
     // Int_t nextId = GetLowestEventId();
 
     if (GetVerboseLevel() >= REST_Debug) {
@@ -163,10 +203,10 @@ TRestEvent* TRestRawMultiCoBoAsAdToSignalProcess::ProcessEvent(TRestEvent* evInp
     while (it != fDataFrame.end()) {
         CoBoDataFrame* data = &(it->second);
         if (data->evId == fCurrentEvent) {
+            if ((Double_t)tSt == 0) tSt = data->timeStamp;
+
             for (int m = 0; m < 272; m++) {
                 if (data->chHit[m]) {
-                    if ((Double_t)tSt == 0) tSt = data->timeStamp;
-
                     sgnl.Initialize();
                     sgnl.SetSignalID(m + data->asadId * 272);
 
@@ -217,13 +257,13 @@ void TRestRawMultiCoBoAsAdToSignalProcess::EndProcess() {
 // true: finish filling
 // false: error when filling
 bool TRestRawMultiCoBoAsAdToSignalProcess::fillbuffer() {
-    // if event id = -1(no event has been read before), read header frame for each
-    // file
-    if (fCurrentEvent == -1) {
-        for (int i = 0; i < fInputFiles.size(); i++) {
+    // if the file is opened but not read, read header frame
+    for (int i = 0; i < fInputFiles.size(); i++) {
+        if (fInputFiles[i] != NULL && ftell(fInputFiles[i]) == 0) {
             if (fread(fHeaderFrame[i].frameHeader, 256, 1, fInputFiles[i]) != 1 || feof(fInputFiles[i])) {
                 fclose(fInputFiles[i]);
                 fInputFiles[i] = NULL;
+                fHeaderFrame[i].eventIdx = (unsigned int)4294967295;
                 return kFALSE;
             }
             totalBytesReaded += 256;
@@ -236,6 +276,7 @@ bool TRestRawMultiCoBoAsAdToSignalProcess::fillbuffer() {
                 GetChar();
                 fclose(fInputFiles[i]);
                 fInputFiles[i] = NULL;
+                fHeaderFrame[i].eventIdx = (unsigned int)4294967295;
                 return false;
             }
         }
@@ -262,8 +303,7 @@ bool TRestRawMultiCoBoAsAdToSignalProcess::fillbuffer() {
         // c. if eventid is the same as current, return to a, otherwise break.
         while (fHeaderFrame[i].eventIdx == fCurrentEvent) {
             if (GetVerboseLevel() >= REST_Debug) {
-                cout << "TRestRawMultiCoBoAsAdToSignalProcess: retrieving frame header "
-                        "in "
+                cout << "TRestRawMultiCoBoAsAdToSignalProcess: retrieving frame header in "
                         "file "
                      << i << " (" << fInputFileNames[i] << ")" << endl;
                 if (GetVerboseLevel() >= REST_Extreme) fHeaderFrame[i].Show();
@@ -287,6 +327,7 @@ bool TRestRawMultiCoBoAsAdToSignalProcess::fillbuffer() {
             } else {
                 fclose(fInputFiles[i]);
                 fInputFiles[i] = NULL;
+                fHeaderFrame[i].eventIdx = (unsigned int)4294967295;
                 return false;
             }
 
@@ -437,8 +478,7 @@ bool TRestRawMultiCoBoAsAdToSignalProcess::ReadFrameHeader(CoBoHeaderFrame& HdrF
         //	if (((HdrFrame.frameSize - 256) / HdrFrame.itemSize) % 512 == 0)
         //	{
         //		HdrFrame.nItems = (HdrFrame.frameSize - 256) /
-        // HdrFrame.itemSize; 		warning << "...nItems fixed to " <<
-        // HdrFrame.nItems
+        // HdrFrame.itemSize; 		warning << "...nItems fixed to " << HdrFrame.nItems
         // <<
         //"..." << endl; 		warning << endl;
         //	}
@@ -568,27 +608,46 @@ bool TRestRawMultiCoBoAsAdToSignalProcess::ReadFrameDataF(CoBoHeaderFrame& hdr) 
     return true;
 }
 
-void TRestRawMultiCoBoAsAdToSignalProcess::ClearBuffer(Int_t n) {
-    fDataFrame[n].evId = -1;
-    for (int m = 0; m < 272; m++) fDataFrame[n].chHit[m] = kFALSE;
-}
-
-Int_t TRestRawMultiCoBoAsAdToSignalProcess::GetLowestEventId() {
-    Int_t evid = fDataFrame[0].evId;
-
-    for (unsigned int m = 1; m < fDataFrame.size(); m++) {
-        if (evid == -1) evid = fDataFrame[m].evId;
-        if (fDataFrame[m].evId != -1 && fDataFrame[m].evId < evid) evid = fDataFrame[m].evId;
-    }
-
-    return evid;
-}
-
 Bool_t TRestRawMultiCoBoAsAdToSignalProcess::EndReading() {
-    for (int n = 0; n < nFiles; n++) {
-        if (fInputFiles[n] != NULL) return kFALSE;
-        if (fDataFrame[n].evId != -1) return kFALSE;
+    for (auto& m : fDataFrame) {
+        m.second.finished = true;
     }
 
-    return kTRUE;
+    // cout << "header frame: ";
+    // for (int n = 0; n < nFiles; n++) {
+    //    cout << fHeaderFrame[n].asadIdx << ":" << fHeaderFrame[n].eventIdx << ", ";
+    //}
+    // cout << endl;
+
+    for (int n = 0; n < nFiles; n++) {
+        // if one header is not 42949..., the asad chain is not finished
+        fDataFrame[fHeaderFrame[n].asadIdx].finished =
+            (fDataFrame[fHeaderFrame[n].asadIdx].finished &&
+             (fHeaderFrame[n].eventIdx == (unsigned int)4294967295));
+    }
+
+    // cout << "data frame: ";
+    // for (auto m : fDataFrame) {
+    //    cout << m.second.asadId << ":" << m.second.finished << ", ";
+    //}
+    // cout << endl;
+    // cout << endl;
+
+    for (auto m : fDataFrame) {
+        // if any of the asad chain is finihsed, we ends reading for all the
+        // events
+        if (m.second.asadId == -1) continue;
+
+        if (m.second.finished == true) {
+            return true;
+        }
+    }
+
+    for (int n = 0; n < nFiles; n++) {
+        if (fInputFiles[n] != NULL) {
+            return false;
+        }
+    }
+
+    return true;
 }
