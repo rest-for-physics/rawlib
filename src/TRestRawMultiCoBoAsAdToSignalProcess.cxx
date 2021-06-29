@@ -175,7 +175,7 @@ TRestEvent* TRestRawMultiCoBoAsAdToSignalProcess::ProcessEvent(TRestEvent* evInp
     fSignalEvent->Initialize();
 
     if (EndReading()) {
-        return NULL;
+        return nullptr;
     }
     if (!fillbuffer()) {
         fSignalEvent->SetOK(false);
@@ -231,7 +231,7 @@ TRestEvent* TRestRawMultiCoBoAsAdToSignalProcess::ProcessEvent(TRestEvent* evInp
     fSignalEvent->SetSubRunOrigin(0);
 
     // cout << fSignalEvent->GetNumberOfSignals() << endl;
-    // if( fSignalEvent->GetNumberOfSignals( ) == 0 ) return NULL;
+    // if( fSignalEvent->GetNumberOfSignals( ) == 0 ) return nullptr;
 
     return fSignalEvent;
 }
@@ -252,7 +252,7 @@ void TRestRawMultiCoBoAsAdToSignalProcess::EndProcess() {
 bool TRestRawMultiCoBoAsAdToSignalProcess::fillbuffer() {
     // if the file is opened but not read, read header frame
     for (int i = 0; i < fInputFiles.size(); i++) {
-        if (fInputFiles[i] != NULL && ftell(fInputFiles[i]) == 0) {
+        if (fInputFiles[i] != nullptr && ftell(fInputFiles[i]) == 0) {
             if (!FRead(fHeaderFrame[i].frameHeader, 256, 1, fInputFiles[i])) {
                 CloseFile(i);
                 return kFALSE;
@@ -280,7 +280,7 @@ bool TRestRawMultiCoBoAsAdToSignalProcess::fillbuffer() {
 
     // loop for each file
     for (int i = 0; i < fHeaderFrame.size(); i++) {
-        if (fInputFiles[i] == NULL) {
+        if (fInputFiles[i] == nullptr) {
             continue;
         }
 
@@ -521,9 +521,11 @@ bool TRestRawMultiCoBoAsAdToSignalProcess::ReadFrameDataP(int fileid, CoBoHeader
 }
 
 void TRestRawMultiCoBoAsAdToSignalProcess::CloseFile(int i) {
-    fclose(fInputFiles[i]);
-    fInputFiles[i] = NULL;
-    fHeaderFrame[i].eventIdx = (unsigned int)4294967295;
+    if(fInputFiles[i] != nullptr) {
+        fclose(fInputFiles[i]);
+        fInputFiles[i] = nullptr;
+        fHeaderFrame[i].eventIdx = (unsigned int)4294967295;
+    }
 }
 
 bool TRestRawMultiCoBoAsAdToSignalProcess::ReadFrameDataF(CoBoHeaderFrame& hdr) {
@@ -624,7 +626,7 @@ Bool_t TRestRawMultiCoBoAsAdToSignalProcess::EndReading() {
     }
 
     for (int n = 0; n < nFiles; n++) {
-        if (fInputFiles[n] != NULL) {
+        if (fInputFiles[n] != nullptr) {
             return false;
         }
     }
