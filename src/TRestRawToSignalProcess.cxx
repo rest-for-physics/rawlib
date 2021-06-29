@@ -244,13 +244,26 @@ Bool_t TRestRawToSignalProcess::GoToNextFile() {
 
 // custom fread method which has retry times for the file to be written when reading
 bool TRestRawToSignalProcess::FRead(void* ptr, size_t size, size_t n, FILE* file) {
+    if (file == nullptr || ptr == nullptr) return false;
+    if (size == 0 || n == 0) return false;
     int nwaits = 0;
+    size_t chunksReaded = 0;
+    size_t chunksRemaining = n;
     while (1) {
-        int reads = fread(ptr, size, n, file);
+        int pos = ftell(file);
+        int reads = fread((char*)ptr + chunksReaded * size, size, chunksRemaining, file);
         totalBytesReaded += reads * size;
-        if (reads != n || feof(file)) {
-            nwaits++;
+        if (reads != chunksRemaining || feof(file)) {
+            if (reads == 0) {
+                nwaits++;
+            } else {
+                // In case it reads something partially
+                nwaits = 0;
+                chunksReaded += reads;
+                chunksRemaining -= reads;
+            }
             if (nwaits > fMaxWaitTimeEOF) return false;
+
             sleep(1);
             fseek(file, ftell(file), 0);
         } else {
