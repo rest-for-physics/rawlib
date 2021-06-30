@@ -109,7 +109,7 @@ void TRestRawToSignalProcess::InitFromConfigFile() {
     fElectronicsType = GetParameter("electronics");
     fShowSamples = StringToInteger(GetParameter("showSamples", "10"));
     fMinPoints = StringToInteger(GetParameter("minPoints", "512"));
-    fMaxWaitTimeEOF = StringToInteger(GetParameter("maxWaitTimeEOF", "1"));
+    fMaxWaitTimeEOF = StringToInteger(GetParameter("maxWaitTimeEOF", "0"));
 
     PrintMetadata();
 
@@ -258,7 +258,7 @@ bool TRestRawToSignalProcess::FRead(void* ptr, size_t size, size_t n, FILE* file
                 nwaits++;
             } else {
                 // In case it reads something partially
-                nwaits = 0;
+                nwaits = 1;
                 chunksReaded += reads;
                 chunksRemaining -= reads;
             }
