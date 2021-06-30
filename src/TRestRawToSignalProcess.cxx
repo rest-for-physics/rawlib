@@ -109,6 +109,7 @@ void TRestRawToSignalProcess::InitFromConfigFile() {
     fElectronicsType = GetParameter("electronics");
     fShowSamples = StringToInteger(GetParameter("showSamples", "10"));
     fMinPoints = StringToInteger(GetParameter("minPoints", "512"));
+    fMaxWaitTimeEOF = StringToInteger(GetParameter("maxWaitTimeEOF", "0"));
 
     PrintMetadata();
 
@@ -237,6 +238,37 @@ Bool_t TRestRawToSignalProcess::GoToNextFile() {
         return true;
     } else {
         info << "GoToNextFile(): No more file to read" << endl;
+    }
+    return false;
+}
+
+// custom fread method which has retry times for the file to be written when reading
+bool TRestRawToSignalProcess::FRead(void* ptr, size_t size, size_t n, FILE* file) {
+    if (file == nullptr || ptr == nullptr) return false;
+    if (size == 0 || n == 0) return false;
+    int nwaits = 0;
+    size_t chunksReaded = 0;
+    size_t chunksRemaining = n;
+    while (1) {
+        int pos = ftell(file);
+        int reads = fread((char*)ptr + chunksReaded * size, size, chunksRemaining, file);
+        totalBytesReaded += reads * size;
+        if (reads != chunksRemaining || feof(file)) {
+            if (reads == 0) {
+                nwaits++;
+            } else {
+                // In case it reads something partially
+                nwaits = 1;
+                chunksReaded += reads;
+                chunksRemaining -= reads;
+            }
+            if (nwaits > fMaxWaitTimeEOF) return false;
+
+            std::this_thread::sleep_for(std::chrono::seconds(1));
+            fseek(file, ftell(file), 0);
+        } else {
+            return true;
+        }
     }
     return false;
 }

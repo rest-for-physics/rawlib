@@ -126,8 +126,9 @@ class TRestRawMultiCoBoAsAdToSignalProcess : public TRestRawToSignalProcess {
 
     bool ReadFrameHeader(CoBoHeaderFrame& Frame);
 
-    bool ReadFrameDataP(FILE* f, CoBoHeaderFrame& hdr);
+    bool ReadFrameDataP(int fileid, CoBoHeaderFrame& hdr);
     bool ReadFrameDataF(CoBoHeaderFrame& hdr);
+    void CloseFile(int fileid);
 
     Bool_t EndReading();
 
