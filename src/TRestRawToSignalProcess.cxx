@@ -264,7 +264,7 @@ bool TRestRawToSignalProcess::FRead(void* ptr, size_t size, size_t n, FILE* file
             }
             if (nwaits > fMaxWaitTimeEOF) return false;
 
-            sleep(1);
+            std::this_thread::sleep_for(std::chrono::seconds(1));
             fseek(file, ftell(file), 0);
         } else {
             return true;
