@@ -85,6 +85,10 @@ TRestRawSignal::TRestRawSignal(Int_t nBins) {
     fSignalData.resize(nBins, 0);
 }
 
+TRestRawSignal::TRestRawSignal(Int_t sID, std::vector<Short_t> &sData) : fSignalID(sID), fSignalData(sData) {
+    
+}
+
 ///////////////////////////////////////////////
 /// \brief Default destructor
 ///

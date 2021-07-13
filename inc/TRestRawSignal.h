@@ -216,6 +216,7 @@ class TRestRawSignal : public TObject {
 
     TRestRawSignal();
     TRestRawSignal(Int_t nBins);
+    TRestRawSignal(Int_t sID, std::vector<Short_t> &sData);
     ~TRestRawSignal();
 
     ClassDef(TRestRawSignal, 1);

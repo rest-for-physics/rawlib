@@ -36,21 +36,21 @@ class TRestRawDAQMetadata : public TRestMetadata {
     virtual void Initialize();
 
    protected:
-    TString fOutBinFileName;
-    TString fElectronicsType;
-    std::vector<TString> fPedBuffer;  // Pedestal script
-    std::vector<TString> fRunBuffer;  // Run script
-    TString fNamePedScript;           // Name of the run script e.g. /home/user/scripts/run
-    TString fNameRunScript;           // Name of the pedestal script e.g.
-                                      // /home/user/scripts/ped
-    UInt_t fGain;                     // Value of the gain in the script you have to convert it to fC
-    UInt_t fShappingTime;             // Value of the shapping time in the script you have to
-                                      // convert it to nS
+    TString fElectronicsType;         // DCC, FEMINOS, ARC, ...
+
+    UInt_t fFECMask;                  // FEC Mask
+    UInt_t fGain;                     // Gain in the AFTER/AGET chip
+    UInt_t fShappingTime;             // Shapping time in the AFTER/AGET chip
+    UInt_t fClockDiv;                 // Clock division
+    Int_t fBaseIp[4] = {192, 168,10,13}; //Base IP of the card
+    TString fTriggerType;             // external or internal
+    TString fAcquisitionType;         // pedestal, calibration or background
+    UInt_t fCompressMode =0;             // 0 uncompressed, 1 compress
+    UInt_t fNEvents=0;                  // 0 --> Infinite
 
    public:
-    void PrintMetadata();
-    void PrintRunScript();
-    void PrintPedScript();
+    virtual void PrintMetadata();
+    void ReadBaseIp();
 
     // Construtor
     TRestRawDAQMetadata();
@@ -58,14 +58,18 @@ class TRestRawDAQMetadata : public TRestMetadata {
     // Destructor
     virtual ~TRestRawDAQMetadata();
 
-    void SetScriptsBuffer();
-    void SetParFromPedBuffer();  // Set gain and shapping time from a given buffer
-    void SetOutBinFileName(TString fName) { fOutBinFileName = fName; }
-
+    UInt_t GetFECMask() { return fFECMask; }
     UInt_t GetGain() { return fGain; }
     UInt_t GetShappingTime() { return fShappingTime; }
+    UInt_t GetClockDiv() { return fClockDiv; }
+    TString GetTriggerType() { return fTriggerType; }
+    TString GetAcquisitionType() { return fAcquisitionType; }
+    UInt_t GetNEvents() { return fNEvents; }
+    Int_t* GetBaseIp() { return fBaseIp; }
+    UInt_t GetCompressMode(){return fCompressMode;}       // 0 uncompressed, 1 compress
+    
     UInt_t GetValFromString(TString var, TString line);
 
-    ClassDef(TRestRawDAQMetadata, 1);  // REST run class
+    ClassDef(TRestRawDAQMetadata, 2);  // REST run class
 };
 #endif
