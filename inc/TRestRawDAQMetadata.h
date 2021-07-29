@@ -28,6 +28,24 @@
 #include "TRestMetadata.h"
 #include "TString.h"
 
+namespace daq_metadata_types {
+
+  enum class acqTypes : int {
+    BACKGROUND,
+    CALIBRATION,
+    PEDESTAL
+  };
+  
+  enum class electronicsTypes : int {
+    DUMMY,
+    DCC
+  };
+
+  inline const std::map<std::string, acqTypes> acqTypes_map = {{"background",acqTypes::BACKGROUND}, {"calibration",acqTypes::CALIBRATION},{"pedestal",acqTypes::PEDESTAL}};
+  inline const std::map<std::string, electronicsTypes> electronicsTypes_map = {{"DUMMY",electronicsTypes::DUMMY}, {"DCC",electronicsTypes::DCC}};
+
+}
+
 //! A metadata class to store DAQ information.
 class TRestRawDAQMetadata : public TRestMetadata {
    private:
@@ -36,17 +54,17 @@ class TRestRawDAQMetadata : public TRestMetadata {
     virtual void Initialize();
 
    protected:
-    TString fElectronicsType;         // DCC, FEMINOS, ARC, ...
+    TString fElectronicsType;            // DCC, FEMINOS, ARC, ...
 
-    UInt_t fFECMask;                  // FEC Mask
-    UInt_t fGain;                     // Gain in the AFTER/AGET chip
-    UInt_t fShappingTime;             // Shapping time in the AFTER/AGET chip
-    UInt_t fClockDiv;                 // Clock division
+    UInt_t fFECMask;                     // FEC Mask
+    UInt_t fGain;                        // Gain in the AFTER/AGET chip
+    UInt_t fShappingTime;                // Shapping time in the AFTER/AGET chip
+    UInt_t fClockDiv;                    // Clock division
     Int_t fBaseIp[4] = {192, 168,10,13}; //Base IP of the card
-    TString fTriggerType;             // external or internal
-    TString fAcquisitionType;         // pedestal, calibration or background
+    TString fTriggerType;                // external or internal
+    TString fAcquisitionType;            // pedestal, calibration or background
     UInt_t fCompressMode =0;             // 0 uncompressed, 1 compress
-    UInt_t fNEvents=0;                  // 0 --> Infinite
+    Int_t fNEvents=0;                   // 0 --> Infinite
 
    public:
     virtual void PrintMetadata();
@@ -54,7 +72,7 @@ class TRestRawDAQMetadata : public TRestMetadata {
 
     // Construtor
     TRestRawDAQMetadata();
-    TRestRawDAQMetadata(char* cfgFileName);
+    TRestRawDAQMetadata(const char* cfgFileName);
     // Destructor
     virtual ~TRestRawDAQMetadata();
 
@@ -64,11 +82,15 @@ class TRestRawDAQMetadata : public TRestMetadata {
     UInt_t GetClockDiv() { return fClockDiv; }
     TString GetTriggerType() { return fTriggerType; }
     TString GetAcquisitionType() { return fAcquisitionType; }
-    UInt_t GetNEvents() { return fNEvents; }
+    TString GetElectronicsType() { return fElectronicsType; }
+    Int_t GetNEvents() { return fNEvents; }
     Int_t* GetBaseIp() { return fBaseIp; }
-    UInt_t GetCompressMode(){return fCompressMode;}       // 0 uncompressed, 1 compress
-    
+    UInt_t GetCompressMode(){return fCompressMode;}       // 0 uncompressed, 1 compress    
     UInt_t GetValFromString(TString var, TString line);
+    TString GetDecodingFile(){return GetParameter("decodingFile");}
+
+    void SetAcquisitionType (const std::string &typ){fAcquisitionType = typ;}
+    void SetNEvents(const Int_t & nEv){fNEvents=nEv;}
 
     ClassDef(TRestRawDAQMetadata, 2);  // REST run class
 };
