@@ -60,7 +60,7 @@ class TRestRawDAQMetadata : public TRestMetadata {
     UInt_t fGain;                        // Gain in the AFTER/AGET chip
     UInt_t fShappingTime;                // Shapping time in the AFTER/AGET chip
     UInt_t fClockDiv;                    // Clock division
-    Int_t fBaseIp[4] = {192, 168,10,13}; //Base IP of the card
+    Int_t fBaseIp[4] = {192,168,10,13};  //Base IP of the card
     TString fTriggerType;                // external or internal
     TString fAcquisitionType;            // pedestal, calibration or background
     UInt_t fCompressMode =0;             // 0 uncompressed, 1 compress

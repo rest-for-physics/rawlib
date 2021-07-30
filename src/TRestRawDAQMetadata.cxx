@@ -99,24 +99,25 @@ void TRestRawDAQMetadata::InitFromConfigFile() {
 
 void TRestRawDAQMetadata::ReadBaseIp( ){
 
-  std::string ip = GetParameter("baseIp");
-  sscanf(ip.c_str(),"%d.%d.%d.%d",&fBaseIp[3],&fBaseIp[2],&fBaseIp[1],&fBaseIp[0]);
-
+  std::string ip = GetParameter("baseIp","192.168.10.13");
+  sscanf(ip.c_str(),"%d:%d:%d:%d",&fBaseIp[0],&fBaseIp[1],&fBaseIp[2],&fBaseIp[3]);
+  std::cout<<"Base IP: "<<ip<<" --> "<<fBaseIp[0]<<" "<<fBaseIp[1]<<" "<<fBaseIp[2]<<" "<<fBaseIp[3]<<std::endl;
 }
 
 void TRestRawDAQMetadata::PrintMetadata() {
-    cout << endl;
-    cout << "====================================" << endl;
-    cout << "Base IP : " << fBaseIp[0]<<"."<< fBaseIp[1]<<"."<< fBaseIp[2]<<"."<< fBaseIp[3]<< endl;
-    cout << "ElectronicsType : " << fElectronicsType.Data() << endl;
-    cout << "FEC mask : 0x"<<std::hex << fFECMask <<std::dec<< endl;
-    cout << "Gain : 0x"<<std::hex << fGain <<std::dec<< endl;
-    cout << "Shapping time 0x: " <<std::hex << fShappingTime <<std::dec<< endl;
-    cout << "Clock div 0x: " <<std::hex << fClockDiv <<std::dec<< endl;
-    cout << "Trigger type : " << fTriggerType.Data() << endl;
-    cout << "Acquisition type : " << fAcquisitionType.Data() << endl;
-    cout << "Number of events : " << fNEvents << endl;
-    cout << "====================================" << endl;
+    metadata << "+++++++++++++++++++++++++++++++++++++++++++++" << endl;
+    metadata << this->ClassName() << " content" << endl;
+    metadata << "+++++++++++++++++++++++++++++++++++++++++++++" << endl;
+    metadata << "Base IP : " << fBaseIp[0]<<"."<< fBaseIp[1]<<"."<< fBaseIp[2]<<"."<< fBaseIp[3]<< endl;
+    metadata << "ElectronicsType : " << fElectronicsType.Data() << endl;
+    metadata << "FEC mask : 0x"<<std::hex << fFECMask <<std::dec<< endl;
+    metadata << "Gain : 0x"<<std::hex << fGain <<std::dec<< endl;
+    metadata << "Shapping time : 0x" <<std::hex << fShappingTime <<std::dec<< endl;
+    metadata << "Clock div : 0x" <<std::hex << fClockDiv <<std::dec<< endl;
+    metadata << "Trigger type : " << fTriggerType.Data() << endl;
+    metadata << "Acquisition type : " << fAcquisitionType.Data() << endl;
+    metadata << "Number of events : " << fNEvents << endl;
+    metadata << "+++++++++++++++++++++++++++++++++++++++++++++" << endl;
     cout << endl;
 }
 
