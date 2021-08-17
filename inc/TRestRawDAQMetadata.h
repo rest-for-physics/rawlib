@@ -41,8 +41,8 @@ namespace daq_metadata_types {
     DCC
   };
 
-  inline const std::map<std::string, acqTypes> acqTypes_map = {{"background",acqTypes::BACKGROUND}, {"calibration",acqTypes::CALIBRATION},{"pedestal",acqTypes::PEDESTAL}};
-  inline const std::map<std::string, electronicsTypes> electronicsTypes_map = {{"DUMMY",electronicsTypes::DUMMY}, {"DCC",electronicsTypes::DCC}};
+  const std::map<std::string, acqTypes> acqTypes_map = {{"background",acqTypes::BACKGROUND}, {"calibration",acqTypes::CALIBRATION},{"pedestal",acqTypes::PEDESTAL}};
+  const std::map<std::string, electronicsTypes> electronicsTypes_map = {{"DUMMY",electronicsTypes::DUMMY}, {"DCC",electronicsTypes::DCC}};
 
 }
 
