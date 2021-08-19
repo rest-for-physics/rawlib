@@ -315,6 +315,8 @@ void TRestRawSignalAnalysisProcess::InitProcess() {
     }
 
     if (fSignalsRange.X() != -1 && fSignalsRange.Y() != -1) fRangeEnabled = true;
+    
+    fPreviousEventTime.clear();
 }
 
 ///////////////////////////////////////////////
