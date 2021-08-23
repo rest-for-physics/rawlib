@@ -85,6 +85,7 @@ void TRestRawDAQMetadata::InitFromConfigFile() {
     // string daqString;
 
     fElectronicsType = GetParameter("electronics");
+    fElectronicsType = GetParameter("chip");
     fFECMask = StringToInteger( GetParameter("fecMask") );
     fGain = StringToInteger( GetParameter("chipGain") );
     fShappingTime = StringToInteger( GetParameter("chipShappingTime") );
@@ -92,16 +93,18 @@ void TRestRawDAQMetadata::InitFromConfigFile() {
     fTriggerType = GetParameter("triggerType");
     fAcquisitionType = GetParameter("acquisitionType");
     fCompressMode = StringToInteger(GetParameter("compressMode"));
+    fPolarity = StringToInteger(GetParameter("polarity"));
     fNEvents = StringToInteger(GetParameter("Nevents"));
-    ReadBaseIp( );
+    ReadIp("baseIp",fBaseIp);
+    ReadIp("localIp",fLocalIp);
 
 }
 
-void TRestRawDAQMetadata::ReadBaseIp( ){
+void TRestRawDAQMetadata::ReadIp(const std::string &param, Int_t *ip ){
 
-  std::string ip = GetParameter("baseIp","192.168.10.13");
-  sscanf(ip.c_str(),"%d:%d:%d:%d",&fBaseIp[0],&fBaseIp[1],&fBaseIp[2],&fBaseIp[3]);
-  std::cout<<"Base IP: "<<ip<<" --> "<<fBaseIp[0]<<" "<<fBaseIp[1]<<" "<<fBaseIp[2]<<" "<<fBaseIp[3]<<std::endl;
+  std::string ipString = GetParameter(param);
+  sscanf(ipString.c_str(),"%d:%d:%d:%d",&ip[0],&ip[1],&ip[2],&ip[3]);
+  std::cout<<param<<": "<<ip<<" --> "<<ip[0]<<" "<<ip[1]<<" "<<ip[2]<<" "<<ip[3]<<std::endl;
 }
 
 void TRestRawDAQMetadata::PrintMetadata() {
@@ -109,7 +112,9 @@ void TRestRawDAQMetadata::PrintMetadata() {
     metadata << this->ClassName() << " content" << endl;
     metadata << "+++++++++++++++++++++++++++++++++++++++++++++" << endl;
     metadata << "Base IP : " << fBaseIp[0]<<"."<< fBaseIp[1]<<"."<< fBaseIp[2]<<"."<< fBaseIp[3]<< endl;
+    metadata << "Local IP : " << fLocalIp[0]<<"."<< fLocalIp[1]<<"."<< fLocalIp[2]<<"."<< fLocalIp[3]<< endl;
     metadata << "ElectronicsType : " << fElectronicsType.Data() << endl;
+    metadata << "ChipType : " << fChipType.Data() << endl;
     metadata << "FEC mask : 0x"<<std::hex << fFECMask <<std::dec<< endl;
     metadata << "Gain : 0x"<<std::hex << fGain <<std::dec<< endl;
     metadata << "Shapping time : 0x" <<std::hex << fShappingTime <<std::dec<< endl;

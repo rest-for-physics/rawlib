@@ -38,11 +38,19 @@ namespace daq_metadata_types {
   
   enum class electronicsTypes : int {
     DUMMY,
-    DCC
+    DCC,
+    FEMINOS
+  };
+
+  enum class chipTypes : int {
+    AFTER,
+    AGET
   };
 
   const std::map<std::string, acqTypes> acqTypes_map = {{"background",acqTypes::BACKGROUND}, {"calibration",acqTypes::CALIBRATION},{"pedestal",acqTypes::PEDESTAL}};
-  const std::map<std::string, electronicsTypes> electronicsTypes_map = {{"DUMMY",electronicsTypes::DUMMY}, {"DCC",electronicsTypes::DCC}};
+  const std::map<std::string, electronicsTypes> electronicsTypes_map = {{"DUMMY",electronicsTypes::DUMMY}, {"DCC",electronicsTypes::DCC}, {"FEMINOS",electronicsTypes::FEMINOS}};
+  const std::map<std::string, chipTypes> chipTypes_map = {{"after",chipTypes::AFTER}, {"aget",chipTypes::AGET}};
+
 
 }
 
@@ -55,20 +63,22 @@ class TRestRawDAQMetadata : public TRestMetadata {
 
    protected:
     TString fElectronicsType;            // DCC, FEMINOS, ARC, ...
-
+    TString fChipType;                   // after or aget
     UInt_t fFECMask;                     // FEC Mask
     UInt_t fGain;                        // Gain in the AFTER/AGET chip
     UInt_t fShappingTime;                // Shapping time in the AFTER/AGET chip
     UInt_t fClockDiv;                    // Clock division
     Int_t fBaseIp[4] = {192,168,10,13};  //Base IP of the card
+    Int_t fLocalIp[4] = {192,168,10,10}; //Local IP of the host computer
     TString fTriggerType;                // external or internal
     TString fAcquisitionType;            // pedestal, calibration or background
     UInt_t fCompressMode =0;             // 0 uncompressed, 1 compress
-    Int_t fNEvents=0;                   // 0 --> Infinite
+    Int_t fNEvents=0;                    // 0 --> Infinite
+    Int_t fPolarity =0;                  // 0--> negative, 1 positive
 
    public:
     virtual void PrintMetadata();
-    void ReadBaseIp();
+    void ReadIp(const std::string &param, Int_t *ip );
 
     // Construtor
     TRestRawDAQMetadata();
@@ -83,9 +93,12 @@ class TRestRawDAQMetadata : public TRestMetadata {
     TString GetTriggerType() { return fTriggerType; }
     TString GetAcquisitionType() { return fAcquisitionType; }
     TString GetElectronicsType() { return fElectronicsType; }
+    TString GetChipType() { return fChipType; }
     Int_t GetNEvents() { return fNEvents; }
     Int_t* GetBaseIp() { return fBaseIp; }
-    UInt_t GetCompressMode(){return fCompressMode;}       // 0 uncompressed, 1 compress    
+    Int_t* GetLocalIp() { return fLocalIp; }
+    UInt_t GetCompressMode(){return fCompressMode;}       // 0 uncompressed, 1 compress
+    UInt_t GetPolarity(){return fPolarity;}
     UInt_t GetValFromString(TString var, TString line);
     TString GetDecodingFile(){return GetParameter("decodingFile");}
 
