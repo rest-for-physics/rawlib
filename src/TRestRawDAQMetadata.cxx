@@ -85,7 +85,7 @@ void TRestRawDAQMetadata::InitFromConfigFile() {
     // string daqString;
 
     fElectronicsType = GetParameter("electronics");
-    fElectronicsType = GetParameter("chip");
+    fChipType = GetParameter("chip");
     fFECMask = StringToInteger( GetParameter("fecMask") );
     fGain = StringToInteger( GetParameter("chipGain") );
     fShappingTime = StringToInteger( GetParameter("chipShappingTime") );
