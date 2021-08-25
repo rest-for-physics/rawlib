@@ -86,25 +86,21 @@ void TRestRawDAQMetadata::InitFromConfigFile() {
 
     fElectronicsType = GetParameter("electronics");
     fChipType = GetParameter("chip");
-    fFECMask = StringToInteger( GetParameter("fecMask") );
-    fGain = StringToInteger( GetParameter("chipGain") );
-    fShappingTime = StringToInteger( GetParameter("chipShappingTime") );
     fClockDiv = StringToInteger( GetParameter("clockDiv") );
     fTriggerType = GetParameter("triggerType");
     fAcquisitionType = GetParameter("acquisitionType");
     fCompressMode = StringToInteger(GetParameter("compressMode"));
-    fPolarity = StringToInteger(GetParameter("polarity"));
     fNEvents = StringToInteger(GetParameter("Nevents"));
     ReadIp("baseIp",fBaseIp);
     ReadIp("localIp",fLocalIp);
-
+    ReadFEC();
 }
 
 void TRestRawDAQMetadata::ReadIp(const std::string &param, Int_t *ip ){
 
   std::string ipString = GetParameter(param);
   sscanf(ipString.c_str(),"%d:%d:%d:%d",&ip[0],&ip[1],&ip[2],&ip[3]);
-  std::cout<<param<<": "<<ip<<" --> "<<ip[0]<<" "<<ip[1]<<" "<<ip[2]<<" "<<ip[3]<<std::endl;
+  //std::cout<<param<<": "<<ip<<" --> "<<ip[0]<<" "<<ip[1]<<" "<<ip[2]<<" "<<ip[3]<<std::endl;
 }
 
 void TRestRawDAQMetadata::PrintMetadata() {
@@ -114,18 +110,131 @@ void TRestRawDAQMetadata::PrintMetadata() {
     metadata << "Base IP : " << fBaseIp[0]<<"."<< fBaseIp[1]<<"."<< fBaseIp[2]<<"."<< fBaseIp[3]<< endl;
     metadata << "Local IP : " << fLocalIp[0]<<"."<< fLocalIp[1]<<"."<< fLocalIp[2]<<"."<< fLocalIp[3]<< endl;
     metadata << "ElectronicsType : " << fElectronicsType.Data() << endl;
-    metadata << "ChipType : " << fChipType.Data() << endl;
-    metadata << "FEC mask : 0x"<<std::hex << fFECMask <<std::dec<< endl;
-    metadata << "Gain : 0x"<<std::hex << fGain <<std::dec<< endl;
-    metadata << "Shapping time : 0x" <<std::hex << fShappingTime <<std::dec<< endl;
     metadata << "Clock div : 0x" <<std::hex << fClockDiv <<std::dec<< endl;
     metadata << "Trigger type : " << fTriggerType.Data() << endl;
     metadata << "Acquisition type : " << fAcquisitionType.Data() << endl;
     metadata << "Number of events : " << fNEvents << endl;
+
+      for(auto f : fFEC)DumpFEC(f);
     metadata << "+++++++++++++++++++++++++++++++++++++++++++++" << endl;
+
     cout << endl;
 }
 
+void TRestRawDAQMetadata::ReadFEC(){
+
+  TiXmlElement* FECDef = GetElement("FEC");
+
+  while(FECDef) {
+
+    FECMetadata fec;
+    fec.id = StringToInteger(GetFieldValue("id", FECDef) );
+    std::string ip = GetFieldValue("ip", FECDef);
+    sscanf(ip.c_str(),"%d:%d:%d:%d",&fec.ip[0],&fec.ip[1],&fec.ip[2],&fec.ip[3]);
+    fec.chipType = GetFieldValue("chip", FECDef);
+    fec.clockDiv = StringToInteger(GetFieldValue("clockDiv", FECDef) );
+    //std::cout<<"FEC "<<fec.id<<" ip:"<<fec.ip[0]<<"."<<fec.ip[1]<<"."<<fec.ip[2]<<"."<<fec.ip[3]<<" "<<ip<<" "<<fec.chipType<<" clockDiv "<<fec.clockDiv<<std::endl;
+
+    TiXmlElement* ASICDef = GetElement("ASIC",FECDef);
+    //std::cout<<"ASICDef "<<ASICDef<<std::endl;
+      while (ASICDef){
+        std::string id = GetFieldValue("id", ASICDef);
+        int gain = StringToInteger(GetFieldValue("gain", ASICDef) );
+        int shappingTime = StringToInteger(GetFieldValue("shappingTime", ASICDef) );
+        bool asicActive = StringToBool(GetFieldValue("isActive", ASICDef) );
+        //std::cout<<"ASIC "<<id<<" gain "<<gain<<" shappingTime "<<shappingTime<<std::endl;
+        uint16_t polarity = StringToInteger(GetFieldValue("polarity", ASICDef) ) & 0x1;
+        uint16_t pedCenter = StringToInteger(GetFieldValue("pedcenter", ASICDef) );
+        float pedThr = StringToFloat(GetFieldValue("pedthr", ASICDef) );
+          TiXmlElement* channelDef = GetElement("channel",ASICDef);
+          bool channelActive[79];
+            while (channelDef){
+              std::string chId = GetFieldValue("id", channelDef);
+              bool active = StringToBool(GetFieldValue("isActive", channelDef) );
+                if(chId=="*"){
+                  for(int i=0;i<79;i++)channelActive[i]=active;
+                } else {
+                  int i= StringToInteger(chId);
+                  if(i<79)
+                    channelActive[i]=active;
+                }
+              channelDef = GetNextElement(channelDef);
+            }
+
+          if(id=="*"){//Wildcard
+            for(int i=0;i<4;i++){
+              fec.asic[i].gain = gain;
+              fec.asic[i].shappingTime = shappingTime;
+              fec.asic[i].isActive = asicActive;
+              fec.asic[i].polarity = polarity;
+              fec.asic[i].pedCenter = pedCenter;
+              fec.asic[i].pedThr = pedThr;
+              bool isFirst = true;
+                for(int c=0;c<79;c++){
+                  fec.asic[i].channelActive[c]=channelActive[c];
+                    if(channelActive[c] && isFirst){
+                      fec.asic[i].channelStart = c;
+                      isFirst=false;
+                    }
+                    if(channelActive[c])fec.asic[i].channelEnd = c;
+                }
+            }
+          } else {
+            int i= StringToInteger(id);
+            if(i<4){
+              fec.asic[i].gain = gain;
+              fec.asic[i].shappingTime = shappingTime;
+              fec.asic[i].isActive = asicActive;
+              fec.asic[i].polarity = polarity;
+              fec.asic[i].pedCenter = pedCenter;
+              fec.asic[i].pedThr = pedThr;
+              bool isFirst = true;
+                for(int c=0;c<79;c++){
+                  fec.asic[i].channelActive[c]=channelActive[c];
+                    if(channelActive[c] && isFirst){
+                      fec.asic[i].channelStart = c;
+                      isFirst=false;
+                    }
+                    if(channelActive[c])fec.asic[i].channelEnd = c;
+                }
+            }
+          }
+        ASICDef = GetNextElement(ASICDef);
+      }
+
+   fFEC.emplace_back( std::move(fec) );
+   FECDef = GetNextElement(FECDef);
+  }
+
+  std::sort(fFEC.begin(), fFEC.end());
+
+}
 
 
+void TRestRawDAQMetadata::DumpFEC(const FECMetadata &fec){
+
+    metadata << "+++++++++++++++++++++++++++++++++++++++++++++" << endl;
+    metadata << "FEC id:"<<fec.id << endl;
+    metadata << "IP: "<<fec.ip[0]<<"."<<fec.ip[1]<<"."<<fec.ip[2]<<"."<<fec.ip[3]<< endl;
+    metadata << "Chip type: "<<fec.chipType<<endl;
+    metadata << "Clock Div: 0x"<<std::hex << fec.clockDiv <<std::dec<<endl;
+      for(int i=0;i<4;i++){
+        if(!fec.asic[i].isActive)continue;
+        metadata << "+++++++++++++++++++++++++++++++++++++++++++++" << endl;
+        metadata <<"ASIC "<<i<<endl;
+        metadata << "Polarity: "<<fec.asic[i].polarity<<endl;
+        metadata <<"Gain: 0x"<<std::hex << fec.asic[i].gain <<std::dec<<endl;
+        metadata <<"ShappingTime: 0x"<<std::hex << fec.asic[i].shappingTime <<std::dec<<endl;
+        metadata <<"Channel start: "<< fec.asic[i].channelStart <<endl;
+        metadata <<"Channel end: "<< fec.asic[i].channelEnd <<endl;
+        metadata <<"Active channels: "<<endl;
+          for(int c=0;c<79;c++){
+            if(fec.asic[i].channelActive[c])metadata<<c<<"; ";
+            if(c>0 && c%10 == 0)metadata<<endl;
+          }
+        metadata<<endl;
+      }
+    metadata << "+++++++++++++++++++++++++++++++++++++++++++++" << endl;
+
+}
 

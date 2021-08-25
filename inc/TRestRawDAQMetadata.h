@@ -26,6 +26,7 @@
 #include <iostream>
 
 #include "TRestMetadata.h"
+#include "FECMetadata.h"
 #include "TString.h"
 
 namespace daq_metadata_types {
@@ -64,9 +65,6 @@ class TRestRawDAQMetadata : public TRestMetadata {
    protected:
     TString fElectronicsType;            // DCC, FEMINOS, ARC, ...
     TString fChipType;                   // after or aget
-    UInt_t fFECMask;                     // FEC Mask
-    UInt_t fGain;                        // Gain in the AFTER/AGET chip
-    UInt_t fShappingTime;                // Shapping time in the AFTER/AGET chip
     UInt_t fClockDiv;                    // Clock division
     Int_t fBaseIp[4] = {192,168,10,13};  //Base IP of the card
     Int_t fLocalIp[4] = {192,168,10,10}; //Local IP of the host computer
@@ -74,9 +72,10 @@ class TRestRawDAQMetadata : public TRestMetadata {
     TString fAcquisitionType;            // pedestal, calibration or background
     UInt_t fCompressMode =0;             // 0 uncompressed, 1 compress
     Int_t fNEvents=0;                    // 0 --> Infinite
-    Int_t fPolarity =0;                  // 0--> negative, 1 positive
+    std::vector<FECMetadata> fFEC;         //Vector of FECs with different info
 
    public:
+
     virtual void PrintMetadata();
     void ReadIp(const std::string &param, Int_t *ip );
 
@@ -86,9 +85,6 @@ class TRestRawDAQMetadata : public TRestMetadata {
     // Destructor
     virtual ~TRestRawDAQMetadata();
 
-    UInt_t GetFECMask() { return fFECMask; }
-    UInt_t GetGain() { return fGain; }
-    UInt_t GetShappingTime() { return fShappingTime; }
     UInt_t GetClockDiv() { return fClockDiv; }
     TString GetTriggerType() { return fTriggerType; }
     TString GetAcquisitionType() { return fAcquisitionType; }
@@ -98,12 +94,15 @@ class TRestRawDAQMetadata : public TRestMetadata {
     Int_t* GetBaseIp() { return fBaseIp; }
     Int_t* GetLocalIp() { return fLocalIp; }
     UInt_t GetCompressMode(){return fCompressMode;}       // 0 uncompressed, 1 compress
-    UInt_t GetPolarity(){return fPolarity;}
     UInt_t GetValFromString(TString var, TString line);
     TString GetDecodingFile(){return GetParameter("decodingFile");}
+    std::vector <FECMetadata> GetFECs(){return fFEC;};
 
     void SetAcquisitionType (const std::string &typ){fAcquisitionType = typ;}
     void SetNEvents(const Int_t & nEv){fNEvents=nEv;}
+
+    void ReadFEC();
+    void DumpFEC(const FECMetadata &fec);
 
     ClassDef(TRestRawDAQMetadata, 2);  // REST run class
 };
