@@ -27,8 +27,7 @@
 #include "TRestEventProcess.h"
 #include "TRestRawSignal.h"
 
-//! A process to substract the common channels noise from RawSignal type of
-//! data.
+//! A process to substract the common channels noise from RawSignal type
 class TRestRawCommonNoiseReductionProcess : public TRestEventProcess {
    private:
     /// A pointer to the specific TRestRawSignalEvent input
