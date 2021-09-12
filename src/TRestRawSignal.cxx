@@ -528,17 +528,21 @@ Int_t TRestRawSignal::GetMinPeakBin() {
 ///////////////////////////////////////////////
 /// \brief It returns whether the signal has ADC saturation
 ///
-Bool_t TRestRawSignal::IsACDSaturation(int Nflat, int OverThres) {
+Bool_t TRestRawSignal::IsADCSaturation(int Nflat) {
+    if (Nflat <= 0) return false;
     // GetMaxPeakBin() will always find the first max peak bin if mulitple
     // bins are in same max value.
     int index = GetMaxPeakBin();
+    Short_t value = fSignalData[index];
 
-    bool sat = true;
+    bool sat = false;
     if (index + Nflat <= fSignalData.size()) {
         for (int i = index; i < index + Nflat; i++) {
-            if (fSignalData[index + i] > OverThres && fSignalData[index] == fSignalData[index + i]) {
-            } else {
-                sat = false;
+            if (fSignalData[i] != value) {
+                break;
+            }
+            if (i == index + Nflat - 1) {
+                sat = true;
             }
         }
     }

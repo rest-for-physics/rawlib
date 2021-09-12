@@ -190,7 +190,7 @@ class TRestRawSignal : public TObject {
 
     Int_t GetMinPeakBin();
 
-    Bool_t IsACDSaturation(int Nflat = 3, int OverThres = 3600);
+    Bool_t IsADCSaturation(int Nflat = 3);
 
     void GetDifferentialSignal(TRestRawSignal* diffSgnl, Int_t smearPoints);
 
