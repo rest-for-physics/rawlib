@@ -38,6 +38,7 @@ class TRestRawToSignalProcess : public TRestEventProcess {
     Double_t tStart;
     Long64_t totalBytesReaded;
     Long64_t totalBytes;
+    Int_t fMaxWaitTimeEOF;  // wait for xx seconds at eof before really closing the binary file
 
     TRestRawSignalEvent* fSignalEvent = 0;  //!
 #ifndef __CINT__
@@ -70,6 +71,7 @@ class TRestRawToSignalProcess : public TRestEventProcess {
 
     void SetRunOrigin(Int_t run_origin) { fRunOrigin = run_origin; }
     void SetSubRunOrigin(Int_t sub_run_origin) { fSubRunOrigin = sub_run_origin; }
+    bool FRead(void* ptr, size_t size, size_t n, FILE* file);
 
     void LoadConfig(std::string cfgFilename, std::string name = "");
 
