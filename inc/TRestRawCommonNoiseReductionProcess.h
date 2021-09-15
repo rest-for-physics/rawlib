@@ -47,7 +47,7 @@ class TRestRawCommonNoiseReductionProcess : public TRestEventProcess {
     Int_t fCenterWidth = 10;
 
     /// Minimum number of signals required to apply the process.
-    Int_t fNSignals = 200;
+    Int_t fMinSignalsRequired = 200;
 
     void Initialize();
 
@@ -76,7 +76,7 @@ class TRestRawCommonNoiseReductionProcess : public TRestEventProcess {
         if (fMode == 1) metadata << " --> Mode 1 activated." << endl;
         metadata << " centerWidth : " << fCenterWidth << endl;
         metadata << "blocks : [" << fBlocks << "]" << endl;
-        metadata << " Minimum number of signals : " << fNSignals << endl;
+        metadata << " Minimum number of signals : " << fMinSignalsRequired << endl;
 
         EndPrintProcess();
     }
