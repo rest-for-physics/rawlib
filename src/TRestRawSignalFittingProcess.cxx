@@ -22,6 +22,9 @@
 
 //////////////////////////////////////////////////////////////////////////
 ///
+///
+/// **NOT IN USE ANYMORE. ALL FUNCTIONALITIES ARE IN TRestRawSignalFitEventProcess**
+///
 /// Fit every TRestRawSignal in a TRestRawSignalEvent with AGET theoretical
 /// curve times a logistic function. This logistic function acts like a step function
 /// to select only the positive range of the AGET function.
@@ -90,7 +93,10 @@
 /// History of developments:
 ///
 /// 2020-August First implementation of raw signal fitting process.
-///                Created from TRestRawSignalAnalysisProcess.
+///             Created from TRestRawSignalAnalysisProcess.
+///
+/// 2021-March  Merged with TRestRawSignalConvolutionFittingProcess.
+///             Since then not in use, sustitued by TRestRawSignalFitEventProcess.
 ///
 /// \class      TRestRawSignalFittingProcess
 /// \author     David Diez

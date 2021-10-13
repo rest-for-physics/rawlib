@@ -22,6 +22,9 @@
 
 //////////////////////////////////////////////////////////////////////////
 ///
+///
+/// **NOT IN USE ANYMORE. ALL FUNCTIONALITIES ARE IN TRestRawSignalFitEventProcess**
+///
 /// Fit every TRestRawSignal in a TRestRawSignalEvent with AGET theoretical
 /// curve
 /// times a logistic function convoluted with a gaussian pulse. The logistic
@@ -101,6 +104,9 @@
 ///
 /// 2020-October First implementation of raw signal convolution fitting process.
 ///              Created from TRestRawSignalAnalysisProcess.
+///
+/// 2021-March  Merged with TRestRawSignalFittingProcess.
+///             Since then not in use, sustitued by TRestRawSignalFitEventProcess.
 ///
 /// \class      TRestRawSignalConvolutionFittingProcess
 /// \author     David Diez

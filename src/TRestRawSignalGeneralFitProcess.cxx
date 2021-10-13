@@ -35,12 +35,13 @@
 ///
 ///
 /// Example of this process in rml file:
-///
+/// \code
 /// <addProcess type="TRestRawSignalGeneralFitProcess" name="rawGeneralFit" value="ON" 
 ///        observable="all" verboseLevel="info"  
 ///        function="[0=0(-100,100)]+[1=2000]*TMath::Exp(-3.*(x-[3=80])/[2=70])*((x-[3=80])/[2=70])^3*sin((x-[3=80])/[2=70])" 
 ///        functionRange="(100,300)">
 /// </addProcess>
+/// \endcode
 ///
 /// <hr>
 ///

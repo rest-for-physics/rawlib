@@ -92,10 +92,12 @@
 ///                * SignalThreshold
 /// 
 /// * **addAllPulses**: Add all pulses in the event and fit the resulting one.
+///
 /// Example in rml file:
 /// \code
 /// <addProcess type="TRestRawSignalFitEventProcess" name="rawFitEvent" value="ON"
-///        observable="all" verboseLevel="info"  agetFit= "false" shapingFixed = "32"
+///        observable="all" verboseLevel="info"  addAllPulses="true" agetFit="false"  
+///        varianceInitialValue="0.84"  shapingFixed="18" amplitudeFixed="10"
 ///        baseLineRange="(20,150)"  pointsOverThreshold="40" pointThreshold="6" signalThreshold="3" >
 /// </addProcess>
 /// \endcode
@@ -143,8 +145,10 @@
 /// 2021-March   Merged ConvolutionFittingProcess with FittingProcess.
 ///              New Weighted observables and option to fix ShapingTime.
 ///
-/// \class      TRestRawSignalFitEventProcess
-/// \author     David Diez
+/// 2021-May     Add all signals option and variables to access all parameters.
+///
+/// \class       TRestRawSignalFitEventProcess
+/// \author      David Diez
 ///
 ///______________________________________________________________________________
 ///
