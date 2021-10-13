@@ -28,10 +28,19 @@
 /// Examples:
 /// -- Initial value: [0=3.5]
 /// -- Fixed value: [0==3.5]
-/// -- Range: [0=3.5(1,5)] The parameter 0 begin at 3.5 and it can move between 1 and 5.
+/// -- Range: [0=3.5(1,5)] The parameter 0 begin at 3.5 and it can be moved between 1 and 5.
 ///
 /// -- Complete function example: [0=0(-100,100)]+[1=2000]*TMath::Exp(-3. * (x-[3=80])/[2=70])
 ///                               * ((x-[3=80])/[2=70])^3  * sin((x-[3=80])/[2=70])
+///
+///
+/// Example of this process in rml file:
+///
+/// <addProcess type="TRestRawSignalGeneralFitProcess" name="rawGeneralFit" value="ON" 
+///        observable="all" verboseLevel="info"  
+///        function="[0=0(-100,100)]+[1=2000]*TMath::Exp(-3.*(x-[3=80])/[2=70])*((x-[3=80])/[2=70])^3*sin((x-[3=80])/[2=70])" 
+///        functionRange="(100,300)">
+/// </addProcess>
 ///
 /// <hr>
 ///
@@ -146,15 +155,6 @@ TRestEvent* TRestRawSignalGeneralFitProcess::ProcessEvent(TRestEvent* evInput) {
     Double_t ChiSquareMean = 0;
     Double_t ChiSquare[fRawSignalEvent->GetNumberOfSignals()];
 
-    /*map<int, Double_t> baselineFit;
-    map<int, Double_t> amplitudeFit;
-    map<int, Double_t> shapingtimeFit;
-    map<int, Double_t> peakpositionFit;
-
-    baselineFit.clear();
-    amplitudeFit.clear();
-    shapingtimeFit.clear();
-    peakpositionFit.clear();*/
 
     if (fFitFunc) {
         delete fFitFunc;
@@ -170,24 +170,6 @@ TRestEvent* TRestRawSignalGeneralFitProcess::ProcessEvent(TRestEvent* evInput) {
 
         int MaxPeakBin = singleSignal->GetMaxPeakBin();
 
-        /*// ShaperSin function (AGET theoretic curve) times logistic function
-        TF1* f = new TF1("fit",
-                         "[0]+[1]*TMath::Exp(-3. * (x-[3])/[2]) * "
-                         "(x-[3])/[2] * (x-[3])/[2] * (x-[3])/[2] * "
-                         "sin((x-[3])/[2])/(1+TMath::Exp(-10000*(x-[3])))",
-                         0, 511);
-        f->SetParameters(0, 2000, 70, 80);
-        //f->SetParameters(0, 0);  // Initial values adjusted from Desmos
-        //f->SetParLimits(0, 150, 350);
-        //f->SetParameters(1, 2000);
-        //f->SetParLimits(1, 30, 90000);
-        //f->SetParameters(2, 70);
-        //f->SetParLimits(2, 10, 80);
-        //f->SetParameters(3, 80);
-        //f->SetParLimits(3, 150, 250);
-        //f->FixParameter(2, 75);
-        f->SetParNames("Baseline", "Amplitude", "ShapingTime", "PeakPosition");*/
-
         // Create histogram from signal
         Int_t nBins = singleSignal->GetNumberOfPoints();
         TH1D* h = new TH1D("histo", "Signal to histo", nBins, 0, nBins);
@@ -196,9 +178,12 @@ TRestEvent* TRestRawSignalGeneralFitProcess::ProcessEvent(TRestEvent* evInput) {
             h->Fill(i, singleSignal->GetRawData(i));
         }
 
-        // Fit histogram with ShaperSin
-        h->Fit(fFitFunc, "NWW", "", 0, 511);  // Options: R->fit in range, N->No draw, Q->Quiet
+        // Fit histogram 
+        h->Fit(fFitFunc, "RNQWW", "", fFunctionRange.X(), fFunctionRange.Y());  
+        // Options: R->fit in range, N->No draw, Q->Quiet, 
+        // WW->Set all weights to 1 including empty bins; ignore error bars
 
+        // Goodnes Of Fit parameters
         Double_t sigma = 0;
         for (int j = fFunctionRange.X(); j < fFunctionRange.Y(); j++) {
             sigma += (singleSignal->GetRawData(j) - fFitFunc->Eval(j)) *
@@ -218,24 +203,8 @@ TRestEvent* TRestRawSignalGeneralFitProcess::ProcessEvent(TRestEvent* evInput) {
             debug << "Error parameter " << i << ": " << paramErr[i][singleSignal->GetID()] << endl;
         }
 
-        /*baselineFit[singleSignal->GetID()] = f->GetParameter(0);
-        amplitudeFit[singleSignal->GetID()] = f->GetParameter(1);
-        shapingtimeFit[singleSignal->GetID()] = f->GetParameter(2);
-        peakpositionFit[singleSignal->GetID()] = f->GetParameter(3);
-
-        fShaping = f->GetParameter(2);
-        fStartPosition = f->GetParameter(3);
-        fBaseline = f->GetParameter(0);
-        fAmplitude = f->GetParameter(1);*/
-
         h->Delete();
     }
-
-    //////////// Fitted parameters Map Observables /////////////
-    /*SetObservableValue("FitBaseline_map", baselineFit);
-    SetObservableValue("FitAmplitude_map", amplitudeFit);
-    SetObservableValue("FitShapingTime_map", shapingtimeFit);
-    SetObservableValue("FitPeakPosition_map", peakpositionFit);*/
 
     //////////// Fitted parameters Map Observables /////////////
     for (int i = 0; i < fFitFunc->GetNpar(); i++) {
@@ -247,7 +216,7 @@ TRestEvent* TRestRawSignalGeneralFitProcess::ProcessEvent(TRestEvent* evInput) {
     SigmaMean = SigmaMean / (fRawSignalEvent->GetNumberOfSignals());
     SetObservableValue("FitSigmaMean", SigmaMean);
 
-    //////////// Sigma Mean Standard Deviation  Observable /////////////
+    //////////// Sigma Mean Standard Deviation Observable /////////////
     Double_t sigmaMeanStdDev = 0;
     for (int k = 0; k < fRawSignalEvent->GetNumberOfSignals(); k++) {
         sigmaMeanStdDev += (Sigma[k] - SigmaMean) * (Sigma[k] - SigmaMean);
@@ -273,29 +242,6 @@ TRestEvent* TRestRawSignalGeneralFitProcess::ProcessEvent(TRestEvent* evInput) {
         debug << "Sandard deviation divided by amplitude of signal number " << k << ": "
               << RatioSigmaMaxPeak[k] << endl;
     }
-
-    /// We define (or re-define) the baseline range and calculation range of our
-    /// raw-signals.
-    // This will affect the calculation of observables, but not the stored
-    // TRestRawSignal data.
-    // fRawSignalEvent->SetBaseLineRange(fBaseLineRange);
-    // fRawSignalEvent->SetRange(fIntegralRange);
-
-    /* Perhaps we want to identify the points over threshold where to apply the
-  fitting?
-     * Then, we might need to initialize points over threshold
-     *
-  for (int s = 0; s < fRawSignalEvent->GetNumberOfSignals(); s++) {
-    TRestRawSignal* sgnl = fRawSignalEvent->GetSignal(s);
-
-    /// Important call we need to initialize the points over threshold in a
-  TRestRawSignal
-    sgnl->InitializePointsOverThreshold(TVector2(fPointThreshold,
-  fSignalThreshold),
-                                        fNPointsOverThreshold);
-
-  }
-    */
 
     // If cut condition matches the event will be not registered.
     if (ApplyCut()) return NULL;

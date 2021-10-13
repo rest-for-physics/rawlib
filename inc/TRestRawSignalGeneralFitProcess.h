@@ -34,21 +34,17 @@
 class TRestRawSignalGeneralFitProcess : public TRestEventProcess {
    private:
     /// A pointer to the specific TRestRawSignalEvent input
-    TRestRawSignalEvent* fRawSignalEvent;  //!
+    TRestRawSignalEvent* fRawSignalEvent; 
 
     void Initialize();
 
     void LoadDefaultConfig();
-
+    
+    // Parameters to provide in the rml
     TVector2 fFunctionRange = TVector2(0, 0);
     string fFunction;
 
-    TF1* fFitFunc = nullptr;  //!
-
-    /*Double_t fShaping = 0;
-    Double_t fStartPosition = 0;
-    Double_t fBaseline = 0;
-    Double_t fAmplitude = 0;*/
+    TF1* fFitFunc = nullptr;  
 
    protected:
     // add here the members of your event process
@@ -58,11 +54,6 @@ class TRestRawSignalGeneralFitProcess : public TRestEventProcess {
     any GetOutputEvent() { return fRawSignalEvent; }
 
     TF1* GetFunction() { return fFitFunc; }
-
-    /*Double_t GetShaping() { return fShaping; }
-    Double_t GetStartPosition() { return fStartPosition; }
-    Double_t GetBaseline() { return fBaseline; }
-    Double_t GetAmplitude() { return fAmplitude; }*/
 
     void InitProcess();
     TRestEvent* ProcessEvent(TRestEvent* eventInput);
