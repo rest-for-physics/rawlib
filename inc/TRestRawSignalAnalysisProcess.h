@@ -28,8 +28,7 @@
 
 #include "TRestEventProcess.h"
 
-//! An analysis REST process to extract valuable information from RawSignal type
-//! of data.
+//! An analysis process to extract valuable information from a TRestRawSignalEvent.
 class TRestRawSignalAnalysisProcess : public TRestEventProcess {
    private:
     /// A pointer to the specific TRestRawSignalEvent input
@@ -43,11 +42,19 @@ class TRestRawSignalAnalysisProcess : public TRestEventProcess {
     /// Just a flag to quickly determine if we have to apply the range filter
     Bool_t fRangeEnabled = false;  //!
 
-    // parameters
+    /// The range where the baseline range will be calculated
     TVector2 fBaseLineRange = TVector2(5, 55);
+
+    /// The range where the observables will be calculated
     TVector2 fIntegralRange = TVector2(10, 500);
+
+    /// The number of sigmas over baseline fluctuations to identify a point overthreshold
     Double_t fPointThreshold = 2;
+
+    /// A parameter to define a minimum signal fluctuation. Measured in sigmas.
     Double_t fSignalThreshold = 5;
+
+    /// The minimum number of points over threshold to identify a signal as such
     Int_t fPointsOverThreshold = 5;
 
     /// It defines the signals id range where analysis is applied

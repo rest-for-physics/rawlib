@@ -25,6 +25,42 @@
 /// THIS DOCUMENTATION NEEDS REVISION. TODO If possible a figure with the
 /// pulse ilustrating the different observables extracted.
 ///
+/// The following metadata parameters might be defined at the RML to control
+/// the rawsignal analysis is performed:
+/// * **baseLineRange:** The bins from the rawdata samples that will be used
+/// to calculate the baseline average and fluctuation.
+/// * **integralRange**: The calculated observables will only consider points
+/// found inside this range.
+///
+/// There are 3 additional parameters that are used in combination to identify
+/// the points over threshold at each signal. Those parameters are used, for
+/// example, to calculate the number of good signals observable.
+///
+/// * **pointThreshold**: The number of sigmas over baseline fluctuations to
+/// identify a point overthreshold
+/// * **signalThreshold**: A parameter to define a minimum signal fluctuation.
+/// Measured in sigmas.
+/// * **pointsOverThreshold**: The minimum number of points over threshold to
+/// identify a signal as such
+///
+/// Additionaly, there is a metadata parameter,*signalsRange* that allows to
+/// define the signal ids over which this process will have effect. This
+/// parameter may allow to define different TRestRawSignalAnalysisProcess
+/// instances at the RML operating over different signal ranges. For example:
+///
+/// \code
+/// <TRestRawSignalAnalysisProcess name="rawMM" signalsRange="(0,512)"
+///        baseLineRange="(5,100)" observables="all" />
+///
+/// <TRestRawSignalAnalysisProcess name="rawVETO" signalsRange="(513,1024)" >
+///		  <parameter name="pointThreshold" value="5" />
+///		  <parameter name="signalThreshold" value="3.5" />
+///		  <parameter name="pointsOverThreshold" value="15" />
+///
+///       <observable name="rawAna_max_amplitude_map" type="map<int,double>" />
+/// </TRestRawSignalAnalysisProcess>
+/// \endcode
+///
 ///
 /// ### Observables
 ///
@@ -177,23 +213,11 @@
 /// account.
 ///
 ///
-///
-/// List of vailable cuts: (obsolete)
-///
-/// * **MeanBaseLineCut**
-/// * **MeanBaseLineSigmaCut**
-/// * **MaxNumberOfSignalsCut**
-/// * **MaxNumberOfGoodSignalsCut**
-/// * **FullIntegralCut**
-/// * **ThresholdIntegralCut**
-/// * **PeakTimeDelayCut**
-/// * **ADCSaturationCut**
-///
-///  To add cut, write "cut" sections in your rml file:
+/// You may add filters to any observable inside the analysis tree. To add a cut,
+/// write "cut" sections in your rml file:
 ///
 /// \code
 /// <TRestRawSignalAnalysisProcess name=""  ... >
-///     <parameter name="cutsEnabled" value="true" />
 ///     <cut name="MeanBaseLineCut" value="(0,4096)" />
 /// </TRestRawSignalAnalysisProcess>
 /// \endcode
