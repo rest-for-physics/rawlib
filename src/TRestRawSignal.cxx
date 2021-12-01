@@ -691,8 +691,8 @@ void TRestRawSignal::CalculateBaseLineIQR(Int_t startBin, Int_t endBin) {
 		vector<Short_t>::const_iterator last  = fSignalData.begin() + endBin;
 		vector<Short_t> v(first,last);
 		std::sort(v.begin(),v.end());
-		Short_t Q1 = v[(int)endBin-startBin*0.25];
-		Short_t Q3 = v[(int)endBin-startBin*0.75];
+		Short_t Q1 = v[(int)(endBin-startBin)*0.25];
+		Short_t Q3 = v[(int)(endBin-startBin)*0.75];
 		Double_t IQR = Q3-Q1;
 		fBaseLineSigma = IQR / 1.349; // IQR/1.346 equals standard deviation of normal distribution
     }
