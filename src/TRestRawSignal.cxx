@@ -61,7 +61,6 @@ using namespace std;
 #include <TF1.h>
 #include <TMath.h>
 #include <TRandom3.h>
-#include <TH1F.h>
 
 ClassImp(TRestRawSignal);
 
