@@ -37,6 +37,8 @@ class TRestRawSignal : public TObject {
     void CalculateThresholdIntegral();
 
     void CalculateBaseLineSigma(Int_t startBin, Int_t endBin);
+	
+    void CalculateBaseLineIQR(Int_t startBin, Int_t endBin);
 
    protected:
     /// An integer value used to attribute a unique identification number to the
@@ -199,6 +201,8 @@ class TRestRawSignal : public TObject {
     void GetWhiteNoiseSignal(TRestRawSignal* noiseSgnl, Double_t noiseLevel = 1.);
 
     void CalculateBaseLine(Int_t startBin, Int_t endBin);
+
+	void CalculateBaseLineRobust(Int_t startBin, Int_t endBin);
 
     //   Double_t GetStandardDeviation(Int_t startBin, Int_t endBin);
 

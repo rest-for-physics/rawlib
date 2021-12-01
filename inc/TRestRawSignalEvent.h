@@ -77,6 +77,14 @@ class TRestRawSignalEvent : public TRestEvent {
         fBaseLineRange = TVector2(from, to);
         for (int n = 0; n < GetNumberOfSignals(); n++) fSignal[n].CalculateBaseLine(from, to);
     }
+	
+	/// Uses for the baseline calculation not the standard deviation but something else
+    void SetBaseLineRangeRobust(TVector2 blRange) { SetBaseLineRangeRobust(blRange.X(), blRange.Y()); }
+
+    void SetBaseLineRangeRobust(Int_t from, Int_t to) {
+        fBaseLineRange = TVector2(from, to);
+        for (int n = 0; n < GetNumberOfSignals(); n++) fSignal[n].CalculateBaseLineRobust(from, to);
+    }
 
     void SetRange(TVector2 range) { SetRange(range.X(), range.Y()); }
 

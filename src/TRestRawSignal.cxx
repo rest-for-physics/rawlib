@@ -61,6 +61,7 @@ using namespace std;
 #include <TF1.h>
 #include <TMath.h>
 #include <TRandom3.h>
+#include <TH1F.h>
 
 ClassImp(TRestRawSignal);
 
@@ -640,6 +641,29 @@ void TRestRawSignal::CalculateBaseLine(Int_t startBin, Int_t endBin) {
 }
 
 ///////////////////////////////////////////////
+/// \brief This method is used to determine the value of the baseline as
+/// median of the data points found
+/// in the range defined between startBin and endBin. It calls the CalculateBaseLineIQR method.
+/// This method is more robust to outliers than CalculateBaseline and can be used when signals are present in the interval used for the baseline calculation.
+///
+void TRestRawSignal::CalculateBaseLineRobust(Int_t startBin, Int_t endBin) {
+    if (endBin - startBin <= 0) {
+        fBaseLine = 0.;
+    } else if (endBin > fSignalData.size()) {
+        cout << "TRestRawSignal::CalculateBaseLine. Error! Baseline range exceeds the rawdata depth!!"
+             << endl;
+        endBin = fSignalData.size();
+    } else {
+		vector<Short_t>::const_iterator first = fSignalData.begin() + startBin;
+		vector<Short_t>::const_iterator last  = fSignalData.begin() + endBin;
+		vector<Short_t> v(first,last);
+		const Short_t* signalInRange = &v[0];
+		fBaseLine = TMath::Median(endBin-startBin,signalInRange);
+	}
+	CalculateBaseLineIQR(startBin, endBin);
+}
+
+///////////////////////////////////////////////
 /// \brief This method is called each time we call CalculateBaseLine to
 /// determine the value of the baseline
 /// fluctuation as its standard deviation in the baseline range provided.
@@ -652,6 +676,26 @@ void TRestRawSignal::CalculateBaseLineSigma(Int_t startBin, Int_t endBin) {
         for (int i = startBin; i < endBin; i++)
             baseLineSigma += (fBaseLine - fSignalData[i]) * (fBaseLine - fSignalData[i]);
         fBaseLineSigma = TMath::Sqrt(baseLineSigma / (endBin - startBin));
+    }
+}
+
+///////////////////////////////////////////////
+/// \brief This method is called each time we call CalculateBaseLineRobust to
+/// determine the value of the baseline
+/// fluctuation as its interquartile range (IQR) in the baseline range provided. The IQR is more robust towars outliers than the standard deviation.
+///
+void TRestRawSignal::CalculateBaseLineIQR(Int_t startBin, Int_t endBin) {
+    if (endBin - startBin <= 0) {
+        fBaseLineSigma = 0;
+    } else {
+		vector<Short_t>::const_iterator first = fSignalData.begin() + startBin;
+		vector<Short_t>::const_iterator last  = fSignalData.begin() + endBin;
+		vector<Short_t> v(first,last);
+		std::sort(v.begin(),v.end());
+		Short_t Q1 = v[(int)endBin-startBin*0.25];
+		Short_t Q3 = v[(int)endBin-startBin*0.75];
+		Double_t IQR = Q3-Q1;
+		fBaseLineSigma = IQR / 1.349; // IQR/1.346 equals standard deviation of normal distribution
     }
 }
 
