@@ -78,7 +78,7 @@ class TRestRawSignalEvent : public TRestEvent {
         for (int n = 0; n < GetNumberOfSignals(); n++) fSignal[n].CalculateBaseLine(from, to);
     }
 	
-	/// Uses for the baseline calculation not the standard deviation but something else
+	/// Uses for the baseline calculation not the standard deviation but IQR (interquartile range) divided by 1.349
     void SetBaseLineRangeRobust(TVector2 blRange) { SetBaseLineRangeRobust(blRange.X(), blRange.Y()); }
 
     void SetBaseLineRangeRobust(Int_t from, Int_t to) {
