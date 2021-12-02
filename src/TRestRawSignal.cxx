@@ -624,14 +624,16 @@ void TRestRawSignal::GetSignalSmoothed(TRestRawSignal* smthSignal, Int_t averagi
 /// average of the data points found
 /// in the range defined between startBin and endBin.
 ///
-void TRestRawSignal::CalculateBaseLine(Int_t startBin, Int_t endBin) {
+void TRestRawSignal::CalculateBaseLine(Int_t startBin, Int_t endBin, std::string option) {
     if (endBin - startBin <= 0) {
         fBaseLine = 0.;
     } else if (endBin > fSignalData.size()) {
         cout << "TRestRawSignal::CalculateBaseLine. Error! Baseline range exceeds the rawdata depth!!"
              << endl;
         endBin = fSignalData.size();
-    } else {
+	} else if (ToUpper(option)=="ROBUST") {
+		return CalculateBaseLineRobust(startBin,endBin);	
+	} else {
         Double_t baseLine = 0;
         for (int i = startBin; i < endBin; i++) baseLine += fSignalData[i];
         fBaseLine = baseLine / (endBin - startBin);

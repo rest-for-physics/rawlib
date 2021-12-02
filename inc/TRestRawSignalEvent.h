@@ -24,6 +24,7 @@
 #define RestDAQ_TRestRawSignalEvent
 
 #include <iostream>
+#include <string>
 
 #include <TArrayD.h>
 #include <TAxis.h>
@@ -71,11 +72,11 @@ class TRestRawSignalEvent : public TRestEvent {
         for (int n = 0; n < GetNumberOfSignals(); n++) fSignal[n].SetTailPoints(p);
     }
 
-    void SetBaseLineRange(TVector2 blRange) { SetBaseLineRange(blRange.X(), blRange.Y()); }
+    void SetBaseLineRange(TVector2 blRange, std::string option= "ROBUST") { SetBaseLineRange(blRange.X(), blRange.Y(), option); }
 
-    void SetBaseLineRange(Int_t from, Int_t to) {
+    void SetBaseLineRange(Int_t from, Int_t to, std::string option="ROBUST") {
         fBaseLineRange = TVector2(from, to);
-        for (int n = 0; n < GetNumberOfSignals(); n++) fSignal[n].CalculateBaseLine(from, to);
+        for (int n = 0; n < GetNumberOfSignals(); n++) fSignal[n].CalculateBaseLine(from, to, option);
     }
 	
 	/// Uses for the baseline calculation not the standard deviation but IQR (interquartile range) divided by 1.349

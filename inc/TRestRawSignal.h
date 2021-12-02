@@ -29,6 +29,7 @@
 #include <TObject.h>
 #include <TString.h>
 #include <TVector2.h>
+#include <string>
 
 //! It defines a Short_t array with a physical parameter that evolves in time
 //! using a fixed time bin.
@@ -200,7 +201,7 @@ class TRestRawSignal : public TObject {
 
     void GetWhiteNoiseSignal(TRestRawSignal* noiseSgnl, Double_t noiseLevel = 1.);
 
-    void CalculateBaseLine(Int_t startBin, Int_t endBin);
+    void CalculateBaseLine(Int_t startBin, Int_t endBin, std::string option = "ROBUST");
 
 	void CalculateBaseLineRobust(Int_t startBin, Int_t endBin);
 
