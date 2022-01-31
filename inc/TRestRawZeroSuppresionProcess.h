@@ -23,9 +23,6 @@
 #ifndef RestCore_TRestRawZeroSuppresionProcess
 #define RestCore_TRestRawZeroSuppresionProcess
 
-//#include <TRestDetectorGas.h>
-//#include <TRestDetectorReadout.h>
-
 #include <TRestRawSignalEvent.h>
 
 #include "TRestEventProcess.h"
@@ -79,8 +76,10 @@ class TRestRawZeroSuppresionProcess : public TRestEventProcess {
     void PrintMetadata() {
         BeginPrintProcess();
 
-        metadata << "Base line range definition : ( " << fBaseLineRange.X() << " , " << fBaseLineRange.Y() << " ) " << endl;
-        metadata << "Integral range : ( " << fIntegralRange.X() << " , " << fIntegralRange.Y() << " ) "<< endl;
+        metadata << "Base line range definition : ( " << fBaseLineRange.X() << " , " << fBaseLineRange.Y()
+                 << " ) " << endl;
+        metadata << "Integral range : ( " << fIntegralRange.X() << " , " << fIntegralRange.Y() << " ) "
+                 << endl;
         metadata << "Point Threshold : " << fPointThreshold << " sigmas" << endl;
         metadata << "Signal threshold : " << fSignalThreshold << " sigmas" << endl;
         metadata << "Number of points over threshold : " << fNPointsOverThreshold << endl;

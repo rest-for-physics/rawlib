@@ -22,7 +22,7 @@
 
 //////////////////////////////////////////////////////////////////////////
 /// The TRestRawZeroSuppresionProcess identifies the points that are over
-/// threshold from the input TRestRawSignalEvent. The resulting points remains as a 
+/// threshold from the input TRestRawSignalEvent. The resulting points remains as a
 /// TRestRawSignalEvent. This process mimic the zero suppression done in the electronics
 /// and also substract the baseline.
 /// The different parameters required by this process are:
@@ -71,19 +71,21 @@
 /// process.
 ///               Javier Galan
 ///
+/// 2022-January Removing conversion to TRestDetectorSignal and moving to raw
+/// library, now it returns a TRestRawSignalEvent after appliying zero suppression
+///				  JuanAn Garcia
+///
+///
 /// \class      TRestRawZeroSuppresionProcess
 /// \author     Javier Galan
 /// \author     Kaixiang Ni
-///
-/// 2022 January Removing conversion to TRestDetectorSignal and moving to raw library, 
-/// now it returns a TRestRawSignalEvent after appliying zero suppression
-/// 
-/// ! author    JuanAn Garcia
+/// \author     JuanAn Garcia
 ///
 /// <hr>
 ///
 
 #include "TRestRawZeroSuppresionProcess.h"
+
 #include <numeric>
 using namespace std;
 
@@ -220,7 +222,8 @@ TRestEvent* TRestRawZeroSuppresionProcess::ProcessEvent(TRestEvent* evInput) {
                                              fNPointsOverThreshold, 512);
             Nbefore = s->GetPointsOverThreshold().size();
         }
-        s->InitializePointsOverThreshold(TVector2(fPointThreshold, fSignalThreshold), fNPointsOverThreshold, fNPointsFlatThreshold);
+        s->InitializePointsOverThreshold(TVector2(fPointThreshold, fSignalThreshold), fNPointsOverThreshold,
+                                         fNPointsFlatThreshold);
 
         int Nafter = s->GetPointsOverThreshold().size();
         // cout << fRawSignalEvent->GetID() << " " << s->GetID() << " " << Nbefore << " " << Nafter << endl;
@@ -255,7 +258,8 @@ TRestEvent* TRestRawZeroSuppresionProcess::ProcessEvent(TRestEvent* evInput) {
     SetObservableValue("NFlatTailSignals", (int)flattailmap.size());
     SetObservableValue("NSignalsRejected", rejectedSignal);
 
-    debug << "TRestRawZeroSuppresionProcess. Signals added : " << fOutputSignalEvent->GetNumberOfSignals() << endl;
+    debug << "TRestRawZeroSuppresionProcess. Signals added : " << fOutputSignalEvent->GetNumberOfSignals()
+          << endl;
     debug << "TRestRawZeroSuppresionProcess. Signals rejected : " << rejectedSignal << endl;
     debug << "TRestRawZeroSuppresionProcess. Threshold integral : " << totalIntegral << endl;
 
@@ -291,5 +295,4 @@ void TRestRawZeroSuppresionProcess::InitFromConfigFile() {
 
     // introduced to prevent daq abnormal response: flat high signal tail
     fNPointsFlatThreshold = StringToInteger(GetParameter("pointsFlatThreshold", "512"));
-
 }
