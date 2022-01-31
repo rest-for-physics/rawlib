@@ -671,6 +671,49 @@ TPad* TRestRawSignalEvent::DrawEvent(TString option) {
 }
 
 ///////////////////////////////////////////////
+/// \brief This method draws selected signal IDs, given by the vector 
+/// passed as reference
+///
+
+TPad* TRestRawSignalEvent::DrawSignals(const std::vector<Int_t> &signals) {
+
+  int maxSID=-1;
+  int max=0;
+  int color=1;
+
+  for(const auto &s : signals){
+    TRestRawSignal* sgnl = GetSignalById(s);
+    if(sgnl->fGraph)delete sgnl->fGraph;
+    sgnl->fGraph = new TGraph();
+      for(int p=0;p<sgnl->GetNumberOfPoints();p++){
+        double val = sgnl->GetData(p);
+        sgnl->fGraph->SetPoint(p,p,val);
+        sgnl->fGraph->SetLineColor(color);
+        if(val>max){max=val;maxSID=s;};
+      }
+     color++;
+  }
+
+  TPad *pad =new TPad("RawSignal", " ", 0, 0, 1, 1);
+  pad->Draw();
+
+  cout<<"Max SID "<<maxSID<<endl;
+
+  if(maxSID ==-1)return pad;
+
+  TRestRawSignal* sgn = GetSignalById(maxSID);
+  pad->cd();
+  sgn->fGraph->Draw();
+
+  for(const auto &s : signals){
+    TRestRawSignal* sgnl = GetSignalById(s);
+    if(sgnl->GetID() !=sgn->GetID())sgnl->fGraph->Draw("SAME"); 
+  }
+
+return pad;
+}
+
+///////////////////////////////////////////////
 /// \brief This method draws selected signal by ID, with baseline range and 
 /// points over threshold highlighted.
 ///
