@@ -697,7 +697,7 @@ TPad* TRestRawSignalEvent::DrawSignals(const std::vector<Int_t> &signals) {
   TPad *pad =new TPad("RawSignal", " ", 0, 0, 1, 1);
   pad->Draw();
 
-  cout<<"Max SID "<<maxSID<<endl;
+  debug<<"Max SID "<<maxSID<<endl;
 
   if(maxSID ==-1)return pad;
 
