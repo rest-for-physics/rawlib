@@ -307,6 +307,7 @@ void TRestRawSignalAnalysisProcess::Initialize() {
 
     fFirstEventTime = -1;
     fPreviousEventTime.clear();
+    fPreviousEventId.clear();
 
     time(&timeStored);
 }
@@ -443,12 +444,20 @@ TRestEvent* TRestRawSignalAnalysisProcess::ProcessEvent(TRestEvent* evInput) {
     SetObservableValue("HoursFromStart", secondsFromStart / 3600.);
 
     Double_t evTimeDelay = 0;
-    if (fPreviousEventTime.size() > 0) evTimeDelay = fSignalEvent->GetTime() - fPreviousEventTime.back();
+    if (fPreviousEventTime.size() > 0) {
+        evTimeDelay = fSignalEvent->GetTime() - fPreviousEventTime.back();
+        // Time delay is renormalized now using event ID
+        evTimeDelay /= (fSignalEvent->GetID() - fPreviousEventId.back());
+    }
     SetObservableValue("EventTimeDelay", evTimeDelay);
 
     Double_t meanRate = 0;
-    if (fPreviousEventTime.size() == 10)
-        meanRate = 10. / (fSignalEvent->GetTime() - fPreviousEventTime.front());
+    // We wait to have processed at least 10 events to get a first average
+    if (fPreviousEventTime.size() == 10) {
+        // meanRate is renormalized now using event ID
+        meanRate = (fSignalEvent->GetID() - fPreviousEventId.front()) /
+                   (fSignalEvent->GetTime() - fPreviousEventTime.front());
+    }
     SetObservableValue("MeanRate_InHz", meanRate);
     /* ///////////////////////////////////////////////////////////////////////////////////
      */
@@ -587,7 +596,9 @@ TRestEvent* TRestRawSignalAnalysisProcess::ProcessEvent(TRestEvent* evInput) {
     }
 
     fPreviousEventTime.push_back(fSignalEvent->GetTimeStamp());
-    if (fPreviousEventTime.size() > 10) fPreviousEventTime.erase(fPreviousEventTime.begin());
+    fPreviousEventId.push_back(fSignalEvent->GetID());
+    while (fPreviousEventTime.size() > 10) fPreviousEventTime.erase(fPreviousEventTime.begin());
+    while (fPreviousEventId.size() > 10) fPreviousEventId.erase(fPreviousEventId.begin());
 
     // If cut condition matches the event will be not registered.
     if (ApplyCut()) return NULL;

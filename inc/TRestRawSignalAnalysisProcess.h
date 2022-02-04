@@ -36,6 +36,7 @@ class TRestRawSignalAnalysisProcess : public TRestEventProcess {
 
     Double_t fFirstEventTime;             //!
     vector<Double_t> fPreviousEventTime;  //!
+    vector<Double_t> fPreviousEventId;    //!
 
     time_t timeStored;  //!
 
