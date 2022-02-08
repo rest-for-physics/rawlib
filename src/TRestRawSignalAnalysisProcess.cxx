@@ -109,26 +109,13 @@
 ///
 /// Time observables:
 ///
-/// * **SecondsFromStart**: It takes the time of the event and subtracts the
-/// time of
-/// the first event.
-/// * **HoursFromStart**: SecondsFromStart divided by 3600.
-/// * **EventTimeDelay**: It counts the time from the previous event to the
-/// present one.
-/// * **MeanRate_InHz**: It records the mean rate of the last 100 events. It
-/// divides
-/// 100 by the time in seconds between the first and the last.
-/// * **TimeBinsLength**: MaxTime of the event - MinTime of the event. The
-/// functions
+/// * **TimeBinsLength**: MaxTime of the event - MinTime of the event. The functions
 /// GetMaxTime() and GetMinTime() take the number of points of the signal
-/// (MinTime=0
-/// MaxTime=fSignal[0].GetNumberOfPoints()).
+/// (MinTime=0 MaxTime=fSignal[0].GetNumberOfPoints()).
 /// * **RiseTimeAvg**: Add GetRiseTime(fSignal) for all signals that satisfy the
-/// GetThresholdIntegralValue() > 0 condition and divide it by the number of
-/// signals
+/// GetThresholdIntegralValue() > 0 condition and divide it by the number of signals
 /// that pass this cut. GetRiseTime(fSignal) provides the number of bins between
-/// the
-/// fist sample that pass the threshold and the maximum of the peak.
+/// the fist sample that pass the threshold and the maximum of the peak.
 ///
 /// Peak amplitude observables:
 ///
@@ -253,9 +240,6 @@
 ///
 /// <hr>
 ///
-#include <TLegend.h>
-#include <TPaveText.h>
-#include "TRestDataBase.h"
 
 #include "TRestRawSignalAnalysisProcess.h"
 using namespace std;
@@ -268,32 +252,9 @@ ClassImp(TRestRawSignalAnalysisProcess);
 TRestRawSignalAnalysisProcess::TRestRawSignalAnalysisProcess() { Initialize(); }
 
 ///////////////////////////////////////////////
-/// \brief Constructor loading data from a config file
-///
-/// If no configuration path is defined using TRestMetadata::SetConfigFilePath
-/// the path to the config file must be specified using full path, absolute or
-/// relative.
-///
-/// The default behaviour is that the config file must be specified with
-/// full path, absolute or relative.
-///
-/// \param cfgFileName A const char* giving the path to an RML file.
-///
-TRestRawSignalAnalysisProcess::TRestRawSignalAnalysisProcess(char* cfgFileName) {
-    Initialize();
-
-    if (LoadConfigFromFile(cfgFileName)) LoadDefaultConfig();
-}
-
-///////////////////////////////////////////////
 /// \brief Default destructor
 ///
 TRestRawSignalAnalysisProcess::~TRestRawSignalAnalysisProcess() {}
-
-///////////////////////////////////////////////
-/// \brief Function to load the default config in absence of RML input
-///
-void TRestRawSignalAnalysisProcess::LoadDefaultConfig() { SetTitle("Default config"); }
 
 ///////////////////////////////////////////////
 /// \brief Function to initialize input/output event members and define the
@@ -304,40 +265,12 @@ void TRestRawSignalAnalysisProcess::Initialize() {
     SetLibraryVersion(LIBRARY_VERSION);
 
     fSignalEvent = NULL;
-
-    fFirstEventTime = -1;
-    fPreviousEventTime.clear();
-
-    time(&timeStored);
-}
-
-///////////////////////////////////////////////
-/// \brief Function to load the configuration from an external configuration
-/// file.
-///
-/// If no configuration path is defined in TRestMetadata::SetConfigFilePath
-/// the path to the config file must be specified using full path, absolute or
-/// relative.
-///
-/// \param cfgFileName A const char* giving the path to an RML file.
-/// \param name The name of the specific metadata. It will be used to find the
-/// correspondig TRestGeant4AnalysisProcess section inside the RML.
-///
-void TRestRawSignalAnalysisProcess::LoadConfig(std::string cfgFilename, std::string name) {
-    if (LoadConfigFromFile(cfgFilename, name)) LoadDefaultConfig();
 }
 
 ///////////////////////////////////////////////
 /// \brief Process initialization.
 ///
 void TRestRawSignalAnalysisProcess::InitProcess() {
-    // fSignalAnalysisObservables = TRestEventProcess::ReadObservables();
-    if (fRunInfo->GetStartTimestamp() != 0) {
-        fFirstEventTime = fRunInfo->GetStartTimestamp();
-    } else {
-        fFirstEventTime = -1;
-    }
-
     if (fSignalsRange.X() != -1 && fSignalsRange.Y() != -1) fRangeEnabled = true;
 }
 
@@ -345,22 +278,7 @@ void TRestRawSignalAnalysisProcess::InitProcess() {
 /// \brief The main processing event function
 ///
 TRestEvent* TRestRawSignalAnalysisProcess::ProcessEvent(TRestEvent* evInput) {
-    // no need for verbose copy now
     fSignalEvent = (TRestRawSignalEvent*)evInput;
-
-    ///////////////////previous usage/////////////////////////
-    // fSignalEvent->Initialize();
-    // TRestRawSignalEvent *fInputSignalEvent = (TRestRawSignalEvent *)evInput;
-    // fSignalEvent->SetID(fInputSignalEvent->GetID());
-    // fSignalEvent->SetSubID(fInputSignalEvent->GetSubID());
-    // fSignalEvent->SetTimeStamp(fInputSignalEvent->GetTimeStamp());
-    // fSignalEvent->SetSubEventTag(fInputSignalEvent->GetSubEventTag());
-
-    // Int_t N = fInputSignalEvent->GetNumberOfSignals();
-    // if (GetVerboseLevel() >= REST_Debug) N = 1;
-    // for (int sgnl = 0; sgnl < N; sgnl++)
-    //	fSignalEvent->AddSignal(*fInputSignalEvent->GetSignal(sgnl));
-    ////////////////////////////////////////////
 
     // we save some complex typed analysis result
     map<int, Double_t> baseline;
@@ -431,27 +349,6 @@ TRestEvent* TRestRawSignalAnalysisProcess::ProcessEvent(TRestEvent* evInput) {
     SetObservableValue("max_amplitude_map", ampsgn_maxmethod);
     SetObservableValue("thr_integral_map", ampsgn_intmethod);
     SetObservableValue("SaturatedChannelID", saturatedchnId);
-
-    ////////////////////////////////////////////////////////////////////////////////////
-    // These observables should probably go into an independent process to
-    // register the rate at any
-    // given moment of the data processing chain : TRestRateAnalysisProcess? */
-    if (fFirstEventTime == -1) fFirstEventTime = fSignalEvent->GetTime();
-
-    Double_t secondsFromStart = fSignalEvent->GetTime() - fFirstEventTime;
-    SetObservableValue("SecondsFromStart", secondsFromStart);
-    SetObservableValue("HoursFromStart", secondsFromStart / 3600.);
-
-    Double_t evTimeDelay = 0;
-    if (fPreviousEventTime.size() > 0) evTimeDelay = fSignalEvent->GetTime() - fPreviousEventTime.back();
-    SetObservableValue("EventTimeDelay", evTimeDelay);
-
-    Double_t meanRate = 0;
-    if (fPreviousEventTime.size() == 10)
-        meanRate = 10. / (fSignalEvent->GetTime() - fPreviousEventTime.front());
-    SetObservableValue("MeanRate_InHz", meanRate);
-    /* ///////////////////////////////////////////////////////////////////////////////////
-     */
 
     Double_t baseLineMean = fSignalEvent->GetBaseLineAverage();
     SetObservableValue("BaseLineMean", baseLineMean);
@@ -586,51 +483,9 @@ TRestEvent* TRestRawSignalAnalysisProcess::ProcessEvent(TRestEvent* evInput) {
         }
     }
 
-    fPreviousEventTime.push_back(fSignalEvent->GetTimeStamp());
-    if (fPreviousEventTime.size() > 10) fPreviousEventTime.erase(fPreviousEventTime.begin());
-
     // If cut condition matches the event will be not registered.
     if (ApplyCut()) return NULL;
 
     return fSignalEvent;
 }
 
-///////////////////////////////////////////////
-/// \brief Function to include required actions after all events have been
-/// processed. This method will write the channels histogram.
-///
-void TRestRawSignalAnalysisProcess::EndProcess() {
-    // Function to be executed once at the end of the process
-    // (after all events have been processed)
-
-    // Start by calling the EndProcess function of the abstract class.
-    // Comment this if you don't want it.
-    // TRestEventProcess::EndProcess();
-}
-
-/* Commented DrawObservables
-TPad* TRestRawSignalAnalysisProcess::DrawObservables() {
-    TPad* pad = new TPad("Signal", " ", 0, 0, 1, 1);
-    // fDrawingObjects.push_back( (TObject *) pad );
-    pad->cd();
-
-    TPaveText* txt = new TPaveText(.05, .1, .95, .8);
-    //   fDrawingObjects.push_back( (TObject *) txt );
-
-    txt->AddText(" ");
-    for (unsigned int i = 0; i < fSignalAnalysisObservables.size(); i++) {
-        Int_t id =
-            fAnalysisTree->GetObservableID(this->GetName() + (TString) "" +
-fSignalAnalysisObservables[i]);
-        TString valueStr;
-        valueStr.Form(" : %lf", fAnalysisTree->GetObservableValue(id));
-        TString sentence = (TString)fSignalAnalysisObservables[i] + valueStr;
-        txt->AddText(sentence);
-    }
-    txt->AddText(" ");
-
-    txt->Draw();
-
-    return pad;
-}
-*/
