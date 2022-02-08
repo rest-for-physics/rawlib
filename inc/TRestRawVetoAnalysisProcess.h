@@ -60,6 +60,11 @@ class TRestRawVetoAnalysisProcess : public TRestEventProcess {
     /// A pointer to the specific TRestRawSignalEvent
     TRestRawSignalEvent* fSignalEvent;  //!
 
+	// Parameters:
+	Double_t fPointThreshold = 2; // 2
+	Double_t fSignalThreshold = 2.5; // 5
+	Int_t fPointsOverThreshold = 3;	// 5 // long time window, short shaping time!!!! --> need low value
+
     void InitFromConfigFile();
 
     void Initialize();

@@ -49,6 +49,9 @@
 ///
 /// 2017-February: First concept and implementation of TRestRawSignal class.
 /// \author     Javier Galan
+/// 
+///	2022-January: Added robust baseline calculation methods
+/// \author		Konrad Altenmüller
 ///
 /// \class TRestRawSignal
 ///
