@@ -201,7 +201,7 @@ class TRestRawSignal : public TObject {
 
     void GetWhiteNoiseSignal(TRestRawSignal* noiseSgnl, Double_t noiseLevel = 1.);
 
-    void CalculateBaseLine(Int_t startBin, Int_t endBin, std::string option = "ROBUST");
+    void CalculateBaseLine(Int_t startBin, Int_t endBin, std::string option = "");
 
 	void CalculateBaseLineRobust(Int_t startBin, Int_t endBin);
 
