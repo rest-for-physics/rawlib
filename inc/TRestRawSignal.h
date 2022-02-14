@@ -169,7 +169,7 @@ class TRestRawSignal : public TObject {
 
     Double_t GetIntegral();
 
-    Double_t GetIntegralInRange(Int_t startBin, Int_t endBin);
+    Double_t GetIntegralInRange(Int_t startBin, Int_t endBin, std::string option="");
 
     Double_t GetThresholdIntegral();
 
@@ -197,7 +197,7 @@ class TRestRawSignal : public TObject {
 
     void GetDifferentialSignal(TRestRawSignal* diffSgnl, Int_t smearPoints);
 
-    void GetSignalSmoothed(TRestRawSignal* smthSignal, Int_t averagingPoints);
+    void GetSignalSmoothed(TRestRawSignal* smthSignal, Int_t averagingPoints, std::string option = "");
 
     void GetWhiteNoiseSignal(TRestRawSignal* noiseSgnl, Double_t noiseLevel = 1.);
 
