@@ -307,18 +307,13 @@ Double_t TRestRawSignal::GetIntegral() {
 ///////////////////////////////////////////////
 /// \brief It returns the integral of points found in the specific range given
 /// by (startBin,endBin).
-/// \param option If it is set to "RAW", the signal without baseline correction is considered
 ///
-Double_t TRestRawSignal::GetIntegralInRange(Int_t startBin, Int_t endBin, std::string option) {
+Double_t TRestRawSignal::GetIntegralInRange(Int_t startBin, Int_t endBin) {
     if (startBin < 0) startBin = 0;
     if (endBin <= 0 || endBin > GetNumberOfPoints()) endBin = GetNumberOfPoints();
 
     Double_t sum = 0;
-	if (ToUpper(option)=="RAW"){
-    	for (int i = startBin; i < endBin; i++) sum += GetRawData(i);
-    } else {
-    	for (int i = startBin; i < endBin; i++) sum += GetData(i);
-	}
+    for (int i = startBin; i < endBin; i++) sum += GetRawData(i);
 	return sum;
 }
 
@@ -608,32 +603,23 @@ void TRestRawSignal::GetWhiteNoiseSignal(TRestRawSignal* noiseSgnl, Double_t noi
 ///
 /// \param averagingPoints It defines the number of neightbour consecutive
 /// points used to average the signal
-/// \param option If option is set to "RAW", the returned signal is the smoothed raw data without baseline correction
 ///
-void TRestRawSignal::GetSignalSmoothed(TRestRawSignal* smthSignal, Int_t averagingPoints, std::string option) {
+void TRestRawSignal::GetSignalSmoothed(TRestRawSignal* smthSignal, Int_t averagingPoints) {
     smthSignal->Initialize();
 
     averagingPoints = (averagingPoints / 2) * 2 + 1;  // make it odd >= averagingPoints
 
-    Double_t sumAvg = GetIntegralInRange(0, averagingPoints, option) / averagingPoints;
+    Double_t sumAvg = GetIntegralInRange(0, averagingPoints) / averagingPoints;
 	
 	for (int i = 0; i <= averagingPoints / 2; i++) smthSignal->AddPoint((Short_t)sumAvg);
 
-	if (ToUpper(option) == "RAW"){
-    	for (int i = averagingPoints / 2 + 1; i < GetNumberOfPoints() - averagingPoints / 2; i++) {
-    	    sumAvg -= this->GetRawData(i - (averagingPoints / 2 + 1)) / averagingPoints;
-	        sumAvg += this->GetRawData(i + averagingPoints / 2) / averagingPoints;
-        	smthSignal->AddPoint((Short_t)sumAvg);
-    	}
-	} else {
-    	for (int i = averagingPoints / 2 + 1; i < GetNumberOfPoints() - averagingPoints / 2; i++) {
-    	    sumAvg -= this->GetData(i - (averagingPoints / 2 + 1)) / averagingPoints;
-	        sumAvg += this->GetData(i + averagingPoints / 2) / averagingPoints;
-        	smthSignal->AddPoint((Short_t)sumAvg);
-    	}
-	}
-    for (int i = GetNumberOfPoints() - averagingPoints / 2; i < GetNumberOfPoints(); i++)
-        smthSignal->AddPoint(sumAvg);
+   	for (int i = averagingPoints / 2 + 1; i < GetNumberOfPoints() - averagingPoints / 2; i++) {
+        sumAvg -= this->GetRawData(i - (averagingPoints / 2 + 1)) / averagingPoints;
+	    sumAvg += this->GetRawData(i + averagingPoints / 2) / averagingPoints;
+       	smthSignal->AddPoint((Short_t)sumAvg);
+   }
+    
+	for (int i = GetNumberOfPoints() - averagingPoints / 2; i < GetNumberOfPoints(); i++) smthSignal->AddPoint(sumAvg);
 }
 
 ///////////////////////////////////////////////
