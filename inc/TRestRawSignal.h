@@ -198,6 +198,8 @@ class TRestRawSignal : public TObject {
     void GetDifferentialSignal(TRestRawSignal* diffSgnl, Int_t smearPoints);
 
     void GetSignalSmoothed(TRestRawSignal* smthSignal, Int_t averagingPoints); 
+    
+	std::vector<Float_t> GetSignalSmoothed(Int_t averagingPoints); 
 
     void GetWhiteNoiseSignal(TRestRawSignal* noiseSgnl, Double_t noiseLevel = 1.);
 

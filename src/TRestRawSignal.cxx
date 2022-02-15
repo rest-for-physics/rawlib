@@ -617,9 +617,34 @@ void TRestRawSignal::GetSignalSmoothed(TRestRawSignal* smthSignal, Int_t averagi
         sumAvg -= this->GetRawData(i - (averagingPoints / 2 + 1)) / averagingPoints;
 	    sumAvg += this->GetRawData(i + averagingPoints / 2) / averagingPoints;
        	smthSignal->AddPoint((Short_t)sumAvg);
-   }
+    }
     
 	for (int i = GetNumberOfPoints() - averagingPoints / 2; i < GetNumberOfPoints(); i++) smthSignal->AddPoint(sumAvg);
+}
+
+///////////////////////////////////////////////
+/// \brief It smoothes the existing signal and returns it in a vector of Float_t values
+///
+/// \param averagingPoints It defines the number of neightbour consecutive
+/// points used to average the signal
+///
+std::vector<Float_t> TRestRawSignal::GetSignalSmoothed(Int_t averagingPoints) {
+	std::vector<Float_t> result;
+
+    averagingPoints = (averagingPoints / 2) * 2 + 1;  // make it odd >= averagingPoints
+
+    Double_t sumAvg = GetIntegralInRange(0, averagingPoints) / averagingPoints;
+	
+	for (int i = 0; i <= averagingPoints / 2; i++) result.push_back((Short_t)sumAvg);
+
+   	for (int i = averagingPoints / 2 + 1; i < GetNumberOfPoints() - averagingPoints / 2; i++) {
+        sumAvg -= this->GetRawData(i - (averagingPoints / 2 + 1)) / averagingPoints;
+	    sumAvg += this->GetRawData(i + averagingPoints / 2) / averagingPoints;
+       	result.push_back((Short_t)sumAvg);
+    }
+    
+	for (int i = GetNumberOfPoints() - averagingPoints / 2; i < GetNumberOfPoints(); i++) result.push_back(sumAvg);
+	return result;
 }
 
 ///////////////////////////////////////////////
