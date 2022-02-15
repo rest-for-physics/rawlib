@@ -633,18 +633,38 @@ std::vector<Float_t> TRestRawSignal::GetSignalSmoothed(Int_t averagingPoints) {
 
     averagingPoints = (averagingPoints / 2) * 2 + 1;  // make it odd >= averagingPoints
 
-    Double_t sumAvg = GetIntegralInRange(0, averagingPoints) / averagingPoints;
+    Float_t sumAvg = (Float_t)GetIntegralInRange(0, averagingPoints) / averagingPoints;
 	
-	for (int i = 0; i <= averagingPoints / 2; i++) result.push_back((Short_t)sumAvg);
+	for (int i = 0; i <= averagingPoints / 2; i++) result.push_back(sumAvg);
 
    	for (int i = averagingPoints / 2 + 1; i < GetNumberOfPoints() - averagingPoints / 2; i++) {
         sumAvg -= this->GetRawData(i - (averagingPoints / 2 + 1)) / averagingPoints;
 	    sumAvg += this->GetRawData(i + averagingPoints / 2) / averagingPoints;
-       	result.push_back((Short_t)sumAvg);
+       	result.push_back(sumAvg);
     }
     
 	for (int i = GetNumberOfPoints() - averagingPoints / 2; i < GetNumberOfPoints(); i++) result.push_back(sumAvg);
 	return result;
+}
+
+///////////////////////////////////////////////
+/// \brief It applies the moving average filter (GetSignalSmoothed) to the signal, which is then subtracted from the raw data, resulting in a corrected baseline. The returned signal is placed at the signal pointer given by argument.
+///
+/// \param smthSignal The pointer to the TRestRawSignal which will contain the corrected signal
+///
+/// \param averagingPoints It defines the number of neightbour consecutive
+/// points used to average the signal
+///
+void TRestRawSignal::GetBaseLineCorrected(TRestRawSignal* smthSignal, Int_t averagingPoints) {
+    smthSignal->Initialize();
+
+	std::vector<Float_t> averagedSignal = GetSignalSmoothed(averagingPoints);
+
+	for (unsigned int i = 0; i < GetNumberOfPoints(); i++){
+		smthSignal->AddPoint(GetRawData(i)-averagedSignal[i]);
+	}
+
+
 }
 
 ///////////////////////////////////////////////

@@ -209,7 +209,9 @@ class TRestRawSignal : public TObject {
 
     //   Double_t GetStandardDeviation(Int_t startBin, Int_t endBin);
 
-    void AddOffset(Short_t offset);
+	void GetBaseLineCorrected(TRestRawSignal* smthSignal, Int_t averageingPoints);
+
+	void AddOffset(Short_t offset);
 
     void SignalAddition(TRestRawSignal* inSgnl);
 
