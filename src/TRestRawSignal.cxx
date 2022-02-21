@@ -630,19 +630,19 @@ void TRestRawSignal::GetSignalSmoothed(TRestRawSignal* smthSignal, Int_t averagi
 ///
 std::vector<Float_t> TRestRawSignal::GetSignalSmoothed(Int_t averagingPoints) {
 	std::vector<Float_t> result;
-
-    averagingPoints = (averagingPoints / 2) * 2 + 1;  // make it odd >= averagingPoints
-
-    Float_t sumAvg = (Float_t)GetIntegralInRange(0, averagingPoints) / averagingPoints;
 	
+    averagingPoints = (averagingPoints / 2) * 2 + 1;  // make it odd >= averagingPoints
+	
+    Float_t sumAvg = (Float_t)GetIntegralInRange(0, averagingPoints) / averagingPoints;
+		
 	for (int i = 0; i <= averagingPoints / 2; i++) result.push_back(sumAvg);
-
+	
    	for (int i = averagingPoints / 2 + 1; i < GetNumberOfPoints() - averagingPoints / 2; i++) {
         sumAvg -= this->GetRawData(i - (averagingPoints / 2 + 1)) / averagingPoints;
 	    sumAvg += this->GetRawData(i + averagingPoints / 2) / averagingPoints;
        	result.push_back(sumAvg);
     }
-    
+	    
 	for (int i = GetNumberOfPoints() - averagingPoints / 2; i < GetNumberOfPoints(); i++) result.push_back(sumAvg);
 	return result;
 }
@@ -744,7 +744,7 @@ void TRestRawSignal::CalculateBaseLineIQR(Int_t startBin, Int_t endBin) {
 		Short_t Q1 = v[(int)(endBin-startBin)*0.25];
 		Short_t Q3 = v[(int)(endBin-startBin)*0.75];
 		Double_t IQR = Q3-Q1;
-		fBaseLineSigma = IQR / 1.349; // IQR/1.349 equals standard deviation of normal distribution
+		fBaseLineSigma = IQR / (1.349*0.5); // IQR/1.349 equals standard deviation of normal distribution
     }
 }
 
