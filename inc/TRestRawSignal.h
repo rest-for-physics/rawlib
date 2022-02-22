@@ -200,7 +200,7 @@ class TRestRawSignal : public TObject {
     void GetSignalSmoothed(TRestRawSignal* smthSignal, Int_t averagingPoints); 
     
 	std::vector<Float_t> GetSignalSmoothed(Int_t averagingPoints); 
-
+	
     void GetWhiteNoiseSignal(TRestRawSignal* noiseSgnl, Double_t noiseLevel = 1.);
 
     void CalculateBaseLine(Int_t startBin, Int_t endBin, std::string option = "");
@@ -209,7 +209,7 @@ class TRestRawSignal : public TObject {
 
     //   Double_t GetStandardDeviation(Int_t startBin, Int_t endBin);
 
-	void GetBaseLineCorrected(TRestRawSignal* smthSignal, Int_t averageingPoints);
+	void GetBaseLineCorrected(TRestRawSignal* smthSignal, Int_t averagingPoints);
 
 	void AddOffset(Short_t offset);
 
