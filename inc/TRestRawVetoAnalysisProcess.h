@@ -65,9 +65,9 @@ class TRestRawVetoAnalysisProcess : public TRestEventProcess {
 	Int_t fSmoothingWindow;
 
 	/// PointsOverThreshold() Parameters:
-	Double_t fPointThreshold = 1.5; // 2
-	Double_t fSignalThreshold = 1.5; // 5
-	Int_t fPointsOverThreshold = 4;	// 5 // long time window, short shaping time!!!! --> need low value
+	Double_t fPointThreshold;
+	Double_t fSignalThreshold; 
+	Int_t fPointsOverThreshold;
 
     void InitFromConfigFile();
 
