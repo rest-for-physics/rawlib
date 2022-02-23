@@ -322,7 +322,7 @@ TRestEvent* TRestRawVetoAnalysisProcess::ProcessEvent(TRestEvent* evInput) {
 					sgnl2->InitializePointsOverThreshold(TVector2(fPointThreshold,fSignalThreshold),fPointsOverThreshold);
                    	// Save two maps with (veto panel ID, max amplitude) and (veto panel
                     // ID, peak time)
-                	if (sgnl2->GetPointsOverThreshold().size() >=fPointsOverThreshold) { // signal is not noise
+					if (sgnl2->GetPointsOverThreshold().size() >=fPointsOverThreshold) { // signal is not noise
 						VetoMaxPeakAmplitude_map[groupIds[j]] = sgnl2->GetMaxPeakValue();
 					} else {
 						VetoMaxPeakAmplitude_map[groupIds[j]] = 0; // signal is noise
@@ -399,7 +399,7 @@ void TRestRawVetoAnalysisProcess::InitFromConfigFile() {
         GetChar();
     }
   	fSmoothingWindow = StringToInteger(GetParameter("SmoothingWindow","75"));
-	std::vector<double> potpars = StringToElements(GetParameter("PointsOverThresholdPars","1.5, 1.5, 4"),",");
+	std::vector<double> potpars = StringToElements(GetParameter("PointsOverThresholdPars","1.5,1.5,4"),",");
 	fPointThreshold = potpars[0];
 	fSignalThreshold = potpars[1];
 	fPointsOverThreshold = (Int_t) potpars[2];
