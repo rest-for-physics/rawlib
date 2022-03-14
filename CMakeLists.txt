@@ -1,4 +1,4 @@
-set( LibraryVersion "1.4" )
+set( LibraryVersion "1.5" )
 add_definitions(-DLIBRARY_VERSION="${LibraryVersion}")
 
 COMPILELIB("")
