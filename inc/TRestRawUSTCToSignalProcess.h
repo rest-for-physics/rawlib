@@ -24,6 +24,7 @@
 #define RestCore_TRestRawUSTCToSignalProcess
 
 #include <map>
+
 #include "TRestRawToSignalProcess.h"
 
 //#define V3_Readout_Format_Long
@@ -89,13 +90,13 @@ class TRestRawUSTCToSignalProcess : public TRestRawToSignalProcess {
     UChar_t fEnding[32];
 
     std::vector<std::vector<USTCDataFrame>> fEventBuffer;  //!
-    int nBufferedEvent;                          //!
-    int fCurrentFile = 0;                        //!
-    int fCurrentEvent = -1;                      //!
-    int fCurrentBuffer = 0;                      //!
-    int fLastBufferedId = 0;                     //!
-    std::vector<int> errorevents;                     //!
-    int unknownerrors = 0;                       //!
+    int nBufferedEvent;                                    //!
+    int fCurrentFile = 0;                                  //!
+    int fCurrentEvent = -1;                                //!
+    int fCurrentBuffer = 0;                                //!
+    int fLastBufferedId = 0;                               //!
+    std::vector<int> errorevents;                          //!
+    int unknownerrors = 0;                                 //!
 
     Long64_t fTimeOffset = 0;
     std::set<int> fChannelOffset;

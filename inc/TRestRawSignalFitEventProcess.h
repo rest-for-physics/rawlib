@@ -24,6 +24,7 @@
 #define RestCore_TRestRawSignalFitEventProcess
 
 #include <TRestRawSignalEvent.h>
+
 #include "TF1Convolution.h"
 #include "TH1D.h"
 #include "TMath.h"
@@ -112,7 +113,7 @@ class TRestRawSignalFitEventProcess : public TRestEventProcess {
         if (fAgetFit == false) {
             metadata << "Fitting mode : Convolution" << endl;
         }
-        
+
         if (fAddAllPulses == true) {
             metadata << "Adding all pulses in the event" << endl;
         }

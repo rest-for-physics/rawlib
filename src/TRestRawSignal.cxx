@@ -55,6 +55,7 @@
 /// <hr>
 ///
 #include "TRestRawSignal.h"
+
 #include <numeric>
 using namespace std;
 
@@ -584,7 +585,7 @@ void TRestRawSignal::GetDifferentialSignal(TRestRawSignal* diffSgnl, Int_t smear
 ///
 void TRestRawSignal::GetWhiteNoiseSignal(TRestRawSignal* noiseSgnl, Double_t noiseLevel) {
     double* dd = new double();
-    uintptr_t seed = (uintptr_t)dd + (uintptr_t) this;
+    uintptr_t seed = (uintptr_t)dd + (uintptr_t)this;
     delete dd;
     TRandom3* fRandom = new TRandom3(seed);
 

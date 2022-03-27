@@ -24,6 +24,7 @@
 #define RestCore_TRestRawMultiCoBoAsAdToSignalProcess
 
 #include <map>
+
 #include "TRestRawSignalEvent.h"
 #include "TRestRawToSignalProcess.h"
 

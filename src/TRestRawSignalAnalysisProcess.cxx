@@ -488,4 +488,3 @@ TRestEvent* TRestRawSignalAnalysisProcess::ProcessEvent(TRestEvent* evInput) {
 
     return fSignalEvent;
 }
-

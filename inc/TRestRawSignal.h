@@ -23,12 +23,12 @@
 #ifndef RestCore_TRestRawSignal
 #define RestCore_TRestRawSignal
 
-#include <iostream>
-
 #include <TGraph.h>
 #include <TObject.h>
 #include <TString.h>
 #include <TVector2.h>
+
+#include <iostream>
 
 //! It defines a Short_t array with a physical parameter that evolves in time
 //! using a fixed time bin.

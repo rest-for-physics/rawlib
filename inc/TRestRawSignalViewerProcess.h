@@ -24,7 +24,6 @@
 #define RestCore_TRestRawSignalViewerProcess
 
 #include <TH1D.h>
-
 #include <TRestRawSignalEvent.h>
 
 #include "TRestEventProcess.h"
@@ -36,7 +35,7 @@ class TRestRawSignalViewerProcess : public TRestEventProcess {
     TRestRawSignalEvent* fSignalEvent;  //!
 
     std::vector<TObject*> fDrawingObjects;  //!
-    Double_t fDrawRefresh;             //!
+    Double_t fDrawRefresh;                  //!
 
     TVector2 fBaseLineRange;  //!
     int eveCounter = 0;       //!
