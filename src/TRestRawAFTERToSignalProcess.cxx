@@ -68,7 +68,11 @@
 #endif
 #include "mygblink.h"
 
+
+using namespace std;
+
 ClassImp(TRestRawAFTERToSignalProcess);
+
 
 ///////////////////////////////////////////////
 /// \brief Default constructor

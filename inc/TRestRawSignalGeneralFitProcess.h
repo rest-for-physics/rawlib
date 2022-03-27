@@ -41,7 +41,7 @@ class TRestRawSignalGeneralFitProcess : public TRestEventProcess {
     void LoadDefaultConfig();
 
     TVector2 fFunctionRange = TVector2(0, 0);
-    string fFunction;
+    std::string fFunction;
 
     TF1* fFitFunc = nullptr;  //!
 
@@ -73,7 +73,7 @@ class TRestRawSignalGeneralFitProcess : public TRestEventProcess {
     void PrintMetadata() {
         BeginPrintProcess();
 
-        metadata << "Function string: " << fFunction << endl;
+        metadata << "Function std::string: " << fFunction << endl;
         metadata << "Range: ( " << fFunctionRange.X() << " , " << fFunctionRange.Y() << " ) " << endl;
 
         EndPrintProcess();

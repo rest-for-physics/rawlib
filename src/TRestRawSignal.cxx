@@ -142,8 +142,8 @@ void TRestRawSignal::AddDeposit(Short_t d) { AddPoint(d); }
 Short_t TRestRawSignal::operator[](Int_t n) {
     if (n >= GetNumberOfPoints()) {
         if (fShowWarnings) {
-            std::cout << "TRestRawSignal::GetSignalData: outside limits" << std::endl;
-            std::cout << "Warnings at TRestRawSignal have been disabled" << std::endl;
+            std::cout << "TRestRawSignal::GetSignalData: outside limits" << endl;
+            std::cout << "Warnings at TRestRawSignal have been disabled" << endl;
             fShowWarnings = false;
         }
         return 0xFFFF;
@@ -174,8 +174,8 @@ Double_t TRestRawSignal::GetRawData(Int_t n) { return (Double_t)fSignalData[n]; 
 void TRestRawSignal::IncreaseBinBy(Int_t bin, Double_t data) {
     if (bin >= GetNumberOfPoints()) {
         if (fShowWarnings) {
-            std::cout << "TRestRawSignal::IncreaseBinBy: outside limits" << std::endl;
-            std::cout << "Warnings at TRestRawSignal have been disabled" << std::endl;
+            std::cout << "TRestRawSignal::IncreaseBinBy: outside limits" << endl;
+            std::cout << "Warnings at TRestRawSignal have been disabled" << endl;
             fShowWarnings = false;
         }
 
@@ -325,7 +325,7 @@ Double_t TRestRawSignal::GetThresholdIntegral() {
             std::cout << "TRestRawSignal::GetThresholdIntegral. "
                          "InitializePointsOverThreshold should be "
                          "called first!"
-                      << std::endl;
+                      << endl;
             fShowWarnings = false;
         }
     return fThresholdIntegral;

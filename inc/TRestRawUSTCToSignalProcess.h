@@ -88,13 +88,13 @@ class TRestRawUSTCToSignalProcess : public TRestRawToSignalProcess {
     UChar_t fHeader[64];
     UChar_t fEnding[32];
 
-    vector<vector<USTCDataFrame>> fEventBuffer;  //!
+    std::vector<std::vector<USTCDataFrame>> fEventBuffer;  //!
     int nBufferedEvent;                          //!
     int fCurrentFile = 0;                        //!
     int fCurrentEvent = -1;                      //!
     int fCurrentBuffer = 0;                      //!
     int fLastBufferedId = 0;                     //!
-    vector<int> errorevents;                     //!
+    std::vector<int> errorevents;                     //!
     int unknownerrors = 0;                       //!
 
     Long64_t fTimeOffset = 0;
