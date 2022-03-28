@@ -15,10 +15,10 @@
 ///                 Javier Galan
 ///_______________________________________________________________________________
 
+#include "TRestRawFFT.h"
+
 #include <TComplex.h>
 #include <TVirtualFFT.h>
-
-#include "TRestRawFFT.h"
 using namespace std;
 
 ClassImp(TRestRawFFT)

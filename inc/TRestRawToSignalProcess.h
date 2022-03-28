@@ -32,7 +32,7 @@ class TRestRawToSignalProcess : public TRestEventProcess {
     virtual void InitFromConfigFile();
     unsigned int payload;
     unsigned int frameBits;
-    string fElectronicsType;  // AFTER or AGET
+    std::string fElectronicsType;  // AFTER or AGET
     Int_t fMinPoints;
 
     Double_t tStart;
@@ -49,7 +49,7 @@ class TRestRawToSignalProcess : public TRestEventProcess {
     Int_t nFiles;                    //!
     Int_t iCurFile;                  //!
     std::vector<FILE*> fInputFiles;  //!
-    std::vector<string> fInputFileNames;
+    std::vector<std::string> fInputFileNames;
     bool fgKeepFileOpen;  //! true if need to open all raw files at the beginning
 
     Int_t fShowSamples;  //!
@@ -77,15 +77,15 @@ class TRestRawToSignalProcess : public TRestEventProcess {
 
     // Bool_t OpenInputBinFile(TString fName);
 
-    virtual Bool_t OpenInputFiles(vector<string> files);
-    virtual Bool_t AddInputFile(string file);
+    virtual Bool_t OpenInputFiles(std::vector<std::string> files);
+    virtual Bool_t AddInputFile(std::string file);
     Bool_t ResetEntry();
 
     virtual Long64_t GetTotalBytesReaded() { return totalBytesReaded; }
     virtual Long64_t GetTotalBytes() { return totalBytes; }
     //  Int_t GetRunNumber(){return fRunNumber;}
     //  Int_t GetRunIndex(){return fRunIndex;}
-    virtual string GetElectronicsType() { return fElectronicsType; }
+    virtual std::string GetElectronicsType() { return fElectronicsType; }
 
     Bool_t GoToNextFile();
 

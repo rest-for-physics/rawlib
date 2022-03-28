@@ -24,6 +24,7 @@
 #define RestCore_TRestRawCommonNoiseReductionProcess
 
 #include <TRestRawSignalEvent.h>
+
 #include "TRestEventProcess.h"
 #include "TRestRawSignal.h"
 
