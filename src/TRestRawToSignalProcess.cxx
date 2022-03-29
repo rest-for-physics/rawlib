@@ -197,7 +197,7 @@ Bool_t TRestRawToSignalProcess::AddInputFile(string file) {
 
 Bool_t TRestRawToSignalProcess::ResetEntry() {
     for (auto f : fInputFiles) {
-        if (f != nullptr) {
+        if (f ) {
             if (fseek(f, 0, 0) != 0) return false;
         }
     }

@@ -259,7 +259,7 @@ void TRestRawMultiCoBoAsAdToSignalProcess::EndProcess() {
 bool TRestRawMultiCoBoAsAdToSignalProcess::fillbuffer() {
     // if the file is opened but not read, read header frame
     for (int i = 0; i < fInputFiles.size(); i++) {
-        if (fInputFiles[i] != nullptr && ftell(fInputFiles[i]) == 0) {
+        if (fInputFiles[i]  && ftell(fInputFiles[i]) == 0) {
             if (fread(fHeaderFrame[i].frameHeader, 256, 1, fInputFiles[i]) != 1 || feof(fInputFiles[i])) {
                 fclose(fInputFiles[i]);
                 fInputFiles[i] = nullptr;
@@ -644,7 +644,7 @@ Bool_t TRestRawMultiCoBoAsAdToSignalProcess::EndReading() {
     }
 
     for (int n = 0; n < nFiles; n++) {
-        if (fInputFiles[n] != nullptr) {
+        if (fInputFiles[n] ) {
             return false;
         }
     }

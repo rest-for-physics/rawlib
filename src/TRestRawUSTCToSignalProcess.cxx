@@ -557,7 +557,7 @@ void TRestRawUSTCToSignalProcess::ClearBuffer() {
 
 Bool_t TRestRawUSTCToSignalProcess::EndReading() {
     for (int n = 0; n < nFiles; n++) {
-        if (fInputFiles[n] != nullptr) return kFALSE;
+        if (fInputFiles[n] ) return kFALSE;
     }
     for (int n = 0; n < fEventBuffer.size(); n++) {
         if (fEventBuffer[n].size() != 0) return kFALSE;

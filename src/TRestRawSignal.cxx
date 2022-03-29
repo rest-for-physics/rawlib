@@ -716,7 +716,7 @@ void TRestRawSignal::Print() {
 /// \brief It builds a TGraph object that can be used for drawing.
 ///
 TGraph* TRestRawSignal::GetGraph(Int_t color) {
-    if (fGraph != nullptr) {
+    if (fGraph ) {
         delete fGraph;
         fGraph = nullptr;
     }
