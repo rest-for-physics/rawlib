@@ -183,7 +183,9 @@
 unsigned char cur_fr[MAX_EVENT_SIZE];  // Current frame
 
 #include "TRestRawMultiFEMINOSToSignalProcess.h"
+
 using namespace std;
+
 #include "TTimeStamp.h"
 
 Int_t nChannels = 0;

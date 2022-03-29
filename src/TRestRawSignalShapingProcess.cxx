@@ -81,6 +81,7 @@
 /// <hr>
 ///
 #include "TRestRawSignalShapingProcess.h"
+
 using namespace std;
 
 #include <TFile.h>

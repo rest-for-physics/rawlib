@@ -65,6 +65,7 @@
 /// <hr>
 ///
 #include "TRestRawFindResponseSignalProcess.h"
+
 using namespace std;
 
 #include <TFile.h>

@@ -72,6 +72,7 @@
 /// <hr>
 ///
 #include "TRestRawSignalRemoveChannelsProcess.h"
+
 using namespace std;
 
 ClassImp(TRestRawSignalRemoveChannelsProcess);

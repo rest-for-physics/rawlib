@@ -84,10 +84,12 @@
 /// <hr>
 ///
 #include "TRestRawCommonNoiseReductionProcess.h"
+
 using namespace std;
+
 #include <algorithm>
-#include <iostream>  // std::cout
-#include <vector>    // std::vector
+#include <iostream>
+#include <vector>
 
 ClassImp(TRestRawCommonNoiseReductionProcess);
 

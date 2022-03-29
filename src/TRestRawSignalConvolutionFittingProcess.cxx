@@ -109,6 +109,7 @@
 ///
 
 #include "TRestRawSignalConvolutionFittingProcess.h"
+
 using namespace std;
 
 ClassImp(TRestRawSignalConvolutionFittingProcess);

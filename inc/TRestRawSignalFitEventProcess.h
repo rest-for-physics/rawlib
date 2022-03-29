@@ -107,14 +107,14 @@ class TRestRawSignalFitEventProcess : public TRestEventProcess {
             metadata << "Amplitude gauss initial value : " << fAmplitudeInitialValue << endl;
         }
 
-        if (fAgetFit == true) {
+        if (fAgetFit) {
             metadata << "Fitting mode : AGET" << endl;
         }
-        if (fAgetFit == false) {
+        if (!fAgetFit) {
             metadata << "Fitting mode : Convolution" << endl;
         }
 
-        if (fAddAllPulses == true) {
+        if (fAddAllPulses) {
             metadata << "Adding all pulses in the event" << endl;
         }
 
@@ -128,6 +128,5 @@ class TRestRawSignalFitEventProcess : public TRestEventProcess {
     ~TRestRawSignalFitEventProcess();  // Destructor
 
     ClassDef(TRestRawSignalFitEventProcess, 3);
-    // Template for a REST "event process" class inherited from TRestEventProcess
 };
 #endif

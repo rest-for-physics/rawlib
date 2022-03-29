@@ -60,23 +60,23 @@
 // int counter = 0;
 
 #include "TRestRawUSTCToSignalProcess.h"
+
 using namespace std;
+
 #include <bitset>
 
 #include "TTimeStamp.h"
 
 ClassImp(TRestRawUSTCToSignalProcess);
-//______________________________________________________________________________
+
 TRestRawUSTCToSignalProcess::TRestRawUSTCToSignalProcess() { Initialize(); }
 
 TRestRawUSTCToSignalProcess::TRestRawUSTCToSignalProcess(char* cfgFileName) { Initialize(); }
 
-//______________________________________________________________________________
 TRestRawUSTCToSignalProcess::~TRestRawUSTCToSignalProcess() {
     // TRestRawUSTCToSignalProcess destructor
 }
 
-//______________________________________________________________________________
 void TRestRawUSTCToSignalProcess::Initialize() {
     TRestRawToSignalProcess::Initialize();
 
@@ -557,7 +557,7 @@ void TRestRawUSTCToSignalProcess::ClearBuffer() {
 
 Bool_t TRestRawUSTCToSignalProcess::EndReading() {
     for (int n = 0; n < nFiles; n++) {
-        if (fInputFiles[n] ) return kFALSE;
+        if (fInputFiles[n]) return kFALSE;
     }
     for (int n = 0; n < fEventBuffer.size(); n++) {
         if (fEventBuffer[n].size() != 0) return kFALSE;

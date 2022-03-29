@@ -69,7 +69,9 @@
 // <hr>
 /////
 #include "TRestRawFEUDreamToSignalProcess.h"
+
 using namespace std;
+
 #include "TTimeStamp.h"
 
 ClassImp(TRestRawFEUDreamToSignalProcess);
@@ -181,7 +183,7 @@ TRestEvent* TRestRawFEUDreamToSignalProcess::ProcessEvent(TRestEvent* evInput) {
     return nullptr;  // can't read data
 }
 
-//______________________________________________________________________________
+
 //			Definition of decoding methods
 bool TRestRawFEUDreamToSignalProcess::ReadEvent(FeuReadOut& Feu) {
     bool badreadfg = false;
@@ -559,10 +561,10 @@ bool TRestRawFEUDreamToSignalProcess::ReadFeuTrailer(FeuReadOut& Feu) {
         if (Feu.current_data.is_final_trailer()) {
             if (Feu.channelN != 0) {
                 bad_event = true;
-                ferr
-                    << "TRestRawFEUDreamToSignalProcess::ReadFeuTrailer: channel number not nullptr in trailer, "
-                       "Feu.channelN "
-                    << Feu.channelN << endl;
+                ferr << "TRestRawFEUDreamToSignalProcess::ReadFeuTrailer: channel number not nullptr in "
+                        "trailer, "
+                        "Feu.channelN "
+                     << Feu.channelN << endl;
                 return true;
             }
             if (Feu.current_data.is_end_of_event()) {

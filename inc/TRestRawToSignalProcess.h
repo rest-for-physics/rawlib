@@ -23,8 +23,8 @@
 #ifndef RestCore_TRestRawToSignalProcess
 #define RestCore_TRestRawToSignalProcess
 
-#include "TRestEventProcess.h"
-#include "TRestRawSignalEvent.h"
+#include <TRestEventProcess.h>
+#include <TRestRawSignalEvent.h>
 
 //! A base class for any process reading a binary external file as input to REST
 class TRestRawToSignalProcess : public TRestEventProcess {
@@ -95,7 +95,6 @@ class TRestRawToSignalProcess : public TRestEventProcess {
     // Destructor
     ~TRestRawToSignalProcess();
 
-    ClassDef(TRestRawToSignalProcess, 1);  // Template for a REST "event process" class inherited from
-                                           // TRestEventProcess
+    ClassDef(TRestRawToSignalProcess, 1);
 };
 #endif

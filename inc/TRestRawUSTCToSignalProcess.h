@@ -23,8 +23,6 @@
 #ifndef RestCore_TRestRawUSTCToSignalProcess
 #define RestCore_TRestRawUSTCToSignalProcess
 
-#include <map>
-
 #include "TRestRawToSignalProcess.h"
 
 //#define V3_Readout_Format_Long
@@ -132,7 +130,6 @@ class TRestRawUSTCToSignalProcess : public TRestRawToSignalProcess {
     // Destructor
     ~TRestRawUSTCToSignalProcess();
 
-    ClassDef(TRestRawUSTCToSignalProcess, 3);  // Template for a REST "event process" class inherited from
-                                               // TRestEventProcess
+    ClassDef(TRestRawUSTCToSignalProcess, 3);
 };
 #endif

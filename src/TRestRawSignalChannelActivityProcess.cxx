@@ -97,6 +97,7 @@
 /// <hr>
 ///
 #include "TRestRawSignalChannelActivityProcess.h"
+
 using namespace std;
 
 ClassImp(TRestRawSignalChannelActivityProcess);

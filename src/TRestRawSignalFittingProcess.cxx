@@ -98,6 +98,7 @@
 /// <hr>
 ///
 #include "TRestRawSignalFittingProcess.h"
+
 using namespace std;
 
 ClassImp(TRestRawSignalFittingProcess);

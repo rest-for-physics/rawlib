@@ -57,6 +57,7 @@
 #include "TRestRawSignal.h"
 
 #include <numeric>
+
 using namespace std;
 
 #include <TF1.h>
@@ -716,7 +717,7 @@ void TRestRawSignal::Print() {
 /// \brief It builds a TGraph object that can be used for drawing.
 ///
 TGraph* TRestRawSignal::GetGraph(Int_t color) {
-    if (fGraph ) {
+    if (fGraph) {
         delete fGraph;
         fGraph = nullptr;
     }

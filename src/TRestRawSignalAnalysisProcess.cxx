@@ -242,6 +242,7 @@
 ///
 
 #include "TRestRawSignalAnalysisProcess.h"
+
 using namespace std;
 
 ClassImp(TRestRawSignalAnalysisProcess);

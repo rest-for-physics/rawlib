@@ -86,6 +86,5 @@ class TRestRawSignalGeneralFitProcess : public TRestEventProcess {
     ~TRestRawSignalGeneralFitProcess();  // Destructor
 
     ClassDef(TRestRawSignalGeneralFitProcess, 2);
-    // Template for a REST "event process" class inherited from TRestEventProcess
 };
 #endif

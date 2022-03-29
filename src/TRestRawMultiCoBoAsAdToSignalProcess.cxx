@@ -55,32 +55,28 @@
 /// <hr>
 ///
 
-// int counter = 0;
-
 #include "TRestRawMultiCoBoAsAdToSignalProcess.h"
 
 #include "TRestDataBase.h"
+
 using namespace std;
+
 #include <bitset>
 
 #include "TTimeStamp.h"
 
-ClassImp(TRestRawMultiCoBoAsAdToSignalProcess)
-    //______________________________________________________________________________
-    TRestRawMultiCoBoAsAdToSignalProcess::TRestRawMultiCoBoAsAdToSignalProcess() {
-    Initialize();
-}
+ClassImp(TRestRawMultiCoBoAsAdToSignalProcess);
+
+TRestRawMultiCoBoAsAdToSignalProcess::TRestRawMultiCoBoAsAdToSignalProcess() { Initialize(); }
 
 TRestRawMultiCoBoAsAdToSignalProcess::TRestRawMultiCoBoAsAdToSignalProcess(char* cfgFileName) {
     Initialize();
 }
 
-//______________________________________________________________________________
 TRestRawMultiCoBoAsAdToSignalProcess::~TRestRawMultiCoBoAsAdToSignalProcess() {
     // TRestRawMultiCoBoAsAdToSignalProcess destructor
 }
 
-//______________________________________________________________________________
 void TRestRawMultiCoBoAsAdToSignalProcess::Initialize() {
     TRestRawToSignalProcess::Initialize();
 
@@ -207,16 +203,16 @@ TRestEvent* TRestRawMultiCoBoAsAdToSignalProcess::ProcessEvent(TRestEvent* evInp
 
             for (int m = 0; m < 272; m++) {
                 if (data->chHit[m]) {
-                    sgnl.Initialize();
-                    sgnl.SetSignalID(m + data->asadId * 272);
+                    signal.Initialize();
+                    signal.SetSignalID(m + data->asadId * 272);
 
-                    for (int j = 0; j < 512; j++) sgnl.AddPoint((Short_t)data->data[m][j]);
+                    for (int j = 0; j < 512; j++) signal.AddPoint((Short_t)data->data[m][j]);
 
-                    fSignalEvent->AddSignal(sgnl);
+                    fSignalEvent->AddSignal(signal);
 
                     if (GetVerboseLevel() >= REST_Extreme) {
                         cout << "AgetId, chnId, first value, max value: " << m / 68 << ", " << m % 68 << ", "
-                             << sgnl.GetData(0) << ", " << sgnl.GetMaxValue() << endl;
+                             << signal.GetData(0) << ", " << signal.GetMaxValue() << endl;
                     }
                 }
             }
@@ -259,7 +255,7 @@ void TRestRawMultiCoBoAsAdToSignalProcess::EndProcess() {
 bool TRestRawMultiCoBoAsAdToSignalProcess::fillbuffer() {
     // if the file is opened but not read, read header frame
     for (int i = 0; i < fInputFiles.size(); i++) {
-        if (fInputFiles[i]  && ftell(fInputFiles[i]) == 0) {
+        if (fInputFiles[i] && ftell(fInputFiles[i]) == 0) {
             if (fread(fHeaderFrame[i].frameHeader, 256, 1, fInputFiles[i]) != 1 || feof(fInputFiles[i])) {
                 fclose(fInputFiles[i]);
                 fInputFiles[i] = nullptr;
@@ -644,7 +640,7 @@ Bool_t TRestRawMultiCoBoAsAdToSignalProcess::EndReading() {
     }
 
     for (int n = 0; n < nFiles; n++) {
-        if (fInputFiles[n] ) {
+        if (fInputFiles[n]) {
             return false;
         }
     }

@@ -151,6 +151,7 @@
 //////////////////////////////////////////////////////////////////////////
 
 #include "TRestRawSignalFitEventProcess.h"
+
 using namespace std;
 
 ClassImp(TRestRawSignalFitEventProcess);

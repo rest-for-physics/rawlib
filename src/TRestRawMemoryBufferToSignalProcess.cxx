@@ -106,6 +106,7 @@
 /// <hr>
 ///
 #include "TRestRawMemoryBufferToSignalProcess.h"
+
 using namespace std;
 
 #include <sys/sem.h>

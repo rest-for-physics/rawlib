@@ -124,6 +124,7 @@
 /// <hr>
 ///
 #include "TRestRawVetoAnalysisProcess.h"
+
 using namespace std;
 
 ClassImp(TRestRawVetoAnalysisProcess);
@@ -424,7 +425,7 @@ void TRestRawVetoAnalysisProcess::InitFromConfigFile() {
 
     TiXmlElement* vetoDefinition = GetElement("vetoGroup");
 
-    while (vetoDefinition ) {
+    while (vetoDefinition) {
         fVetoGroupNames.push_back(GetFieldValue("name", vetoDefinition));
         fVetoGroupIds.push_back(GetFieldValue("signalIDs", vetoDefinition));
         vetoDefinition = GetNextElement(vetoDefinition);

@@ -59,6 +59,7 @@
 /// <hr>
 ///
 #include "TRestRawSignalGeneralFitProcess.h"
+
 using namespace std;
 
 ClassImp(TRestRawSignalGeneralFitProcess);
