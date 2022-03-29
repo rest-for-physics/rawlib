@@ -70,7 +70,7 @@ class TRestRawAFTERToSignalProcess : public TRestRawToSignalProcess {
     void InitProcess();
     TRestEvent* ProcessEvent(TRestEvent* evInput);
     TString GetProcessName() { return (TString) "AFTERToSignal"; }
-    TRestMetadata* GetProcessMetadata() { return NULL; }
+    TRestMetadata* GetProcessMetadata() { return nullptr; }
 
     Bool_t isExternal() { return true; }
 

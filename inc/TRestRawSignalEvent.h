@@ -113,7 +113,7 @@ class TRestRawSignalEvent : public TRestEvent {
 
     TRestRawSignal* GetSignalById(Int_t sid) {
         Int_t index = GetSignalIndex(sid);
-        if (index < 0) return NULL;
+        if (index < 0) return nullptr;
 
         return &fSignal[index];
     }

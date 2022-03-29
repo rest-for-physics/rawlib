@@ -89,7 +89,7 @@ void TRestRawSignalAddNoiseProcess::Initialize() {
     SetSectionName(this->ClassName());
     SetLibraryVersion(LIBRARY_VERSION);
 
-    fInputSignalEvent = NULL;
+    fInputSignalEvent = nullptr;
     fOutputSignalEvent = new TRestRawSignalEvent();
 }
 
@@ -114,7 +114,7 @@ TRestEvent* TRestRawSignalAddNoiseProcess::ProcessEvent(TRestEvent* evInput) {
     // cout<<"Number of signals "<< fInputSignalEvent->GetNumberOfSignals()<<
     // endl;
 
-    if (fInputSignalEvent->GetNumberOfSignals() <= 0) return NULL;
+    if (fInputSignalEvent->GetNumberOfSignals() <= 0) return nullptr;
 
     for (int n = 0; n < fInputSignalEvent->GetNumberOfSignals(); n++) {
         TRestRawSignal noiseSignal;

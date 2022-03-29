@@ -130,7 +130,7 @@ void TRestRawUSTCToSignalProcess::InitProcess() {
 TRestEvent* TRestRawUSTCToSignalProcess::ProcessEvent(TRestEvent* evInput) {
     while (1) {
         if (EndReading()) {
-            return NULL;
+            return nullptr;
         }
         if (!FillBuffer()) {
             fSignalEvent->SetOK(false);
@@ -194,7 +194,7 @@ TRestEvent* TRestRawUSTCToSignalProcess::ProcessEvent(TRestEvent* evInput) {
     fSignalEvent->SetSubRunOrigin(fSubRunOrigin);
 
     // cout << fSignalEvent->GetNumberOfSignals() << endl;
-    // if( fSignalEvent->GetNumberOfSignals( ) == 0 ) return NULL;
+    // if( fSignalEvent->GetNumberOfSignals( ) == 0 ) return nullptr;
     fCurrentEvent++;
 
     return fSignalEvent;
@@ -302,7 +302,7 @@ bool TRestRawUSTCToSignalProcess::OpenNextFile(USTCDataFrame& frame) {
 }
 
 bool TRestRawUSTCToSignalProcess::GetNextFrame(USTCDataFrame& frame) {
-    if (fInputFiles[fCurrentFile] == NULL) {
+    if (fInputFiles[fCurrentFile] == nullptr) {
         return OpenNextFile(frame);
     }
 #ifdef V4_Readout_Format
@@ -311,7 +311,7 @@ bool TRestRawUSTCToSignalProcess::GetNextFrame(USTCDataFrame& frame) {
         if (fread(Protocol, PROTOCOL_SIZE, 1, fInputFiles[fCurrentFile]) != 1 ||
             feof(fInputFiles[fCurrentFile])) {
             fclose(fInputFiles[fCurrentFile]);
-            fInputFiles[fCurrentFile] = NULL;
+            fInputFiles[fCurrentFile] = nullptr;
             return OpenNextFile(frame);
         }
         totalBytesReaded += PROTOCOL_SIZE;
@@ -327,7 +327,7 @@ bool TRestRawUSTCToSignalProcess::GetNextFrame(USTCDataFrame& frame) {
                           fInputFiles[fCurrentFile]) != 1 ||
                     feof(fInputFiles[fCurrentFile])) {
                     fclose(fInputFiles[fCurrentFile]);
-                    fInputFiles[fCurrentFile] = NULL;
+                    fInputFiles[fCurrentFile] = nullptr;
                     return OpenNextFile(frame);
                 }
                 totalBytesReaded += ENDING_SIZE;
@@ -338,7 +338,7 @@ bool TRestRawUSTCToSignalProcess::GetNextFrame(USTCDataFrame& frame) {
                           fInputFiles[fCurrentFile]) != 1 ||
                     feof(fInputFiles[fCurrentFile])) {
                     fclose(fInputFiles[fCurrentFile]);
-                    fInputFiles[fCurrentFile] = NULL;
+                    fInputFiles[fCurrentFile] = nullptr;
                     return OpenNextFile(frame);
                 }
                 totalBytesReaded += HEADER_SIZE;
@@ -349,7 +349,7 @@ bool TRestRawUSTCToSignalProcess::GetNextFrame(USTCDataFrame& frame) {
                           fInputFiles[fCurrentFile]) != 1 ||
                     feof(fInputFiles[fCurrentFile])) {
                     fclose(fInputFiles[fCurrentFile]);
-                    fInputFiles[fCurrentFile] = NULL;
+                    fInputFiles[fCurrentFile] = nullptr;
                     return OpenNextFile(frame);
                 }
                 totalBytesReaded += DATA_SIZE;
@@ -362,7 +362,7 @@ bool TRestRawUSTCToSignalProcess::GetNextFrame(USTCDataFrame& frame) {
 #else
     if (fread(frame.data, DATA_SIZE, 1, fInputFiles[fCurrentFile]) != 1 || feof(fInputFiles[fCurrentFile])) {
         fclose(fInputFiles[fCurrentFile]);
-        fInputFiles[fCurrentFile] = NULL;
+        fInputFiles[fCurrentFile] = nullptr;
         return OpenNextFile(frame);
     }
     totalBytesReaded += DATA_SIZE;
@@ -378,7 +378,7 @@ bool TRestRawUSTCToSignalProcess::GetNextFrame(USTCDataFrame& frame) {
 
 // it find the next flag of frame, e.g. 0xffff or 0xac0f
 void TRestRawUSTCToSignalProcess::FixToNextFrame(FILE* f) {
-    if (f == NULL) return;
+    if (f == nullptr) return;
     UChar_t buffer[PROTOCOL_SIZE];
     int n = 0;
     while (1) {
@@ -396,7 +396,7 @@ void TRestRawUSTCToSignalProcess::FixToNextFrame(FILE* f) {
                           fInputFiles[fCurrentFile]) != 1 ||
                     feof(fInputFiles[fCurrentFile])) {
                     fclose(f);
-                    f = NULL;
+                    f = nullptr;
                     break;
                 }
                 n += HEADER_SIZE;
@@ -557,7 +557,7 @@ void TRestRawUSTCToSignalProcess::ClearBuffer() {
 
 Bool_t TRestRawUSTCToSignalProcess::EndReading() {
     for (int n = 0; n < nFiles; n++) {
-        if (fInputFiles[n] != NULL) return kFALSE;
+        if (fInputFiles[n] != nullptr) return kFALSE;
     }
     for (int n = 0; n < fEventBuffer.size(); n++) {
         if (fEventBuffer[n].size() != 0) return kFALSE;

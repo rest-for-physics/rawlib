@@ -60,7 +60,7 @@ class TRestRawSignalAddNoiseProcess : public TRestEventProcess {
         EndPrintProcess();
     }
 
-    TRestMetadata* GetProcessMetadata() { return NULL; }
+    TRestMetadata* GetProcessMetadata() { return nullptr; }
 
     TString GetProcessName() { return (TString) "rawSignalAddNoise"; }
 

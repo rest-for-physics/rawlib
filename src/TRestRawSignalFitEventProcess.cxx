@@ -196,7 +196,7 @@ void TRestRawSignalFitEventProcess::Initialize() {
     SetSectionName(this->ClassName());
     SetLibraryVersion(LIBRARY_VERSION);
 
-    fRawSignalEvent = NULL;
+    fRawSignalEvent = nullptr;
 }
 
 ///////////////////////////////////////////////
@@ -586,7 +586,7 @@ TRestEvent* TRestRawSignalFitEventProcess::ProcessEvent(TRestEvent* evInput) {
             }
 
             // If cut condition matches the event will be not registered.
-            if (ApplyCut()) return NULL;
+            if (ApplyCut()) return nullptr;
 
             return fRawSignalEvent;
         }
@@ -709,7 +709,7 @@ TRestEvent* TRestRawSignalFitEventProcess::ProcessEvent(TRestEvent* evInput) {
             }
 
             // If cut condition matches the event will be not registered.
-            if (ApplyCut()) return NULL;
+            if (ApplyCut()) return nullptr;
 
             return fRawSignalEvent;
         }
@@ -870,11 +870,11 @@ TRestEvent* TRestRawSignalFitEventProcess::ProcessEvent(TRestEvent* evInput) {
         h->Delete();
 
         // If cut condition matches the event will be not registered.
-        if (ApplyCut()) return NULL;
+        if (ApplyCut()) return nullptr;
 
         return fRawSignalEvent;
     }
-    return NULL;
+    return nullptr;
 }
 
 ///////////////////////////////////////////////

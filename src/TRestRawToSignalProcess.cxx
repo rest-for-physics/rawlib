@@ -93,7 +93,7 @@ void TRestRawToSignalProcess::Initialize() {
     if (fSignalEvent) delete fSignalEvent;
     fSignalEvent = new TRestRawSignalEvent();
 
-    fInputBinFile = NULL;
+    fInputBinFile = nullptr;
 
     fMinPoints = 512;
 
@@ -177,7 +177,7 @@ Bool_t TRestRawToSignalProcess::AddInputFile(string file) {
 
     FILE* f = fopen(file.c_str(), "rb");
 
-    if (f == NULL) {
+    if (f == nullptr) {
         warning << "REST WARNING. Input file for " << this->ClassName() << " does not exist!" << endl;
         warning << "File : " << file << endl;
         return false;
@@ -197,7 +197,7 @@ Bool_t TRestRawToSignalProcess::AddInputFile(string file) {
 
 Bool_t TRestRawToSignalProcess::ResetEntry() {
     for (auto f : fInputFiles) {
-        if (f != NULL) {
+        if (f != nullptr) {
             if (fseek(f, 0, 0) != 0) return false;
         }
     }

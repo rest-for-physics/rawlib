@@ -135,7 +135,7 @@ void TRestRawCommonNoiseReductionProcess::Initialize() {
     SetSectionName(this->ClassName());
     SetLibraryVersion(LIBRARY_VERSION);
 
-    fInputEvent = NULL;
+    fInputEvent = nullptr;
     fOutputEvent = new TRestRawSignalEvent();
 }
 
@@ -321,7 +321,7 @@ TRestEvent* TRestRawCommonNoiseReductionProcess::ProcessEvent(TRestEvent* evInpu
         }
         return fOutputEvent;
     }
-    return NULL;
+    return nullptr;
 }
 
 ///////////////////////////////////////////////

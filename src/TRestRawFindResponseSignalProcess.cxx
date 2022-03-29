@@ -118,7 +118,7 @@ void TRestRawFindResponseSignalProcess::Initialize() {
     SetSectionName(this->ClassName());
     SetLibraryVersion(LIBRARY_VERSION);
 
-    fInputSignalEvent = NULL;
+    fInputSignalEvent = nullptr;
     fOutputSignalEvent = new TRestRawSignalEvent();
 }
 
@@ -152,8 +152,8 @@ TRestEvent* TRestRawFindResponseSignalProcess::ProcessEvent(TRestEvent* evInput)
 
     // We accept signals that are inside a given condition.
     // TODO: Now it is also possible to use ApplyCut and <cut definitions?
-    if (fInputSignalEvent->GetNumberOfSignals() <= 0) return NULL;
-    if (fInputSignalEvent->GetNumberOfSignals() > 8) return NULL;
+    if (fInputSignalEvent->GetNumberOfSignals() <= 0) return nullptr;
+    if (fInputSignalEvent->GetNumberOfSignals() > 8) return nullptr;
 
     Int_t dominantSignal = -1;
     Double_t maxPeak = 0;
@@ -166,7 +166,7 @@ TRestEvent* TRestRawFindResponseSignalProcess::ProcessEvent(TRestEvent* evInput)
         }
     }
 
-    if (maxPeak < 400 || maxPeak > 600) return NULL;
+    if (maxPeak < 400 || maxPeak > 600) return nullptr;
 
     TRestRawSignal* sgnl = fInputSignalEvent->GetSignal(dominantSignal);
     sgnl->Scale(1000. / maxPeak);

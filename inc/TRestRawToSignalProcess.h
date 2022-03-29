@@ -58,7 +58,7 @@ class TRestRawToSignalProcess : public TRestEventProcess {
     void LoadDefaultConfig();
 
    public:
-    virtual any GetInputEvent() { return any((TRestEvent*)NULL); }
+    virtual any GetInputEvent() { return any((TRestEvent*)nullptr); }
     virtual any GetOutputEvent() { return fSignalEvent; }
 
     virtual void Initialize();
@@ -66,7 +66,7 @@ class TRestRawToSignalProcess : public TRestEventProcess {
     virtual TRestEvent* ProcessEvent(TRestEvent* evInput) = 0;
     virtual void EndProcess();
     // virtual TString GetProcessName()=0;
-    TRestMetadata* GetProcessMetadata() { return NULL; }
+    TRestMetadata* GetProcessMetadata() { return nullptr; }
 
     void SetRunOrigin(Int_t run_origin) { fRunOrigin = run_origin; }
     void SetSubRunOrigin(Int_t sub_run_origin) { fSubRunOrigin = sub_run_origin; }

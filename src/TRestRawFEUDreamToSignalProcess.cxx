@@ -560,7 +560,7 @@ bool TRestRawFEUDreamToSignalProcess::ReadFeuTrailer(FeuReadOut& Feu) {
             if (Feu.channelN != 0) {
                 bad_event = true;
                 ferr
-                    << "TRestRawFEUDreamToSignalProcess::ReadFeuTrailer: channel number not null in trailer, "
+                    << "TRestRawFEUDreamToSignalProcess::ReadFeuTrailer: channel number not nullptr in trailer, "
                        "Feu.channelN "
                     << Feu.channelN << endl;
                 return true;

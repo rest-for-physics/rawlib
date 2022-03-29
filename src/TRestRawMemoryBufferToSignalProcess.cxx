@@ -338,7 +338,7 @@ TRestEvent* TRestRawMemoryBufferToSignalProcess::ProcessEvent(TRestEvent* evInpu
                 }
             }
 
-            if (fOutputRawSignalEvent->GetNumberOfSignals() == 0) return NULL;
+            if (fOutputRawSignalEvent->GetNumberOfSignals() == 0) return nullptr;
 
             return fOutputRawSignalEvent;
         }
