@@ -1,4 +1,4 @@
-image: nkx1231/root6-geant4-garfield:0.8
+image: ghcr.io/lobis/root-geant4-garfield:cpp17_ROOT-v6-26-00_Geant4-v10.4.3_Garfield-af4a1451
 
 stages:
   - pre-build
@@ -8,41 +8,41 @@ stages:
   - externalPcs
 
 before_script:
-    - export USER="raw"
-    - pwd
-    - echo $CI_SERVER_HOST
-    - echo $CRONJOB
-    - export HOME=${CI_PROJECT_DIR}/install/
-    - if [ -d $HOME/.rest ]; then rm -Rf $HOME/.rest; fi
-    - if [ -f "/opt/root/install/bin/thisroot.sh" ]; then source /opt/root/install/bin/thisroot.sh; fi
-    - root-config --version
-    - if [ -f "/opt/geant4/install/bin/geant4.sh" ]; then source /opt/geant4/install/bin/geant4.sh; fi
-    - geant4-config --version
-    - if [ -d "/opt/garfieldpp/install" ]; then export GARFIELD_HOME=/opt/garfieldpp/install; fi
-    - if [ -d "/opt/garfieldpp/install" ]; then export HEED_DATABASE=$GARFIELD_HOME/Heed/heed++/database; fi
-    - if [ -d "/opt/garfieldpp/install" ]; then export LD_LIBRARY_PATH=$GARFIELD_HOME/lib:$LD_LIBRARY_PATH; fi
-    - ls $GARFIELD_HOME
-    - python3 --version
-    - apt update && apt install -y wget
+  - export USER="raw"
+  - pwd
+  - echo $CI_SERVER_HOST
+  - echo $CRONJOB
+  - export HOME=${CI_PROJECT_DIR}/install/
+  - if [ -d $HOME/.rest ]; then rm -Rf $HOME/.rest; fi
+  - if [ -f "/opt/root/install/bin/thisroot.sh" ]; then source /opt/root/install/bin/thisroot.sh; fi
+  - root-config --version
+  - if [ -f "/opt/geant4/install/bin/geant4.sh" ]; then source /opt/geant4/install/bin/geant4.sh; fi
+  - geant4-config --version
+  - if [ -d "/opt/garfieldpp/install" ]; then export GARFIELD_HOME=/opt/garfieldpp/install; fi
+  - if [ -d "/opt/garfieldpp/install" ]; then export HEED_DATABASE=$GARFIELD_HOME/Heed/heed++/database; fi
+  - if [ -d "/opt/garfieldpp/install" ]; then export LD_LIBRARY_PATH=$GARFIELD_HOME/lib:$LD_LIBRARY_PATH; fi
+  - ls $GARFIELD_HOME
+  - python3 --version
+  - apt update && apt install -y wget
 
 clang-format:
-    stage: pre-build
-    script:
-        - echo "**$CRONJOB**"
-        - echo "**$CI_SERVER_HOST**"
-        - cd ${CI_PROJECT_DIR}/pipeline/clang-format/
-        - ./clangformattest.sh
-          # We execute only at a schedulled pipeline that defines CRONJOB variable
-    only:
-        variables:
-            - $CRONJOB
+  stage: pre-build
+  script:
+    - echo "**$CRONJOB**"
+    - echo "**$CI_SERVER_HOST**"
+    - cd ${CI_PROJECT_DIR}/pipeline/clang-format/
+    - ./clangformattest.sh
+    # We execute only at a schedulled pipeline that defines CRONJOB variable
+  only:
+    variables:
+      - $CRONJOB
 
-validateLibrary:
-    stage: pre-build
-    script:
-        - python3 pipeline/validateLibrary.py .
+Validate Library:
+  stage: pre-build
+  script:
+    - python3 pipeline/validateLibrary.py .
 
-build:
+Build:
   type: build
   script:
     - echo "**${CI_PROJECT_DIR}**"
@@ -69,56 +69,56 @@ build:
       - ${CI_PROJECT_DIR}/framework/build
     expire_in: 1 day
 
-loadRESTLibs:
+Load REST Libraries:
   type: loadRESTLibs
   script:
     - . ${CI_PROJECT_DIR}/install/thisREST.sh
     - restRoot -b -q
 
-addSignalNoise: 
+Add Signal Noise:
   type: process
   script:
     - . ${CI_PROJECT_DIR}/install/thisREST.sh
     - cd ${CI_PROJECT_DIR}/pipeline/processes/noise
     - python addNoise.py
-    
-commonNoise: 
+
+Common Noise:
   type: process
   script:
     - . ${CI_PROJECT_DIR}/install/thisREST.sh
     - cd ${CI_PROJECT_DIR}/pipeline/processes/commonNoise
     - restRoot -b -q commonNoise.C
 
-vetoAnalysis: 
+Veto Analysis:
   type: process
   script:
     - . ${CI_PROJECT_DIR}/install/thisREST.sh
     - cd ${CI_PROJECT_DIR}/pipeline/processes/veto
     - restManager --c veto.rml --f ../../data/R01208_Ar2Iso_Background14h_14Vetos_IccubFEC-000.aqs
-    - python vetoValidation.py 
+    - python vetoValidation.py
 
-signalShaping: 
+Signal Shaping:
   type: process
   script:
     - . ${CI_PROJECT_DIR}/install/thisREST.sh
     - cd ${CI_PROJECT_DIR}/pipeline/processes/shaping
     - restRoot -b -q shaping.C
-    
-fittingProcess: 
+
+Fitting Process:
   type: process
   script:
     - . ${CI_PROJECT_DIR}/install/thisREST.sh
     - cd ${CI_PROJECT_DIR}/pipeline/processes/fit
     - restRoot -b -q fit.C
-    
-generalFitProcess: 
+
+General Fit Process:
   type: process
   script:
     - . ${CI_PROJECT_DIR}/install/thisREST.sh
     - cd ${CI_PROJECT_DIR}/pipeline/processes/fit
     - restRoot -b -q GeneralFit.C
 
-analysisProcess: 
+Analysis Process:
   type: process
   script:
     - . ${CI_PROJECT_DIR}/install/thisREST.sh
@@ -126,7 +126,7 @@ analysisProcess:
     - restManager --c veto.rml --f ../../data/R01208_Ar2Iso_Background14h_14Vetos_IccubFEC-000.aqs
     - restRoot -b -q validate.C
 
-dreamData:
+Dream Data:
   type: externalPcs
   script:
     - . ${CI_PROJECT_DIR}/install/thisREST.sh
