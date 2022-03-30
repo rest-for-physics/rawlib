@@ -639,8 +639,8 @@ Bool_t TRestRawMultiCoBoAsAdToSignalProcess::EndReading() {
         }
     }
 
-    for (int n = 0; n < nFiles; n++) {
-        if (fInputFiles[n]) {
+    for (const auto& file : fInputFiles) {
+        if (file != nullptr) {
             return false;
         }
     }

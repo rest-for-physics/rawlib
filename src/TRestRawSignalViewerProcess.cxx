@@ -150,7 +150,10 @@ TRestEvent* TRestRawSignalViewerProcess::ProcessEvent(TRestEvent* evInput) {
         if (GetVerboseLevel() >= REST_Debug) {
             GetAnalysisTree()->PrintObservables();
         }
-        for (unsigned int i = 0; i < fDrawingObjects.size(); i++) delete fDrawingObjects[i];
+        for (auto object : fDrawingObjects) {
+            delete object;
+        }
+
         fDrawingObjects.clear();
 
         TPad* pad2 = DrawSignal(sgnCounter);

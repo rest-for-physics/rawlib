@@ -425,7 +425,7 @@ void TRestRawVetoAnalysisProcess::InitFromConfigFile() {
 
     TiXmlElement* vetoDefinition = GetElement("vetoGroup");
 
-    while (vetoDefinition) {
+    while (vetoDefinition != nullptr) {
         fVetoGroupNames.push_back(GetFieldValue("name", vetoDefinition));
         fVetoGroupIds.push_back(GetFieldValue("signalIDs", vetoDefinition));
         vetoDefinition = GetNextElement(vetoDefinition);

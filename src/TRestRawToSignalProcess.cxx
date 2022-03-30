@@ -76,7 +76,7 @@ TRestRawToSignalProcess::TRestRawToSignalProcess(char* cfgFileName) {
 
 TRestRawToSignalProcess::~TRestRawToSignalProcess() {
     // TRestRawToSignalProcess destructor
-    if (fSignalEvent) delete fSignalEvent;
+    delete fSignalEvent;
 }
 
 void TRestRawToSignalProcess::LoadConfig(string cfgFilename, string name) {
@@ -90,7 +90,7 @@ void TRestRawToSignalProcess::Initialize() {
     SetSectionName(this->ClassName());
     SetLibraryVersion(LIBRARY_VERSION);
 
-    if (fSignalEvent) delete fSignalEvent;
+    delete fSignalEvent;
     fSignalEvent = new TRestRawSignalEvent();
 
     fInputBinFile = nullptr;
@@ -196,7 +196,7 @@ Bool_t TRestRawToSignalProcess::AddInputFile(string file) {
 
 Bool_t TRestRawToSignalProcess::ResetEntry() {
     for (auto f : fInputFiles) {
-        if (f) {
+        if (f != nullptr) {
             if (fseek(f, 0, 0) != 0) return false;
         }
     }
