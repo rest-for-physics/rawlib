@@ -32,7 +32,7 @@ clang-format:
     - echo "**$CI_SERVER_HOST**"
     - cd ${CI_PROJECT_DIR}/pipeline/clang-format/
     - ./clangformattest.sh
-    # We execute only at a schedulled pipeline that defines CRONJOB variable
+    # We execute only at a scheduled pipeline that defines CRONJOB variable
   only:
     variables:
       - $CRONJOB
@@ -43,7 +43,7 @@ Validate Library:
     - python3 pipeline/validateLibrary.py .
 
 Build:
-  type: build
+  stage: build
   script:
     - echo "**${CI_PROJECT_DIR}**"
     - rm -rf ${CI_PROJECT_DIR}/install
@@ -70,27 +70,27 @@ Build:
     expire_in: 1 day
 
 Load REST Libraries:
-  type: loadRESTLibs
+  stage: loadRESTLibs
   script:
     - . ${CI_PROJECT_DIR}/install/thisREST.sh
     - restRoot -b -q
 
 Add Signal Noise:
-  type: process
+  stage: process
   script:
     - . ${CI_PROJECT_DIR}/install/thisREST.sh
     - cd ${CI_PROJECT_DIR}/pipeline/processes/noise
     - python addNoise.py
 
 Common Noise:
-  type: process
+  stage: process
   script:
     - . ${CI_PROJECT_DIR}/install/thisREST.sh
     - cd ${CI_PROJECT_DIR}/pipeline/processes/commonNoise
     - restRoot -b -q commonNoise.C
 
 Veto Analysis:
-  type: process
+  stage: process
   script:
     - . ${CI_PROJECT_DIR}/install/thisREST.sh
     - cd ${CI_PROJECT_DIR}/pipeline/processes/veto
@@ -98,28 +98,28 @@ Veto Analysis:
     - python vetoValidation.py
 
 Signal Shaping:
-  type: process
+  stage: process
   script:
     - . ${CI_PROJECT_DIR}/install/thisREST.sh
     - cd ${CI_PROJECT_DIR}/pipeline/processes/shaping
     - restRoot -b -q shaping.C
 
 Fitting Process:
-  type: process
+  stage: process
   script:
     - . ${CI_PROJECT_DIR}/install/thisREST.sh
     - cd ${CI_PROJECT_DIR}/pipeline/processes/fit
     - restRoot -b -q fit.C
 
 General Fit Process:
-  type: process
+  stage: process
   script:
     - . ${CI_PROJECT_DIR}/install/thisREST.sh
     - cd ${CI_PROJECT_DIR}/pipeline/processes/fit
     - restRoot -b -q GeneralFit.C
 
 Analysis Process:
-  type: process
+  stage: process
   script:
     - . ${CI_PROJECT_DIR}/install/thisREST.sh
     - cd ${CI_PROJECT_DIR}/pipeline/processes/analysis
@@ -127,7 +127,7 @@ Analysis Process:
     - restRoot -b -q validate.C
 
 Dream Data:
-  type: externalPcs
+  stage: externalPcs
   script:
     - . ${CI_PROJECT_DIR}/install/thisREST.sh
     - cd ${CI_PROJECT_DIR}/pipeline/external/dream
