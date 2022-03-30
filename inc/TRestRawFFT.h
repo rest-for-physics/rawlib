@@ -18,12 +18,11 @@
 #ifndef RestCore_TRestRawFFT
 #define RestCore_TRestRawFFT
 
-#include <iostream>
-
 #include <TArrayD.h>
 #include <TObject.h>
-
 #include <TRestRawSignal.h>
+
+#include <iostream>
 
 class TRestRawFFT : public TObject {
    protected:

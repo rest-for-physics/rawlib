@@ -58,7 +58,8 @@
 ///
 
 #include "TRestRawAFTERToSignalProcess.h"
-#include <bitset> 
+
+#include <bitset>
 
 #include "TTimeStamp.h"
 #ifdef WIN32
@@ -67,6 +68,8 @@
 #include <arpa/inet.h>
 #endif
 #include "mygblink.h"
+
+using namespace std;
 
 ClassImp(TRestRawAFTERToSignalProcess);
 
@@ -120,7 +123,7 @@ void TRestRawAFTERToSignalProcess::InitProcess() {
     // The binary starts here
     char runUid[21], initTime[21];
     fread(runUid, 1, 20, fInputBinFile);
-    runUid[20]='\0';
+    runUid[20] = '\0';
     sprintf(initTime, "%s", runUid);
     printf("File UID is %s \n", initTime);
     totalBytesReaded = sizeof(runUid);
@@ -154,14 +157,14 @@ TRestEvent* TRestRawAFTERToSignalProcess::ProcessEvent(TRestEvent* evInput) {
 
     head.eventSize = ntohl(head.eventSize);
     head.eventNumb = ntohl(head.eventNumb);
-    
+
     payload = head.eventSize;
     frameBits = sizeof(head);
 
-        debug << "Event number from header --> 0x"<< std::hex<< head.eventNumb<<std::dec << endl;
-        debug << " event header size " << sizeof(head) << endl;
-        debug << " total rawdata size 0x" << std::hex<< head.eventSize<< std::dec << endl;
-        debug << "Payload " << payload << endl;
+    debug << "Event number from header --> 0x" << std::hex << head.eventNumb << std::dec << endl;
+    debug << " event header size " << sizeof(head) << endl;
+    debug << " total rawdata size 0x" << std::hex << head.eventSize << std::dec << endl;
+    debug << "Payload " << payload << endl;
 
     fSignalEvent->SetID(head.eventNumb);
 
@@ -190,7 +193,7 @@ TRestEvent* TRestRawAFTERToSignalProcess::ProcessEvent(TRestEvent* evInput) {
         {
             th = ntohs(pHeader.ts_h);
             tl = ntohs(pHeader.ts_l);
-            eventTime = th <<16 | tl;  // built time from MSB and LSB
+            eventTime = th << 16 | tl;  // built time from MSB and LSB
 
             if (eventTime > prevTime)
                 deltaTime = eventTime - prevTime;
@@ -208,43 +211,46 @@ TRestEvent* TRestRawAFTERToSignalProcess::ProcessEvent(TRestEvent* evInput) {
             debug << "Timestamp: " << eventTime << endl;
         }
 
-            debug << "******Event data packet header:******" << endl;
+        debug << "******Event data packet header:******" << endl;
 
-            debug << "Size " << ntohs(pHeader.size) << endl;
+        debug << "Size " << ntohs(pHeader.size) << endl;
 
-            debug << "Event data packet header: " << endl;
-            debug << std::hex<<"Size 0x" << ntohs(pHeader.size) << endl;
+        debug << "Event data packet header: " << endl;
+        debug << std::hex << "Size 0x" << ntohs(pHeader.size) << endl;
 #ifdef NEW_DAQ_T2K_2_X
-            debug <<"DCC 0x" << ntohs(pHeader.dcc) << endl;
+        debug << "DCC 0x" << ntohs(pHeader.dcc) << endl;
 #endif
-            debug <<"Hdr word 0x" << ntohs(pHeader.hdr) << endl;
-            debug <<"Args 0x" << ntohs(pHeader.args) << endl;
-            debug <<"TS_H 0x" << ntohs(pHeader.ts_h) << endl;
-            debug <<"TS_L 0x" << ntohs(pHeader.ts_l) << endl;
-            debug <<"Ecnt 0x" << ntohs(pHeader.ecnt) << endl;
-            debug <<"Scnt 0x" << ntohs(pHeader.scnt) <<std::dec<< endl;
+        debug << "Hdr word 0x" << ntohs(pHeader.hdr) << endl;
+        debug << "Args 0x" << ntohs(pHeader.args) << endl;
+        debug << "TS_H 0x" << ntohs(pHeader.ts_h) << endl;
+        debug << "TS_L 0x" << ntohs(pHeader.ts_l) << endl;
+        debug << "Ecnt 0x" << ntohs(pHeader.ecnt) << endl;
+        debug << "Scnt 0x" << ntohs(pHeader.scnt) << std::dec << endl;
 
 #ifdef NEW_DAQ_T2K_2_X
-        debug << "RawDCC Head 0x" <<std::hex << ntohs(pHeader.dcc)<<std::dec << " Version " << GET_EVENT_TYPE(ntohs(pHeader.dcc));
+        debug << "RawDCC Head 0x" << std::hex << ntohs(pHeader.dcc) << std::dec << " Version "
+              << GET_EVENT_TYPE(ntohs(pHeader.dcc));
         debug << " Flag " << ((ntohs(pHeader.dcc) & 0x3000) >> 12);
         debug << " RT " << ((ntohs(pHeader.dcc) & 0x0C00) >> 10) << " DCCInd "
-                 << ((ntohs(pHeader.dcc) & 0x03F0) >> 4);
+              << ((ntohs(pHeader.dcc) & 0x03F0) >> 4);
         debug << " FEMInd " << (ntohs(pHeader.dcc) & 0x000F) << endl;
 
         debug << "FEM0Ind " << ntohs(pHeader.hdr) << " Type " << ((ntohs(pHeader.hdr) & 0xF000) >> 12);
         debug << " L " << ((ntohs(pHeader.hdr) & 0x0800) >> 11);
         debug << " U " << ((ntohs(pHeader.hdr) & 0x0800) >> 10) << " FECFlags "
-                 << ((ntohs(pHeader.hdr) & 0x03F0) >> 4);
+              << ((ntohs(pHeader.hdr) & 0x03F0) >> 4);
         debug << " Index " << (ntohs(pHeader.hdr) & 0x000F) << endl;
 
-        debug << "RawFEM 0x"<<std::hex << ntohs(pHeader.args)<<std::dec << " M " << ((ntohs(pHeader.args) & 0x8000) >> 15);
+        debug << "RawFEM 0x" << std::hex << ntohs(pHeader.args) << std::dec << " M "
+              << ((ntohs(pHeader.args) & 0x8000) >> 15);
         debug << " N " << ((ntohs(pHeader.args) & 0x4000) >> 14) << " Zero "
-                 << ((ntohs(pHeader.args) & 0x1000) >> 13);
-        debug << " Arg2 " << GET_RB_ARG2(ntohs(pHeader.args)) << " Arg2 "
-                 << GET_RB_ARG1(ntohs(pHeader.args)) << endl;
+              << ((ntohs(pHeader.args) & 0x1000) >> 13);
+        debug << " Arg2 " << GET_RB_ARG2(ntohs(pHeader.args)) << " Arg2 " << GET_RB_ARG1(ntohs(pHeader.args))
+              << endl;
         debug << "TimeStampH " << ntohs(pHeader.ts_h) << endl;
         debug << "TimeStampL " << ntohs(pHeader.ts_l) << endl;
-        debug << "RawEvType 0x"<<std::hex << ntohs(pHeader.ecnt)<<std::dec << " EvTy " << GET_EVENT_TYPE(ntohs(pHeader.ecnt));
+        debug << "RawEvType 0x" << std::hex << ntohs(pHeader.ecnt) << std::dec << " EvTy "
+              << GET_EVENT_TYPE(ntohs(pHeader.ecnt));
         debug << " EventCount " << GET_EVENT_COUNT(ntohs(pHeader.ecnt)) << endl;
         debug << "Samples " << ntohs(pHeader.scnt) << endl;
 #endif
@@ -293,8 +299,8 @@ TRestEvent* TRestRawAFTERToSignalProcess::ProcessEvent(TRestEvent* evInput) {
             frameBits += sizeof(dat);
             data = ntohs(dat);
 
-              std::bitset<16> bs(data);
-              debug<<bs<<endl;
+            std::bitset<16> bs(data);
+            debug << bs << endl;
 
             if (((data & 0xFE00) >> 9) == 8) {
                 timeBin = GET_CELL_INDEX(data);
@@ -317,14 +323,14 @@ TRestEvent* TRestRawAFTERToSignalProcess::ProcessEvent(TRestEvent* evInput) {
         frameBits += sizeof(DataPacketEnd);
 
         debug << "Read "
-             << sampleCountRead * sizeof(uint16_t) + sizeof(DataPacketHeader) +
-                sizeof(DataPacketEnd) + sampleCountRead % 2 * sizeof(uint16_t)
-             << " vs HeadSize " << ntohs(pHeader.size) << " Diff "
-             << ntohs(pHeader.size) - (sampleCountRead + sizeof(DataPacketHeader) +
-                sizeof(DataPacketEnd) + sampleCountRead % 2)
-             << endl;
-            debug << "Trailer_H " << ntohs(pEnd.crc1) << " Trailer_L " << ntohs(pEnd.crc2) << endl;
-            debug << "Trailer " << eventTime << "\n" << endl;
+              << sampleCountRead * sizeof(uint16_t) + sizeof(DataPacketHeader) + sizeof(DataPacketEnd) +
+                     sampleCountRead % 2 * sizeof(uint16_t)
+              << " vs HeadSize " << ntohs(pHeader.size) << " Diff "
+              << ntohs(pHeader.size) - (sampleCountRead + sizeof(DataPacketHeader) + sizeof(DataPacketEnd) +
+                                        sampleCountRead % 2)
+              << endl;
+        debug << "Trailer_H " << ntohs(pEnd.crc1) << " Trailer_L " << ntohs(pEnd.crc2) << endl;
+        debug << "Trailer " << eventTime << "\n" << endl;
 
     }  // end while
     totalBytesReaded += frameBits;

@@ -57,9 +57,10 @@
 /// <hr>
 ///
 
+#include "TRestRawSignalEvent.h"
+
 #include <TMath.h>
 
-#include "TRestRawSignalEvent.h"
 #include "TRestStringHelper.h"
 using namespace std;
 
@@ -87,7 +88,7 @@ void TRestRawSignalEvent::Initialize() {
     fMaxTime = -1E10;
 }
 
-void TRestRawSignalEvent::AddSignal(TRestRawSignal &s) {
+void TRestRawSignalEvent::AddSignal(TRestRawSignal& s) {
     if (signalIDExists(s.GetSignalID())) {
         cout << "Warning. Signal ID : " << s.GetSignalID()
              << " already exists. Signal will not be added to signal event" << endl;
@@ -714,7 +715,7 @@ return pad;
 }
 
 ///////////////////////////////////////////////
-/// \brief This method draws selected signal by ID, with baseline range and 
+/// \brief This method draws selected signal by ID, with baseline range and
 /// points over threshold highlighted.
 ///
 /// In order to compute points over threshold the following parameters should
@@ -749,15 +750,15 @@ TPad* TRestRawSignalEvent::DrawSignal(Int_t signal, TString option) {
         cout << "Empty event " << endl;
         return NULL;
     }
-    
+
     vector<TString> optList = Vector_cast<string, TString>(TRestTools::GetOptions((string)option));
-    
+
     bool ThresCheck = false;
     bool BLCheck = false;
 
     double signalTh = 0, pointTh = 0, nOver = 0;
     int baseLineRangeInit = 0, baseLineRangeEnd = 0;
-    
+
     for (int j = 0; j < optList.size(); j++) {
         string str = (string)optList[j];
 
@@ -792,9 +793,7 @@ TPad* TRestRawSignalEvent::DrawSignal(Int_t signal, TString option) {
             BLCheck = true;
         }
     }
-    
-    
-    
+
     fPad = new TPad(this->GetName(), " ", 0, 0, 1, 1);
     fPad->Draw();
     fPad->cd();
@@ -805,8 +804,7 @@ TPad* TRestRawSignalEvent::DrawSignal(Int_t signal, TString option) {
     sgnl->CalculateBaseLine(baseLineRangeInit, baseLineRangeEnd);
     sgnl->InitializePointsOverThreshold(TVector2(pointTh, signalTh), nOver);
 
-    info << "Drawing signal. Event ID : " << this->GetID() << " Signal ID : " << sgnl->GetID()
-         << endl;
+    info << "Drawing signal. Event ID : " << this->GetID() << " Signal ID : " << sgnl->GetID() << endl;
 
     for (int n = 0; n < sgnl->GetNumberOfPoints(); n++) gr->SetPoint(n, n, sgnl->GetData(n));
 
@@ -815,8 +813,8 @@ TPad* TRestRawSignalEvent::DrawSignal(Int_t signal, TString option) {
     TGraph* gr2 = new TGraph();
 
     gr2->SetLineWidth(2);
-    gr2->SetLineColor(2); // Red
-    
+    gr2->SetLineColor(2);  // Red
+
     for (int n = baseLineRangeInit; n < baseLineRangeEnd; n++)
         gr2->SetPoint(n - baseLineRangeInit, n, sgnl->GetData(n));
 
@@ -841,11 +839,11 @@ TPad* TRestRawSignalEvent::DrawSignal(Int_t signal, TString option) {
             point = 0;
             gr3[nGraphs] = new TGraph();
             gr3[nGraphs]->SetLineWidth(2);
-            gr3[nGraphs]->SetLineColor(3); // Green
+            gr3[nGraphs]->SetLineColor(3);  // Green
         }
     }
 
     if (nPoints > 0) gr3[nGraphs]->Draw("CP");
 
     return fPad;
- }
+}

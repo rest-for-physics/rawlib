@@ -62,6 +62,7 @@
 #include "TRestRawUSTCToSignalProcess.h"
 using namespace std;
 #include <bitset>
+
 #include "TTimeStamp.h"
 
 ClassImp(TRestRawUSTCToSignalProcess);

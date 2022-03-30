@@ -23,12 +23,12 @@
 #ifndef RestCore_TRestRawSignal
 #define RestCore_TRestRawSignal
 
-#include <iostream>
-
 #include <TGraph.h>
 #include <TObject.h>
 #include <TString.h>
 #include <TVector2.h>
+
+#include <iostream>
 
 //! It defines a Short_t array with a physical parameter that evolves in time
 //! using a fixed time bin.
@@ -52,7 +52,7 @@ class TRestRawSignal : public TObject {
     /// A TGraph pointer used to store the TRestRawSignal drawing
     TGraph* fGraph;  //!
 
-    /// A vector containing the index of points that are identified over
+    /// A std::vector containing the index of points that are identified over
     /// threshold.
     std::vector<Int_t> fPointsOverThreshold;  //!
 
@@ -89,7 +89,7 @@ class TRestRawSignal : public TObject {
     /// Returns the actual number of points, or size of the signal
     Int_t GetNumberOfPoints() { return fSignalData.size(); }
 
-    /// Returns a vector containing the indexes of data points over threshold
+    /// Returns a std::vector containing the indexes of data points over threshold
     std::vector<Int_t> GetPointsOverThreshold() { return fPointsOverThreshold; }
 
     /// Returns the maximum value found in the data points. It includes baseline
