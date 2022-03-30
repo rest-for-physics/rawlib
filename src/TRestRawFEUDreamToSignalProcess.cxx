@@ -183,7 +183,6 @@ TRestEvent* TRestRawFEUDreamToSignalProcess::ProcessEvent(TRestEvent* evInput) {
     return nullptr;  // can't read data
 }
 
-
 //			Definition of decoding methods
 bool TRestRawFEUDreamToSignalProcess::ReadEvent(FeuReadOut& Feu) {
     bool badreadfg = false;
@@ -561,7 +560,7 @@ bool TRestRawFEUDreamToSignalProcess::ReadFeuTrailer(FeuReadOut& Feu) {
         if (Feu.current_data.is_final_trailer()) {
             if (Feu.channelN != 0) {
                 bad_event = true;
-                ferr << "TRestRawFEUDreamToSignalProcess::ReadFeuTrailer: channel number not nullptr in "
+                ferr << "TRestRawFEUDreamToSignalProcess::ReadFeuTrailer: channel number not NULL in "
                         "trailer, "
                         "Feu.channelN "
                      << Feu.channelN << endl;

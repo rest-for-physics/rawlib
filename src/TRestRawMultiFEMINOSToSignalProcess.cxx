@@ -96,7 +96,7 @@
 #define PFX_END_OF_BUILT_EVENT 0x0008    // End of built event
 #define PFX_EVPERIOD_HSTAT_BINS 0x0007   // Inter Event Time statistics and histogram
 #define PFX_SOBE_SIZE 0x0006             // Start of built event + Size
-#define PFX_NULL_CONTENT 0x0000          // nullptr content
+#define PFX_NULL_CONTENT 0x0000          // NULL content
 //
 // Prefix Codes for 14-bit data content
 //
