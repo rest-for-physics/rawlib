@@ -8,17 +8,17 @@ namespace fs = std::filesystem;
 
 using namespace std;
 
-#define FILES_PATH fs::path(__FILE__).parent_path().parent_path() / "files"
-const auto TRestRawSignalShapingProcessRml = FILES_PATH / "TRestRawSignalShapingProcess.rml";
+const auto filesPath = fs::path(__FILE__).parent_path().parent_path() / "files";
+const auto restRawSignalShapingProcessRml = filesPath / "TRestRawSignalShapingProcess.rml";
 
 TEST(TRestRawSignalShapingProcess, TestFiles) {
-    cout << "Test files path: " << FILES_PATH << endl;
+    cout << "Test files path: " << filesPath << endl;
 
     // Check dir exists and is a directory
-    EXPECT_TRUE(fs::is_directory(FILES_PATH));
+    EXPECT_TRUE(fs::is_directory(filesPath));
     // Check it's not empty
-    EXPECT_TRUE(!fs::is_empty(FILES_PATH));
-    EXPECT_TRUE(fs::exists(TRestRawSignalShapingProcessRml));
+    EXPECT_TRUE(!fs::is_empty(filesPath));
+    EXPECT_TRUE(fs::exists(restRawSignalShapingProcessRml));
 }
 
 TEST(TRestRawSignalShapingProcess, Default) {
@@ -27,7 +27,7 @@ TEST(TRestRawSignalShapingProcess, Default) {
 }
 
 TEST(TRestRawSignalShapingProcess, FromRml) {
-    TRestRawSignalShapingProcess rawSignalShapingProcess((char*)TRestRawSignalShapingProcessRml.c_str());
+    TRestRawSignalShapingProcess rawSignalShapingProcess((char*)restRawSignalShapingProcessRml.c_str());
 
     rawSignalShapingProcess.PrintMetadata();
 }
