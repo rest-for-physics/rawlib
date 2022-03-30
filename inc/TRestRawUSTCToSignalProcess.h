@@ -23,6 +23,8 @@
 #ifndef RestCore_TRestRawUSTCToSignalProcess
 #define RestCore_TRestRawUSTCToSignalProcess
 
+#include <map>
+
 #include "TRestRawToSignalProcess.h"
 
 //#define V3_Readout_Format_Long
