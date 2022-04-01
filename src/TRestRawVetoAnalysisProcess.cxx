@@ -76,11 +76,10 @@
 /// 
 /// ### Veto Noise Reduction
 ///
-/// The noise signals in the veto data is removed by combining TRestSignal's GetBaseLineCorrected() and GetPointsOverThreshold() methods. This can be controlled by defining following parameters in the RML file:
-///
-/// SmoothingWindow: sets the time window used for the smoothing filter that is used for the baseline correction. Standard value is "75".
-///
+/// The noise signals in the veto data is removed with the GetPointsOverThreshold() method. This can be controlled by defining following parameter in the RML file:
 /// PointsOverThresholdPars: sets the parameters of the PointsOverThreshold() method. Standard values are "1.5, 1.5, 4".
+/// Signals that are identified as noise get the amplitude 0 assigned.
+/// It is advised to run the TRestRawBaseLineCorrectionProcess before on the veto signals.
 ///
 /// ### Methods to retrieve metadata
 ///
@@ -227,7 +226,6 @@ TRestEvent* TRestRawVetoAnalysisProcess::ProcessEvent(TRestEvent* evInput) {
     Int_t VetoInTimeWindow = 0;
     Int_t NVetoInTimeWindow = 0;
 
-    // fSignalEvent->SetBaseLineRange(fBaseLineRange); // this method already subtracts the baseline!
     fSignalEvent->SetRange(fRange);
 
     VetoMaxPeakAmplitude_map.clear();
@@ -246,34 +244,28 @@ TRestEvent* TRestRawVetoAnalysisProcess::ProcessEvent(TRestEvent* evInput) {
             if (fSignalEvent->GetSignalIndex(fVetoSignalId[i]) != -1) {
                 // We extract the parameters from the veto signal
                 TRestRawSignal* sgnl = fSignalEvent->GetSignalById(fVetoSignalId[i]);
-				// Correct signal baseline
-				TRestRawSignal* sgnl2 = new TRestRawSignal();
-				sgnl->GetBaseLineCorrected(sgnl2,fSmoothingWindow);
-				sgnl2->SetID(fVetoSignalId[i]);
-				sgnl2->CalculateBaseLine(fBaseLineRange.X(),fBaseLineRange.Y(),"ROBUST");
 				// Deal with noise
-				sgnl2->InitializePointsOverThreshold(TVector2(fPointThreshold,fSignalThreshold),fPointsOverThreshold);
-                // cout << "ID: " << fVetoSignalId[i] << " Amp: " <<
-                // sgnl->GetMaxPeakValue() << endl;
-
+				sgnl->CalculateBaseLine(fBaseLineRange.X(),fBaseLineRange.Y(),"ROBUST");
+				sgnl->InitializePointsOverThreshold(TVector2(fPointThreshold,fSignalThreshold),fPointsOverThreshold);
+                
                 // Save two maps with (veto panel ID, max amplitude) and (veto panel ID,
                 // peak time)
-                if (sgnl2->GetPointsOverThreshold().size() >=fPointsOverThreshold) { // signal is not noise
-					VetoMaxPeakAmplitude_map[fVetoSignalId[i]] = sgnl2->GetMaxPeakValue();
+                if (sgnl->GetPointsOverThreshold().size() >=fPointsOverThreshold) { // signal is not noise
+					VetoMaxPeakAmplitude_map[fVetoSignalId[i]] = sgnl->GetMaxPeakValue();
 				} else {
 					VetoMaxPeakAmplitude_map[fVetoSignalId[i]] = 0; // signal is noise
 				}
-                VetoPeakTime_map[fVetoSignalId[i]] = sgnl2->GetMaxPeakBin();
+                VetoPeakTime_map[fVetoSignalId[i]] = sgnl->GetMaxPeakBin();
                 // We remove the signal from the event
                 fSignalEvent->RemoveSignalWithId(fVetoSignalId[i]);
 
                 // check if signal is above threshold
-                if (sgnl2->GetMaxPeakValue() > fThreshold) {
+                if (sgnl->GetMaxPeakValue() > fThreshold) {
                     VetoAboveThreshold = 1;
                     NVetoAboveThreshold += 1;
                 }
                 // check if signal is in time window
-                if (sgnl2->GetMaxPeakBin() > fTimeWindow[0] && sgnl2->GetMaxPeakBin() < fTimeWindow[1]) {
+                if (sgnl->GetMaxPeakBin() > fTimeWindow[0] && sgnl->GetMaxPeakBin() < fTimeWindow[1]) {
                     VetoInTimeWindow = 1;
                     NVetoInTimeWindow += 1;
                 }
@@ -313,31 +305,27 @@ TRestEvent* TRestRawVetoAnalysisProcess::ProcessEvent(TRestEvent* evInput) {
                 if (fSignalEvent->GetSignalIndex(groupIds[j]) != -1) {
 					// We extract the parameters from the veto signal
                     TRestRawSignal* sgnl = fSignalEvent->GetSignalById(groupIds[j]);
-					// Correct signal baseline
-					TRestRawSignal* sgnl2 = new TRestRawSignal();
-					sgnl->GetBaseLineCorrected(sgnl2,fSmoothingWindow);
-					sgnl2->SetID(groupIds[j]);
-					sgnl2->CalculateBaseLine(fBaseLineRange.X(),fBaseLineRange.Y(),"ROBUST");
-					// Deal with noise
-					sgnl2->InitializePointsOverThreshold(TVector2(fPointThreshold,fSignalThreshold),fPointsOverThreshold);
+			        // Deal with noise
+					sgnl->CalculateBaseLine(fBaseLineRange.X(),fBaseLineRange.Y(),"ROBUST");
+					sgnl->InitializePointsOverThreshold(TVector2(fPointThreshold,fSignalThreshold),fPointsOverThreshold);
                    	// Save two maps with (veto panel ID, max amplitude) and (veto panel
                     // ID, peak time)
-					if (sgnl2->GetPointsOverThreshold().size() >=fPointsOverThreshold) { // signal is not noise
-						VetoMaxPeakAmplitude_map[groupIds[j]] = sgnl2->GetMaxPeakValue();
+					if (sgnl->GetPointsOverThreshold().size() >=fPointsOverThreshold) { // signal is not noise
+						VetoMaxPeakAmplitude_map[groupIds[j]] = sgnl->GetMaxPeakValue();
 					} else {
 						VetoMaxPeakAmplitude_map[groupIds[j]] = 0; // signal is noise
 					}
-					VetoPeakTime_map[groupIds[j]] = sgnl2->GetMaxPeakBin();
+					VetoPeakTime_map[groupIds[j]] = sgnl->GetMaxPeakBin();
 					// We remove the signal from the event
                     fSignalEvent->RemoveSignalWithId(groupIds[j]);
 
                     // check if signal is above threshold
-                    if (sgnl2->GetMaxPeakValue() > fThreshold) {
+                    if (sgnl->GetMaxPeakValue() > fThreshold) {
                         VetoAboveThreshold = 1;
                         NVetoAboveThreshold += 1;
                     }
                     // check if signal is in time window
-                    if (sgnl2->GetMaxPeakBin() > fTimeWindow[0] && sgnl2->GetMaxPeakBin() < fTimeWindow[1]) {
+                    if (sgnl->GetMaxPeakBin() > fTimeWindow[0] && sgnl->GetMaxPeakBin() < fTimeWindow[1]) {
                         VetoInTimeWindow = 1;
                         NVetoInTimeWindow += 1;
                     }
@@ -398,8 +386,7 @@ void TRestRawVetoAnalysisProcess::InitFromConfigFile() {
         cout << "Error: timeWindow has to consist of two comma-separated values." << endl;
         GetChar();
     }
-  	fSmoothingWindow = StringToInteger(GetParameter("SmoothingWindow","75"));
-	std::vector<double> potpars = StringToElements(GetParameter("PointsOverThresholdPars","1.5,1.5,4"),",");
+  	std::vector<double> potpars = StringToElements(GetParameter("PointsOverThresholdPars","1.5,1.5,4"),",");
 	fPointThreshold = potpars[0];
 	fSignalThreshold = potpars[1];
 	fPointsOverThreshold = (Int_t) potpars[2];
@@ -460,7 +447,7 @@ void TRestRawVetoAnalysisProcess::PrintMetadata() {
     if (fTimeWindow[0] != -1) {
         metadata << "Peak time window: (" << fTimeWindow[0] << ", " << fTimeWindow[1] << ")" << endl;
     }
-    metadata << "Noise reduction: Smoothing window size = " << fSmoothingWindow << " bins; Points over Threshold parameters = (" << fPointThreshold << ", " << fSignalThreshold << ", " << fPointsOverThreshold << ")" << endl;
+    metadata << "Noise reduction: Points over Threshold parameters = (" << fPointThreshold << ", " << fSignalThreshold << ", " << fPointsOverThreshold << ")" << endl;
 	
 	
 	EndPrintProcess();
