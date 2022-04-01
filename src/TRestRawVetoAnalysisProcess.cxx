@@ -382,21 +382,20 @@ TRestEvent* TRestRawVetoAnalysisProcess::ProcessEvent(TRestEvent* evInput) {
     return fSignalEvent;
 }
 
-/// \brief Function that returns the index of a specified veto group within the group name vector and ID vector
-Int_t TRestRawVetoAnalysisProcess::GetGroupIndex(string groupName){
-	auto it = find(fVetoGroupNames.begin(),fVetoGroupNames.end(),groupName);
-	if (it != fVetoGroupNames.end())
-		return it - fVetoGroupNames.begin();
-	return -1;
+/// \brief Function that returns the index of a specified veto group within the group name vector and ID
+/// vector
+Int_t TRestRawVetoAnalysisProcess::GetGroupIndex(string groupName) {
+    auto it = find(fVetoGroupNames.begin(), fVetoGroupNames.end(), groupName);
+    if (it != fVetoGroupNames.end()) return it - fVetoGroupNames.begin();
+    return -1;
 }
 
 /// \brief Function that returns a string of the signal IDs for the specified veto group
-string TRestRawVetoAnalysisProcess::GetGroupIds(string groupName){
-	Int_t index = GetGroupIndex(groupName);
-	if (index != -1)
-		return fVetoGroupIds[index];
-	return std::string("-1");
-}	
+string TRestRawVetoAnalysisProcess::GetGroupIds(string groupName) {
+    Int_t index = GetGroupIndex(groupName);
+    if (index != -1) return fVetoGroupIds[index];
+    return std::string("-1");
+}
 
 ///////////////////////////////////////////////
 /// \brief Function reading input parameters from the RML

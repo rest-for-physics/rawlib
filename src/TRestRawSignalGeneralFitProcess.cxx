@@ -319,4 +319,3 @@ void TRestRawSignalGeneralFitProcess::EndProcess() {
         fFitFunc = nullptr;
     }
 }
-
