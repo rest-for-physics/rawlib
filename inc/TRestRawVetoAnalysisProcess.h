@@ -61,6 +61,9 @@ class TRestRawVetoAnalysisProcess : public TRestEventProcess {
     /// A pointer to the specific TRestRawSignalEvent
     TRestRawSignalEvent* fSignalEvent;  //!
 
+	/// Time window width for smoothing filter for baseline correction in bins
+	Int_t fSmoothingWindow;
+
 	/// PointsOverThreshold() Parameters:
 	Double_t fPointThreshold;
 	Double_t fSignalThreshold; 
