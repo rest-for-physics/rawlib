@@ -38,7 +38,6 @@ struct EventHeader {
     // uint16_t dummy;
 };
 
-
 // ATENTION!!!!!
 // New verison of the DaqT2K (2.x)
 // added 30th July 2012 (JuanAn)

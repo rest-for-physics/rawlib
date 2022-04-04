@@ -23,7 +23,6 @@
 #ifndef RestCore_TRestRawSignalAnalysisProcess
 #define RestCore_TRestRawSignalAnalysisProcess
 
-#include <TH1D.h>
 #include <TRestRawSignalEvent.h>
 
 #include "TRestEventProcess.h"
@@ -33,11 +32,6 @@ class TRestRawSignalAnalysisProcess : public TRestEventProcess {
    private:
     /// A pointer to the specific TRestRawSignalEvent input
     TRestRawSignalEvent* fSignalEvent;  //!
-
-    Double_t fFirstEventTime;             //!
-    vector<Double_t> fPreviousEventTime;  //!
-
-    time_t timeStored;  //!
 
     /// Just a flag to quickly determine if we have to apply the range filter
     Bool_t fRangeEnabled = false;  //!
@@ -62,8 +56,6 @@ class TRestRawSignalAnalysisProcess : public TRestEventProcess {
 
     void Initialize();
 
-    void LoadDefaultConfig();
-
    protected:
     // add here the members of your event process
 
@@ -73,9 +65,6 @@ class TRestRawSignalAnalysisProcess : public TRestEventProcess {
 
     void InitProcess();
     TRestEvent* ProcessEvent(TRestEvent* eventInput);
-    void EndProcess();
-
-    void LoadConfig(std::string cfgFilename, std::string name = "");
 
     void PrintMetadata() {
         BeginPrintProcess();
@@ -93,11 +82,9 @@ class TRestRawSignalAnalysisProcess : public TRestEventProcess {
 
     TString GetProcessName() { return (TString) "rawSignalAnalysis"; }
 
-    TRestRawSignalAnalysisProcess();  // Constructor
-    TRestRawSignalAnalysisProcess(char* cfgFileName);
+    TRestRawSignalAnalysisProcess();   // Constructor
     ~TRestRawSignalAnalysisProcess();  // Destructor
 
     ClassDef(TRestRawSignalAnalysisProcess, 4);
-    // Template for a REST "event process" class inherited from TRestEventProcess
 };
 #endif

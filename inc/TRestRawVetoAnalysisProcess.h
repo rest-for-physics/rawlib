@@ -41,22 +41,22 @@ class TRestRawVetoAnalysisProcess : public TRestEventProcess {
     Int_t fThreshold;
 
     /// Peak time window for cut
-    vector<double> fTimeWindow;
+    std::vector<double> fTimeWindow;
 
     /// Veto signal IDs
-    vector<double> fVetoSignalId;
+    std::vector<double> fVetoSignalId;
 
     /// Veto signal IDs per group
-    vector<string> fVetoGroupIds;
+    std::vector<std::string> fVetoGroupIds;
 
     /// Veto group Names
-    vector<string> fVetoGroupNames;
+    std::vector<std::string> fVetoGroupNames;
 
     /// Peak Time observable names
-    vector<string> fPeakTime;
-    
+    std::vector<std::string> fPeakTime;
+
 	/// Max peak amplitude observable names
-    vector<string> fPeakAmp;
+    std::vector<std::string> fPeakAmp;
 
     /// A pointer to the specific TRestRawSignalEvent
     TRestRawSignalEvent* fSignalEvent;  //!
@@ -98,15 +98,15 @@ class TRestRawVetoAnalysisProcess : public TRestEventProcess {
     }
 
     /// Returns the veto group names and IDs
-    std::pair<vector<string>, vector<string>> GetVetoGroups() {
-        pair<vector<string>, vector<string>> output;
+    std::pair<std::vector<std::string>, std::vector<std::string>> GetVetoGroups() {
+        std::pair<std::vector<std::string>, std::vector<std::string>> output;
         output.first = fVetoGroupNames;
         output.second = fVetoGroupIds;
         return output;
     }
 
     Int_t GetGroupIndex(std::string groupName);
-    string GetGroupIds(std::string groupName);
+    std::string GetGroupIds(std::string groupName);
 
     TRestRawVetoAnalysisProcess();
     TRestRawVetoAnalysisProcess(char* cfgFileName);

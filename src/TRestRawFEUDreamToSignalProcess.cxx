@@ -595,4 +595,3 @@ bool TRestRawFEUDreamToSignalProcess::ReadFeuTrailer(FeuReadOut& Feu) {
     }  // end while
     return false;
 }
-

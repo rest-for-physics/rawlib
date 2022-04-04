@@ -23,9 +23,6 @@
 #ifndef RestDAQ_TRestRawSignalEvent
 #define RestDAQ_TRestRawSignalEvent
 
-#include <iostream>
-#include <string>
-
 #include <TArrayD.h>
 #include <TAxis.h>
 #include <TGraph.h>
@@ -33,6 +30,9 @@
 #include <TObject.h>
 #include <TPad.h>
 #include <TVector2.h>
+
+#include <iostream>
+#include <string>
 
 #include "TRestEvent.h"
 #include "TRestRawSignal.h"
@@ -62,7 +62,7 @@ class TRestRawSignalEvent : public TRestEvent {
     }
 
     // Setters
-    void AddSignal(TRestRawSignal &s);
+    void AddSignal(TRestRawSignal& s);
 
     void RemoveSignalWithId(Int_t sId);
 
@@ -100,10 +100,10 @@ class TRestRawSignalEvent : public TRestEvent {
 
     void PrintSignalIds() {
         for (int n = 0; n < GetNumberOfSignals(); n++) {
-            if (n > 0) cout << " , ";
-            cout << GetSignal(n)->GetSignalID();
+            if (n > 0) std::cout << " , ";
+            std::cout << GetSignal(n)->GetSignalID();
         }
-        cout << endl;
+        std::cout << std::endl;
     }
 
     std::vector<int> GetSignalIds() {
