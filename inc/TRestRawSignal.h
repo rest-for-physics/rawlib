@@ -27,6 +27,7 @@
 #include <TObject.h>
 #include <TString.h>
 #include <TVector2.h>
+#include <string>
 
 #include <iostream>
 
@@ -37,6 +38,8 @@ class TRestRawSignal : public TObject {
     void CalculateThresholdIntegral();
 
     void CalculateBaseLineSigma(Int_t startBin, Int_t endBin);
+	
+    void CalculateBaseLineIQR(Int_t startBin, Int_t endBin);
 
    protected:
     /// An integer value used to attribute a unique identification number to the
@@ -194,15 +197,21 @@ class TRestRawSignal : public TObject {
 
     void GetDifferentialSignal(TRestRawSignal* diffSgnl, Int_t smearPoints);
 
-    void GetSignalSmoothed(TRestRawSignal* smthSignal, Int_t averagingPoints);
-
+    void GetSignalSmoothed(TRestRawSignal* smthSignal, Int_t averagingPoints); 
+    
+	std::vector<Float_t> GetSignalSmoothed(Int_t averagingPoints); 
+	
     void GetWhiteNoiseSignal(TRestRawSignal* noiseSgnl, Double_t noiseLevel = 1.);
 
-    void CalculateBaseLine(Int_t startBin, Int_t endBin);
+    void CalculateBaseLine(Int_t startBin, Int_t endBin, std::string option = "");
+
+	void CalculateBaseLineRobust(Int_t startBin, Int_t endBin);
 
     //   Double_t GetStandardDeviation(Int_t startBin, Int_t endBin);
 
-    void AddOffset(Short_t offset);
+	void GetBaseLineCorrected(TRestRawSignal* smthSignal, Int_t averagingPoints);
+
+	void AddOffset(Short_t offset);
 
     void SignalAddition(TRestRawSignal* inSgnl);
 

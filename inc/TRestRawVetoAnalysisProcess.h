@@ -54,11 +54,17 @@ class TRestRawVetoAnalysisProcess : public TRestEventProcess {
 
     /// Peak Time observable names
     std::vector<std::string> fPeakTime;
-    /// Max peak amplitude observable names
+
+	/// Max peak amplitude observable names
     std::vector<std::string> fPeakAmp;
 
     /// A pointer to the specific TRestRawSignalEvent
     TRestRawSignalEvent* fSignalEvent;  //!
+
+	/// PointsOverThreshold() Parameters:
+	Double_t fPointThreshold;
+	Double_t fSignalThreshold; 
+	Int_t fPointsOverThreshold;
 
     void InitFromConfigFile();
 
