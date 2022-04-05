@@ -77,7 +77,7 @@ class TRestRawFFT : public TObject {
     void WriteFrequencyToTextFile(TString filename);
     void WriteTimeSignalToTextFile(TString filename);
 
-    // Construtor
+    // Constructor
     TRestRawFFT();
     // Destructor
     ~TRestRawFFT();
