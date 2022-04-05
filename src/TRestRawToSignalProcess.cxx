@@ -59,11 +59,13 @@
 #include "TRestRawToSignalProcess.h"
 
 #include <sys/stat.h>
+
 using namespace std;
+
 #include "TTimeStamp.h"
 
 ClassImp(TRestRawToSignalProcess);
-//______________________________________________________________________________
+
 TRestRawToSignalProcess::TRestRawToSignalProcess() { Initialize(); }
 
 TRestRawToSignalProcess::TRestRawToSignalProcess(char* cfgFileName) {
@@ -72,10 +74,9 @@ TRestRawToSignalProcess::TRestRawToSignalProcess(char* cfgFileName) {
     if (LoadConfigFromFile(cfgFileName)) LoadDefaultConfig();
 }
 
-//______________________________________________________________________________
 TRestRawToSignalProcess::~TRestRawToSignalProcess() {
     // TRestRawToSignalProcess destructor
-    if (fSignalEvent) delete fSignalEvent;
+    delete fSignalEvent;
 }
 
 void TRestRawToSignalProcess::LoadConfig(string cfgFilename, string name) {
@@ -85,15 +86,14 @@ void TRestRawToSignalProcess::LoadConfig(string cfgFilename, string name) {
     }
 }
 
-//______________________________________________________________________________
 void TRestRawToSignalProcess::Initialize() {
     SetSectionName(this->ClassName());
     SetLibraryVersion(LIBRARY_VERSION);
 
-    if (fSignalEvent) delete fSignalEvent;
+    delete fSignalEvent;
     fSignalEvent = new TRestRawSignalEvent();
 
-    fInputBinFile = NULL;
+    fInputBinFile = nullptr;
 
     fMinPoints = 512;
 
@@ -140,7 +140,6 @@ void TRestRawToSignalProcess::LoadDefaultConfig() {
     fMinPoints = 512;
 }
 
-//______________________________________________________________________________
 void TRestRawToSignalProcess::EndProcess() {
     // close binary file??? Already done
 }
@@ -177,7 +176,7 @@ Bool_t TRestRawToSignalProcess::AddInputFile(string file) {
 
     FILE* f = fopen(file.c_str(), "rb");
 
-    if (f == NULL) {
+    if (f == nullptr) {
         warning << "REST WARNING. Input file for " << this->ClassName() << " does not exist!" << endl;
         warning << "File : " << file << endl;
         return false;
@@ -197,7 +196,7 @@ Bool_t TRestRawToSignalProcess::AddInputFile(string file) {
 
 Bool_t TRestRawToSignalProcess::ResetEntry() {
     for (auto f : fInputFiles) {
-        if (f != NULL) {
+        if (f != nullptr) {
             if (fseek(f, 0, 0) != 0) return false;
         }
     }

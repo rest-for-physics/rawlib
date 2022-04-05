@@ -29,11 +29,11 @@
 #include <TMultiGraph.h>
 #include <TObject.h>
 #include <TPad.h>
+#include <TRestEvent.h>
 #include <TVector2.h>
 
 #include <iostream>
 
-#include "TRestEvent.h"
 #include "TRestRawSignal.h"
 
 //! An event container for time rawdata signals with fixed length
@@ -113,7 +113,7 @@ class TRestRawSignalEvent : public TRestEvent {
 
     TRestRawSignal* GetSignalById(Int_t sid) {
         Int_t index = GetSignalIndex(sid);
-        if (index < 0) return NULL;
+        if (index < 0) return nullptr;
 
         return &fSignal[index];
     }
@@ -128,7 +128,7 @@ class TRestRawSignalEvent : public TRestEvent {
 
     Double_t GetBaseLineAverage();
     Double_t GetBaseLineSigmaAverage();
-    //   void SubstractBaselines();
+    //   void SubtractBaselines();
     Double_t GetIntegral();
     Double_t GetThresholdIntegral();
 
@@ -149,11 +149,11 @@ class TRestRawSignalEvent : public TRestEvent {
     TPad* DrawEvent(TString option = "");
     TPad* DrawSignal(Int_t signal, TString option = "");
 
-    // Construtor
+    // Constructor
     TRestRawSignalEvent();
     // Destructor
     virtual ~TRestRawSignalEvent();
 
-    ClassDef(TRestRawSignalEvent, 1);  // REST event superclass
+    ClassDef(TRestRawSignalEvent, 1);
 };
 #endif

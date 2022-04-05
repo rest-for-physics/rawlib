@@ -60,7 +60,7 @@ class TRestRawSignalAddNoiseProcess : public TRestEventProcess {
         EndPrintProcess();
     }
 
-    TRestMetadata* GetProcessMetadata() { return NULL; }
+    TRestMetadata* GetProcessMetadata() { return nullptr; }
 
     TString GetProcessName() { return (TString) "rawSignalAddNoise"; }
 
@@ -70,7 +70,6 @@ class TRestRawSignalAddNoiseProcess : public TRestEventProcess {
     // Destructor
     ~TRestRawSignalAddNoiseProcess();
 
-    ClassDef(TRestRawSignalAddNoiseProcess, 1);  // Template for a REST "event process" class inherited from
-                                                 // TRestEventProcess
+    ClassDef(TRestRawSignalAddNoiseProcess, 1);
 };
 #endif
