@@ -81,6 +81,7 @@
 /// <hr>
 ///
 #include "TRestRawSignalShapingProcess.h"
+
 using namespace std;
 
 #include <TFile.h>
@@ -132,7 +133,7 @@ void TRestRawSignalShapingProcess::Initialize() {
     SetSectionName(this->ClassName());
     SetLibraryVersion(LIBRARY_VERSION);
 
-    fInputSignalEvent = NULL;
+    fInputSignalEvent = nullptr;
     fOutputSignalEvent = new TRestRawSignalEvent();
 }
 
@@ -200,7 +201,7 @@ void TRestRawSignalShapingProcess::InitProcess() {
 TRestEvent* TRestRawSignalShapingProcess::ProcessEvent(TRestEvent* evInput) {
     fInputSignalEvent = (TRestRawSignalEvent*)evInput;
 
-    if (fInputSignalEvent->GetNumberOfSignals() <= 0) return NULL;
+    if (fInputSignalEvent->GetNumberOfSignals() <= 0) return nullptr;
 
     double* rsp;
     Int_t Nr = 0;
@@ -236,7 +237,7 @@ TRestEvent* TRestRawSignalShapingProcess::ProcessEvent(TRestEvent* evInput) {
     } else {
         if (GetVerboseLevel() >= REST_Warning)
             cout << "REST WARNING. Shaping type : " << fShapingType << " is not defined!!" << endl;
-        return NULL;
+        return nullptr;
     }
 
     // Making sure that rsp integral is 1, and applying the gain

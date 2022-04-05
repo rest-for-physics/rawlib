@@ -62,16 +62,16 @@
 #include <TMath.h>
 
 #include "TRestStringHelper.h"
+
 using namespace std;
 
 ClassImp(TRestRawSignalEvent);
-//______________________________________________________________________________
+
 TRestRawSignalEvent::TRestRawSignalEvent() {
     // TRestRawSignalEvent default constructor
     Initialize();
 }
 
-//______________________________________________________________________________
 TRestRawSignalEvent::~TRestRawSignalEvent() {
     // TRestRawSignalEvent destructor
 }
@@ -79,9 +79,9 @@ TRestRawSignalEvent::~TRestRawSignalEvent() {
 void TRestRawSignalEvent::Initialize() {
     TRestEvent::Initialize();
     fSignal.clear();
-    fPad = NULL;
-    mg = NULL;
-    gr = NULL;
+    fPad = nullptr;
+    mg = nullptr;
+    gr = nullptr;
     fMinValue = 1E10;
     fMaxValue = -1E10;
     fMinTime = 1E10;
@@ -136,7 +136,7 @@ Double_t TRestRawSignalEvent::GetThresholdIntegral() {
 }
 
 TRestRawSignal* TRestRawSignalEvent::GetMaxSignal() {
-    if (GetNumberOfSignals() <= 0) return NULL;
+    if (GetNumberOfSignals() <= 0) return nullptr;
 
     Double_t max = fSignal[0].GetIntegral();
 
@@ -398,18 +398,18 @@ Double_t TRestRawSignalEvent::GetMaxTime() {
 TPad* TRestRawSignalEvent::DrawEvent(TString option) {
     int nSignals = this->GetNumberOfSignals();
 
-    if (fPad != NULL) {
-        for (int n = 0; n < nSignals; n++) {
-            delete fSignal[n].fGraph;
-            fSignal[n].fGraph = NULL;
+    if (fPad != nullptr) {
+        for (auto& signal : fSignal) {
+            delete signal.fGraph;
+            signal.fGraph = nullptr;
         }
         delete fPad;
-        fPad = NULL;
+        fPad = nullptr;
     }
 
     if (nSignals == 0) {
         cout << "Empty event " << endl;
-        return NULL;
+        return nullptr;
     }
 
     fMinValue = 1E10;
@@ -501,7 +501,7 @@ TPad* TRestRawSignalEvent::DrawEvent(TString option) {
 
     ///// No specific signal selection ////
     if ((optList.size() == 0) || (isANumber((string)optList[0]) == false)) {
-        if (mg != NULL) delete mg;
+        delete mg;
         sprintf(title, "Event ID %d", this->GetID());
         mg = new TMultiGraph();
 
@@ -590,7 +590,7 @@ TPad* TRestRawSignalEvent::DrawEvent(TString option) {
                 return fPad;
             }
 
-            if (mg != NULL) delete mg;
+            delete mg;
             mg = new TMultiGraph();
             sprintf(title, "Event ID %d", this->GetID());
 
@@ -694,18 +694,18 @@ TPad* TRestRawSignalEvent::DrawEvent(TString option) {
 TPad* TRestRawSignalEvent::DrawSignal(Int_t signal, TString option) {
     int nSignals = this->GetNumberOfSignals();
 
-    if (fPad != NULL) {
+    if (fPad != nullptr) {
         for (int n = 0; n < nSignals; n++) {
             delete fSignal[n].fGraph;
-            fSignal[n].fGraph = NULL;
+            fSignal[n].fGraph = nullptr;
         }
         delete fPad;
-        fPad = NULL;
+        fPad = nullptr;
     }
 
     if (nSignals == 0) {
         cout << "Empty event " << endl;
-        return NULL;
+        return nullptr;
     }
 
     vector<TString> optList = Vector_cast<string, TString>(TRestTools::GetOptions((string)option));
