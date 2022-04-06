@@ -395,7 +395,7 @@ Double_t TRestRawSignalEvent::GetMaxTime() {
 /// DrawEvent("ids[800,900]:printIDs");
 /// \endcode
 ///
-TPad* TRestRawSignalEvent::DrawEvent(TString option) {
+TPad* TRestRawSignalEvent::DrawEvent(const TString& option) {
     int nSignals = this->GetNumberOfSignals();
 
     if (fPad != nullptr) {
