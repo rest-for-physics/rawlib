@@ -26,6 +26,10 @@
 /// DOCUMENTATION TO BE WRITTEN (main description, figures, methods, data
 /// members)
 ///
+/// \htmlonly <style>div.image img[src="rawsignals.png"]{width:750px;}</style> \endhtmlonly
+///
+/// ![Raw event signals produced with DrawEvent method](rawsignals.png)
+///
 /// <hr>
 ///
 /// \warning **⚠ REST is under continous development.** This
