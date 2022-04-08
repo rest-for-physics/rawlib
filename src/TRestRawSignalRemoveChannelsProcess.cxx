@@ -72,6 +72,7 @@
 /// <hr>
 ///
 #include "TRestRawSignalRemoveChannelsProcess.h"
+
 using namespace std;
 
 ClassImp(TRestRawSignalRemoveChannelsProcess);
@@ -122,7 +123,7 @@ void TRestRawSignalRemoveChannelsProcess::Initialize() {
     SetSectionName(this->ClassName());
     SetLibraryVersion(LIBRARY_VERSION);
 
-    fInputSignalEvent = NULL;
+    fInputSignalEvent = nullptr;
     fOutputSignalEvent = new TRestRawSignalEvent();
 }
 

@@ -52,14 +52,14 @@ class TRestRawDAQMetadata : public TRestMetadata {
     void PrintRunScript();
     void PrintPedScript();
 
-    // Construtor
+    // Constructor
     TRestRawDAQMetadata();
     TRestRawDAQMetadata(char* cfgFileName);
     // Destructor
     virtual ~TRestRawDAQMetadata();
 
     void SetScriptsBuffer();
-    void SetParFromPedBuffer();  // Set gain and shapping time from a given buffer
+    void SetParFromPedBuffer();  // Set gain and shaping time from a given buffer
     void SetOutBinFileName(TString fName) { fOutBinFileName = fName; }
 
     UInt_t GetGain() { return fGain; }

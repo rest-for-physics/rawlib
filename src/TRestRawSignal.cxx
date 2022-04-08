@@ -60,6 +60,7 @@
 #include "TRestRawSignal.h"
 
 #include <numeric>
+
 using namespace std;
 
 #include <TF1.h>
@@ -72,7 +73,7 @@ ClassImp(TRestRawSignal);
 /// \brief Default constructor
 ///
 TRestRawSignal::TRestRawSignal() {
-    fGraph = NULL;
+    fGraph = nullptr;
 
     Initialize();
 }
@@ -82,7 +83,7 @@ TRestRawSignal::TRestRawSignal() {
 /// equal to nBins.
 ///
 TRestRawSignal::TRestRawSignal(Int_t nBins) {
-    fGraph = NULL;
+    fGraph = nullptr;
 
     Initialize();
 
@@ -809,9 +810,9 @@ void TRestRawSignal::Print() {
 /// \brief It builds a TGraph object that can be used for drawing.
 ///
 TGraph* TRestRawSignal::GetGraph(Int_t color) {
-    if (fGraph != NULL) {
+    if (fGraph != nullptr) {
         delete fGraph;
-        fGraph = NULL;
+        fGraph = nullptr;
     }
 
     fGraph = new TGraph();

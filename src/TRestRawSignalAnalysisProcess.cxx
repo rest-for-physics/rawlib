@@ -242,6 +242,7 @@
 ///
 
 #include "TRestRawSignalAnalysisProcess.h"
+
 using namespace std;
 
 ClassImp(TRestRawSignalAnalysisProcess);
@@ -264,7 +265,7 @@ void TRestRawSignalAnalysisProcess::Initialize() {
     SetSectionName(this->ClassName());
     SetLibraryVersion(LIBRARY_VERSION);
 
-    fSignalEvent = NULL;
+    fSignalEvent = nullptr;
 }
 
 ///////////////////////////////////////////////
@@ -484,7 +485,7 @@ TRestEvent* TRestRawSignalAnalysisProcess::ProcessEvent(TRestEvent* evInput) {
     }
 
     // If cut condition matches the event will be not registered.
-    if (ApplyCut()) return NULL;
+    if (ApplyCut()) return nullptr;
 
     return fSignalEvent;
 }

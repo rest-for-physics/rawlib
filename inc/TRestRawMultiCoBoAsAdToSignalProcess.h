@@ -33,10 +33,12 @@ struct CoBoDataFrame {
         timeStamp = 0;
         evId = -1;
         asadId = -1;
-        for (int m = 0; m < 272; m++) chHit[m] = kFALSE;
-
-        for (int m = 0; m < 272; m++)
-            for (int l = 0; l < 512; l++) data[m][l] = 0;
+        for (bool& m : chHit) m = kFALSE;
+        for (auto& m : data) {
+            for (int& l : m) {
+                l = 0;
+            }
+        }
     }
     TTimeStamp timeStamp;
     Bool_t chHit[272];
@@ -49,7 +51,9 @@ struct CoBoDataFrame {
 
 struct CoBoHeaderFrame {
     CoBoHeaderFrame() {
-        for (int m = 0; m < 256; m++) frameHeader[m] = 0;
+        for (unsigned char& m : frameHeader) {
+            m = 0;
+        }
         // 4294967295 == -1  --> ends reading
         // 4294967294 == -2  --> just initialized
         eventIdx = (unsigned int)4294967294;
@@ -93,7 +97,7 @@ struct CoBoHeaderFrame {
 class TRestRawMultiCoBoAsAdToSignalProcess : public TRestRawToSignalProcess {
    private:
 #ifndef __CINT__
-    TRestRawSignal sgnl;  //!
+    TRestRawSignal signal;  //!
 
     UChar_t frameDataP[2048];    //!///for partial readout data frame
     UChar_t frameDataF[278528];  //!///for full readout data frame
@@ -138,8 +142,6 @@ class TRestRawMultiCoBoAsAdToSignalProcess : public TRestRawToSignalProcess {
     // Destructor
     ~TRestRawMultiCoBoAsAdToSignalProcess();
 
-    ClassDef(TRestRawMultiCoBoAsAdToSignalProcess,
-             1);  // Template for a REST "event process" class inherited from
-                  // TRestEventProcess
+    ClassDef(TRestRawMultiCoBoAsAdToSignalProcess, 1);
 };
 #endif

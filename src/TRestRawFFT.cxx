@@ -19,15 +19,15 @@
 
 #include <TComplex.h>
 #include <TVirtualFFT.h>
+
 using namespace std;
 
-ClassImp(TRestRawFFT)
-    //______________________________________________________________________________
-    TRestRawFFT::TRestRawFFT() {
+ClassImp(TRestRawFFT);
+
+TRestRawFFT::TRestRawFFT() {
     // TRestRawFFT default constructor
 }
 
-//______________________________________________________________________________
 TRestRawFFT::~TRestRawFFT() {
     // TRestRawFFT destructor
 }

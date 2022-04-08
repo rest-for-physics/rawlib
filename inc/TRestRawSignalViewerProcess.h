@@ -24,9 +24,8 @@
 #define RestCore_TRestRawSignalViewerProcess
 
 #include <TH1D.h>
+#include <TRestEventProcess.h>
 #include <TRestRawSignalEvent.h>
-
-#include "TRestEventProcess.h"
 
 //! A generic viewer REST process to visualize raw signals and
 //! parameters obtained from the anlysisTree on the processes canvas.
@@ -79,7 +78,6 @@ class TRestRawSignalViewerProcess : public TRestEventProcess {
     // Destructor
     ~TRestRawSignalViewerProcess();
 
-    ClassDef(TRestRawSignalViewerProcess, 1);  // Template for a REST "event process" class inherited from
-                                               // TRestEventProcess
+    ClassDef(TRestRawSignalViewerProcess, 1);
 };
 #endif

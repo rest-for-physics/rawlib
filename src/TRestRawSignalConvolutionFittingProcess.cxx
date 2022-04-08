@@ -109,6 +109,7 @@
 ///
 
 #include "TRestRawSignalConvolutionFittingProcess.h"
+
 using namespace std;
 
 ClassImp(TRestRawSignalConvolutionFittingProcess);
@@ -154,7 +155,7 @@ void TRestRawSignalConvolutionFittingProcess::Initialize() {
     SetSectionName(this->ClassName());
     SetLibraryVersion(LIBRARY_VERSION);
 
-    fRawSignalEvent = NULL;
+    fRawSignalEvent = nullptr;
 }
 
 ///////////////////////////////////////////////
@@ -334,7 +335,7 @@ TRestEvent* TRestRawSignalConvolutionFittingProcess::ProcessEvent(TRestEvent* ev
     */
 
     // If cut condition matches the event will be not registered.
-    if (ApplyCut()) return NULL;
+    if (ApplyCut()) return nullptr;
 
     return fRawSignalEvent;
 }

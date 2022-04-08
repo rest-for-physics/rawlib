@@ -55,32 +55,28 @@
 /// <hr>
 ///
 
-// int counter = 0;
-
 #include "TRestRawMultiCoBoAsAdToSignalProcess.h"
 
 #include "TRestDataBase.h"
+
 using namespace std;
+
 #include <bitset>
 
 #include "TTimeStamp.h"
 
-ClassImp(TRestRawMultiCoBoAsAdToSignalProcess)
-    //______________________________________________________________________________
-    TRestRawMultiCoBoAsAdToSignalProcess::TRestRawMultiCoBoAsAdToSignalProcess() {
-    Initialize();
-}
+ClassImp(TRestRawMultiCoBoAsAdToSignalProcess);
+
+TRestRawMultiCoBoAsAdToSignalProcess::TRestRawMultiCoBoAsAdToSignalProcess() { Initialize(); }
 
 TRestRawMultiCoBoAsAdToSignalProcess::TRestRawMultiCoBoAsAdToSignalProcess(char* cfgFileName) {
     Initialize();
 }
 
-//______________________________________________________________________________
 TRestRawMultiCoBoAsAdToSignalProcess::~TRestRawMultiCoBoAsAdToSignalProcess() {
     // TRestRawMultiCoBoAsAdToSignalProcess destructor
 }
 
-//______________________________________________________________________________
 void TRestRawMultiCoBoAsAdToSignalProcess::Initialize() {
     TRestRawToSignalProcess::Initialize();
 
@@ -155,7 +151,7 @@ Bool_t TRestRawMultiCoBoAsAdToSignalProcess::AddInputFile(string file) {
         int i = fHeaderFrame.size() - 1;
         if (fread(fHeaderFrame[i].frameHeader, 256, 1, fInputFiles[i]) != 1 || feof(fInputFiles[i])) {
             fclose(fInputFiles[i]);
-            fInputFiles[i] = NULL;
+            fInputFiles[i] = nullptr;
             fHeaderFrame[i].eventIdx = (unsigned int)4294967295;
             return kFALSE;
         }
@@ -168,7 +164,7 @@ Bool_t TRestRawMultiCoBoAsAdToSignalProcess::AddInputFile(string file) {
             cout << endl;
             GetChar();
             fclose(fInputFiles[i]);
-            fInputFiles[i] = NULL;
+            fInputFiles[i] = nullptr;
             fHeaderFrame[i].eventIdx = (unsigned int)4294967295;
             return false;
         }
@@ -182,7 +178,7 @@ TRestEvent* TRestRawMultiCoBoAsAdToSignalProcess::ProcessEvent(TRestEvent* evInp
     fSignalEvent->Initialize();
 
     if (EndReading()) {
-        return NULL;
+        return nullptr;
     }
     if (!fillbuffer()) {
         fSignalEvent->SetOK(false);
@@ -207,16 +203,16 @@ TRestEvent* TRestRawMultiCoBoAsAdToSignalProcess::ProcessEvent(TRestEvent* evInp
 
             for (int m = 0; m < 272; m++) {
                 if (data->chHit[m]) {
-                    sgnl.Initialize();
-                    sgnl.SetSignalID(m + data->asadId * 272);
+                    signal.Initialize();
+                    signal.SetSignalID(m + data->asadId * 272);
 
-                    for (int j = 0; j < 512; j++) sgnl.AddPoint((Short_t)data->data[m][j]);
+                    for (int j = 0; j < 512; j++) signal.AddPoint((Short_t)data->data[m][j]);
 
-                    fSignalEvent->AddSignal(sgnl);
+                    fSignalEvent->AddSignal(signal);
 
                     if (GetVerboseLevel() >= REST_Extreme) {
                         cout << "AgetId, chnId, first value, max value: " << m / 68 << ", " << m % 68 << ", "
-                             << sgnl.GetData(0) << ", " << sgnl.GetMaxValue() << endl;
+                             << signal.GetData(0) << ", " << signal.GetMaxValue() << endl;
                     }
                 }
             }
@@ -238,7 +234,7 @@ TRestEvent* TRestRawMultiCoBoAsAdToSignalProcess::ProcessEvent(TRestEvent* evInp
     fSignalEvent->SetSubRunOrigin(0);
 
     // cout << fSignalEvent->GetNumberOfSignals() << endl;
-    // if( fSignalEvent->GetNumberOfSignals( ) == 0 ) return NULL;
+    // if( fSignalEvent->GetNumberOfSignals( ) == 0 ) return nullptr;
 
     return fSignalEvent;
 }
@@ -259,10 +255,10 @@ void TRestRawMultiCoBoAsAdToSignalProcess::EndProcess() {
 bool TRestRawMultiCoBoAsAdToSignalProcess::fillbuffer() {
     // if the file is opened but not read, read header frame
     for (int i = 0; i < fInputFiles.size(); i++) {
-        if (fInputFiles[i] != NULL && ftell(fInputFiles[i]) == 0) {
+        if (fInputFiles[i] && ftell(fInputFiles[i]) == 0) {
             if (fread(fHeaderFrame[i].frameHeader, 256, 1, fInputFiles[i]) != 1 || feof(fInputFiles[i])) {
                 fclose(fInputFiles[i]);
-                fInputFiles[i] = NULL;
+                fInputFiles[i] = nullptr;
                 fHeaderFrame[i].eventIdx = (unsigned int)4294967295;
                 return kFALSE;
             }
@@ -275,7 +271,7 @@ bool TRestRawMultiCoBoAsAdToSignalProcess::fillbuffer() {
                 cout << endl;
                 GetChar();
                 fclose(fInputFiles[i]);
-                fInputFiles[i] = NULL;
+                fInputFiles[i] = nullptr;
                 fHeaderFrame[i].eventIdx = (unsigned int)4294967295;
                 return false;
             }
@@ -292,7 +288,7 @@ bool TRestRawMultiCoBoAsAdToSignalProcess::fillbuffer() {
 
     // loop for each file
     for (int i = 0; i < fHeaderFrame.size(); i++) {
-        if (fInputFiles[i] == NULL) {
+        if (fInputFiles[i] == nullptr) {
             continue;
         }
 
@@ -318,7 +314,7 @@ bool TRestRawMultiCoBoAsAdToSignalProcess::fillbuffer() {
             {
                 if (fread(frameDataF, 2048, 136, fInputFiles[i]) != 136 || feof(fInputFiles[i])) {
                     fclose(fInputFiles[i]);
-                    fInputFiles[i] = NULL;
+                    fInputFiles[i] = nullptr;
                     fHeaderFrame[i].eventIdx = (unsigned int)4294967295;
                     break;
                 }
@@ -326,7 +322,7 @@ bool TRestRawMultiCoBoAsAdToSignalProcess::fillbuffer() {
                 ReadFrameDataF(fHeaderFrame[i]);
             } else {
                 fclose(fInputFiles[i]);
-                fInputFiles[i] = NULL;
+                fInputFiles[i] = nullptr;
                 fHeaderFrame[i].eventIdx = (unsigned int)4294967295;
                 return false;
             }
@@ -334,7 +330,7 @@ bool TRestRawMultiCoBoAsAdToSignalProcess::fillbuffer() {
             // reading next header
             if (fread(fHeaderFrame[i].frameHeader, 256, 1, fInputFiles[i]) != 1 || feof(fInputFiles[i])) {
                 fclose(fInputFiles[i]);
-                fInputFiles[i] = NULL;
+                fInputFiles[i] = nullptr;
                 fHeaderFrame[i].eventIdx = (unsigned int)4294967295;  // maximum of unsigned int
                 break;
             }
@@ -369,7 +365,7 @@ bool TRestRawMultiCoBoAsAdToSignalProcess::fillbuffer() {
                 }
                 if (!found) {
                     fclose(fInputFiles[i]);
-                    fInputFiles[i] = NULL;
+                    fInputFiles[i] = nullptr;
                     fHeaderFrame[i].eventIdx = (unsigned int)4294967295;  // maximum of unsigned int
                 }
             }
@@ -512,7 +508,7 @@ bool TRestRawMultiCoBoAsAdToSignalProcess::ReadFrameDataP(FILE* f, CoBoHeaderFra
         for (i = 0; i < NBuckTotal; i++) {
             if ((fread(frameDataP, 4, 1, f)) != 1 || feof(f)) {
                 fclose(f);
-                f = NULL;
+                f = nullptr;
                 return kFALSE;
             }
             totalBytesReaded += 4;
@@ -643,8 +639,8 @@ Bool_t TRestRawMultiCoBoAsAdToSignalProcess::EndReading() {
         }
     }
 
-    for (int n = 0; n < nFiles; n++) {
-        if (fInputFiles[n] != NULL) {
+    for (const auto& file : fInputFiles) {
+        if (file != nullptr) {
             return false;
         }
     }
