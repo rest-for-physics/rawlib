@@ -49,7 +49,7 @@
 ///
 /// 2017-February: First concept and implementation of TRestRawSignal class.
 /// \author     Javier Galan
-/// 
+///
 ///	2022-January: Added robust baseline calculation methods
 /// \author		Konrad Altenmüller
 ///
@@ -316,7 +316,7 @@ Double_t TRestRawSignal::GetIntegralInRange(Int_t startBin, Int_t endBin) {
 
     Double_t sum = 0;
     for (int i = startBin; i < endBin; i++) sum += GetRawData(i);
-	return sum;
+    return sum;
 }
 
 ///////////////////////////////////////////////
@@ -612,16 +612,17 @@ void TRestRawSignal::GetSignalSmoothed(TRestRawSignal* smthSignal, Int_t averagi
     averagingPoints = (averagingPoints / 2) * 2 + 1;  // make it odd >= averagingPoints
 
     Double_t sumAvg = GetIntegralInRange(0, averagingPoints) / averagingPoints;
-	
-	for (int i = 0; i <= averagingPoints / 2; i++) smthSignal->AddPoint((Short_t)sumAvg);
 
-   	for (int i = averagingPoints / 2 + 1; i < GetNumberOfPoints() - averagingPoints / 2; i++) {
+    for (int i = 0; i <= averagingPoints / 2; i++) smthSignal->AddPoint((Short_t)sumAvg);
+
+    for (int i = averagingPoints / 2 + 1; i < GetNumberOfPoints() - averagingPoints / 2; i++) {
         sumAvg -= this->GetRawData(i - (averagingPoints / 2 + 1)) / averagingPoints;
-	    sumAvg += this->GetRawData(i + averagingPoints / 2) / averagingPoints;
-       	smthSignal->AddPoint((Short_t)sumAvg);
+        sumAvg += this->GetRawData(i + averagingPoints / 2) / averagingPoints;
+        smthSignal->AddPoint((Short_t)sumAvg);
     }
-    
-	for (int i = GetNumberOfPoints() - averagingPoints / 2; i < GetNumberOfPoints(); i++) smthSignal->AddPoint(sumAvg);
+
+    for (int i = GetNumberOfPoints() - averagingPoints / 2; i < GetNumberOfPoints(); i++)
+        smthSignal->AddPoint(sumAvg);
 }
 
 ///////////////////////////////////////////////
@@ -631,26 +632,29 @@ void TRestRawSignal::GetSignalSmoothed(TRestRawSignal* smthSignal, Int_t averagi
 /// points used to average the signal
 ///
 std::vector<Float_t> TRestRawSignal::GetSignalSmoothed(Int_t averagingPoints) {
-	std::vector<Float_t> result;
-	
+    std::vector<Float_t> result;
+
     averagingPoints = (averagingPoints / 2) * 2 + 1;  // make it odd >= averagingPoints
-	
+
     Float_t sumAvg = (Float_t)GetIntegralInRange(0, averagingPoints) / averagingPoints;
-		
-	for (int i = 0; i <= averagingPoints / 2; i++) result.push_back(sumAvg);
-	
-   	for (int i = averagingPoints / 2 + 1; i < GetNumberOfPoints() - averagingPoints / 2; i++) {
+
+    for (int i = 0; i <= averagingPoints / 2; i++) result.push_back(sumAvg);
+
+    for (int i = averagingPoints / 2 + 1; i < GetNumberOfPoints() - averagingPoints / 2; i++) {
         sumAvg -= this->GetRawData(i - (averagingPoints / 2 + 1)) / averagingPoints;
-	    sumAvg += this->GetRawData(i + averagingPoints / 2) / averagingPoints;
-       	result.push_back(sumAvg);
+        sumAvg += this->GetRawData(i + averagingPoints / 2) / averagingPoints;
+        result.push_back(sumAvg);
     }
-	    
-	for (int i = GetNumberOfPoints() - averagingPoints / 2; i < GetNumberOfPoints(); i++) result.push_back(sumAvg);
-	return result;
+
+    for (int i = GetNumberOfPoints() - averagingPoints / 2; i < GetNumberOfPoints(); i++)
+        result.push_back(sumAvg);
+    return result;
 }
 
 ///////////////////////////////////////////////
-/// \brief It applies the moving average filter (GetSignalSmoothed) to the signal, which is then subtracted from the raw data, resulting in a corrected baseline. The returned signal is placed at the signal pointer given by argument.
+/// \brief It applies the moving average filter (GetSignalSmoothed) to the signal, which is then subtracted
+/// from the raw data, resulting in a corrected baseline. The returned signal is placed at the signal pointer
+/// given by argument.
 ///
 /// \param smthSignal The pointer to the TRestRawSignal which will contain the corrected signal
 ///
@@ -660,13 +664,11 @@ std::vector<Float_t> TRestRawSignal::GetSignalSmoothed(Int_t averagingPoints) {
 void TRestRawSignal::GetBaseLineCorrected(TRestRawSignal* smthSignal, Int_t averagingPoints) {
     smthSignal->Initialize();
 
-	std::vector<Float_t> averagedSignal = GetSignalSmoothed(averagingPoints);
+    std::vector<Float_t> averagedSignal = GetSignalSmoothed(averagingPoints);
 
-	for (unsigned int i = 0; i < GetNumberOfPoints(); i++){
-		smthSignal->AddPoint(GetRawData(i)-averagedSignal[i]);
-	}
-
-
+    for (unsigned int i = 0; i < GetNumberOfPoints(); i++) {
+        smthSignal->AddPoint(GetRawData(i) - averagedSignal[i]);
+    }
 }
 
 ///////////////////////////////////////////////
@@ -681,9 +683,9 @@ void TRestRawSignal::CalculateBaseLine(Int_t startBin, Int_t endBin, std::string
         cout << "TRestRawSignal::CalculateBaseLine. Error! Baseline range exceeds the rawdata depth!!"
              << endl;
         endBin = fSignalData.size();
-	} else if (ToUpper(option)=="ROBUST") {
-		return CalculateBaseLineRobust(startBin,endBin);	
-	} else {
+    } else if (ToUpper(option) == "ROBUST") {
+        return CalculateBaseLineRobust(startBin, endBin);
+    } else {
         Double_t baseLine = 0;
         for (int i = startBin; i < endBin; i++) baseLine += fSignalData[i];
         fBaseLine = baseLine / (endBin - startBin);
@@ -695,7 +697,8 @@ void TRestRawSignal::CalculateBaseLine(Int_t startBin, Int_t endBin, std::string
 /// \brief This method is used to determine the value of the baseline as
 /// median of the data points found
 /// in the range defined between startBin and endBin. It calls the CalculateBaseLineIQR method.
-/// This method is more robust to outliers than CalculateBaseline and can be used when signals are present in the interval used for the baseline calculation.
+/// This method is more robust to outliers than CalculateBaseline and can be used when signals are present in
+/// the interval used for the baseline calculation.
 ///
 void TRestRawSignal::CalculateBaseLineRobust(Int_t startBin, Int_t endBin) {
     if (endBin - startBin <= 0) {
@@ -705,13 +708,13 @@ void TRestRawSignal::CalculateBaseLineRobust(Int_t startBin, Int_t endBin) {
              << endl;
         endBin = fSignalData.size();
     } else {
-		vector<Short_t>::const_iterator first = fSignalData.begin() + startBin;
-		vector<Short_t>::const_iterator last  = fSignalData.begin() + endBin;
-		vector<Short_t> v(first,last);
-		const Short_t* signalInRange = &v[0];
-		fBaseLine = TMath::Median(endBin-startBin,signalInRange);
-	}
-	CalculateBaseLineIQR(startBin, endBin);
+        vector<Short_t>::const_iterator first = fSignalData.begin() + startBin;
+        vector<Short_t>::const_iterator last = fSignalData.begin() + endBin;
+        vector<Short_t> v(first, last);
+        const Short_t* signalInRange = &v[0];
+        fBaseLine = TMath::Median(endBin - startBin, signalInRange);
+    }
+    CalculateBaseLineIQR(startBin, endBin);
 }
 
 ///////////////////////////////////////////////
@@ -733,20 +736,21 @@ void TRestRawSignal::CalculateBaseLineSigma(Int_t startBin, Int_t endBin) {
 ///////////////////////////////////////////////
 /// \brief This method is called each time we call CalculateBaseLineRobust to
 /// determine the value of the baseline
-/// fluctuation as its interquartile range (IQR) in the baseline range provided. The IQR is more robust towars outliers than the standard deviation.
+/// fluctuation as its interquartile range (IQR) in the baseline range provided. The IQR is more robust towars
+/// outliers than the standard deviation.
 ///
 void TRestRawSignal::CalculateBaseLineIQR(Int_t startBin, Int_t endBin) {
     if (endBin - startBin <= 0) {
         fBaseLineSigma = 0;
     } else {
-		vector<Short_t>::const_iterator first = fSignalData.begin() + startBin;
-		vector<Short_t>::const_iterator last  = fSignalData.begin() + endBin;
-		vector<Short_t> v(first,last);
-		std::sort(v.begin(),v.end());
-		Short_t Q1 = v[(int)(endBin-startBin)*0.25];
-		Short_t Q3 = v[(int)(endBin-startBin)*0.75];
-		Double_t IQR = Q3-Q1;
-		fBaseLineSigma = IQR / 1.349; // IQR/1.349 equals standard deviation of normal distribution
+        vector<Short_t>::const_iterator first = fSignalData.begin() + startBin;
+        vector<Short_t>::const_iterator last = fSignalData.begin() + endBin;
+        vector<Short_t> v(first, last);
+        std::sort(v.begin(), v.end());
+        Short_t Q1 = v[(int)(endBin - startBin) * 0.25];
+        Short_t Q3 = v[(int)(endBin - startBin) * 0.75];
+        Double_t IQR = Q3 - Q1;
+        fBaseLineSigma = IQR / 1.349;  // IQR/1.349 equals standard deviation of normal distribution
     }
 }
 
