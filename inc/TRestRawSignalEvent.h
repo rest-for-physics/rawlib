@@ -146,7 +146,7 @@ class TRestRawSignalEvent : public TRestEvent {
     void Initialize();
     void PrintEvent();
 
-    TPad* DrawEvent(TString option = "");
+    TPad* DrawEvent(const TString& option = "");
     TPad* DrawSignals(const std::vector<Int_t> &signals);
     TPad* DrawSignal(Int_t signal, TString option = "");
 
