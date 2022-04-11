@@ -37,9 +37,9 @@ class TRestRawSignal : public TObject {
    private:
     void CalculateThresholdIntegral();
 
-    void CalculateBaseLineSigma(Int_t startBin, Int_t endBin);
+    void CalculateBaseLineSigmaSD(Int_t startBin, Int_t endBin);
 
-    void CalculateBaseLineIQR(Int_t startBin, Int_t endBin);
+    void CalculateBaseLineSigmaIQR(Int_t startBin, Int_t endBin);
 
    protected:
     /// An integer value used to attribute a unique identification number to the
@@ -113,8 +113,8 @@ class TRestRawSignal : public TObject {
     /// CalculateBaseLine.
     Double_t GetBaseLine() { return fBaseLine; }
 
-    /// Returns the value of baseline that it is initialized after calling
-    /// CalculateBaseLineSigma.
+    /// Returns the value of baseline sigma that it is initialized after calling
+    /// CalculateBaseLineSigmaSD or CalculateBaseLineSigmaIQR.
     Double_t GetBaseLineSigma() { return fBaseLineSigma; }
 
     /// Returns the range defined by user

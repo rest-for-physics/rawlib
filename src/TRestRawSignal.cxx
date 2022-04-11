@@ -690,13 +690,13 @@ void TRestRawSignal::CalculateBaseLine(Int_t startBin, Int_t endBin, std::string
         for (int i = startBin; i < endBin; i++) baseLine += fSignalData[i];
         fBaseLine = baseLine / (endBin - startBin);
     }
-    CalculateBaseLineSigma(startBin, endBin);
+    CalculateBaseLineSigmaSD(startBin, endBin);
 }
 
 ///////////////////////////////////////////////
 /// \brief This method is used to determine the value of the baseline as
 /// median of the data points found
-/// in the range defined between startBin and endBin. It calls the CalculateBaseLineIQR method.
+/// in the range defined between startBin and endBin. It calls the CalculateBaseLineSigmaIQR method.
 /// This method is more robust to outliers than CalculateBaseline and can be used when signals are present in
 /// the interval used for the baseline calculation.
 ///
@@ -714,7 +714,7 @@ void TRestRawSignal::CalculateBaseLineRobust(Int_t startBin, Int_t endBin) {
         const Short_t* signalInRange = &v[0];
         fBaseLine = TMath::Median(endBin - startBin, signalInRange);
     }
-    CalculateBaseLineIQR(startBin, endBin);
+    CalculateBaseLineSigmaIQR(startBin, endBin);
 }
 
 ///////////////////////////////////////////////
@@ -722,7 +722,7 @@ void TRestRawSignal::CalculateBaseLineRobust(Int_t startBin, Int_t endBin) {
 /// determine the value of the baseline
 /// fluctuation as its standard deviation in the baseline range provided.
 ///
-void TRestRawSignal::CalculateBaseLineSigma(Int_t startBin, Int_t endBin) {
+void TRestRawSignal::CalculateBaseLineSigmaSD(Int_t startBin, Int_t endBin) {
     if (endBin - startBin <= 0) {
         fBaseLineSigma = 0;
     } else {
@@ -739,7 +739,7 @@ void TRestRawSignal::CalculateBaseLineSigma(Int_t startBin, Int_t endBin) {
 /// fluctuation as its interquartile range (IQR) in the baseline range provided. The IQR is more robust towars
 /// outliers than the standard deviation.
 ///
-void TRestRawSignal::CalculateBaseLineIQR(Int_t startBin, Int_t endBin) {
+void TRestRawSignal::CalculateBaseLineSigmaIQR(Int_t startBin, Int_t endBin) {
     if (endBin - startBin <= 0) {
         fBaseLineSigma = 0;
     } else {
