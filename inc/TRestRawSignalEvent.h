@@ -72,12 +72,14 @@ class TRestRawSignalEvent : public TRestEvent {
         for (int n = 0; n < GetNumberOfSignals(); n++) fSignal[n].SetTailPoints(p);
     }
 
-    /// It sets the range to be used for the baseline calculation and calls TRestRawSignal::CalculateBaseLine()
+    /// It sets the range to be used for the baseline calculation and calls
+    /// TRestRawSignal::CalculateBaseLine()
     void SetBaseLineRange(TVector2 blRange, std::string option = "") {
         SetBaseLineRange(blRange.X(), blRange.Y(), option);
     }
 
-    /// It sets the range to be used for the baseline calculation and calls TRestRawSignal::CalculateBaseLine()
+    /// It sets the range to be used for the baseline calculation and calls
+    /// TRestRawSignal::CalculateBaseLine()
     void SetBaseLineRange(Int_t from, Int_t to, std::string option = "") {
         fBaseLineRange = TVector2(from, to);
         for (int n = 0; n < GetNumberOfSignals(); n++) fSignal[n].CalculateBaseLine(from, to, option);
