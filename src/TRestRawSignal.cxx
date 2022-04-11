@@ -672,35 +672,30 @@ void TRestRawSignal::GetBaseLineCorrected(TRestRawSignal* smthSignal, Int_t aver
 }
 
 ///////////////////////////////////////////////
-/// \brief This method is used to determine the value of the baseline as an
-/// average of the data points found
+/// \brief This method is called by CalculateBaseLine and is used to determine the value of the baseline as 
+/// average (arithmetic mean) of the data points found
 /// in the range defined between startBin and endBin.
 ///
-void TRestRawSignal::CalculateBaseLine(Int_t startBin, Int_t endBin, std::string option) {
+void TRestRawSignal::CalculateBaseLineMean(Int_t startBin, Int_t endBin){
     if (endBin - startBin <= 0) {
         fBaseLine = 0.;
     } else if (endBin > fSignalData.size()) {
         cout << "TRestRawSignal::CalculateBaseLine. Error! Baseline range exceeds the rawdata depth!!"
              << endl;
         endBin = fSignalData.size();
-    } else if (ToUpper(option) == "ROBUST") {
-        return CalculateBaseLineRobust(startBin, endBin);
     } else {
         Double_t baseLine = 0;
         for (int i = startBin; i < endBin; i++) baseLine += fSignalData[i];
         fBaseLine = baseLine / (endBin - startBin);
     }
-    CalculateBaseLineSigmaSD(startBin, endBin);
 }
 
 ///////////////////////////////////////////////
-/// \brief This method is used to determine the value of the baseline as
+/// \brief This method is called by CalculateBaseLine with the "ROBUST"-option and is used to determine the value of the baseline as the
 /// median of the data points found
-/// in the range defined between startBin and endBin. It calls the CalculateBaseLineSigmaIQR method.
-/// This method is more robust to outliers than CalculateBaseline and can be used when signals are present in
-/// the interval used for the baseline calculation.
+/// in the range defined between startBin and endBin.
 ///
-void TRestRawSignal::CalculateBaseLineRobust(Int_t startBin, Int_t endBin) {
+void TRestRawSignal::CalculateBaseLineMedian(Int_t startBin, Int_t endBin) {
     if (endBin - startBin <= 0) {
         fBaseLine = 0.;
     } else if (endBin > fSignalData.size()) {
@@ -714,11 +709,30 @@ void TRestRawSignal::CalculateBaseLineRobust(Int_t startBin, Int_t endBin) {
         const Short_t* signalInRange = &v[0];
         fBaseLine = TMath::Median(endBin - startBin, signalInRange);
     }
-    CalculateBaseLineSigmaIQR(startBin, endBin);
 }
 
 ///////////////////////////////////////////////
-/// \brief This method is called each time we call CalculateBaseLine to
+/// \brief This method calculates the average and fluctuation of the baseline in the
+/// specified range and writes the values to fBaseLine and fBaseLineSigma respectively.
+/// Without further option, this method calculates the average as arithmetic mean,
+/// and the fluctuation as standard deviation.
+///
+/// \param option By setting this option to "ROBUST", the average is calculated as median,
+/// and the fluctuation as interquartile range (IQR), which are less affected by outliers (e.g. a signal pulse).
+///
+void TRestRawSignal::CalculateBaseLine(Int_t startBin, Int_t endBin, std::string option) {
+    if (ToUpper(option) == "ROBUST") {
+        CalculateBaseLineMedian(startBin, endBin);
+        CalculateBaseLineSigmaIQR(startBin, endBin);
+    } else {
+        CalculateBaseLineMean(startBin, endBin);
+        CalculateBaseLineSigmaSD(startBin, endBin);    
+    }
+    
+}
+
+///////////////////////////////////////////////
+/// \brief This method is called by CalculateBaseLine to
 /// determine the value of the baseline
 /// fluctuation as its standard deviation in the baseline range provided.
 ///
@@ -734,7 +748,7 @@ void TRestRawSignal::CalculateBaseLineSigmaSD(Int_t startBin, Int_t endBin) {
 }
 
 ///////////////////////////////////////////////
-/// \brief This method is called each time we call CalculateBaseLineRobust to
+/// \brief This method is called by CalculateBaseLine with the "ROBUST"-option to
 /// determine the value of the baseline
 /// fluctuation as its interquartile range (IQR) in the baseline range provided. The IQR is more robust towars
 /// outliers than the standard deviation.
@@ -750,7 +764,7 @@ void TRestRawSignal::CalculateBaseLineSigmaIQR(Int_t startBin, Int_t endBin) {
         Short_t Q1 = v[(int)(endBin - startBin) * 0.25];
         Short_t Q3 = v[(int)(endBin - startBin) * 0.75];
         Double_t IQR = Q3 - Q1;
-        fBaseLineSigma = IQR / 1.349;  // IQR/1.349 equals standard deviation of normal distribution
+        fBaseLineSigma = IQR / 1.349;  // IQR/1.349 equals the standard deviation in case of normally distributed data
     }
 }
 
