@@ -33,6 +33,7 @@
 #include <TVector2.h>
 
 #include <iostream>
+#include <string>
 
 #include "TRestRawSignal.h"
 
@@ -71,11 +72,17 @@ class TRestRawSignalEvent : public TRestEvent {
         for (int n = 0; n < GetNumberOfSignals(); n++) fSignal[n].SetTailPoints(p);
     }
 
-    void SetBaseLineRange(TVector2 blRange) { SetBaseLineRange(blRange.X(), blRange.Y()); }
+    /// It sets the range to be used for the baseline calculation and calls
+    /// TRestRawSignal::CalculateBaseLine()
+    void SetBaseLineRange(TVector2 blRange, std::string option = "") {
+        SetBaseLineRange(blRange.X(), blRange.Y(), option);
+    }
 
-    void SetBaseLineRange(Int_t from, Int_t to) {
+    /// It sets the range to be used for the baseline calculation and calls
+    /// TRestRawSignal::CalculateBaseLine()
+    void SetBaseLineRange(Int_t from, Int_t to, std::string option = "") {
         fBaseLineRange = TVector2(from, to);
-        for (int n = 0; n < GetNumberOfSignals(); n++) fSignal[n].CalculateBaseLine(from, to);
+        for (int n = 0; n < GetNumberOfSignals(); n++) fSignal[n].CalculateBaseLine(from, to, option);
     }
 
     void SetRange(TVector2 range) { SetRange(range.X(), range.Y()); }

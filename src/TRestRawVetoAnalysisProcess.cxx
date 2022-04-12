@@ -74,6 +74,14 @@
 /// "NVetoInTimeWindow" contains the number of veto signals per event, where the peak time is within the
 /// window.
 ///
+/// ### Veto Noise Reduction
+///
+/// The noise signals in the veto data is removed with the GetPointsOverThreshold() method. This can be
+/// controlled by defining following parameter in the RML file: PointsOverThresholdPars: sets the parameters
+/// of the PointsOverThreshold() method. Standard values are "1.5, 1.5, 4". Signals that are identified as
+/// noise get the amplitude 0 assigned. It is advised to run the TRestRawBaseLineCorrectionProcess before on
+/// the veto signals.
+///
 /// ### Methods to retrieve metadata
 ///
 /// The method GetVetoSignalIDs() returns a vector<double> of the veto signal IDs, if the vetoes were defined
@@ -114,6 +122,9 @@
 ///		Konrad Altenmueller
 ///
 /// 2021-Mar:  Added threshold parameter and observables "VetoAboveThreshold" and "NVetoAboveThreshold"
+///		Konrad Altenmueller
+///
+/// 2022-Feb: Added noise removal
 ///		Konrad Altenmueller
 ///
 /// \class      TRestRawVetoAnalysisProcess
@@ -217,28 +228,10 @@ TRestEvent* TRestRawVetoAnalysisProcess::ProcessEvent(TRestEvent* evInput) {
     Int_t VetoInTimeWindow = 0;
     Int_t NVetoInTimeWindow = 0;
 
-    fSignalEvent->SetBaseLineRange(fBaseLineRange);
     fSignalEvent->SetRange(fRange);
 
     VetoMaxPeakAmplitude_map.clear();
     VetoPeakTime_map.clear();
-
-    // ***** debugging *****
-    /* cout << "******************" << endl;
-    // cout << "I am in process " << GetProcessName() << endl;
-    cout << "event ID : " << fSignalEvent->GetID() << endl;
-    cout << "number of signals: " << fSignalEvent->GetNumberOfSignals()
-    << endl;
-    cout << "signal IDs : ";
-    fSignalEvent->PrintSignalIds();
-    cout  << endl;
-    for (unsigned int i=0; i< fSignalEvent->GetNumberOfSignals(); i++){
-    TRestRawSignal* debug = fSignalEvent->GetSignal(i);
-    cout << "signal ID: " << debug->GetSignalID() << " Amp: " <<
-    debug->GetMaxPeakValue() << endl;
-    }
-    */
-    // *** end debugging ***
 
     // **************************************************************
     // if list of veto Ids without groups is given ******************
@@ -247,27 +240,26 @@ TRestEvent* TRestRawVetoAnalysisProcess::ProcessEvent(TRestEvent* evInput) {
     if (fVetoSignalId[0] != -1) {
         // iterate over vetoes
         for (unsigned int i = 0; i < fVetoSignalId.size(); i++) {
-            // cout << "ID: "<< fVetoSignalId[i] << " Index: " <<
-            // fSignalEvent->GetSignalIndex(fVetoSignalId[i]) << "; ";
-
             // Checks if channel (fVetoSignalId) participated in the event. If not, it
             // is -1
             if (fSignalEvent->GetSignalIndex(fVetoSignalId[i]) != -1) {
                 // We extract the parameters from the veto signal
                 TRestRawSignal* sgnl = fSignalEvent->GetSignalById(fVetoSignalId[i]);
-                // cout << "ID: " << fVetoSignalId[i] << " Amp: " <<
-                // sgnl->GetMaxPeakValue() << endl;
+                // Deal with noise
+                sgnl->CalculateBaseLine(fBaseLineRange.X(), fBaseLineRange.Y(), "ROBUST");
+                sgnl->InitializePointsOverThreshold(TVector2(fPointThreshold, fSignalThreshold),
+                                                    fPointsOverThreshold);
 
                 // Save two maps with (veto panel ID, max amplitude) and (veto panel ID,
                 // peak time)
-                VetoMaxPeakAmplitude_map[fVetoSignalId[i]] = sgnl->GetMaxPeakValue();
+                if (sgnl->GetPointsOverThreshold().size() >= fPointsOverThreshold) {  // signal is not noise
+                    VetoMaxPeakAmplitude_map[fVetoSignalId[i]] = sgnl->GetMaxPeakValue();
+                } else {
+                    VetoMaxPeakAmplitude_map[fVetoSignalId[i]] = 0;  // signal is noise
+                }
                 VetoPeakTime_map[fVetoSignalId[i]] = sgnl->GetMaxPeakBin();
                 // We remove the signal from the event
                 fSignalEvent->RemoveSignalWithId(fVetoSignalId[i]);
-
-                // cout << "ID: " << fVetoSignalId[i] << " Amp: " <<
-                // sgnl->GetMaxPeakValue() << endl;
-                // cout << "********" << endl;
 
                 // check if signal is above threshold
                 if (sgnl->GetMaxPeakValue() > fThreshold) {
@@ -281,19 +273,6 @@ TRestEvent* TRestRawVetoAnalysisProcess::ProcessEvent(TRestEvent* evInput) {
                 }
             }
         }
-
-        // ***** debugging *****
-        /*
-           cout << endl;
-           cout << "Observables Added: " << endl;
-           cout << "Map size: " << VetoMaxPeakAmplitude_map.size() << endl;
-           for (map<int, double>::const_iterator it = VetoMaxPeakAmplitude_map.begin();
-           it != VetoMaxPeakAmplitude_map.end(); ++it){
-           cout << "ID: " << it->first << " Amplitude: " << it->second;
-           }
-           cout << endl;
-           */
-        // *** end debugging ***
 
         SetObservableValue("PeakTime", VetoPeakTime_map);
         SetObservableValue("MaxPeakAmplitude", VetoMaxPeakAmplitude_map);
@@ -323,14 +302,23 @@ TRestEvent* TRestRawVetoAnalysisProcess::ProcessEvent(TRestEvent* evInput) {
             // iterate over vetoes in each group
             vector<double> groupIds = StringToElements(fVetoGroupIds[i], ",");
             for (unsigned int j = 0; j < groupIds.size(); j++) {
-                // Checks if channel (fVetoSignalId) participated in the event. If not,
+                // Checks if channel (groupIds) participated in the event. If not,
                 // it is -1
                 if (fSignalEvent->GetSignalIndex(groupIds[j]) != -1) {
                     // We extract the parameters from the veto signal
                     TRestRawSignal* sgnl = fSignalEvent->GetSignalById(groupIds[j]);
+                    // Deal with noise
+                    sgnl->CalculateBaseLine(fBaseLineRange.X(), fBaseLineRange.Y(), "ROBUST");
+                    sgnl->InitializePointsOverThreshold(TVector2(fPointThreshold, fSignalThreshold),
+                                                        fPointsOverThreshold);
                     // Save two maps with (veto panel ID, max amplitude) and (veto panel
                     // ID, peak time)
-                    VetoMaxPeakAmplitude_map[groupIds[j]] = sgnl->GetMaxPeakValue();
+                    if (sgnl->GetPointsOverThreshold().size() >=
+                        fPointsOverThreshold) {  // signal is not noise
+                        VetoMaxPeakAmplitude_map[groupIds[j]] = sgnl->GetMaxPeakValue();
+                    } else {
+                        VetoMaxPeakAmplitude_map[groupIds[j]] = 0;  // signal is noise
+                    }
                     VetoPeakTime_map[groupIds[j]] = sgnl->GetMaxPeakBin();
                     // We remove the signal from the event
                     fSignalEvent->RemoveSignalWithId(groupIds[j]);
@@ -364,16 +352,6 @@ TRestEvent* TRestRawVetoAnalysisProcess::ProcessEvent(TRestEvent* evInput) {
         }
     }
 
-    /*
-       cout << "++++++++++++++++++++++++++" << endl;
-       cout << "Signal removed" << endl;
-       fSignalEvent->PrintEvent();
-       Int_t Threshold = 0;
-       cout << "Signal removed" << endl;
-       cout << "++++++++++++++++++++++++++" << endl;
-       GetChar();
-       */
-
     if (GetVerboseLevel() >= REST_Debug) {
         fSignalEvent->PrintEvent();
 
@@ -404,13 +382,18 @@ string TRestRawVetoAnalysisProcess::GetGroupIds(string groupName) {
 ///
 void TRestRawVetoAnalysisProcess::InitFromConfigFile() {
     fBaseLineRange = StringTo2DVector(GetParameter("baseLineRange", "(5,55)"));
-    fRange = StringTo2DVector(GetParameter("range", "(10,500)"));
+    fRange = StringTo2DVector(GetParameter("range", "(5,507)"));
     fThreshold = StringToInteger(GetParameter("threshold", "-1"));
     fTimeWindow = StringToElements(GetParameter("timeWindow", "-1,-1"), ",");
     if (fTimeWindow.size() != 2) {
         cout << "Error: timeWindow has to consist of two comma-separated values." << endl;
         GetChar();
     }
+    std::vector<double> potpars = StringToElements(GetParameter("PointsOverThresholdPars", "1.5,1.5,4"), ",");
+    fPointThreshold = potpars[0];
+    fSignalThreshold = potpars[1];
+    fPointsOverThreshold = (Int_t)potpars[2];
+
     // **************************************************************
     // ***** Vetoes are defined as a single list ********************
     // **************************************************************
@@ -467,5 +450,8 @@ void TRestRawVetoAnalysisProcess::PrintMetadata() {
     if (fTimeWindow[0] != -1) {
         metadata << "Peak time window: (" << fTimeWindow[0] << ", " << fTimeWindow[1] << ")" << endl;
     }
+    metadata << "Noise reduction: Points over Threshold parameters = (" << fPointThreshold << ", "
+             << fSignalThreshold << ", " << fPointsOverThreshold << ")" << endl;
+
     EndPrintProcess();
 }

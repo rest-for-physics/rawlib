@@ -27,6 +27,7 @@
 #include <TObject.h>
 #include <TString.h>
 #include <TVector2.h>
+#include <string>
 
 #include <iostream>
 
@@ -36,7 +37,9 @@ class TRestRawSignal : public TObject {
    private:
     void CalculateThresholdIntegral();
 
-    void CalculateBaseLineSigma(Int_t startBin, Int_t endBin);
+    void CalculateBaseLineSigmaSD(Int_t startBin, Int_t endBin);
+
+    void CalculateBaseLineSigmaIQR(Int_t startBin, Int_t endBin);
 
    protected:
     /// An integer value used to attribute a unique identification number to the
@@ -110,8 +113,8 @@ class TRestRawSignal : public TObject {
     /// CalculateBaseLine.
     Double_t GetBaseLine() { return fBaseLine; }
 
-    /// Returns the value of baseline that it is initialized after calling
-    /// CalculateBaseLineSigma.
+    /// Returns the value of baseline sigma that it is initialized after calling
+    /// CalculateBaseLineSigmaSD or CalculateBaseLineSigmaIQR.
     Double_t GetBaseLineSigma() { return fBaseLineSigma; }
 
     /// Returns the range defined by user
@@ -196,11 +199,19 @@ class TRestRawSignal : public TObject {
 
     void GetSignalSmoothed(TRestRawSignal* smthSignal, Int_t averagingPoints);
 
+    std::vector<Float_t> GetSignalSmoothed(Int_t averagingPoints);
+
     void GetWhiteNoiseSignal(TRestRawSignal* noiseSgnl, Double_t noiseLevel = 1.);
 
-    void CalculateBaseLine(Int_t startBin, Int_t endBin);
+    void CalculateBaseLineMean(Int_t startBin, Int_t endBin);
+
+    void CalculateBaseLineMedian(Int_t startBin, Int_t endBin);
+
+    void CalculateBaseLine(Int_t startBin, Int_t endBin, std::string option = "");
 
     //   Double_t GetStandardDeviation(Int_t startBin, Int_t endBin);
+
+    void GetBaseLineCorrected(TRestRawSignal* smthSignal, Int_t averagingPoints);
 
     void AddOffset(Short_t offset);
 
