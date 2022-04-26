@@ -40,7 +40,7 @@ class TRestRawFFT : public TObject {
 
     Double_t GetFrequencyNorm2(Int_t n);
 
-   inline Int_t GetNfft() const { return fNfft; }
+    inline Int_t GetNfft() const { return fNfft; }
 
     void GetSignal(TRestRawSignal* sgnl);
 

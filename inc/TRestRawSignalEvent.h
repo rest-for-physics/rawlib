@@ -91,7 +91,7 @@ class TRestRawSignalEvent : public TRestEvent {
     }
 
     // Getters
-   inline Int_t GetNumberOfSignals() const { return fSignal.size(); }
+    inline Int_t GetNumberOfSignals() const { return fSignal.size(); }
     TRestRawSignal* GetSignal(Int_t n) { return &fSignal[n]; }
 
     void PrintSignalIds() {

@@ -49,13 +49,13 @@ class TRestRawSignalFittingProcess : public TRestEventProcess {
     // add here the members of your event process
 
    public:
-   inline any GetInputEvent() const { return fRawSignalEvent; }
-   inline any GetOutputEvent() const { return fRawSignalEvent; }
+    inline any GetInputEvent() const { return fRawSignalEvent; }
+    inline any GetOutputEvent() const { return fRawSignalEvent; }
 
-   inline Double_t GetShaping() const { return fShaping; }
-   inline Double_t GetStartPosition() const { return fStartPosition; }
-   inline Double_t GetBaseline() const { return fBaseline; }
-   inline Double_t GetAmplitude() const { return fAmplitude; }
+    inline Double_t GetShaping() const { return fShaping; }
+    inline Double_t GetStartPosition() const { return fStartPosition; }
+    inline Double_t GetBaseline() const { return fBaseline; }
+    inline Double_t GetAmplitude() const { return fAmplitude; }
 
     void InitProcess();
     TRestEvent* ProcessEvent(TRestEvent* eventInput);

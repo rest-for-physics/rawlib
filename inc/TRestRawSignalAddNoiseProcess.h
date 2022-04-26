@@ -43,8 +43,8 @@ class TRestRawSignalAddNoiseProcess : public TRestEventProcess {
     // add here the members of your event process
 
    public:
-   inline any GetInputEvent() const { return fInputSignalEvent; }
-   inline any GetOutputEvent() const { return fOutputSignalEvent; }
+    inline any GetInputEvent() const { return fInputSignalEvent; }
+    inline any GetOutputEvent() const { return fOutputSignalEvent; }
 
     void InitProcess();
     TRestEvent* ProcessEvent(TRestEvent* eventInput);

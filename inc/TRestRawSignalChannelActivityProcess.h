@@ -98,17 +98,15 @@ class TRestRawSignalChannelActivityProcess : public TRestEventProcess {
     /// The readout channels histogram built with 3-signal events (high threshold)
     TH1D* fReadoutChannelsHisto_ThreeSignals_High;  //!
 
-    /// The readout channels histogram built more than 3-signal events (low
-    /// threshold)
+    /// The readout channels histogram built more than 3-signal events (low threshold)
     TH1D* fReadoutChannelsHisto_MultiSignals;  //!
 
-    /// The readout channels histogram built more than 3-signal events (high
-    /// threshold)
+    /// The readout channels histogram built more than 3-signal events (high threshold)
     TH1D* fReadoutChannelsHisto_MultiSignals_High;  //!
 
    public:
-   inline any GetInputEvent() const { return fSignalEvent; }
-   inline any GetOutputEvent() const { return fSignalEvent; }
+    inline any GetInputEvent() const { return fSignalEvent; }
+    inline any GetOutputEvent() const { return fSignalEvent; }
 
     void InitProcess();
     TRestEvent* ProcessEvent(TRestEvent* eventInput);

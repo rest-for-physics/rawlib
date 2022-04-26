@@ -54,7 +54,7 @@ class TRestRawSignalConvolutionFittingProcess : public TRestEventProcess {
 
    public:
     inline any GetInputEvent() const { return fRawSignalEvent; }
-     inline any GetOutputEvent() const { return fRawSignalEvent; }
+    inline any GetOutputEvent() const { return fRawSignalEvent; }
 
     void InitProcess();
     TRestEvent* ProcessEvent(TRestEvent* eventInput);

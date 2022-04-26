@@ -62,8 +62,8 @@ class TRestRawDAQMetadata : public TRestMetadata {
     void SetParFromPedBuffer();  // Set gain and shaping time from a given buffer
     void SetOutBinFileName(TString fName) { fOutBinFileName = fName; }
 
-   inline UInt_t GetGain() const { return fGain; }
-   inline UInt_t GetShappingTime() const { return fShappingTime; }
+    inline UInt_t GetGain() const { return fGain; }
+    inline UInt_t GetShappingTime() const { return fShappingTime; }
     UInt_t GetValFromString(TString var, TString line);
 
     ClassDef(TRestRawDAQMetadata, 1);  // REST run class
