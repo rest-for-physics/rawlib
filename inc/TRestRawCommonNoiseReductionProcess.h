@@ -58,8 +58,8 @@ class TRestRawCommonNoiseReductionProcess : public TRestEventProcess {
     // add here the members of your event process
 
    public:
-    any GetInputEvent() { return fInputEvent; }
-    any GetOutputEvent() { return fOutputEvent; }
+   inline any GetInputEvent() const { return fInputEvent; }
+   inline any GetOutputEvent() const { return fOutputEvent; }
 
     void InitProcess();
 

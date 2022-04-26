@@ -53,8 +53,8 @@ class TRestRawSignalShapingProcess : public TRestEventProcess {
     Double_t fShapingGain = 1;
 
    public:
-    any GetInputEvent() { return fInputSignalEvent; }
-    any GetOutputEvent() { return fOutputSignalEvent; }
+   inline any GetInputEvent() const { return fInputSignalEvent; }
+   inline any GetOutputEvent() const { return fOutputSignalEvent; }
 
     void InitProcess();
     TRestEvent* ProcessEvent(TRestEvent* eventInput);

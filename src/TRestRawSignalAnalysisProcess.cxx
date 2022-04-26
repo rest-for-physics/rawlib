@@ -331,7 +331,7 @@ TRestEvent* TRestRawSignalAnalysisProcess::ProcessEvent(TRestEvent* evInput) {
         // if (sgnl->GetPointsOverThreshold().size() < 2) continue;
         if (sgnl->GetPointsOverThreshold().size() >= 2) nGoodSignals++;
 
-        // Now TRestRawSignal returns directly baseline substracted values
+        // Now TRestRawSignal returns directly baseline subtracted values
         baseline[sgnl->GetID()] = sgnl->GetBaseLine();
         baselinesigma[sgnl->GetID()] = sgnl->GetBaseLineSigma();
         ampsgn_intmethod[sgnl->GetID()] = sgnl->GetThresholdIntegral();

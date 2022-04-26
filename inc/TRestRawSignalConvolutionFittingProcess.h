@@ -53,8 +53,8 @@ class TRestRawSignalConvolutionFittingProcess : public TRestEventProcess {
     // add here the members of your event process
 
    public:
-    any GetInputEvent() { return fRawSignalEvent; }
-    any GetOutputEvent() { return fRawSignalEvent; }
+    inline any GetInputEvent() const { return fRawSignalEvent; }
+     inline any GetOutputEvent() const { return fRawSignalEvent; }
 
     void InitProcess();
     TRestEvent* ProcessEvent(TRestEvent* eventInput);
@@ -70,12 +70,10 @@ class TRestRawSignalConvolutionFittingProcess : public TRestEventProcess {
     fBaseLineRange.Y() << " ) "
          << endl;
     metadata << "Integral range : ( " << fIntegralRange.X() << " , " <<
-    fIntegralRange.Y() << " ) "
-         << endl;
+    fIntegralRange.Y() << " ) " << endl;
     metadata << "Point Threshold : " << fPointThreshold << " sigmas" << endl;
     metadata << "Signal threshold : " << fSignalThreshold << " sigmas" << endl;
-    metadata << "Number of points over threshold : " << fNPointsOverThreshold <<
-    endl;
+    metadata << "Number of points over threshold : " << fNPointsOverThreshold << endl;
     metadata << " " << endl;
         */
 

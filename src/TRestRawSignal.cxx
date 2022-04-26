@@ -165,13 +165,13 @@ Short_t TRestRawSignal::operator[](Int_t n) {
 /// been called previously, this
 /// method will return the raw values inside fSignalData.
 ///
-Double_t TRestRawSignal::GetData(Int_t n) { return (Double_t)fSignalData[n] - fBaseLine; }
+Double_t TRestRawSignal::GetData(Int_t n) const { return (Double_t)fSignalData[n] - fBaseLine; }
 
 ///////////////////////////////////////////////
 /// \brief It returns the original data value of point *n* without baseline
 /// correction.
 ///
-Double_t TRestRawSignal::GetRawData(Int_t n) { return (Double_t)fSignalData[n]; }
+Double_t TRestRawSignal::GetRawData(Int_t n) const { return (Double_t)fSignalData[n]; }
 
 ///////////////////////////////////////////////
 /// \brief It adds the content of data to fSignalData[bin].

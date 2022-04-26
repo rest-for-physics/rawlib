@@ -41,8 +41,8 @@ class TRestRawFindResponseSignalProcess : public TRestEventProcess {
     // add here the members of your event process
 
    public:
-    any GetInputEvent() { return fInputSignalEvent; }
-    any GetOutputEvent() { return fOutputSignalEvent; }
+   inline any GetInputEvent() const { return fInputSignalEvent; }
+   inline any GetOutputEvent() const { return fOutputSignalEvent; }
 
     void InitProcess();
     TRestEvent* ProcessEvent(TRestEvent* eventInput);

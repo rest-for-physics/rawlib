@@ -54,15 +54,15 @@ class TRestRawSignalGeneralFitProcess : public TRestEventProcess {
     // add here the members of your event process
 
    public:
-    any GetInputEvent() { return fRawSignalEvent; }
-    any GetOutputEvent() { return fRawSignalEvent; }
+   inline any GetInputEvent() const { return fRawSignalEvent; }
+   inline any GetOutputEvent() const { return fRawSignalEvent; }
 
     TF1* GetFunction() { return fFitFunc; }
 
     /*Double_t GetShaping() { return fShaping; }
-    Double_t GetStartPosition() { return fStartPosition; }
-    Double_t GetBaseline() { return fBaseline; }
-    Double_t GetAmplitude() { return fAmplitude; }*/
+   inline Double_t GetStartPosition() const { return fStartPosition; }
+   inline Double_t GetBaseline() const { return fBaseline; }
+   inline Double_t GetAmplitude() const { return fAmplitude; }*/
 
     void InitProcess();
     TRestEvent* ProcessEvent(TRestEvent* eventInput);

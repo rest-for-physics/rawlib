@@ -27,9 +27,9 @@
 #include <TObject.h>
 #include <TString.h>
 #include <TVector2.h>
-#include <string>
 
 #include <iostream>
+#include <string>
 
 //! It defines a Short_t array with a physical parameter that evolves in time
 //! using a fixed time bin.
@@ -63,7 +63,7 @@ class TRestRawSignal : public TObject {
     /// threshold.
     Double_t fThresholdIntegral = -1;  //!
 
-    /// It defines the number of points to inclulde before point over threshold
+    /// It defines the number of points to include before point over threshold
     /// definition. NOT implemented.
     Int_t fHeadPoints;  //!
 
@@ -71,7 +71,7 @@ class TRestRawSignal : public TObject {
     /// definition. NOT implemented.
     Int_t fTailPoints;  //!
 
-    /// This baseline value will be substracted from GetData for any raw signal
+    /// This baseline value will be subtracted from GetData for any raw signal
     /// observable calculation.
     Double_t fBaseLine = 0;  //!
 
@@ -84,41 +84,41 @@ class TRestRawSignal : public TObject {
     TVector2 fRange = TVector2(0, 0);  //!
 
     /// Returns the value of signal ID
-    Int_t GetSignalID() { return fSignalID; }
+    inline Int_t GetSignalID() const { return fSignalID; }
 
     /// Returns the value of signal ID
-    Int_t GetID() { return fSignalID; }
+    inline Int_t GetID() const { return fSignalID; }
 
     /// Returns the actual number of points, or size of the signal
-    Int_t GetNumberOfPoints() { return fSignalData.size(); }
+    inline Int_t GetNumberOfPoints() const { return fSignalData.size(); }
 
     /// Returns a std::vector containing the indexes of data points over threshold
-    std::vector<Int_t> GetPointsOverThreshold() { return fPointsOverThreshold; }
+    std::vector<Int_t> GetPointsOverThreshold() const { return fPointsOverThreshold; }
 
     /// Returns the maximum value found in the data points. It includes baseline
     /// correction
-    Double_t GetMaxValue() { return GetMaxPeakValue(); }
+    inline Double_t GetMaxValue() { return GetMaxPeakValue(); }
 
     /// Returns the lowest value found in the data points. It includes baseline
     /// correction
-    Double_t GetMinValue() { return GetMinPeakValue(); }
+    inline Double_t GetMinValue() { return GetMinPeakValue(); }
 
     /// Returns the number of head points used on points over threshold definition
-    Int_t GetHeadPoints() { return fHeadPoints; }
+    inline Int_t GetHeadPoints() const { return fHeadPoints; }
 
     /// Returns the number of tail points used on points over threshold definition
-    Int_t GetTailPoints() { return fTailPoints; }
+    inline Int_t GetTailPoints() const { return fTailPoints; }
 
     /// Returns the value of baseline that it is initialized after calling
     /// CalculateBaseLine.
-    Double_t GetBaseLine() { return fBaseLine; }
+    inline Double_t GetBaseLine() const { return fBaseLine; }
 
     /// Returns the value of baseline sigma that it is initialized after calling
     /// CalculateBaseLineSigmaSD or CalculateBaseLineSigmaIQR.
-    Double_t GetBaseLineSigma() { return fBaseLineSigma; }
+    inline Double_t GetBaseLineSigma() const { return fBaseLineSigma; }
 
     /// Returns the range defined by user
-    TVector2 GetRange() { return fRange; }
+    inline TVector2 GetRange() const { return fRange; }
 
     /// Returns false if the baseline and its baseline fluctuation was not
     /// initialized.
@@ -127,9 +127,9 @@ class TRestRawSignal : public TObject {
         return true;
     }
 
-    Double_t GetData(Int_t n);
+    Double_t GetData(Int_t n) const;
 
-    Double_t GetRawData(Int_t n);
+    Double_t GetRawData(Int_t n) const;
 
     Short_t operator[](Int_t n);
 
