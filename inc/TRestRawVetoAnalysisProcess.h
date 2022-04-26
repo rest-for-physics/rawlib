@@ -80,7 +80,7 @@ class TRestRawVetoAnalysisProcess : public TRestEventProcess {
     void InitProcess();
     TRestEvent* ProcessEvent(TRestEvent* evInput);
 
-    void LoadConfig(std::string cfgFilename, std::string name = "");
+    void LoadConfig(std::string configFilename, std::string name = "");
 
     void PrintMetadata();
 
@@ -88,7 +88,7 @@ class TRestRawVetoAnalysisProcess : public TRestEventProcess {
     TRestEventProcess* Maker() { return new TRestRawVetoAnalysisProcess; }
 
     /// Returns the name of this process
-    TString GetProcessName() { return (TString) "vetoAnalysis"; }
+    inline TString GetProcessName() const { return (TString) "vetoAnalysis"; }
 
     /// Returns the veto IDs, if they where defined in a list
     std::vector<double> GetVetoSignalIDs() { return fVetoSignalId; }
@@ -109,7 +109,7 @@ class TRestRawVetoAnalysisProcess : public TRestEventProcess {
     std::string GetGroupIds(std::string groupName);
 
     TRestRawVetoAnalysisProcess();
-    TRestRawVetoAnalysisProcess(char* cfgFileName);
+    TRestRawVetoAnalysisProcess(char* configFilename);
 
     ~TRestRawVetoAnalysisProcess();
 

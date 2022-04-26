@@ -68,7 +68,7 @@ class TRestRawSignalGeneralFitProcess : public TRestEventProcess {
     TRestEvent* ProcessEvent(TRestEvent* eventInput);
     void EndProcess();
 
-    void LoadConfig(std::string cfgFilename, std::string name = "");
+    void LoadConfig(std::string configFilename, std::string name = "");
 
     void PrintMetadata() {
         BeginPrintProcess();
@@ -79,10 +79,10 @@ class TRestRawSignalGeneralFitProcess : public TRestEventProcess {
         EndPrintProcess();
     }
 
-    TString GetProcessName() { return (TString) "rawSignalGeneralFit"; }
+    inline TString GetProcessName() const { return (TString) "rawSignalGeneralFit"; }
 
     TRestRawSignalGeneralFitProcess();  // Constructor
-    TRestRawSignalGeneralFitProcess(char* cfgFileName);
+    TRestRawSignalGeneralFitProcess(char* configFilename);
     ~TRestRawSignalGeneralFitProcess();  // Destructor
 
     ClassDef(TRestRawSignalGeneralFitProcess, 2);

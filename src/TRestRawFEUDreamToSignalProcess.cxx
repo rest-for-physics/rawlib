@@ -78,8 +78,8 @@ ClassImp(TRestRawFEUDreamToSignalProcess);
 
 TRestRawFEUDreamToSignalProcess::TRestRawFEUDreamToSignalProcess() { Initialize(); }
 
-TRestRawFEUDreamToSignalProcess::TRestRawFEUDreamToSignalProcess(char* cfgFileName)
-    : TRestRawToSignalProcess(cfgFileName) {
+TRestRawFEUDreamToSignalProcess::TRestRawFEUDreamToSignalProcess(char* configFilename)
+    : TRestRawToSignalProcess(configFilename) {
     Initialize();
 }
 

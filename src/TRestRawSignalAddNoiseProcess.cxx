@@ -67,10 +67,10 @@ ClassImp(TRestRawSignalAddNoiseProcess);
 
 TRestRawSignalAddNoiseProcess::TRestRawSignalAddNoiseProcess() { Initialize(); }
 
-TRestRawSignalAddNoiseProcess::TRestRawSignalAddNoiseProcess(char* cfgFileName) {
+TRestRawSignalAddNoiseProcess::TRestRawSignalAddNoiseProcess(char* configFilename) {
     Initialize();
 
-    if (LoadConfigFromFile(cfgFileName) == -1) LoadDefaultConfig();
+    if (LoadConfigFromFile(configFilename) == -1) LoadDefaultConfig();
 }
 
 TRestRawSignalAddNoiseProcess::~TRestRawSignalAddNoiseProcess() {
@@ -91,8 +91,8 @@ void TRestRawSignalAddNoiseProcess::Initialize() {
     fOutputSignalEvent = new TRestRawSignalEvent();
 }
 
-void TRestRawSignalAddNoiseProcess::LoadConfig(string cfgFilename, string name) {
-    if (LoadConfigFromFile(cfgFilename, name) == -1) LoadDefaultConfig();
+void TRestRawSignalAddNoiseProcess::LoadConfig(string configFilename, string name) {
+    if (LoadConfigFromFile(configFilename, name) == -1) LoadDefaultConfig();
 }
 
 void TRestRawSignalAddNoiseProcess::InitProcess() {

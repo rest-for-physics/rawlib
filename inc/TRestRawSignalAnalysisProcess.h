@@ -80,7 +80,7 @@ class TRestRawSignalAnalysisProcess : public TRestEventProcess {
         EndPrintProcess();
     }
 
-    TString GetProcessName() { return (TString) "rawSignalAnalysis"; }
+    inline TString GetProcessName() const { return (TString) "rawSignalAnalysis"; }
 
     TRestRawSignalAnalysisProcess();   // Constructor
     ~TRestRawSignalAnalysisProcess();  // Destructor

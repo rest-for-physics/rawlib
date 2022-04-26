@@ -68,10 +68,10 @@ ClassImp(TRestRawToSignalProcess);
 
 TRestRawToSignalProcess::TRestRawToSignalProcess() { Initialize(); }
 
-TRestRawToSignalProcess::TRestRawToSignalProcess(char* cfgFileName) {
+TRestRawToSignalProcess::TRestRawToSignalProcess(char* configFilename) {
     Initialize();
 
-    if (LoadConfigFromFile(cfgFileName)) LoadDefaultConfig();
+    if (LoadConfigFromFile(configFilename)) LoadDefaultConfig();
 }
 
 TRestRawToSignalProcess::~TRestRawToSignalProcess() {
@@ -79,8 +79,8 @@ TRestRawToSignalProcess::~TRestRawToSignalProcess() {
     delete fSignalEvent;
 }
 
-void TRestRawToSignalProcess::LoadConfig(string cfgFilename, string name) {
-    if (LoadConfigFromFile(cfgFilename, name) == -1) {
+void TRestRawToSignalProcess::LoadConfig(string configFilename, string name) {
+    if (LoadConfigFromFile(configFilename, name) == -1) {
         cout << "Loading default" << endl;
         LoadDefaultConfig();
     }

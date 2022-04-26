@@ -25,7 +25,7 @@
 
 #include "TRestRawToSignalProcess.h"
 
-// ATENTION: new T2K Daq versions 2.X need to read one extra word
+// ATTENTION: new T2K Daq versions 2.X need to read one extra word
 #define NEW_DAQ_T2K_2_X
 
 //--------------------------------------------------------
@@ -38,8 +38,8 @@ struct EventHeader {
     // uint16_t dummy;
 };
 
-// ATENTION!!!!!
-// New verison of the DaqT2K (2.x)
+// ATTENTION!!!!!
+// New version of the DaqT2K (2.x)
 // added 30th July 2012 (JuanAn)
 struct DataPacketHeader {
     uint16_t size;
@@ -69,8 +69,8 @@ class TRestRawAFTERToSignalProcess : public TRestRawToSignalProcess {
     void Initialize();
     void InitProcess();
     TRestEvent* ProcessEvent(TRestEvent* evInput);
-    TString GetProcessName() { return (TString) "AFTERToSignal"; }
-    TRestMetadata* GetProcessMetadata() { return nullptr; }
+    inline TString GetProcessName() const { return (TString) "AFTERToSignal"; }
+    TRestMetadata* GetProcessMetadata() const { return nullptr; }
 
     Bool_t isExternal() { return true; }
 

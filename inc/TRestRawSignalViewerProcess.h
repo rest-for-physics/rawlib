@@ -60,7 +60,7 @@ class TRestRawSignalViewerProcess : public TRestEventProcess {
     TRestEvent* ProcessEvent(TRestEvent* eventInput);
     void EndProcess();
 
-    void LoadConfig(std::string cfgFilename, std::string name = "");
+    void LoadConfig(std::string configFilename, std::string name = "");
 
     void PrintMetadata() {
         BeginPrintProcess();
@@ -70,11 +70,11 @@ class TRestRawSignalViewerProcess : public TRestEventProcess {
         EndPrintProcess();
     }
 
-    TString GetProcessName() { return (TString) "rawSignalViewer"; }
+    inline TString GetProcessName() const { return (TString) "rawSignalViewer"; }
 
     // Constructor
     TRestRawSignalViewerProcess();
-    TRestRawSignalViewerProcess(char* cfgFileName);
+    TRestRawSignalViewerProcess(char* configFilename);
     // Destructor
     ~TRestRawSignalViewerProcess();
 

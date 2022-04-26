@@ -50,9 +50,9 @@ class TRestRawSignalAddNoiseProcess : public TRestEventProcess {
     TRestEvent* ProcessEvent(TRestEvent* eventInput);
     void EndProcess();
 
-    void LoadConfig(std::string cfgFilename, std::string name = "");
+    void LoadConfig(std::string configFilename, std::string name = "");
 
-    void PrintMetadata() {
+    inline void PrintMetadata() {
         BeginPrintProcess();
 
         metadata << "Noise Level : " << fNoiseLevel << endl;
@@ -60,13 +60,13 @@ class TRestRawSignalAddNoiseProcess : public TRestEventProcess {
         EndPrintProcess();
     }
 
-    TRestMetadata* GetProcessMetadata() { return nullptr; }
+    TRestMetadata* GetProcessMetadata() const { return nullptr; }
 
-    TString GetProcessName() { return (TString) "rawSignalAddNoise"; }
+    inline TString GetProcessName() const { return (TString) "rawSignalAddNoise"; }
 
     // Constructor
     TRestRawSignalAddNoiseProcess();
-    TRestRawSignalAddNoiseProcess(char* cfgFileName);
+    TRestRawSignalAddNoiseProcess(char* configFilename);
     // Destructor
     ~TRestRawSignalAddNoiseProcess();
 

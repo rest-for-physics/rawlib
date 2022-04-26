@@ -71,7 +71,7 @@ ClassImp(TRestRawUSTCToSignalProcess);
 
 TRestRawUSTCToSignalProcess::TRestRawUSTCToSignalProcess() { Initialize(); }
 
-TRestRawUSTCToSignalProcess::TRestRawUSTCToSignalProcess(char* cfgFileName) { Initialize(); }
+TRestRawUSTCToSignalProcess::TRestRawUSTCToSignalProcess(char* configFilename) { Initialize(); }
 
 TRestRawUSTCToSignalProcess::~TRestRawUSTCToSignalProcess() {
     // TRestRawUSTCToSignalProcess destructor

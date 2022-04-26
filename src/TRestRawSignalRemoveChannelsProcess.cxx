@@ -92,12 +92,12 @@ TRestRawSignalRemoveChannelsProcess::TRestRawSignalRemoveChannelsProcess() { Ini
 /// The default behaviour is that the config file must be specified with
 /// full path, absolute or relative.
 ///
-/// \param cfgFileName A const char* giving the path to an RML file.
+/// \param configFilename A const char* giving the path to an RML file.
 ///
-TRestRawSignalRemoveChannelsProcess::TRestRawSignalRemoveChannelsProcess(char* cfgFileName) {
+TRestRawSignalRemoveChannelsProcess::TRestRawSignalRemoveChannelsProcess(char* configFilename) {
     Initialize();
 
-    if (LoadConfigFromFile(cfgFileName) == -1) LoadDefaultConfig();
+    if (LoadConfigFromFile(configFilename) == -1) LoadDefaultConfig();
 
     PrintMetadata();
 }
@@ -135,12 +135,12 @@ void TRestRawSignalRemoveChannelsProcess::Initialize() {
 /// the path to the config file must be specified using full path, absolute or
 /// relative.
 ///
-/// \param cfgFileName A const char* giving the path to an RML file.
+/// \param configFilename A const char* giving the path to an RML file.
 /// \param name The name of the specific metadata. It will be used to find the
 /// correspondig TRestGeant4AnalysisProcess section inside the RML.
 ///
-void TRestRawSignalRemoveChannelsProcess::LoadConfig(string cfgFilename, string name) {
-    if (LoadConfigFromFile(cfgFilename, name) == -1) LoadDefaultConfig();
+void TRestRawSignalRemoveChannelsProcess::LoadConfig(string configFilename, string name) {
+    if (LoadConfigFromFile(configFilename, name) == -1) LoadDefaultConfig();
 }
 
 ///////////////////////////////////////////////

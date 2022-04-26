@@ -66,12 +66,12 @@ class TRestRawToSignalProcess : public TRestEventProcess {
     virtual TRestEvent* ProcessEvent(TRestEvent* evInput) = 0;
     virtual void EndProcess();
     // virtual TString GetProcessName()=0;
-    TRestMetadata* GetProcessMetadata() { return nullptr; }
+    TRestMetadata* GetProcessMetadata() const { return nullptr; }
 
-    void SetRunOrigin(Int_t run_origin) { fRunOrigin = run_origin; }
-    void SetSubRunOrigin(Int_t sub_run_origin) { fSubRunOrigin = sub_run_origin; }
+    void SetRunOrigin(Int_t runOrigin) { fRunOrigin = runOrigin; }
+    void SetSubRunOrigin(Int_t subRunOrigin) { fSubRunOrigin = subRunOrigin; }
 
-    void LoadConfig(std::string cfgFilename, std::string name = "");
+    void LoadConfig(std::string configFilename, std::string name = "");
 
     virtual void PrintMetadata();
 
@@ -81,17 +81,17 @@ class TRestRawToSignalProcess : public TRestEventProcess {
     virtual Bool_t AddInputFile(std::string file);
     Bool_t ResetEntry();
 
-    virtual Long64_t GetTotalBytesReaded() { return totalBytesReaded; }
-    virtual Long64_t GetTotalBytes() { return totalBytes; }
+    virtual Long64_t GetTotalBytesRead() const { return totalBytesReaded; }
+    virtual Long64_t GetTotalBytes() const { return totalBytes; }
     //  Int_t GetRunNumber(){return fRunNumber;}
     //  Int_t GetRunIndex(){return fRunIndex;}
-    virtual std::string GetElectronicsType() { return fElectronicsType; }
+    virtual std::string GetElectronicsType() const { return fElectronicsType; }
 
     Bool_t GoToNextFile();
 
     // Constructor
     TRestRawToSignalProcess();
-    TRestRawToSignalProcess(char* cfgFileName);
+    TRestRawToSignalProcess(char* configFileName);
     // Destructor
     ~TRestRawToSignalProcess();
 

@@ -128,7 +128,7 @@ class TRestRawUSTCToSignalProcess : public TRestRawToSignalProcess {
 
     // Constructor
     TRestRawUSTCToSignalProcess();
-    TRestRawUSTCToSignalProcess(char* cfgFileName);
+    TRestRawUSTCToSignalProcess(char* configFilename);
     // Destructor
     ~TRestRawUSTCToSignalProcess();
 

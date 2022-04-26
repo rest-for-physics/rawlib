@@ -113,7 +113,7 @@ class TRestRawMemoryBufferToSignalProcess : public TRestEventProcess {
     void BeginOfEventProcess();
     TRestEvent* ProcessEvent(TRestEvent* eventInput);
 
-    void LoadConfig(std::string cfgFilename, std::string name = "");
+    void LoadConfig(std::string configFilename, std::string name = "");
 
     /// It prints out the process parameters stored in the metadata structure
     void PrintMetadata() {
@@ -126,11 +126,11 @@ class TRestRawMemoryBufferToSignalProcess : public TRestEventProcess {
     TRestEventProcess* Maker() { return new TRestRawMemoryBufferToSignalProcess; }
 
     /// Returns the name of this process
-    TString GetProcessName() { return (TString) "sharedMemoryBufferToSignalEvent"; }
+    inline TString GetProcessName() const { return (TString) "sharedMemoryBufferToSignalEvent"; }
 
     // Constructor
     TRestRawMemoryBufferToSignalProcess();
-    TRestRawMemoryBufferToSignalProcess(char* cfgFileName);
+    TRestRawMemoryBufferToSignalProcess(char* configFilename);
 
     // Destructor
     ~TRestRawMemoryBufferToSignalProcess();

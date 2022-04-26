@@ -67,7 +67,7 @@ class TRestRawCommonNoiseReductionProcess : public TRestEventProcess {
 
     void EndProcess();
 
-    void LoadConfig(std::string cfgFilename, std::string name = "");
+    void LoadConfig(std::string configFilename, std::string name = "");
 
     void PrintMetadata() {
         BeginPrintProcess();
@@ -86,11 +86,11 @@ class TRestRawCommonNoiseReductionProcess : public TRestEventProcess {
     TRestEventProcess* Maker() { return new TRestRawCommonNoiseReductionProcess; }
 
     /// Returns the reduced process name
-    TString GetProcessName() { return (TString) "commonNoiseReduction"; }
+    inline TString GetProcessName() const { return (TString) "commonNoiseReduction"; }
 
     // Constructor
     TRestRawCommonNoiseReductionProcess();
-    TRestRawCommonNoiseReductionProcess(char* cfgFileName);
+    TRestRawCommonNoiseReductionProcess(char* configFilename);
 
     // Destructor
     ~TRestRawCommonNoiseReductionProcess();

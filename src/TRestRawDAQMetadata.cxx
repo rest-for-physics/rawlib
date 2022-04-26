@@ -64,7 +64,7 @@ ClassImp(TRestRawDAQMetadata);
 
 TRestRawDAQMetadata::TRestRawDAQMetadata() { Initialize(); }
 
-TRestRawDAQMetadata::TRestRawDAQMetadata(char* cfgFileName) : TRestMetadata(cfgFileName) {
+TRestRawDAQMetadata::TRestRawDAQMetadata(char* configFilename) : TRestMetadata(configFilename) {
     Initialize();
 
     LoadConfigFromFile(fConfigFileName);

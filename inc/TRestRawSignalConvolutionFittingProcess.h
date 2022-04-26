@@ -60,7 +60,7 @@ class TRestRawSignalConvolutionFittingProcess : public TRestEventProcess {
     TRestEvent* ProcessEvent(TRestEvent* eventInput);
     void EndProcess();
 
-    void LoadConfig(std::string cfgFilename, std::string name = "");
+    void LoadConfig(std::string configFilename, std::string name = "");
 
     void PrintMetadata() {
         BeginPrintProcess();
@@ -82,10 +82,10 @@ class TRestRawSignalConvolutionFittingProcess : public TRestEventProcess {
         EndPrintProcess();
     }
 
-    TString GetProcessName() { return (TString) "rawSignalConvolutionFitting"; }
+    inline TString GetProcessName() const { return (TString) "rawSignalConvolutionFitting"; }
 
     TRestRawSignalConvolutionFittingProcess();  // Constructor
-    TRestRawSignalConvolutionFittingProcess(char* cfgFileName);
+    TRestRawSignalConvolutionFittingProcess(char* configFilename);
     ~TRestRawSignalConvolutionFittingProcess();  // Destructor
 
     ClassDef(TRestRawSignalConvolutionFittingProcess, 1);
