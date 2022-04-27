@@ -86,7 +86,7 @@ class TRestRawCommonNoiseReductionProcess : public TRestEventProcess {
     TRestEventProcess* Maker() { return new TRestRawCommonNoiseReductionProcess; }
 
     /// Returns the reduced process name
-    inline TString GetProcessName() const { return (TString) "commonNoiseReduction"; }
+    inline const char* GetProcessName() const { return "commonNoiseReduction"; }
 
     // Constructor
     TRestRawCommonNoiseReductionProcess();

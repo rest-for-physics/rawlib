@@ -80,7 +80,7 @@ class TRestRawSignalConvolutionFittingProcess : public TRestEventProcess {
         EndPrintProcess();
     }
 
-    inline TString GetProcessName() const { return (TString) "rawSignalConvolutionFitting"; }
+    inline const char* GetProcessName() const { return "rawSignalConvolutionFitting"; }
 
     TRestRawSignalConvolutionFittingProcess();  // Constructor
     TRestRawSignalConvolutionFittingProcess(char* configFilename);

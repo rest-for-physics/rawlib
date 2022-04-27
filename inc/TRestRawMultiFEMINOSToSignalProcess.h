@@ -40,7 +40,7 @@ class TRestRawMultiFEMINOSToSignalProcess : public TRestRawToSignalProcess {
     void InitProcess();
     void Initialize();
     TRestEvent* ProcessEvent(TRestEvent* evInput);
-    inline TString GetProcessName() const { return (TString) "MultiFEMINOSToSignal"; }
+    inline const char* GetProcessName() const { return "MultiFEMINOSToSignal"; }
 
     Bool_t ReadFrame(void* fr, int fr_sz);
 

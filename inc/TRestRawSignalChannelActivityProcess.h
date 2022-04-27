@@ -137,7 +137,7 @@ class TRestRawSignalChannelActivityProcess : public TRestEventProcess {
     }
 
     /// Returns the name of this process
-    inline TString GetProcessName() const { return (TString) "rawSignalChannelActivity"; }
+    inline const char* GetProcessName() const { return "rawSignalChannelActivity"; }
 
     // Constructor
     TRestRawSignalChannelActivityProcess();

@@ -88,7 +88,7 @@ class TRestRawVetoAnalysisProcess : public TRestEventProcess {
     TRestEventProcess* Maker() { return new TRestRawVetoAnalysisProcess; }
 
     /// Returns the name of this process
-    inline TString GetProcessName() const { return (TString) "vetoAnalysis"; }
+    inline const char* GetProcessName() const { return "vetoAnalysis"; }
 
     /// Returns the veto IDs, if they where defined in a list
     std::vector<double> GetVetoSignalIDs() { return fVetoSignalId; }

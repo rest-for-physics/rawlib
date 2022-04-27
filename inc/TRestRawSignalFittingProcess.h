@@ -69,7 +69,7 @@ class TRestRawSignalFittingProcess : public TRestEventProcess {
         EndPrintProcess();
     }
 
-    inline TString GetProcessName() const { return (TString) "rawSignalFitting"; }
+    inline const char* GetProcessName() const { return "rawSignalFitting"; }
 
     TRestRawSignalFittingProcess();  // Constructor
     TRestRawSignalFittingProcess(char* configFilename);

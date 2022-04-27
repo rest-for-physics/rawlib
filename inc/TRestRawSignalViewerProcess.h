@@ -70,7 +70,7 @@ class TRestRawSignalViewerProcess : public TRestEventProcess {
         EndPrintProcess();
     }
 
-    inline TString GetProcessName() const { return (TString) "rawSignalViewer"; }
+    inline const char* GetProcessName() const { return "rawSignalViewer"; }
 
     // Constructor
     TRestRawSignalViewerProcess();
