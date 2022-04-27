@@ -61,7 +61,7 @@ class TRestRawSignalFittingProcess : public TRestEventProcess {
     TRestEvent* ProcessEvent(TRestEvent* eventInput);
     void EndProcess();
 
-    void LoadConfig(std::string configFilename, std::string name = "");
+    void LoadConfig(const std::string& configFilename, const std::string& name = "");
 
     void PrintMetadata() {
         BeginPrintProcess();

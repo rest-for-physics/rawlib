@@ -123,7 +123,7 @@ void TRestRawSignalViewerProcess::Initialize() {
 /// \param name The name of the specific metadata. It will be used to find the
 /// correspondig TRestGeant4AnalysisProcess section inside the RML.
 ///
-void TRestRawSignalViewerProcess::LoadConfig(std::string configFilename, std::string name) {
+void TRestRawSignalViewerProcess::LoadConfig(const string& configFilename, const string& name) {
     if (LoadConfigFromFile(configFilename, name)) LoadDefaultConfig();
 }
 

@@ -91,7 +91,7 @@ void TRestRawSignalAddNoiseProcess::Initialize() {
     fOutputSignalEvent = new TRestRawSignalEvent();
 }
 
-void TRestRawSignalAddNoiseProcess::LoadConfig(string configFilename, string name) {
+void TRestRawSignalAddNoiseProcess::LoadConfig(const string& configFilename, const string& name) {
     if (LoadConfigFromFile(configFilename, name) == -1) LoadDefaultConfig();
 }
 

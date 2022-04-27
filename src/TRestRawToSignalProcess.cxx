@@ -79,7 +79,7 @@ TRestRawToSignalProcess::~TRestRawToSignalProcess() {
     delete fSignalEvent;
 }
 
-void TRestRawToSignalProcess::LoadConfig(string configFilename, string name) {
+void TRestRawToSignalProcess::LoadConfig(const string& configFilename, const string& name) {
     if (LoadConfigFromFile(configFilename, name) == -1) {
         cout << "Loading default" << endl;
         LoadDefaultConfig();

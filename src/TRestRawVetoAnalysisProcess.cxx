@@ -190,7 +190,7 @@ void TRestRawVetoAnalysisProcess::LoadDefaultConfig() {
 /// \param name The name of the specific metadata. It will be used to find the
 /// correspondig TRestRawVetoAnalysisProcess section inside the RML.
 ///
-void TRestRawVetoAnalysisProcess::LoadConfig(std::string configFilename, std::string name) {
+void TRestRawVetoAnalysisProcess::LoadConfig(const string& configFilename, const string& name) {
     if (LoadConfigFromFile(configFilename, name)) LoadDefaultConfig();
 }
 

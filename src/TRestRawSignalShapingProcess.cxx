@@ -149,7 +149,7 @@ void TRestRawSignalShapingProcess::Initialize() {
 /// \param name The name of the specific metadata. It will be used to find the
 /// correspondig TRestGeant4AnalysisProcess section inside the RML.
 ///
-void TRestRawSignalShapingProcess::LoadConfig(string configFilename, string name) {
+void TRestRawSignalShapingProcess::LoadConfig(const string& configFilename, const string& name) {
     if (LoadConfigFromFile(configFilename, name) == -1) LoadDefaultConfig();
 }
 

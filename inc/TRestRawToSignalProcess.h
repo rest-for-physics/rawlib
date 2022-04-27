@@ -71,7 +71,7 @@ class TRestRawToSignalProcess : public TRestEventProcess {
     void SetRunOrigin(Int_t runOrigin) { fRunOrigin = runOrigin; }
     void SetSubRunOrigin(Int_t subRunOrigin) { fSubRunOrigin = subRunOrigin; }
 
-    void LoadConfig(std::string configFilename, std::string name = "");
+    void LoadConfig(const std::string& configFilename, const std::string& name = "");
 
     virtual void PrintMetadata();
 
