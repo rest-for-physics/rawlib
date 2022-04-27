@@ -194,7 +194,7 @@ ClassImp(TRestRawMultiFEMINOSToSignalProcess);
 
 TRestRawMultiFEMINOSToSignalProcess::TRestRawMultiFEMINOSToSignalProcess() { Initialize(); }
 
-TRestRawMultiFEMINOSToSignalProcess::TRestRawMultiFEMINOSToSignalProcess(char* configFilename)
+TRestRawMultiFEMINOSToSignalProcess::TRestRawMultiFEMINOSToSignalProcess(const char* configFilename)
     : TRestRawToSignalProcess(configFilename) {
     Initialize();
 }

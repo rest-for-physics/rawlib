@@ -74,7 +74,7 @@ class TRestRawSignalViewerProcess : public TRestEventProcess {
 
     // Constructor
     TRestRawSignalViewerProcess();
-    TRestRawSignalViewerProcess(char* configFilename);
+    TRestRawSignalViewerProcess(const char* configFilename);
     // Destructor
     ~TRestRawSignalViewerProcess();
 

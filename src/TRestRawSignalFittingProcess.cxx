@@ -120,7 +120,7 @@ TRestRawSignalFittingProcess::TRestRawSignalFittingProcess() { Initialize(); }
 ///
 /// \param configFilename A const char* giving the path to an RML file.
 ///
-TRestRawSignalFittingProcess::TRestRawSignalFittingProcess(char* configFilename) {
+TRestRawSignalFittingProcess::TRestRawSignalFittingProcess(const char* configFilename) {
     Initialize();
 
     if (LoadConfigFromFile(configFilename)) LoadDefaultConfig();

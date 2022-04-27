@@ -130,7 +130,7 @@ class TRestRawMemoryBufferToSignalProcess : public TRestEventProcess {
 
     // Constructor
     TRestRawMemoryBufferToSignalProcess();
-    TRestRawMemoryBufferToSignalProcess(char* configFilename);
+    TRestRawMemoryBufferToSignalProcess(const char* configFilename);
 
     // Destructor
     ~TRestRawMemoryBufferToSignalProcess();

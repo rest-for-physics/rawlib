@@ -110,7 +110,7 @@ TRestRawCommonNoiseReductionProcess::TRestRawCommonNoiseReductionProcess() { Ini
 ///
 /// \param configFilename A const char* giving the path to an RML file.
 ///
-TRestRawCommonNoiseReductionProcess::TRestRawCommonNoiseReductionProcess(char* configFilename) {
+TRestRawCommonNoiseReductionProcess::TRestRawCommonNoiseReductionProcess(const char* configFilename) {
     Initialize();
 
     if (LoadConfigFromFile(configFilename)) LoadDefaultConfig();

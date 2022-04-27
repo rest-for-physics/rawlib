@@ -141,7 +141,7 @@ class TRestRawSignalChannelActivityProcess : public TRestEventProcess {
 
     // Constructor
     TRestRawSignalChannelActivityProcess();
-    TRestRawSignalChannelActivityProcess(char* configFilename);
+    TRestRawSignalChannelActivityProcess(const char* configFilename);
     // Destructor
     ~TRestRawSignalChannelActivityProcess();
 

@@ -82,7 +82,7 @@ class TRestRawSignalGeneralFitProcess : public TRestEventProcess {
     inline const char* GetProcessName() const { return "rawSignalGeneralFit"; }
 
     TRestRawSignalGeneralFitProcess();  // Constructor
-    TRestRawSignalGeneralFitProcess(char* configFilename);
+    TRestRawSignalGeneralFitProcess(const char* configFilename);
     ~TRestRawSignalGeneralFitProcess();  // Destructor
 
     ClassDef(TRestRawSignalGeneralFitProcess, 2);

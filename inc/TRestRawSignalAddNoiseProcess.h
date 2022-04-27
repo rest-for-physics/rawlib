@@ -66,7 +66,7 @@ class TRestRawSignalAddNoiseProcess : public TRestEventProcess {
 
     // Constructor
     TRestRawSignalAddNoiseProcess();
-    TRestRawSignalAddNoiseProcess(char* configFilename);
+    TRestRawSignalAddNoiseProcess(const char* configFilename);
     // Destructor
     ~TRestRawSignalAddNoiseProcess();
 

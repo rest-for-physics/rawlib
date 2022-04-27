@@ -119,7 +119,7 @@ TRestRawSignalChannelActivityProcess::TRestRawSignalChannelActivityProcess() { I
 ///
 /// \param configFilename A const char* giving the path to an RML file.
 ///
-TRestRawSignalChannelActivityProcess::TRestRawSignalChannelActivityProcess(char* configFilename) {
+TRestRawSignalChannelActivityProcess::TRestRawSignalChannelActivityProcess(const char* configFilename) {
     Initialize();
 
     if (LoadConfigFromFile(configFilename)) LoadDefaultConfig();

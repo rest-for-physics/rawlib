@@ -159,7 +159,7 @@ TRestRawVetoAnalysisProcess::TRestRawVetoAnalysisProcess() { Initialize(); }
 ///
 /// \param configFilename A const char* giving the path to an RML file.
 ///
-TRestRawVetoAnalysisProcess::TRestRawVetoAnalysisProcess(char* configFilename) {
+TRestRawVetoAnalysisProcess::TRestRawVetoAnalysisProcess(const char* configFilename) {
     Initialize();
 
     LoadConfig(configFilename);

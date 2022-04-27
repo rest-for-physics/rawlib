@@ -46,7 +46,7 @@ class TRestRawMultiFEMINOSToSignalProcess : public TRestRawToSignalProcess {
 
     // Constructor
     TRestRawMultiFEMINOSToSignalProcess();
-    TRestRawMultiFEMINOSToSignalProcess(char* configFilename);
+    TRestRawMultiFEMINOSToSignalProcess(const char* configFilename);
     // Destructor
     ~TRestRawMultiFEMINOSToSignalProcess();
 

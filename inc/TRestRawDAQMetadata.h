@@ -54,7 +54,7 @@ class TRestRawDAQMetadata : public TRestMetadata {
 
     // Constructor
     TRestRawDAQMetadata();
-    TRestRawDAQMetadata(char* configFilename);
+    TRestRawDAQMetadata(const char* configFilename);
     // Destructor
     virtual ~TRestRawDAQMetadata();
 

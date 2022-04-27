@@ -154,7 +154,7 @@ class TRestRawFEUDreamToSignalProcess : public TRestRawToSignalProcess {
 
     // Constructor
     TRestRawFEUDreamToSignalProcess();
-    TRestRawFEUDreamToSignalProcess(char* configFilename);
+    TRestRawFEUDreamToSignalProcess(const char* configFilename);
 
     // Destructor
     ~TRestRawFEUDreamToSignalProcess();

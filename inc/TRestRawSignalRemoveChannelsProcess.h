@@ -75,7 +75,7 @@ class TRestRawSignalRemoveChannelsProcess : public TRestEventProcess {
 
     // Constructor
     TRestRawSignalRemoveChannelsProcess();
-    TRestRawSignalRemoveChannelsProcess(char* configFilename);
+    TRestRawSignalRemoveChannelsProcess(const char* configFilename);
 
     // Destructor
     ~TRestRawSignalRemoveChannelsProcess();

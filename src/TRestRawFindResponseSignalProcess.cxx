@@ -89,7 +89,7 @@ TRestRawFindResponseSignalProcess::TRestRawFindResponseSignalProcess() { Initial
 ///
 /// \param configFilename A const char* giving the path to an RML file.
 ///
-TRestRawFindResponseSignalProcess::TRestRawFindResponseSignalProcess(char* configFilename) {
+TRestRawFindResponseSignalProcess::TRestRawFindResponseSignalProcess(const char* configFilename) {
     Initialize();
 
     if (LoadConfigFromFile(configFilename) == -1) LoadDefaultConfig();

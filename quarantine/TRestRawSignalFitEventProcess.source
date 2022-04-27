@@ -173,7 +173,7 @@ TRestRawSignalFitEventProcess::TRestRawSignalFitEventProcess() { Initialize(); }
 ///
 /// \param configFilename A const char* giving the path to an RML file.
 ///
-TRestRawSignalFitEventProcess::TRestRawSignalFitEventProcess(char* configFilename) {
+TRestRawSignalFitEventProcess::TRestRawSignalFitEventProcess(const char* configFilename) {
     Initialize();
 
     if (LoadConfigFromFile(configFilename)) LoadDefaultConfig();

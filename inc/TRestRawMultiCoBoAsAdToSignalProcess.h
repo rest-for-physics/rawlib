@@ -138,7 +138,7 @@ class TRestRawMultiCoBoAsAdToSignalProcess : public TRestRawToSignalProcess {
 
     // Constructor
     TRestRawMultiCoBoAsAdToSignalProcess();
-    TRestRawMultiCoBoAsAdToSignalProcess(char* configFilename);
+    TRestRawMultiCoBoAsAdToSignalProcess(const char* configFilename);
     // Destructor
     ~TRestRawMultiCoBoAsAdToSignalProcess();
 

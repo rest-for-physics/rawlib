@@ -67,7 +67,7 @@ ClassImp(TRestRawSignalAddNoiseProcess);
 
 TRestRawSignalAddNoiseProcess::TRestRawSignalAddNoiseProcess() { Initialize(); }
 
-TRestRawSignalAddNoiseProcess::TRestRawSignalAddNoiseProcess(char* configFilename) {
+TRestRawSignalAddNoiseProcess::TRestRawSignalAddNoiseProcess(const char* configFilename) {
     Initialize();
 
     if (LoadConfigFromFile(configFilename) == -1) LoadDefaultConfig();

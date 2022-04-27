@@ -90,7 +90,7 @@ class TRestRawCommonNoiseReductionProcess : public TRestEventProcess {
 
     // Constructor
     TRestRawCommonNoiseReductionProcess();
-    TRestRawCommonNoiseReductionProcess(char* configFilename);
+    TRestRawCommonNoiseReductionProcess(const char* configFilename);
 
     // Destructor
     ~TRestRawCommonNoiseReductionProcess();

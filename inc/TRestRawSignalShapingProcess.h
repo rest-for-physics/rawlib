@@ -84,7 +84,7 @@ class TRestRawSignalShapingProcess : public TRestEventProcess {
     inline const char* GetProcessName() const { return "rawSignalShaping"; }
 
     TRestRawSignalShapingProcess();
-    TRestRawSignalShapingProcess(char* configFilename);
+    TRestRawSignalShapingProcess(const char* configFilename);
     ~TRestRawSignalShapingProcess();
 
     ClassDef(TRestRawSignalShapingProcess, 2);

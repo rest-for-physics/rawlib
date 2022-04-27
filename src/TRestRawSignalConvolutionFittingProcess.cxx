@@ -131,7 +131,7 @@ TRestRawSignalConvolutionFittingProcess::TRestRawSignalConvolutionFittingProcess
 ///
 /// \param configFilename A const char* giving the path to an RML file.
 ///
-TRestRawSignalConvolutionFittingProcess::TRestRawSignalConvolutionFittingProcess(char* configFilename) {
+TRestRawSignalConvolutionFittingProcess::TRestRawSignalConvolutionFittingProcess(const char* configFilename) {
     Initialize();
 
     if (LoadConfigFromFile(configFilename)) LoadDefaultConfig();

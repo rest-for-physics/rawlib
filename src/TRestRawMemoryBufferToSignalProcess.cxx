@@ -144,7 +144,7 @@ TRestRawMemoryBufferToSignalProcess::TRestRawMemoryBufferToSignalProcess() { Ini
 ///
 /// \param configFilename A const char* giving the path to an RML file.
 ///
-TRestRawMemoryBufferToSignalProcess::TRestRawMemoryBufferToSignalProcess(char* configFilename) {
+TRestRawMemoryBufferToSignalProcess::TRestRawMemoryBufferToSignalProcess(const char* configFilename) {
     Initialize();
 
     LoadConfig(configFilename);

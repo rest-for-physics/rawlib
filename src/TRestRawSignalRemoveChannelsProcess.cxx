@@ -94,7 +94,7 @@ TRestRawSignalRemoveChannelsProcess::TRestRawSignalRemoveChannelsProcess() { Ini
 ///
 /// \param configFilename A const char* giving the path to an RML file.
 ///
-TRestRawSignalRemoveChannelsProcess::TRestRawSignalRemoveChannelsProcess(char* configFilename) {
+TRestRawSignalRemoveChannelsProcess::TRestRawSignalRemoveChannelsProcess(const char* configFilename) {
     Initialize();
 
     if (LoadConfigFromFile(configFilename) == -1) LoadDefaultConfig();

@@ -68,7 +68,7 @@ ClassImp(TRestRawToSignalProcess);
 
 TRestRawToSignalProcess::TRestRawToSignalProcess() { Initialize(); }
 
-TRestRawToSignalProcess::TRestRawToSignalProcess(char* configFilename) {
+TRestRawToSignalProcess::TRestRawToSignalProcess(const char* configFilename) {
     Initialize();
 
     if (LoadConfigFromFile(configFilename)) LoadDefaultConfig();

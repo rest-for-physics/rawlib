@@ -69,7 +69,7 @@ ClassImp(TRestRawMultiCoBoAsAdToSignalProcess);
 
 TRestRawMultiCoBoAsAdToSignalProcess::TRestRawMultiCoBoAsAdToSignalProcess() { Initialize(); }
 
-TRestRawMultiCoBoAsAdToSignalProcess::TRestRawMultiCoBoAsAdToSignalProcess(char* configFilename) {
+TRestRawMultiCoBoAsAdToSignalProcess::TRestRawMultiCoBoAsAdToSignalProcess(const char* configFilename) {
     Initialize();
 }
 

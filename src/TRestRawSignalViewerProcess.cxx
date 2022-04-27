@@ -80,7 +80,7 @@ TRestRawSignalViewerProcess::TRestRawSignalViewerProcess() { Initialize(); }
 ///
 /// \param configFilename A const char* giving the path to an RML file.
 ///
-TRestRawSignalViewerProcess::TRestRawSignalViewerProcess(char* configFilename) {
+TRestRawSignalViewerProcess::TRestRawSignalViewerProcess(const char* configFilename) {
     Initialize();
 
     if (LoadConfigFromFile(configFilename)) LoadDefaultConfig();

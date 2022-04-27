@@ -81,7 +81,7 @@ TRestRawSignalGeneralFitProcess::TRestRawSignalGeneralFitProcess() { Initialize(
 ///
 /// \param configFilename A const char* giving the path to an RML file.
 ///
-TRestRawSignalGeneralFitProcess::TRestRawSignalGeneralFitProcess(char* configFilename) {
+TRestRawSignalGeneralFitProcess::TRestRawSignalGeneralFitProcess(const char* configFilename) {
     Initialize();
 
     if (LoadConfigFromFile(configFilename)) LoadDefaultConfig();

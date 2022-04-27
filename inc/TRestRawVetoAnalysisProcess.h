@@ -109,7 +109,7 @@ class TRestRawVetoAnalysisProcess : public TRestEventProcess {
     std::string GetGroupIds(std::string groupName);
 
     TRestRawVetoAnalysisProcess();
-    TRestRawVetoAnalysisProcess(char* configFilename);
+    TRestRawVetoAnalysisProcess(const char* configFilename);
 
     ~TRestRawVetoAnalysisProcess();
 
