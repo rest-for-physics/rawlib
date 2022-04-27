@@ -58,8 +58,8 @@ class TRestRawToSignalProcess : public TRestEventProcess {
     void LoadDefaultConfig();
 
    public:
-    inline any GetInputEvent() const { return any((TRestEvent*)nullptr); }
-    inline any GetOutputEvent() const { return fSignalEvent; }
+    any GetInputEvent() const override { return any((TRestEvent*)nullptr); }
+    any GetOutputEvent() const override { return fSignalEvent; }
 
     virtual void Initialize();
     virtual void InitProcess() = 0;
