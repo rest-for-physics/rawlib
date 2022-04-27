@@ -62,7 +62,7 @@ class TRestRawSignalAddNoiseProcess : public TRestEventProcess {
 
     TRestMetadata* GetProcessMetadata() const { return nullptr; }
 
-    inline const char* GetProcessName() const { return "rawSignalAddNoise"; }
+    const char* GetProcessName() const override { return "rawSignalAddNoise"; }
 
     // Constructor
     TRestRawSignalAddNoiseProcess();

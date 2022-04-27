@@ -58,7 +58,7 @@ class TRestRawFindResponseSignalProcess : public TRestEventProcess {
 
     TRestMetadata* GetProcessMetadata() const { return nullptr; }
 
-    inline const char* GetProcessName() const { return "findResponseSignal"; }
+    const char* GetProcessName() const override { return "findResponseSignal"; }
 
     TRestRawFindResponseSignalProcess();
     TRestRawFindResponseSignalProcess(const char* configFilename);

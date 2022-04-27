@@ -71,7 +71,7 @@ class TRestRawSignalRemoveChannelsProcess : public TRestEventProcess {
     TRestEventProcess* Maker() { return new TRestRawSignalRemoveChannelsProcess; }
 
     /// Returns the name of this process
-    inline const char* GetProcessName() const { return "removeChannels"; }
+    const char* GetProcessName() const override { return "removeChannels"; }
 
     // Constructor
     TRestRawSignalRemoveChannelsProcess();

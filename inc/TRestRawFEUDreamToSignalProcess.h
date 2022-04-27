@@ -150,7 +150,7 @@ class TRestRawFEUDreamToSignalProcess : public TRestRawToSignalProcess {
     void InitProcess();
     void Initialize();
     TRestEvent* ProcessEvent(TRestEvent* evInput);
-    inline const char* GetProcessName() const { return "DreamToSignal"; }
+    const char* GetProcessName() const override { return "DreamToSignal"; }
 
     // Constructor
     TRestRawFEUDreamToSignalProcess();

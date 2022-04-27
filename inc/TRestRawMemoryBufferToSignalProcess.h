@@ -126,7 +126,7 @@ class TRestRawMemoryBufferToSignalProcess : public TRestEventProcess {
     TRestEventProcess* Maker() { return new TRestRawMemoryBufferToSignalProcess; }
 
     /// Returns the name of this process
-    inline const char* GetProcessName() const { return "sharedMemoryBufferToSignalEvent"; }
+    const char* GetProcessName() const override { return "sharedMemoryBufferToSignalEvent"; }
 
     // Constructor
     TRestRawMemoryBufferToSignalProcess();

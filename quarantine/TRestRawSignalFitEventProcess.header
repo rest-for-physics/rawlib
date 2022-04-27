@@ -121,7 +121,7 @@ class TRestRawSignalFitEventProcess : public TRestEventProcess {
         EndPrintProcess();
     }
 
-    inline const char* GetProcessName() const { return  "rawSignalFitEvent"; }
+    const char* GetProcessName() const override { return  "rawSignalFitEvent"; }
 
     TRestRawSignalFitEventProcess();  // Constructor
     TRestRawSignalFitEventProcess(const char* configFilename);
