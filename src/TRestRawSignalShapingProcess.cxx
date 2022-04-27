@@ -108,22 +108,13 @@ TRestRawSignalShapingProcess::TRestRawSignalShapingProcess() { Initialize(); }
 ///
 TRestRawSignalShapingProcess::TRestRawSignalShapingProcess(const char* configFilename) {
     Initialize();
-
-    if (LoadConfigFromFile(configFilename) == -1) LoadDefaultConfig();
+    LoadConfigFromFile(configFilename);
 }
 
 ///////////////////////////////////////////////
 /// \brief Default destructor
 ///
 TRestRawSignalShapingProcess::~TRestRawSignalShapingProcess() { delete fOutputSignalEvent; }
-
-///////////////////////////////////////////////
-/// \brief Function to load the default config in absence of RML input
-///
-void TRestRawSignalShapingProcess::LoadDefaultConfig() {
-    SetName("rawSignalShapingProcess-Default");
-    SetTitle("Default config");
-}
 
 ///////////////////////////////////////////////
 /// \brief Function to initialize input/output event members and define the
@@ -150,7 +141,7 @@ void TRestRawSignalShapingProcess::Initialize() {
 /// correspondig TRestGeant4AnalysisProcess section inside the RML.
 ///
 void TRestRawSignalShapingProcess::LoadConfig(const string& configFilename, const string& name) {
-    if (LoadConfigFromFile(configFilename, name) == -1) LoadDefaultConfig();
+    LoadConfigFromFile(configFilename, name);
 }
 
 ///////////////////////////////////////////////
@@ -163,7 +154,7 @@ void TRestRawSignalShapingProcess::InitProcess() {
      * NOT IMPLEMENTED. TODO To use a generic response from a
      * predefined TRestDetectorSignal
      *
-     * For the moment we do only a gausian shaping"
+     * For the moment we do only a gaussian shaping"
      * /
 
     responseSignal = new TRestRawSignal();
