@@ -111,7 +111,7 @@ class TRestRawMemoryBufferToSignalProcess : public TRestEventProcess {
     void InitProcess();
 
     void BeginOfEventProcess();
-    TRestEvent* ProcessEvent(TRestEvent* eventInput);
+    TRestEvent* ProcessEvent(TRestEvent* inputEvent);
 
     void LoadConfig(const std::string& configFilename, const std::string& name = "");
 

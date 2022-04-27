@@ -146,8 +146,8 @@ void TRestRawSignalRemoveChannelsProcess::LoadConfig(const string& configFilenam
 ///////////////////////////////////////////////
 /// \brief The main processing event function
 ///
-TRestEvent* TRestRawSignalRemoveChannelsProcess::ProcessEvent(TRestEvent* evInput) {
-    fInputSignalEvent = (TRestRawSignalEvent*)evInput;
+TRestEvent* TRestRawSignalRemoveChannelsProcess::ProcessEvent(TRestEvent* inputEvent) {
+    fInputSignalEvent = (TRestRawSignalEvent*)inputEvent;
 
     for (int n = 0; n < fInputSignalEvent->GetNumberOfSignals(); n++) {
         TRestRawSignal* sgnl = fInputSignalEvent->GetSignal(n);

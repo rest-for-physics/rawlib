@@ -217,8 +217,8 @@ void TRestRawVetoAnalysisProcess::Initialize() {
 ///////////////////////////////////////////////
 /// \brief The main processing event function
 ///
-TRestEvent* TRestRawVetoAnalysisProcess::ProcessEvent(TRestEvent* evInput) {
-    fSignalEvent = (TRestRawSignalEvent*)evInput;
+TRestEvent* TRestRawVetoAnalysisProcess::ProcessEvent(TRestEvent* inputEvent) {
+    fSignalEvent = (TRestRawSignalEvent*)inputEvent;
 
     map<int, Double_t> VetoMaxPeakAmplitude_map;
     map<int, Double_t> VetoPeakTime_map;

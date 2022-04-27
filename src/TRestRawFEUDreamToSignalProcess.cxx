@@ -104,7 +104,7 @@ void TRestRawFEUDreamToSignalProcess::InitProcess() {
     totalBytesReaded = 0;
 }
 
-TRestEvent* TRestRawFEUDreamToSignalProcess::ProcessEvent(TRestEvent* evInput) {
+TRestEvent* TRestRawFEUDreamToSignalProcess::ProcessEvent(TRestEvent* inputEvent) {
     FeuReadOut Feu;
     bool badreadfg = false;
 

@@ -127,7 +127,7 @@ void TRestRawUSTCToSignalProcess::InitProcess() {
     }
 }
 
-TRestEvent* TRestRawUSTCToSignalProcess::ProcessEvent(TRestEvent* evInput) {
+TRestEvent* TRestRawUSTCToSignalProcess::ProcessEvent(TRestEvent* inputEvent) {
     while (1) {
         if (EndReading()) {
             return nullptr;

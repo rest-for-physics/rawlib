@@ -134,9 +134,9 @@ void TRestRawSignalGeneralFitProcess::InitProcess() {
 ///////////////////////////////////////////////
 /// \brief The main processing event function
 ///
-TRestEvent* TRestRawSignalGeneralFitProcess::ProcessEvent(TRestEvent* evInput) {
+TRestEvent* TRestRawSignalGeneralFitProcess::ProcessEvent(TRestEvent* inputEvent) {
     // no need for verbose copy now
-    fRawSignalEvent = (TRestRawSignalEvent*)evInput;
+    fRawSignalEvent = (TRestRawSignalEvent*)inputEvent;
 
     debug << "TRestRawSignalGeneralFitProcess::ProcessEvent. Event ID : " << fRawSignalEvent->GetID() << endl;
 

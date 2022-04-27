@@ -78,7 +78,7 @@ class TRestRawVetoAnalysisProcess : public TRestEventProcess {
     any GetOutputEvent() const override { return fSignalEvent; }
 
     void InitProcess();
-    TRestEvent* ProcessEvent(TRestEvent* evInput);
+    TRestEvent* ProcessEvent(TRestEvent* inputEvent);
 
     void LoadConfig(const std::string& configFilename, const std::string& name = "");
 

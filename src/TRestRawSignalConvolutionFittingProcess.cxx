@@ -184,9 +184,9 @@ void TRestRawSignalConvolutionFittingProcess::InitProcess() {
 ///////////////////////////////////////////////
 /// \brief The main processing event function
 ///
-TRestEvent* TRestRawSignalConvolutionFittingProcess::ProcessEvent(TRestEvent* evInput) {
+TRestEvent* TRestRawSignalConvolutionFittingProcess::ProcessEvent(TRestEvent* inputEvent) {
     // no need for verbose copy now
-    fRawSignalEvent = (TRestRawSignalEvent*)evInput;
+    fRawSignalEvent = (TRestRawSignalEvent*)inputEvent;
 
     debug << "TRestRawSignalConvolutionFittingProcess::ProcessEvent. Event ID : " << fRawSignalEvent->GetID()
           << endl;

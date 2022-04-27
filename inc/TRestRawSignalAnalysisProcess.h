@@ -64,7 +64,7 @@ class TRestRawSignalAnalysisProcess : public TRestEventProcess {
     any GetOutputEvent() const override { return fSignalEvent; }
 
     void InitProcess();
-    TRestEvent* ProcessEvent(TRestEvent* eventInput);
+    TRestEvent* ProcessEvent(TRestEvent* inputEvent);
 
     void PrintMetadata() {
         BeginPrintProcess();

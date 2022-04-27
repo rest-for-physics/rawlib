@@ -68,7 +68,7 @@ class TRestRawAFTERToSignalProcess : public TRestRawToSignalProcess {
    public:
     void Initialize();
     void InitProcess();
-    TRestEvent* ProcessEvent(TRestEvent* evInput);
+    TRestEvent* ProcessEvent(TRestEvent* inputEvent);
     const char* GetProcessName() const override { return "AFTERToSignal"; }
     TRestMetadata* GetProcessMetadata() const { return nullptr; }
 

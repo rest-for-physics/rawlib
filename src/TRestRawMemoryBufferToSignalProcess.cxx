@@ -281,7 +281,7 @@ void TRestRawMemoryBufferToSignalProcess::BeginOfEventProcess() { fOutputRawSign
 ///////////////////////////////////////////////
 /// \brief The main processing event function
 ///
-TRestEvent* TRestRawMemoryBufferToSignalProcess::ProcessEvent(TRestEvent* evInput) {
+TRestEvent* TRestRawMemoryBufferToSignalProcess::ProcessEvent(TRestEvent* inputEvent) {
     while (true) {
         SemaphoreRed(fSemaphoreId);
         int dataReady = fShMem_daqInfo->dataReady;

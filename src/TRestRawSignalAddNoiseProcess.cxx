@@ -104,8 +104,8 @@ void TRestRawSignalAddNoiseProcess::InitProcess() {
     // TRestEventProcess::InitProcess();
 }
 
-TRestEvent* TRestRawSignalAddNoiseProcess::ProcessEvent(TRestEvent* evInput) {
-    fInputSignalEvent = (TRestRawSignalEvent*)evInput;
+TRestEvent* TRestRawSignalAddNoiseProcess::ProcessEvent(TRestEvent* inputEvent) {
+    fInputSignalEvent = (TRestRawSignalEvent*)inputEvent;
 
     // cout<<"Number of signals "<< fInputSignalEvent->GetNumberOfSignals()<<
     // endl;

@@ -136,11 +136,11 @@ void TRestRawSignalViewerProcess::InitProcess() { this->CreateCanvas(); }
 ///////////////////////////////////////////////
 /// \brief The main processing event function
 ///
-TRestEvent* TRestRawSignalViewerProcess::ProcessEvent(TRestEvent* evInput) {
+TRestEvent* TRestRawSignalViewerProcess::ProcessEvent(TRestEvent* inputEvent) {
     TString obsName;
 
     // no need for verbose copy now
-    fSignalEvent = (TRestRawSignalEvent*)evInput;
+    fSignalEvent = (TRestRawSignalEvent*)inputEvent;
 
     fCanvas->cd();
     eveCounter++;

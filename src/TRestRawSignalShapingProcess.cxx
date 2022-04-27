@@ -189,10 +189,12 @@ void TRestRawSignalShapingProcess::InitProcess() {
 ///////////////////////////////////////////////
 /// \brief The main processing event function
 ///
-TRestEvent* TRestRawSignalShapingProcess::ProcessEvent(TRestEvent* evInput) {
-    fInputSignalEvent = (TRestRawSignalEvent*)evInput;
+TRestEvent* TRestRawSignalShapingProcess::ProcessEvent(TRestEvent* inputEvent) {
+    fInputSignalEvent = (TRestRawSignalEvent*)inputEvent;
 
-    if (fInputSignalEvent->GetNumberOfSignals() <= 0) return nullptr;
+    if (fInputSignalEvent->GetNumberOfSignals() <= 0) {
+        return nullptr;
+    }
 
     double* rsp;
     Int_t Nr = 0;

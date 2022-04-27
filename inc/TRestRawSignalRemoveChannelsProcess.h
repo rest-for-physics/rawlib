@@ -53,7 +53,7 @@ class TRestRawSignalRemoveChannelsProcess : public TRestEventProcess {
     any GetInputEvent() const override { return fInputSignalEvent; }
     any GetOutputEvent() const override { return fOutputSignalEvent; }
 
-    TRestEvent* ProcessEvent(TRestEvent* eventInput);
+    TRestEvent* ProcessEvent(TRestEvent* inputEvent);
 
     void LoadConfig(const std::string& configFilename, const std::string& name = "");
 

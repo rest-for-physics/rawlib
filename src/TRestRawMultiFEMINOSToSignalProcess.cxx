@@ -265,7 +265,7 @@ void TRestRawMultiFEMINOSToSignalProcess::InitProcess() {
     }
 }
 
-TRestEvent* TRestRawMultiFEMINOSToSignalProcess::ProcessEvent(TRestEvent* evInput) {
+TRestEvent* TRestRawMultiFEMINOSToSignalProcess::ProcessEvent(TRestEvent* inputEvent) {
     if (GetVerboseLevel() >= REST_Debug) cout << "TRestRawMultiFEMINOSToSignalProcess::ProcessEvent" << endl;
 
     while (1) {

@@ -106,7 +106,7 @@ class TRestRawUSTCToSignalProcess : public TRestRawToSignalProcess {
     void InitProcess();
     void Initialize();
 
-    TRestEvent* ProcessEvent(TRestEvent* evInput);
+    TRestEvent* ProcessEvent(TRestEvent* inputEvent);
 
     void EndProcess();
 

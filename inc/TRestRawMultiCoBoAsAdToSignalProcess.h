@@ -121,7 +121,7 @@ class TRestRawMultiCoBoAsAdToSignalProcess : public TRestRawToSignalProcess {
 
     Bool_t InitializeStartTimeStampFromFilename(TString fName);
 
-    TRestEvent* ProcessEvent(TRestEvent* evInput);
+    TRestEvent* ProcessEvent(TRestEvent* inputEvent);
 
     void EndProcess();
 

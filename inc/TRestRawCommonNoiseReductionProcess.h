@@ -63,7 +63,7 @@ class TRestRawCommonNoiseReductionProcess : public TRestEventProcess {
 
     void InitProcess();
 
-    TRestEvent* ProcessEvent(TRestEvent* eventInput);
+    TRestEvent* ProcessEvent(TRestEvent* inputEvent);
 
     void EndProcess();
 

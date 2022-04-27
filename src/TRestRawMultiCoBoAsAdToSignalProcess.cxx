@@ -174,7 +174,7 @@ Bool_t TRestRawMultiCoBoAsAdToSignalProcess::AddInputFile(string file) {
     return false;
 }
 
-TRestEvent* TRestRawMultiCoBoAsAdToSignalProcess::ProcessEvent(TRestEvent* evInput) {
+TRestEvent* TRestRawMultiCoBoAsAdToSignalProcess::ProcessEvent(TRestEvent* inputEvent) {
     fSignalEvent->Initialize();
 
     if (EndReading()) {

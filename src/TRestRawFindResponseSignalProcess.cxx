@@ -148,8 +148,8 @@ void TRestRawFindResponseSignalProcess::InitProcess() {}
 ///////////////////////////////////////////////
 /// \brief The main processing event function
 ///
-TRestEvent* TRestRawFindResponseSignalProcess::ProcessEvent(TRestEvent* evInput) {
-    fInputSignalEvent = (TRestRawSignalEvent*)evInput;
+TRestEvent* TRestRawFindResponseSignalProcess::ProcessEvent(TRestEvent* inputEvent) {
+    fInputSignalEvent = (TRestRawSignalEvent*)inputEvent;
 
     // We accept signals that are inside a given condition.
     // TODO: Now it is also possible to use ApplyCut and <cut definitions?
