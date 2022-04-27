@@ -39,7 +39,7 @@ class TRestRawToSignalProcess : public TRestEventProcess {
     Long64_t totalBytesReaded;
     Long64_t totalBytes;
 
-    TRestRawSignalEvent* fSignalEvent = 0;  //!
+    TRestRawSignalEvent* fSignalEvent = nullptr;  //!
 #ifndef __CINT__
     FILE* fInputBinFile;  //!
 
@@ -61,21 +61,14 @@ class TRestRawToSignalProcess : public TRestEventProcess {
     any GetInputEvent() const override { return any((TRestEvent*)nullptr); }
     any GetOutputEvent() const override { return fSignalEvent; }
 
+    void PrintMetadata() override;
     virtual void Initialize();
-    virtual void InitProcess() = 0;
-    virtual TRestEvent* ProcessEvent(TRestEvent* inputEvent) = 0;
-    virtual void EndProcess();
-    // virtual TString GetProcessName()=0;
     TRestMetadata* GetProcessMetadata() const { return nullptr; }
 
-    void SetRunOrigin(Int_t runOrigin) { fRunOrigin = runOrigin; }
-    void SetSubRunOrigin(Int_t subRunOrigin) { fSubRunOrigin = subRunOrigin; }
+    inline void SetRunOrigin(Int_t runOrigin) { fRunOrigin = runOrigin; }
+    inline void SetSubRunOrigin(Int_t subRunOrigin) { fSubRunOrigin = subRunOrigin; }
 
     void LoadConfig(const std::string& configFilename, const std::string& name = "");
-
-    virtual void PrintMetadata();
-
-    // Bool_t OpenInputBinFile(TString fName);
 
     virtual Bool_t OpenInputFiles(std::vector<std::string> files);
     virtual Bool_t AddInputFile(std::string file);
@@ -83,8 +76,6 @@ class TRestRawToSignalProcess : public TRestEventProcess {
 
     virtual Long64_t GetTotalBytesRead() const { return totalBytesReaded; }
     virtual Long64_t GetTotalBytes() const { return totalBytes; }
-    //  Int_t GetRunNumber(){return fRunNumber;}
-    //  Int_t GetRunIndex(){return fRunIndex;}
     virtual std::string GetElectronicsType() const { return fElectronicsType; }
 
     Bool_t GoToNextFile();

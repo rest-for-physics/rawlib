@@ -113,7 +113,7 @@ class TRestRawMultiCoBoAsAdToSignalProcess : public TRestRawToSignalProcess {
 #endif
 
    public:
-    void InitProcess();
+    void InitProcess() override;
 
     Bool_t AddInputFile(std::string file);
 
@@ -121,9 +121,9 @@ class TRestRawMultiCoBoAsAdToSignalProcess : public TRestRawToSignalProcess {
 
     Bool_t InitializeStartTimeStampFromFilename(TString fName);
 
-    TRestEvent* ProcessEvent(TRestEvent* inputEvent);
+    TRestEvent* ProcessEvent(TRestEvent* inputEvent) override;
 
-    void EndProcess();
+    void EndProcess() override;
 
     Bool_t FillBuffer(Int_t n);
 

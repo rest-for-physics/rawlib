@@ -64,9 +64,9 @@ class TRestRawSignalGeneralFitProcess : public TRestEventProcess {
    inline Double_t GetBaseline() const { return fBaseline; }
    inline Double_t GetAmplitude() const { return fAmplitude; }*/
 
-    void InitProcess();
-    TRestEvent* ProcessEvent(TRestEvent* inputEvent);
-    void EndProcess();
+    void InitProcess() override;
+    TRestEvent* ProcessEvent(TRestEvent* inputEvent) override;
+    void EndProcess() override;
 
     void LoadConfig(const std::string& configFilename, const std::string& name = "");
 

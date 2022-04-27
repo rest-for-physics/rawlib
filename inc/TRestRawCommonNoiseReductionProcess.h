@@ -61,11 +61,11 @@ class TRestRawCommonNoiseReductionProcess : public TRestEventProcess {
     any GetInputEvent() const override { return fInputEvent; }
     any GetOutputEvent() const override { return fOutputEvent; }
 
-    void InitProcess();
+    void InitProcess() override;
 
-    TRestEvent* ProcessEvent(TRestEvent* inputEvent);
+    TRestEvent* ProcessEvent(TRestEvent* inputEvent) override;
 
-    void EndProcess();
+    void EndProcess() override;
 
     void LoadConfig(const std::string& configFilename, const std::string& name = "");
 

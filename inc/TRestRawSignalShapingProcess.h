@@ -63,14 +63,14 @@ class TRestRawSignalShapingProcess : public TRestEventProcess {
     any GetInputEvent() const override { return fInputSignalEvent; }
     any GetOutputEvent() const override { return fOutputSignalEvent; }
 
-    void InitProcess();
-    TRestEvent* ProcessEvent(TRestEvent* inputEvent);
-    void EndProcess();
+    void InitProcess() override;
+    TRestEvent* ProcessEvent(TRestEvent* inputEvent) override;
+    void EndProcess() override;
 
     void LoadConfig(const std::string& configFilename, const std::string& name = "");
 
     /// It prints out the process parameters stored in the metadata structure
-    void PrintMetadata() {
+    inline void PrintMetadata() {
         BeginPrintProcess();
 
         metadata << "Shaping type : " << fShapingType << endl;

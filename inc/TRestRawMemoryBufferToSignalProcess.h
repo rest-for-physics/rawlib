@@ -97,7 +97,7 @@ class TRestRawMemoryBufferToSignalProcess : public TRestEventProcess {
     void SemaphoreGreen(int id);
     void SemaphoreRed(int id);
 
-    void InitFromConfigFile();
+    void InitFromConfigFile() override;
 
     void Initialize();
 
@@ -108,10 +108,10 @@ class TRestRawMemoryBufferToSignalProcess : public TRestEventProcess {
     any GetInputEvent() const override { return any((TRestEvent*)nullptr); }
     any GetOutputEvent() const override { return fOutputRawSignalEvent; }
 
-    void InitProcess();
+    void InitProcess() override;
 
-    void BeginOfEventProcess();
-    TRestEvent* ProcessEvent(TRestEvent* inputEvent);
+    void BeginOfEventProcess(TRestEvent* inputEvent = nullptr) override;
+    TRestEvent* ProcessEvent(TRestEvent* inputEvent) override;
 
     void LoadConfig(const std::string& configFilename, const std::string& name = "");
 

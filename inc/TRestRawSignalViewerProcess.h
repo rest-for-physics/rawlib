@@ -43,7 +43,7 @@ class TRestRawSignalViewerProcess : public TRestEventProcess {
     TPad* DrawSignal(Int_t signal);
     TPad* DrawObservables();
 
-    void InitFromConfigFile();
+    void InitFromConfigFile() override;
 
     void Initialize();
 
@@ -56,9 +56,9 @@ class TRestRawSignalViewerProcess : public TRestEventProcess {
     any GetInputEvent() const override { return fSignalEvent; }
     any GetOutputEvent() const override { return fSignalEvent; }
 
-    void InitProcess();
-    TRestEvent* ProcessEvent(TRestEvent* inputEvent);
-    void EndProcess();
+    void InitProcess() override;
+    TRestEvent* ProcessEvent(TRestEvent* inputEvent) override;
+    void EndProcess() override;
 
     void LoadConfig(const std::string& configFilename, const std::string& name = "");
 

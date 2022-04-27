@@ -66,7 +66,7 @@ class TRestRawVetoAnalysisProcess : public TRestEventProcess {
     Double_t fSignalThreshold;
     Int_t fPointsOverThreshold;
 
-    void InitFromConfigFile();
+    void InitFromConfigFile() override;
 
     void Initialize();
 
@@ -77,12 +77,12 @@ class TRestRawVetoAnalysisProcess : public TRestEventProcess {
     any GetInputEvent() const override { return fSignalEvent; }
     any GetOutputEvent() const override { return fSignalEvent; }
 
-    void InitProcess();
-    TRestEvent* ProcessEvent(TRestEvent* inputEvent);
+    void InitProcess() override;
+    TRestEvent* ProcessEvent(TRestEvent* inputEvent) override;
 
     void LoadConfig(const std::string& configFilename, const std::string& name = "");
 
-    void PrintMetadata();
+    void PrintMetadata() override;
 
     /// Returns a new instance of this class
     TRestEventProcess* Maker() { return new TRestRawVetoAnalysisProcess; }

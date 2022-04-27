@@ -129,19 +129,8 @@ void TRestRawToSignalProcess::InitFromConfigFile() {
 }
 
 void TRestRawToSignalProcess::LoadDefaultConfig() {
-    // if (GetVerboseLevel() <= REST_Warning) {
-    //    cout << "REST WARNING: TRestRawToSignalProcess " << endl;
-    //    cout << "Error Loading config file " << endl;
-    //}
-
-    // if (GetVerboseLevel() >= REST_Debug) GetChar();
-
     fElectronicsType = "SingleFeminos";
     fMinPoints = 512;
-}
-
-void TRestRawToSignalProcess::EndProcess() {
-    // close binary file??? Already done
 }
 
 Bool_t TRestRawToSignalProcess::OpenInputFiles(vector<string> files) {

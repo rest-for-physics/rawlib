@@ -276,7 +276,9 @@ void TRestRawMemoryBufferToSignalProcess::InitProcess() {
 /// \brief Function including required initialization before each event starts
 /// to process.
 ///
-void TRestRawMemoryBufferToSignalProcess::BeginOfEventProcess() { fOutputRawSignalEvent->Initialize(); }
+void TRestRawMemoryBufferToSignalProcess::BeginOfEventProcess(TRestEvent* inputEvent) {
+    fOutputRawSignalEvent->Initialize();
+}
 
 ///////////////////////////////////////////////
 /// \brief The main processing event function
@@ -302,8 +304,9 @@ TRestEvent* TRestRawMemoryBufferToSignalProcess::ProcessEvent(TRestEvent* inputE
                 if (GetVerboseLevel() >= REST_Debug)
                     cout << "s : " << s << " id : " << sgnl.GetSignalID() << endl;
 
-                for (int n = 0; n < maxSamples; n++)
+                for (int n = 0; n < maxSamples; n++) {
                     sgnl.AddPoint(fShMem_Buffer[s * (maxSamples + 1) + 1 + n]);
+                }
                 fOutputRawSignalEvent->AddSignal(sgnl);
 
                 if (GetVerboseLevel() >= REST_Extreme) {

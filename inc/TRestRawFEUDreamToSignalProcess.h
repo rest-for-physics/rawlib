@@ -147,9 +147,9 @@ class TRestRawFEUDreamToSignalProcess : public TRestRawToSignalProcess {
     bool ReadFeuTrailer(FeuReadOut& feu);
     bool ReadEvent(FeuReadOut& feu);
 
-    void InitProcess();
+    void InitProcess() override;
     void Initialize();
-    TRestEvent* ProcessEvent(TRestEvent* inputEvent);
+    TRestEvent* ProcessEvent(TRestEvent* inputEvent) override;
     const char* GetProcessName() const override { return "DreamToSignal"; }
 
     // Constructor

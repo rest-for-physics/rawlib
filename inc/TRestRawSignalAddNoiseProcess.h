@@ -46,9 +46,9 @@ class TRestRawSignalAddNoiseProcess : public TRestEventProcess {
     any GetInputEvent() const override { return fInputSignalEvent; }
     any GetOutputEvent() const override { return fOutputSignalEvent; }
 
-    void InitProcess();
-    TRestEvent* ProcessEvent(TRestEvent* inputEvent);
-    void EndProcess();
+    void InitProcess() override;
+    TRestEvent* ProcessEvent(TRestEvent* inputEvent) override;
+    void EndProcess() override;
 
     void LoadConfig(const std::string& configFilename, const std::string& name = "");
 

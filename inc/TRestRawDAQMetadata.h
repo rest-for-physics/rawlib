@@ -31,7 +31,7 @@
 //! A metadata class to store DAQ information.
 class TRestRawDAQMetadata : public TRestMetadata {
    private:
-    void InitFromConfigFile();
+    void InitFromConfigFile() override;
 
     virtual void Initialize();
 
@@ -48,7 +48,7 @@ class TRestRawDAQMetadata : public TRestMetadata {
                                       // convert it to nS
 
    public:
-    void PrintMetadata();
+    void PrintMetadata() override;
     void PrintRunScript();
     void PrintPedScript();
 
