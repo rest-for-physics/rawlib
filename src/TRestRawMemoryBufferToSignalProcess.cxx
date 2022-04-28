@@ -201,10 +201,12 @@ void TRestRawMemoryBufferToSignalProcess::LoadDefaultConfig() {
 ///
 /// \param configFilename A const char* giving the path to an RML file.
 /// \param name The name of the specific metadata. It will be used to find the
-/// correspondig TRestGeant4AnalysisProcess section inside the RML.
+/// corresponding TRestGeant4AnalysisProcess section inside the RML.
 ///
 void TRestRawMemoryBufferToSignalProcess::LoadConfig(const string& configFilename, const string& name) {
-    if (LoadConfigFromFile(configFilename, name)) LoadDefaultConfig();
+    if (LoadConfigFromFile(configFilename, name)) {
+        LoadDefaultConfig();
+    }
 }
 
 ///////////////////////////////////////////////
@@ -357,10 +359,7 @@ TRestEvent* TRestRawMemoryBufferToSignalProcess::ProcessEvent(TRestEvent* inputE
 ///
 void TRestRawMemoryBufferToSignalProcess::InitFromConfigFile() {
     fKeyDaqInfo = StringToInteger(GetParameter("daqInfoKey", "3"));
-
     fKeyBuffer = StringToInteger(GetParameter("bufferKey", "13"));
-
     fKeySemaphore = StringToInteger(GetParameter("semaphoreKey", "14"));
-
     fTimeDelay = StringToInteger(GetParameter("timeDelay", "10000"));
 }
