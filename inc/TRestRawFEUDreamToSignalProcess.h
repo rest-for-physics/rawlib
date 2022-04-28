@@ -148,7 +148,7 @@ class TRestRawFEUDreamToSignalProcess : public TRestRawToSignalProcess {
     bool ReadEvent(FeuReadOut& feu);
 
     void InitProcess() override;
-    void Initialize();
+    void Initialize() override;
     TRestEvent* ProcessEvent(TRestEvent* inputEvent) override;
     const char* GetProcessName() const override { return "DreamToSignal"; }
 
@@ -159,7 +159,7 @@ class TRestRawFEUDreamToSignalProcess : public TRestRawToSignalProcess {
     // Destructor
     ~TRestRawFEUDreamToSignalProcess();
 
-    ClassDef(TRestRawFEUDreamToSignalProcess, 1);
+    ClassDefOverride(TRestRawFEUDreamToSignalProcess, 1);
 };
 
 #endif

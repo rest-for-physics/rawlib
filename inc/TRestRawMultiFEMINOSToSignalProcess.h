@@ -38,7 +38,7 @@ class TRestRawMultiFEMINOSToSignalProcess : public TRestRawToSignalProcess {
 
    public:
     void InitProcess() override;
-    void Initialize();
+    void Initialize() override;
     TRestEvent* ProcessEvent(TRestEvent* inputEvent) override;
     const char* GetProcessName() const override { return "MultiFEMINOSToSignal"; }
 
@@ -50,7 +50,7 @@ class TRestRawMultiFEMINOSToSignalProcess : public TRestRawToSignalProcess {
     // Destructor
     ~TRestRawMultiFEMINOSToSignalProcess();
 
-    ClassDef(TRestRawMultiFEMINOSToSignalProcess,
+    ClassDefOverride(TRestRawMultiFEMINOSToSignalProcess,
              1);  // Template for a REST "event process" class inherited from
                   // TRestEventProcess
 };
