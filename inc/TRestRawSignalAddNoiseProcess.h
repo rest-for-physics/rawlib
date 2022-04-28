@@ -23,9 +23,9 @@
 #ifndef RestCore_TRestRawSignalAddNoiseProcess
 #define RestCore_TRestRawSignalAddNoiseProcess
 
-#include <TRestRawSignalEvent.h>
+#include <TRestEventProcess.h>
 
-#include "TRestEventProcess.h"
+#include "TRestRawSignalEvent.h"
 
 //! A process to add/emulate electronic noise into a TRestRawSignalEvent
 class TRestRawSignalAddNoiseProcess : public TRestEventProcess {
@@ -37,12 +37,15 @@ class TRestRawSignalAddNoiseProcess : public TRestEventProcess {
 
     void LoadDefaultConfig();
 
-    Double_t fNoiseLevel = 10;
+    Double_t fNoiseLevel = 10.0;
 
    protected:
     // add here the members of your event process
 
    public:
+    inline Double_t GetNoiseLevel() const { return fNoiseLevel; }
+    inline void SetNoiseLevel(Double_t noiseLevel) { fNoiseLevel = noiseLevel; }
+
     any GetInputEvent() const override { return fInputSignalEvent; }
     any GetOutputEvent() const override { return fOutputSignalEvent; }
 
