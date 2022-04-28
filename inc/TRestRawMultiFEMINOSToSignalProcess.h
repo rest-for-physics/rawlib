@@ -51,7 +51,7 @@ class TRestRawMultiFEMINOSToSignalProcess : public TRestRawToSignalProcess {
     ~TRestRawMultiFEMINOSToSignalProcess();
 
     ClassDefOverride(TRestRawMultiFEMINOSToSignalProcess,
-             1);  // Template for a REST "event process" class inherited from
-                  // TRestEventProcess
+                     1);  // Template for a REST "event process" class inherited from
+                          // TRestEventProcess
 };
 #endif
