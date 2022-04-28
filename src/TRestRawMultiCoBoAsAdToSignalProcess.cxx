@@ -180,7 +180,7 @@ TRestEvent* TRestRawMultiCoBoAsAdToSignalProcess::ProcessEvent(TRestEvent* input
     if (EndReading()) {
         return nullptr;
     }
-    if (!fillbuffer()) {
+    if (!FillBuffer()) {
         fSignalEvent->SetOK(false);
         return fSignalEvent;
     }
@@ -252,7 +252,7 @@ void TRestRawMultiCoBoAsAdToSignalProcess::EndProcess() {
 
 // true: finish filling
 // false: error when filling
-bool TRestRawMultiCoBoAsAdToSignalProcess::fillbuffer() {
+bool TRestRawMultiCoBoAsAdToSignalProcess::FillBuffer() {
     // if the file is opened but not read, read header frame
     for (int i = 0; i < fInputFiles.size(); i++) {
         if (fInputFiles[i] && ftell(fInputFiles[i]) == 0) {

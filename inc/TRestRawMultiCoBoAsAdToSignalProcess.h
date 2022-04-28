@@ -127,7 +127,7 @@ class TRestRawMultiCoBoAsAdToSignalProcess : public TRestRawToSignalProcess {
 
     Bool_t FillBuffer(Int_t n);
 
-    bool fillbuffer();
+    bool FillBuffer();
 
     bool ReadFrameHeader(CoBoHeaderFrame& Frame);
 
@@ -141,6 +141,8 @@ class TRestRawMultiCoBoAsAdToSignalProcess : public TRestRawToSignalProcess {
     TRestRawMultiCoBoAsAdToSignalProcess(const char* configFilename);
     // Destructor
     ~TRestRawMultiCoBoAsAdToSignalProcess();
+
+    const char* GetProcessName() const override { return "RawMultiCoBoAsAdToSignal"; }
 
     ClassDefOverride(TRestRawMultiCoBoAsAdToSignalProcess, 1);
 };
