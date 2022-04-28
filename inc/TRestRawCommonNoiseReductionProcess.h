@@ -50,7 +50,7 @@ class TRestRawCommonNoiseReductionProcess : public TRestEventProcess {
     /// Minimum number of signals required to apply the process.
     Int_t fMinSignalsRequired = 200;
 
-    void Initialize();
+    void Initialize() override;
 
     void LoadDefaultConfig();
 
@@ -69,7 +69,7 @@ class TRestRawCommonNoiseReductionProcess : public TRestEventProcess {
 
     void LoadConfig(const std::string& configFilename, const std::string& name = "");
 
-    void PrintMetadata() {
+    void PrintMetadata() override {
         BeginPrintProcess();
 
         metadata << " mode : [" << fMode << "]";
@@ -95,6 +95,6 @@ class TRestRawCommonNoiseReductionProcess : public TRestEventProcess {
     // Destructor
     ~TRestRawCommonNoiseReductionProcess();
 
-    ClassDef(TRestRawCommonNoiseReductionProcess, 2);
+    ClassDefOverride(TRestRawCommonNoiseReductionProcess, 2);
 };
 #endif

@@ -66,7 +66,7 @@ class TRestRawAFTERToSignalProcess : public TRestRawToSignalProcess {
     double reducedTime;
 
    public:
-    void Initialize();
+    void Initialize() override;
     void InitProcess() override;
     TRestEvent* ProcessEvent(TRestEvent* inputEvent) override;
     const char* GetProcessName() const override { return "AFTERToSignal"; }
@@ -77,6 +77,6 @@ class TRestRawAFTERToSignalProcess : public TRestRawToSignalProcess {
     TRestRawAFTERToSignalProcess();
     ~TRestRawAFTERToSignalProcess();
 
-    ClassDef(TRestRawAFTERToSignalProcess, 1);
+    ClassDefOverride(TRestRawAFTERToSignalProcess, 1);
 };
 #endif

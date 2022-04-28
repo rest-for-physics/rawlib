@@ -37,7 +37,7 @@ class TRestRawSignalShapingProcess : public TRestEventProcess {
     /// A pointer to the specific TRestRawSignalEvent output
     TRestRawSignalEvent* fOutputSignalEvent;
 
-    void Initialize();
+    void Initialize() override;
 
    protected:
     // add here the members of your event process
@@ -70,7 +70,7 @@ class TRestRawSignalShapingProcess : public TRestEventProcess {
     void LoadConfig(const std::string& configFilename, const std::string& name = "");
 
     /// It prints out the process parameters stored in the metadata structure
-    inline void PrintMetadata() {
+    inline void PrintMetadata() override {
         BeginPrintProcess();
 
         metadata << "Shaping type : " << fShapingType << endl;
@@ -93,6 +93,6 @@ class TRestRawSignalShapingProcess : public TRestEventProcess {
     TRestRawSignalShapingProcess(const char* configFilename);
     ~TRestRawSignalShapingProcess();
 
-    ClassDef(TRestRawSignalShapingProcess, 2);
+    ClassDefOverride(TRestRawSignalShapingProcess, 2);
 };
 #endif

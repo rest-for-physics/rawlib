@@ -33,7 +33,7 @@ class TRestRawFindResponseSignalProcess : public TRestEventProcess {
     TRestRawSignalEvent* fInputSignalEvent;   //!
     TRestRawSignalEvent* fOutputSignalEvent;  //!
 
-    void Initialize();
+    void Initialize() override;
 
     void LoadDefaultConfig();
 
@@ -50,7 +50,7 @@ class TRestRawFindResponseSignalProcess : public TRestEventProcess {
 
     void LoadConfig(const std::string& configFilename, const std::string& name = "");
 
-    void PrintMetadata() {
+    void PrintMetadata() override {
         BeginPrintProcess();
 
         EndPrintProcess();
@@ -64,6 +64,6 @@ class TRestRawFindResponseSignalProcess : public TRestEventProcess {
     TRestRawFindResponseSignalProcess(const char* configFilename);
     ~TRestRawFindResponseSignalProcess();
 
-    ClassDef(TRestRawFindResponseSignalProcess, 1);
+    ClassDefOverride(TRestRawFindResponseSignalProcess, 1);
 };
 #endif

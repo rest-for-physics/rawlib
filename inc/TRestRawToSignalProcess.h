@@ -29,7 +29,7 @@
 //! A base class for any process reading a binary external file as input to REST
 class TRestRawToSignalProcess : public TRestEventProcess {
    protected:
-    virtual void InitFromConfigFile();
+    void InitFromConfigFile() override;
     unsigned int payload;
     unsigned int frameBits;
     std::string fElectronicsType;  // AFTER or AGET
@@ -62,7 +62,7 @@ class TRestRawToSignalProcess : public TRestEventProcess {
     any GetOutputEvent() const override { return fSignalEvent; }
 
     void PrintMetadata() override;
-    virtual void Initialize();
+    void Initialize() override;
     TRestMetadata* GetProcessMetadata() const { return nullptr; }
 
     inline void SetRunOrigin(Int_t runOrigin) { fRunOrigin = runOrigin; }
@@ -70,12 +70,12 @@ class TRestRawToSignalProcess : public TRestEventProcess {
 
     void LoadConfig(const std::string& configFilename, const std::string& name = "");
 
-    virtual Bool_t OpenInputFiles(std::vector<std::string> files);
-    virtual Bool_t AddInputFile(std::string file);
-    Bool_t ResetEntry();
+    Bool_t OpenInputFiles(std::vector<std::string> files) override;
+    Bool_t AddInputFile(std::string file) override;
+    Bool_t ResetEntry() override;
 
-    virtual Long64_t GetTotalBytesRead() const { return totalBytesReaded; }
-    virtual Long64_t GetTotalBytes() const { return totalBytes; }
+    Long64_t GetTotalBytesRead() const override { return totalBytesReaded; }
+    Long64_t GetTotalBytes() const override { return totalBytes; }
     virtual std::string GetElectronicsType() const { return fElectronicsType; }
 
     Bool_t GoToNextFile();
@@ -86,6 +86,6 @@ class TRestRawToSignalProcess : public TRestEventProcess {
     // Destructor
     ~TRestRawToSignalProcess();
 
-    ClassDef(TRestRawToSignalProcess, 1);
+    ClassDefOverride(TRestRawToSignalProcess, 1);
 };
 #endif

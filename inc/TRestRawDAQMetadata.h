@@ -33,7 +33,7 @@ class TRestRawDAQMetadata : public TRestMetadata {
    private:
     void InitFromConfigFile() override;
 
-    virtual void Initialize();
+    void Initialize() override;
 
    protected:
     TString fOutBinFileName;
@@ -66,6 +66,6 @@ class TRestRawDAQMetadata : public TRestMetadata {
     inline UInt_t GetShappingTime() const { return fShappingTime; }
     UInt_t GetValFromString(TString var, TString line);
 
-    ClassDef(TRestRawDAQMetadata, 1);  // REST run class
+    ClassDefOverride(TRestRawDAQMetadata, 1);  // REST run class
 };
 #endif

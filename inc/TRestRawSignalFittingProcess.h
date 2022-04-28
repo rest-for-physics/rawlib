@@ -36,7 +36,7 @@ class TRestRawSignalFittingProcess : public TRestEventProcess {
     /// A pointer to the specific TRestRawSignalEvent input
     TRestRawSignalEvent* fRawSignalEvent;  //!
 
-    void Initialize();
+    void Initialize() override;
 
     void LoadDefaultConfig();
 
@@ -63,7 +63,7 @@ class TRestRawSignalFittingProcess : public TRestEventProcess {
 
     void LoadConfig(const std::string& configFilename, const std::string& name = "");
 
-    void PrintMetadata() {
+    void PrintMetadata() override {
         BeginPrintProcess();
 
         EndPrintProcess();
@@ -75,6 +75,6 @@ class TRestRawSignalFittingProcess : public TRestEventProcess {
     TRestRawSignalFittingProcess(const char* configFilename);
     ~TRestRawSignalFittingProcess();  // Destructor
 
-    ClassDef(TRestRawSignalFittingProcess, 2);
+    ClassDefOverride(TRestRawSignalFittingProcess, 2);
 };
 #endif

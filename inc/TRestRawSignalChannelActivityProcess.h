@@ -45,7 +45,7 @@ class TRestRawSignalChannelActivityProcess : public TRestEventProcess {
     TRestDetectorReadout* fReadout;  //!
 #endif
 
-    void Initialize();
+    void Initialize() override;
 
     void LoadDefaultConfig();
 
@@ -115,7 +115,7 @@ class TRestRawSignalChannelActivityProcess : public TRestEventProcess {
     void LoadConfig(const std::string& configFilename, const std::string& name = "");
 
     /// It prints out the process parameters stored in the metadata structure
-    void PrintMetadata() {
+    void PrintMetadata() override {
         BeginPrintProcess();
 
         metadata << "Low signal threshold activity : " << fLowThreshold << endl;
@@ -145,6 +145,6 @@ class TRestRawSignalChannelActivityProcess : public TRestEventProcess {
     // Destructor
     ~TRestRawSignalChannelActivityProcess();
 
-    ClassDef(TRestRawSignalChannelActivityProcess, 3);
+    ClassDefOverride(TRestRawSignalChannelActivityProcess, 3);
 };
 #endif

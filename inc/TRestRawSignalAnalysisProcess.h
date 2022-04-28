@@ -54,7 +54,7 @@ class TRestRawSignalAnalysisProcess : public TRestEventProcess {
     /// It defines the signals id range where analysis is applied
     TVector2 fSignalsRange = TVector2(-1, -1);  //<
 
-    void Initialize();
+    void Initialize() override;
 
    protected:
     // add here the members of your event process
@@ -66,7 +66,7 @@ class TRestRawSignalAnalysisProcess : public TRestEventProcess {
     void InitProcess() override;
     TRestEvent* ProcessEvent(TRestEvent* inputEvent) override;
 
-    void PrintMetadata() {
+    void PrintMetadata() override {
         BeginPrintProcess();
 
         metadata << "Baseline range : ( " << fBaseLineRange.X() << " , " << fBaseLineRange.Y() << " ) "
@@ -85,6 +85,6 @@ class TRestRawSignalAnalysisProcess : public TRestEventProcess {
     TRestRawSignalAnalysisProcess();   // Constructor
     ~TRestRawSignalAnalysisProcess();  // Destructor
 
-    ClassDef(TRestRawSignalAnalysisProcess, 4);
+    ClassDefOverride(TRestRawSignalAnalysisProcess, 4);
 };
 #endif

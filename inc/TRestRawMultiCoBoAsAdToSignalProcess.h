@@ -115,9 +115,9 @@ class TRestRawMultiCoBoAsAdToSignalProcess : public TRestRawToSignalProcess {
    public:
     void InitProcess() override;
 
-    Bool_t AddInputFile(std::string file);
+    Bool_t AddInputFile(std::string file) override;
 
-    void Initialize();
+    void Initialize() override;
 
     Bool_t InitializeStartTimeStampFromFilename(TString fName);
 
@@ -142,6 +142,6 @@ class TRestRawMultiCoBoAsAdToSignalProcess : public TRestRawToSignalProcess {
     // Destructor
     ~TRestRawMultiCoBoAsAdToSignalProcess();
 
-    ClassDef(TRestRawMultiCoBoAsAdToSignalProcess, 1);
+    ClassDefOverride(TRestRawMultiCoBoAsAdToSignalProcess, 1);
 };
 #endif

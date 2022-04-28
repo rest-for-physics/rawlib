@@ -68,7 +68,7 @@ class TRestRawVetoAnalysisProcess : public TRestEventProcess {
 
     void InitFromConfigFile() override;
 
-    void Initialize();
+    void Initialize() override;
 
     void LoadDefaultConfig();
 
@@ -115,6 +115,6 @@ class TRestRawVetoAnalysisProcess : public TRestEventProcess {
 
     // If new members are added, removed or modified in this class version number
     // must be increased!
-    ClassDef(TRestRawVetoAnalysisProcess, 1);
+    ClassDefOverride(TRestRawVetoAnalysisProcess, 1);
 };
 #endif

@@ -99,7 +99,7 @@ class TRestRawMemoryBufferToSignalProcess : public TRestEventProcess {
 
     void InitFromConfigFile() override;
 
-    void Initialize();
+    void Initialize() override;
 
     void LoadDefaultConfig();
 
@@ -116,7 +116,7 @@ class TRestRawMemoryBufferToSignalProcess : public TRestEventProcess {
     void LoadConfig(const std::string& configFilename, const std::string& name = "");
 
     /// It prints out the process parameters stored in the metadata structure
-    void PrintMetadata() {
+    void PrintMetadata() override {
         BeginPrintProcess();
 
         EndPrintProcess();
@@ -135,6 +135,6 @@ class TRestRawMemoryBufferToSignalProcess : public TRestEventProcess {
     // Destructor
     ~TRestRawMemoryBufferToSignalProcess();
 
-    ClassDef(TRestRawMemoryBufferToSignalProcess, 1);
+    ClassDefOverride(TRestRawMemoryBufferToSignalProcess, 1);
 };
 #endif
