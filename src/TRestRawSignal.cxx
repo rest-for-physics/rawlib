@@ -218,7 +218,8 @@ void TRestRawSignal::IncreaseBinBy(Int_t bin, Double_t data) {
 /// we find an overshoot, being the baseline not returning to zero (or its
 /// original value) at the signal tail.
 ///
-void TRestRawSignal::InitializePointsOverThreshold(TVector2 thrPar, Int_t nPointsOver, Int_t nPointsFlat) {
+void TRestRawSignal::InitializePointsOverThreshold(const TVector2& thrPar, Int_t nPointsOver,
+                                                   Int_t nPointsFlat) {
     if (fRange.X() < 0) fRange.SetX(0);
     if (fRange.Y() <= 0) fRange.SetY(GetNumberOfPoints());
 
@@ -371,8 +372,7 @@ Double_t TRestRawSignal::GetRiseSlope() {
              << endl;
 
     if (fPointsOverThreshold.size() < 2) {
-        // cout << "REST Warning. TRestRawSignal::GetRiseSlope. Less than 2
-        // points!." << endl;
+        // cout << "REST Warning. TRestRawSignal::GetRiseSlope. Less than 2 points!." << endl;
         return 0;
     }
 
@@ -396,8 +396,7 @@ Int_t TRestRawSignal::GetRiseTime() {
              << endl;
 
     if (fPointsOverThreshold.size() < 2) {
-        // cout << "REST Warning. TRestRawSignal::GetRiseTime. Less than 2 points!."
-        // << endl;
+        // cout << "REST Warning. TRestRawSignal::GetRiseTime. Less than 2 points!." << endl;
         return 0;
     }
 
@@ -535,8 +534,7 @@ Int_t TRestRawSignal::GetMinPeakBin() {
 ///
 Bool_t TRestRawSignal::IsADCSaturation(int Nflat) {
     if (Nflat <= 0) return false;
-    // GetMaxPeakBin() will always find the first max peak bin if mulitple
-    // bins are in same max value.
+    // GetMaxPeakBin() will always find the first max peak bin if multiple bins are in same max value.
     int index = GetMaxPeakBin();
     Short_t value = fSignalData[index];
 
@@ -562,21 +560,21 @@ Bool_t TRestRawSignal::IsADCSaturation(int Nflat) {
 ///
 /// \param smearPoints is a number bigger that 0 that serves to change the time
 /// distance of points used to
-/// obtain the diferential at a given point.
+/// obtain the differential at a given point.
 ///
-void TRestRawSignal::GetDifferentialSignal(TRestRawSignal* diffSgnl, Int_t smearPoints) {
+void TRestRawSignal::GetDifferentialSignal(TRestRawSignal* diffSignal, Int_t smearPoints) {
     if (smearPoints <= 0) smearPoints = 1;
-    diffSgnl->Initialize();
+    diffSignal->Initialize();
 
-    for (int i = 0; i < smearPoints; i++) diffSgnl->AddPoint(0);
+    for (int i = 0; i < smearPoints; i++) diffSignal->AddPoint(0);
 
     for (int i = smearPoints; i < this->GetNumberOfPoints() - smearPoints; i++) {
         Double_t value = 0.5 * (this->GetData(i + smearPoints) - GetData(i - smearPoints)) / smearPoints;
 
-        diffSgnl->AddPoint((Short_t)value);
+        diffSignal->AddPoint((Short_t)value);
     }
 
-    for (int i = GetNumberOfPoints() - smearPoints; i < GetNumberOfPoints(); i++) diffSgnl->AddPoint(0);
+    for (int i = GetNumberOfPoints() - smearPoints; i < GetNumberOfPoints(); i++) diffSignal->AddPoint(0);
 }
 
 ///////////////////////////////////////////////
@@ -587,14 +585,14 @@ void TRestRawSignal::GetDifferentialSignal(TRestRawSignal* diffSgnl, Int_t smear
 /// \param noiseLevel It defines the amplitude of the signal noise fluctuations
 /// as its standard deviation.
 ///
-void TRestRawSignal::GetWhiteNoiseSignal(TRestRawSignal* noiseSgnl, Double_t noiseLevel) {
+void TRestRawSignal::GetWhiteNoiseSignal(TRestRawSignal* noiseSignal, Double_t noiseLevel) {
     double* dd = new double();
     uintptr_t seed = (uintptr_t)dd + (uintptr_t)this;
     delete dd;
     TRandom3* fRandom = new TRandom3(seed);
 
     for (int i = 0; i < GetNumberOfPoints(); i++) {
-        noiseSgnl->AddPoint(this->GetData(i) + (Short_t)fRandom->Gaus(0, noiseLevel));
+        noiseSignal->AddPoint(this->GetData(i) + (Short_t)fRandom->Gaus(0, noiseLevel));
     }
     delete fRandom;
 }
@@ -603,26 +601,26 @@ void TRestRawSignal::GetWhiteNoiseSignal(TRestRawSignal* noiseSgnl, Double_t noi
 /// \brief It smoothes the existing signal and places it at the signal pointer
 /// given by argument.
 ///
-/// \param averagingPoints It defines the number of neightbour consecutive
+/// \param averagingPoints It defines the number of neighbour consecutive
 /// points used to average the signal
 ///
-void TRestRawSignal::GetSignalSmoothed(TRestRawSignal* smthSignal, Int_t averagingPoints) {
-    smthSignal->Initialize();
+void TRestRawSignal::GetSignalSmoothed(TRestRawSignal* smoothedSignal, Int_t averagingPoints) {
+    smoothedSignal->Initialize();
 
     averagingPoints = (averagingPoints / 2) * 2 + 1;  // make it odd >= averagingPoints
 
     Double_t sumAvg = GetIntegralInRange(0, averagingPoints) / averagingPoints;
 
-    for (int i = 0; i <= averagingPoints / 2; i++) smthSignal->AddPoint((Short_t)sumAvg);
+    for (int i = 0; i <= averagingPoints / 2; i++) smoothedSignal->AddPoint((Short_t)sumAvg);
 
     for (int i = averagingPoints / 2 + 1; i < GetNumberOfPoints() - averagingPoints / 2; i++) {
         sumAvg -= this->GetRawData(i - (averagingPoints / 2 + 1)) / averagingPoints;
         sumAvg += this->GetRawData(i + averagingPoints / 2) / averagingPoints;
-        smthSignal->AddPoint((Short_t)sumAvg);
+        smoothedSignal->AddPoint((Short_t)sumAvg);
     }
 
     for (int i = GetNumberOfPoints() - averagingPoints / 2; i < GetNumberOfPoints(); i++)
-        smthSignal->AddPoint(sumAvg);
+        smoothedSignal->AddPoint(sumAvg);
 }
 
 ///////////////////////////////////////////////
@@ -656,18 +654,18 @@ std::vector<Float_t> TRestRawSignal::GetSignalSmoothed(Int_t averagingPoints) {
 /// from the raw data, resulting in a corrected baseline. The returned signal is placed at the signal pointer
 /// given by argument.
 ///
-/// \param smthSignal The pointer to the TRestRawSignal which will contain the corrected signal
+/// \param smoothedSignal The pointer to the TRestRawSignal which will contain the corrected signal
 ///
-/// \param averagingPoints It defines the number of neightbour consecutive
+/// \param averagingPoints It defines the number of neighbour consecutive
 /// points used to average the signal
 ///
-void TRestRawSignal::GetBaseLineCorrected(TRestRawSignal* smthSignal, Int_t averagingPoints) {
-    smthSignal->Initialize();
+void TRestRawSignal::GetBaseLineCorrected(TRestRawSignal* smoothedSignal, Int_t averagingPoints) {
+    smoothedSignal->Initialize();
 
     std::vector<Float_t> averagedSignal = GetSignalSmoothed(averagingPoints);
 
     for (unsigned int i = 0; i < GetNumberOfPoints(); i++) {
-        smthSignal->AddPoint(GetRawData(i) - averagedSignal[i]);
+        smoothedSignal->AddPoint(GetRawData(i) - averagedSignal[i]);
     }
 }
 
@@ -721,7 +719,7 @@ void TRestRawSignal::CalculateBaseLineMedian(Int_t startBin, Int_t endBin) {
 /// and the fluctuation as interquartile range (IQR), which are less affected by outliers (e.g. a signal
 /// pulse).
 ///
-void TRestRawSignal::CalculateBaseLine(Int_t startBin, Int_t endBin, std::string option) {
+void TRestRawSignal::CalculateBaseLine(Int_t startBin, Int_t endBin, const std::string& option) {
     if (ToUpper(option) == "ROBUST") {
         CalculateBaseLineMedian(startBin, endBin);
         CalculateBaseLineSigmaIQR(startBin, endBin);
@@ -750,8 +748,8 @@ void TRestRawSignal::CalculateBaseLineSigmaSD(Int_t startBin, Int_t endBin) {
 ///////////////////////////////////////////////
 /// \brief This method is called by CalculateBaseLine with the "ROBUST"-option to
 /// determine the value of the baseline
-/// fluctuation as its interquartile range (IQR) in the baseline range provided. The IQR is more robust towars
-/// outliers than the standard deviation.
+/// fluctuation as its interquartile range (IQR) in the baseline range provided. The IQR is more robust
+/// towards outliers than the standard deviation.
 ///
 void TRestRawSignal::CalculateBaseLineSigmaIQR(Int_t startBin, Int_t endBin) {
     if (endBin - startBin <= 0) {
@@ -791,30 +789,32 @@ void TRestRawSignal::Scale(Double_t value) {
 /// \brief This method adds the signal provided by argument to the existing
 /// signal.
 ///
-void TRestRawSignal::SignalAddition(TRestRawSignal* inSgnl) {
-    if (this->GetNumberOfPoints() != inSgnl->GetNumberOfPoints()) {
+void TRestRawSignal::SignalAddition(const TRestRawSignal& signal) {
+    if (this->GetNumberOfPoints() != signal.GetNumberOfPoints()) {
         cout << "ERROR : TRestRawSignal::SignalAddition." << endl;
         cout << "I cannot add two signals with different number of points" << endl;
         return;
     }
 
-    for (int i = 0; i < GetNumberOfPoints(); i++) fSignalData[i] += inSgnl->GetData(i);
+    for (int i = 0; i < GetNumberOfPoints(); i++) {
+        fSignalData[i] += signal.GetData(i);
+    }
 }
 
 ///////////////////////////////////////////////
 /// \brief This method dumps to a text file the data inside fSignalData.
 ///
-void TRestRawSignal::WriteSignalToTextFile(TString filename) {
+void TRestRawSignal::WriteSignalToTextFile(const TString& filename) {
     // We should check it is writable
-    FILE* fff = fopen(filename.Data(), "w");
-    for (int i = 0; i < GetNumberOfPoints(); i++) fprintf(fff, "%d\t%lf\n", i, GetData(i));
-    fclose(fff);
+    FILE* file = fopen(filename.Data(), "w");
+    for (int i = 0; i < GetNumberOfPoints(); i++) fprintf(file, "%d\t%lf\n", i, GetData(i));
+    fclose(file);
 }
 
 ///////////////////////////////////////////////
 /// \brief It prints the signal data on screen.
 ///
-void TRestRawSignal::Print() {
+void TRestRawSignal::Print() const {
     cout << "---------------------" << endl;
     cout << "Signal id : " << this->GetSignalID() << endl;
     cout << "Baseline : " << fBaseLine << endl;
@@ -829,10 +829,7 @@ void TRestRawSignal::Print() {
 /// \brief It builds a TGraph object that can be used for drawing.
 ///
 TGraph* TRestRawSignal::GetGraph(Int_t color) {
-    if (fGraph != nullptr) {
-        delete fGraph;
-        fGraph = nullptr;
-    }
+    delete fGraph;
 
     fGraph = new TGraph();
 

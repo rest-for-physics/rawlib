@@ -93,7 +93,7 @@ class TRestRawSignal : public TObject {
     inline Int_t GetNumberOfPoints() const { return fSignalData.size(); }
 
     /// Returns a std::vector containing the indexes of data points over threshold
-    std::vector<Int_t> GetPointsOverThreshold() const { return fPointsOverThreshold; }
+    inline std::vector<Int_t> GetPointsOverThreshold() const { return fPointsOverThreshold; }
 
     /// Returns the maximum value found in the data points. It includes baseline
     /// correction
@@ -122,7 +122,7 @@ class TRestRawSignal : public TObject {
 
     /// Returns false if the baseline and its baseline fluctuation was not
     /// initialized.
-    Bool_t isBaseLineInitialized() {
+    inline Bool_t isBaseLineInitialized() {
         if (fBaseLineSigma == 0 && fBaseLine == 0) return false;
         return true;
     }
@@ -134,24 +134,24 @@ class TRestRawSignal : public TObject {
     Short_t operator[](Int_t n);
 
     /// It sets the id number of the signal
-    void SetSignalID(Int_t sID) { fSignalID = sID; }
+    inline void SetSignalID(Int_t sID) { fSignalID = sID; }
 
     /// It sets the id number of the signal
-    void SetID(Int_t sID) { fSignalID = sID; }
+    inline void SetID(Int_t sID) { fSignalID = sID; }
 
     /// It sets the number of head points
-    void SetHeadPoints(Int_t p) { fHeadPoints = p; }
+    inline void SetHeadPoints(Int_t p) { fHeadPoints = p; }
 
     /// It sets the number of tail points
-    void SetTailPoints(Int_t p) { fTailPoints = p; }
+    inline void SetTailPoints(Int_t p) { fTailPoints = p; }
 
     /// It sets/constrains the range for any calculation.
-    void SetRange(TVector2 range) { fRange = range; }
+    inline void SetRange(const TVector2& range) { fRange = range; }
 
-    void SetRangeToMax() { fRange = TVector2(0, GetNumberOfPoints()); }
+    inline void SetRangeToMax() { fRange = TVector2(0, GetNumberOfPoints()); }
 
     /// It sets/constrains the range for any calculation.
-    void SetRange(Int_t from, Int_t to) { fRange = TVector2(from, to); }
+    inline void SetRange(Int_t from, Int_t to) { fRange = TVector2(from, to); }
 
     void Reset();
 
@@ -165,7 +165,7 @@ class TRestRawSignal : public TObject {
 
     void IncreaseBinBy(Int_t bin, Double_t data);
 
-    void InitializePointsOverThreshold(TVector2 thrPar, Int_t nPointsOver, Int_t nPointsFlat = 512);
+    void InitializePointsOverThreshold(const TVector2& thrPar, Int_t nPointsOver, Int_t nPointsFlat = 512);
 
     Double_t GetIntegral();
 
@@ -195,33 +195,31 @@ class TRestRawSignal : public TObject {
 
     Bool_t IsADCSaturation(int Nflat = 3);
 
-    void GetDifferentialSignal(TRestRawSignal* diffSgnl, Int_t smearPoints);
+    void GetDifferentialSignal(TRestRawSignal* diffSignal, Int_t smearPoints);
 
-    void GetSignalSmoothed(TRestRawSignal* smthSignal, Int_t averagingPoints);
+    void GetSignalSmoothed(TRestRawSignal* smoothedSignal, Int_t averagingPoints);
 
     std::vector<Float_t> GetSignalSmoothed(Int_t averagingPoints);
 
-    void GetWhiteNoiseSignal(TRestRawSignal* noiseSgnl, Double_t noiseLevel = 1.);
+    void GetWhiteNoiseSignal(TRestRawSignal* noiseSignal, Double_t noiseLevel = 1.);
 
     void CalculateBaseLineMean(Int_t startBin, Int_t endBin);
 
     void CalculateBaseLineMedian(Int_t startBin, Int_t endBin);
 
-    void CalculateBaseLine(Int_t startBin, Int_t endBin, std::string option = "");
+    void CalculateBaseLine(Int_t startBin, Int_t endBin, const std::string& option = "");
 
-    //   Double_t GetStandardDeviation(Int_t startBin, Int_t endBin);
-
-    void GetBaseLineCorrected(TRestRawSignal* smthSignal, Int_t averagingPoints);
+    void GetBaseLineCorrected(TRestRawSignal* smoothedSignal, Int_t averagingPoints);
 
     void AddOffset(Short_t offset);
 
-    void SignalAddition(TRestRawSignal* inSgnl);
+    void SignalAddition(const TRestRawSignal& signal);
 
     void Scale(Double_t value);
 
-    void WriteSignalToTextFile(TString filename);
+    void WriteSignalToTextFile(const TString& filename);
 
-    void Print();
+    void Print() const;
 
     TGraph* GetGraph(Int_t color = 1);
 
