@@ -47,6 +47,9 @@
 /// the TRestDetectorReadout definition to assure that the righ signal ids,
 /// corresponding to the adjacent channels, are used in the calculation.
 ///
+/// \warning This process will only be functional if the detectorlib
+/// was compiled. You may check if it is the case executing the command
+/// `rest-config --libs`, and checking the output shows `-lRestDetector`.
 ///
 ///--------------------------------------------------------------------------
 ///
@@ -139,12 +142,18 @@ void TRestRawSignalRecoverChannelsProcess::LoadConfig(string cfgFilename, string
 /// TRestDetectorReadout.
 ///
 void TRestRawSignalRecoverChannelsProcess::InitProcess() {
+#ifdef REST_DetectorLib
     fReadout = GetMetadata<TRestDetectorReadout>();
 
     if (fReadout == nullptr) {
         cout << "REST ERRORRRR : Readout has not been initialized" << endl;
         exit(-1);
     }
+#else
+    ferr << "TRestRawSignalRecoverChannelsProcess will not be active." << endl;
+    ferr << "REST was not compiled with detectorlib" << endl;
+    ferr << "Please, remove this process or compile REST with detector library" << endl;
+#endif
 }
 
 ///////////////////////////////////////////////
@@ -153,12 +162,8 @@ void TRestRawSignalRecoverChannelsProcess::InitProcess() {
 TRestEvent* TRestRawSignalRecoverChannelsProcess::ProcessEvent(TRestEvent* evInput) {
     fInputSignalEvent = (TRestRawSignalEvent*)evInput;
 
-    //       TRestRawSignal *sgnl = fInputSignalEvent->GetSignal(n);
     for (int n = 0; n < fInputSignalEvent->GetNumberOfSignals(); n++)
         fOutputSignalEvent->AddSignal(*fInputSignalEvent->GetSignal(n));
-
-    //   cout << "Channels before : " << fOutputSignalEvent->GetNumberOfSignals()
-    //   << endl;
 
     Int_t nPoints = fOutputSignalEvent->GetSignal(0)->GetNumberOfPoints();
 
@@ -213,24 +218,9 @@ TRestEvent* TRestRawSignalRecoverChannelsProcess::ProcessEvent(TRestEvent* evInp
     return fOutputSignalEvent;
 }
 
-///////////////////////////////////////////////
-/// \brief Function reading input parameters from the RML
-/// TRestDetectorSignalToRawSignalProcess metadata section
-///
-/*
-void TRestRawSignalRecoverChannelsProcess::InitFromConfigFile() {
-    size_t pos = 0;
-
-    string recoverChannelDefinition;
-    while ((recoverChannelDefinition = GetKEYDefinition("recoverChannel", pos)) != "") {
-        Int_t id = StringToInteger(GetFieldValue("id", recoverChannelDefinition));
-        fChannelIds.push_back(id);
-    }
-}
-*/
-
 void TRestRawSignalRecoverChannelsProcess::GetAdjacentSignalIds(Int_t signalId, Int_t& idLeft,
                                                                 Int_t& idRight) {
+#ifdef REST_DetectorLib
     for (int p = 0; p < fReadout->GetNumberOfReadoutPlanes(); p++) {
         TRestDetectorReadoutPlane* plane = fReadout->GetReadoutPlane(p);
         for (int m = 0; m < plane->GetNumberOfModules(); m++) {
@@ -249,6 +239,7 @@ void TRestRawSignalRecoverChannelsProcess::GetAdjacentSignalIds(Int_t signalId, 
             }
         }
     }
+#endif
 
     idLeft = -1;
     idRight = -1;

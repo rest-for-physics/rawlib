@@ -23,23 +23,25 @@
 #ifndef RestCore_TRestRawSignalRecoverChannelsProcess
 #define RestCore_TRestRawSignalRecoverChannelsProcess
 
+#ifdef REST_DetectorLib
 #include "TRestDetectorReadout.h"
+#endif
 #include "TRestEventProcess.h"
 #include "TRestRawSignalEvent.h"
 
 //! A process allowing to recover selected channels from a TRestRawSignalEvent
 class TRestRawSignalRecoverChannelsProcess : public TRestEventProcess {
    private:
-    /// A pointer to the specific TRestDetectorSignalEvent input
+    /// A pointer to the specific TRestRawSignalEvent input
     TRestRawSignalEvent* fInputSignalEvent;  //!
 
     /// A pointer to the specific TRestRawSignalEvent input
     TRestRawSignalEvent* fOutputSignalEvent;  //!
 
+#ifdef REST_DetectorLib
     /// A pointer to the readout previously defined inside REST.
     TRestDetectorReadout* fReadout;  //!
-
-    void InitFromConfigFile();
+#endif
 
     void Initialize();
 
