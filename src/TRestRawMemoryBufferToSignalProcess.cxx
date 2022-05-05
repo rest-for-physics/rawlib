@@ -61,7 +61,7 @@
 ///                daqInfo structure.
 ///
 /// * \b *bufferKey* : An integer number used to generate a unique key to access
-///               the buffer containning the signals filled by the daq.
+///               the buffer containing the signals filled by the daq.
 ///
 /// * \b *semaphoreKey* : An integer number used to generate a unique key to
 ///                  access the semaphore controlling access to the data.

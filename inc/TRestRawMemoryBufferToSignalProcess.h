@@ -62,7 +62,7 @@ class TRestRawMemoryBufferToSignalProcess : public TRestEventProcess {
     /// A pointer to the specific TRestRawSignalEvent input
     TRestRawSignalEvent* fOutputRawSignalEvent;  //!
 
-    /// A pointer to the daqInfo data structure containning relevant information
+    /// A pointer to the daqInfo data structure containing relevant information
     /// shared by the daq
     daqInfo* fShMem_daqInfo;  //!
 

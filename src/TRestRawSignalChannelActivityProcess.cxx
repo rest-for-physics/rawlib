@@ -270,7 +270,7 @@ TRestEvent* TRestRawSignalChannelActivityProcess::ProcessEvent(TRestEvent* input
 
 ///////////////////////////////////////////////
 /// \brief Function to include required actions after all events have been
-/// processed. In this process it will take care of writting the histograms
+/// processed. In this process it will take care of writing the histograms
 /// to disk.
 ///
 void TRestRawSignalChannelActivityProcess::EndProcess() {
