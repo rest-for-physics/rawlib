@@ -43,9 +43,9 @@ class TRestRawSignalViewerProcess : public TRestEventProcess {
     TPad* DrawSignal(Int_t signal);
     TPad* DrawObservables();
 
-    void InitFromConfigFile();
+    void InitFromConfigFile() override;
 
-    void Initialize();
+    void Initialize() override;
 
     void LoadDefaultConfig();
 
@@ -56,13 +56,13 @@ class TRestRawSignalViewerProcess : public TRestEventProcess {
     any GetInputEvent() const override { return fSignalEvent; }
     any GetOutputEvent() const override { return fSignalEvent; }
 
-    void InitProcess();
-    TRestEvent* ProcessEvent(TRestEvent* eventInput);
-    void EndProcess();
+    void InitProcess() override;
+    TRestEvent* ProcessEvent(TRestEvent* inputEvent) override;
+    void EndProcess() override;
 
-    void LoadConfig(std::string configFilename, std::string name = "");
+    void LoadConfig(const std::string& configFilename, const std::string& name = "");
 
-    void PrintMetadata() {
+    void PrintMetadata() override {
         BeginPrintProcess();
 
         std::cout << "Refresh value : " << fDrawRefresh << endl;
@@ -78,6 +78,6 @@ class TRestRawSignalViewerProcess : public TRestEventProcess {
     // Destructor
     ~TRestRawSignalViewerProcess();
 
-    ClassDef(TRestRawSignalViewerProcess, 1);
+    ClassDefOverride(TRestRawSignalViewerProcess, 1);
 };
 #endif

@@ -201,10 +201,12 @@ void TRestRawMemoryBufferToSignalProcess::LoadDefaultConfig() {
 ///
 /// \param configFilename A const char* giving the path to an RML file.
 /// \param name The name of the specific metadata. It will be used to find the
-/// correspondig TRestGeant4AnalysisProcess section inside the RML.
+/// corresponding TRestGeant4AnalysisProcess section inside the RML.
 ///
-void TRestRawMemoryBufferToSignalProcess::LoadConfig(std::string configFilename, std::string name) {
-    if (LoadConfigFromFile(configFilename, name)) LoadDefaultConfig();
+void TRestRawMemoryBufferToSignalProcess::LoadConfig(const string& configFilename, const string& name) {
+    if (LoadConfigFromFile(configFilename, name)) {
+        LoadDefaultConfig();
+    }
 }
 
 ///////////////////////////////////////////////
@@ -276,12 +278,14 @@ void TRestRawMemoryBufferToSignalProcess::InitProcess() {
 /// \brief Function including required initialization before each event starts
 /// to process.
 ///
-void TRestRawMemoryBufferToSignalProcess::BeginOfEventProcess() { fOutputRawSignalEvent->Initialize(); }
+void TRestRawMemoryBufferToSignalProcess::BeginOfEventProcess(TRestEvent* inputEvent) {
+    fOutputRawSignalEvent->Initialize();
+}
 
 ///////////////////////////////////////////////
 /// \brief The main processing event function
 ///
-TRestEvent* TRestRawMemoryBufferToSignalProcess::ProcessEvent(TRestEvent* evInput) {
+TRestEvent* TRestRawMemoryBufferToSignalProcess::ProcessEvent(TRestEvent* inputEvent) {
     while (true) {
         SemaphoreRed(fSemaphoreId);
         int dataReady = fShMem_daqInfo->dataReady;
@@ -302,8 +306,9 @@ TRestEvent* TRestRawMemoryBufferToSignalProcess::ProcessEvent(TRestEvent* evInpu
                 if (GetVerboseLevel() >= REST_Debug)
                     cout << "s : " << s << " id : " << sgnl.GetSignalID() << endl;
 
-                for (int n = 0; n < maxSamples; n++)
+                for (int n = 0; n < maxSamples; n++) {
                     sgnl.AddPoint(fShMem_Buffer[s * (maxSamples + 1) + 1 + n]);
+                }
                 fOutputRawSignalEvent->AddSignal(sgnl);
 
                 if (GetVerboseLevel() >= REST_Extreme) {
@@ -354,10 +359,7 @@ TRestEvent* TRestRawMemoryBufferToSignalProcess::ProcessEvent(TRestEvent* evInpu
 ///
 void TRestRawMemoryBufferToSignalProcess::InitFromConfigFile() {
     fKeyDaqInfo = StringToInteger(GetParameter("daqInfoKey", "3"));
-
     fKeyBuffer = StringToInteger(GetParameter("bufferKey", "13"));
-
     fKeySemaphore = StringToInteger(GetParameter("semaphoreKey", "14"));
-
     fTimeDelay = StringToInteger(GetParameter("timeDelay", "10000"));
 }

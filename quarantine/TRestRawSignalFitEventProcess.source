@@ -212,7 +212,7 @@ void TRestRawSignalFitEventProcess::Initialize() {
 /// \param name The name of the specific metadata. It will be used to find the
 /// correspondig TRestGeant4AnalysisProcess section inside the RML.
 ///
-void TRestRawSignalFitEventProcess::LoadConfig(std::string configFilename, std::string name) {
+void TRestRawSignalFitEventProcess::LoadConfig(const string& configFilename, const string& name) {
     if (LoadConfigFromFile(configFilename, name)) LoadDefaultConfig();
 }
 

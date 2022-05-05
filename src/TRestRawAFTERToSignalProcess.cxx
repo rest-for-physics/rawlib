@@ -140,7 +140,7 @@ void TRestRawAFTERToSignalProcess::InitProcess() {
 ///////////////////////////////////////////////
 /// \brief The main processing event function
 ///
-TRestEvent* TRestRawAFTERToSignalProcess::ProcessEvent(TRestEvent* evInput) {
+TRestEvent* TRestRawAFTERToSignalProcess::ProcessEvent(TRestEvent* inputEvent) {
     EventHeader head;
     DataPacketHeader pHeader;
     DataPacketEnd pEnd;

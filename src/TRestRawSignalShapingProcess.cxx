@@ -108,22 +108,13 @@ TRestRawSignalShapingProcess::TRestRawSignalShapingProcess() { Initialize(); }
 ///
 TRestRawSignalShapingProcess::TRestRawSignalShapingProcess(const char* configFilename) {
     Initialize();
-
-    if (LoadConfigFromFile(configFilename) == -1) LoadDefaultConfig();
+    LoadConfigFromFile(configFilename);
 }
 
 ///////////////////////////////////////////////
 /// \brief Default destructor
 ///
 TRestRawSignalShapingProcess::~TRestRawSignalShapingProcess() { delete fOutputSignalEvent; }
-
-///////////////////////////////////////////////
-/// \brief Function to load the default config in absence of RML input
-///
-void TRestRawSignalShapingProcess::LoadDefaultConfig() {
-    SetName("rawSignalShapingProcess-Default");
-    SetTitle("Default config");
-}
 
 ///////////////////////////////////////////////
 /// \brief Function to initialize input/output event members and define the
@@ -147,10 +138,10 @@ void TRestRawSignalShapingProcess::Initialize() {
 ///
 /// \param configFilename A const char* giving the path to an RML file.
 /// \param name The name of the specific metadata. It will be used to find the
-/// correspondig TRestGeant4AnalysisProcess section inside the RML.
+/// corresponding TRestGeant4AnalysisProcess section inside the RML.
 ///
-void TRestRawSignalShapingProcess::LoadConfig(string configFilename, string name) {
-    if (LoadConfigFromFile(configFilename, name) == -1) LoadDefaultConfig();
+void TRestRawSignalShapingProcess::LoadConfig(const string& configFilename, const string& name) {
+    LoadConfigFromFile(configFilename, name);
 }
 
 ///////////////////////////////////////////////
@@ -163,7 +154,7 @@ void TRestRawSignalShapingProcess::InitProcess() {
      * NOT IMPLEMENTED. TODO To use a generic response from a
      * predefined TRestDetectorSignal
      *
-     * For the moment we do only a gausian shaping"
+     * For the moment we do only a gaussian shaping"
      * /
 
     responseSignal = new TRestRawSignal();
@@ -198,10 +189,12 @@ void TRestRawSignalShapingProcess::InitProcess() {
 ///////////////////////////////////////////////
 /// \brief The main processing event function
 ///
-TRestEvent* TRestRawSignalShapingProcess::ProcessEvent(TRestEvent* evInput) {
-    fInputSignalEvent = (TRestRawSignalEvent*)evInput;
+TRestEvent* TRestRawSignalShapingProcess::ProcessEvent(TRestEvent* inputEvent) {
+    fInputSignalEvent = (TRestRawSignalEvent*)inputEvent;
 
-    if (fInputSignalEvent->GetNumberOfSignals() <= 0) return nullptr;
+    if (fInputSignalEvent->GetNumberOfSignals() <= 0) {
+        return nullptr;
+    }
 
     double* rsp;
     Int_t Nr = 0;

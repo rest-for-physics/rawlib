@@ -23,9 +23,9 @@
 #ifndef RestCore_TRestRawSignalAddNoiseProcess
 #define RestCore_TRestRawSignalAddNoiseProcess
 
-#include <TRestRawSignalEvent.h>
+#include <TRestEventProcess.h>
 
-#include "TRestEventProcess.h"
+#include "TRestRawSignalEvent.h"
 
 //! A process to add/emulate electronic noise into a TRestRawSignalEvent
 class TRestRawSignalAddNoiseProcess : public TRestEventProcess {
@@ -33,26 +33,29 @@ class TRestRawSignalAddNoiseProcess : public TRestEventProcess {
     TRestRawSignalEvent* fInputSignalEvent;
     TRestRawSignalEvent* fOutputSignalEvent;
 
-    void Initialize();
+    void Initialize() override;
 
     void LoadDefaultConfig();
 
-    Double_t fNoiseLevel = 10;
+    Double_t fNoiseLevel = 10.0;
 
    protected:
     // add here the members of your event process
 
    public:
+    inline Double_t GetNoiseLevel() const { return fNoiseLevel; }
+    inline void SetNoiseLevel(Double_t noiseLevel) { fNoiseLevel = noiseLevel; }
+
     any GetInputEvent() const override { return fInputSignalEvent; }
     any GetOutputEvent() const override { return fOutputSignalEvent; }
 
-    void InitProcess();
-    TRestEvent* ProcessEvent(TRestEvent* eventInput);
-    void EndProcess();
+    void InitProcess() override;
+    TRestEvent* ProcessEvent(TRestEvent* inputEvent) override;
+    void EndProcess() override;
 
-    void LoadConfig(std::string configFilename, std::string name = "");
+    void LoadConfig(const std::string& configFilename, const std::string& name = "");
 
-    inline void PrintMetadata() {
+    inline void PrintMetadata() override {
         BeginPrintProcess();
 
         metadata << "Noise Level : " << fNoiseLevel << endl;
@@ -70,6 +73,6 @@ class TRestRawSignalAddNoiseProcess : public TRestEventProcess {
     // Destructor
     ~TRestRawSignalAddNoiseProcess();
 
-    ClassDef(TRestRawSignalAddNoiseProcess, 1);
+    ClassDefOverride(TRestRawSignalAddNoiseProcess, 1);
 };
 #endif

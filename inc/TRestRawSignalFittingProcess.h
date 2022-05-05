@@ -36,7 +36,7 @@ class TRestRawSignalFittingProcess : public TRestEventProcess {
     /// A pointer to the specific TRestRawSignalEvent input
     TRestRawSignalEvent* fRawSignalEvent;  //!
 
-    void Initialize();
+    void Initialize() override;
 
     void LoadDefaultConfig();
 
@@ -57,13 +57,13 @@ class TRestRawSignalFittingProcess : public TRestEventProcess {
     inline Double_t GetBaseline() const { return fBaseline; }
     inline Double_t GetAmplitude() const { return fAmplitude; }
 
-    void InitProcess();
-    TRestEvent* ProcessEvent(TRestEvent* eventInput);
-    void EndProcess();
+    void InitProcess() override;
+    TRestEvent* ProcessEvent(TRestEvent* inputEvent) override;
+    void EndProcess() override;
 
-    void LoadConfig(std::string configFilename, std::string name = "");
+    void LoadConfig(const std::string& configFilename, const std::string& name = "");
 
-    void PrintMetadata() {
+    void PrintMetadata() override {
         BeginPrintProcess();
 
         EndPrintProcess();
@@ -75,6 +75,6 @@ class TRestRawSignalFittingProcess : public TRestEventProcess {
     TRestRawSignalFittingProcess(const char* configFilename);
     ~TRestRawSignalFittingProcess();  // Destructor
 
-    ClassDef(TRestRawSignalFittingProcess, 2);
+    ClassDefOverride(TRestRawSignalFittingProcess, 2);
 };
 #endif

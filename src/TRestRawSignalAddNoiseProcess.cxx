@@ -59,9 +59,9 @@
 
 #include "TRestRawSignalAddNoiseProcess.h"
 
-using namespace std;
-
 #include <TFile.h>
+
+using namespace std;
 
 ClassImp(TRestRawSignalAddNoiseProcess);
 
@@ -69,8 +69,9 @@ TRestRawSignalAddNoiseProcess::TRestRawSignalAddNoiseProcess() { Initialize(); }
 
 TRestRawSignalAddNoiseProcess::TRestRawSignalAddNoiseProcess(const char* configFilename) {
     Initialize();
-
-    if (LoadConfigFromFile(configFilename) == -1) LoadDefaultConfig();
+    if (LoadConfigFromFile(configFilename) == -1) {
+        LoadDefaultConfig();
+    }
 }
 
 TRestRawSignalAddNoiseProcess::~TRestRawSignalAddNoiseProcess() {
@@ -91,7 +92,7 @@ void TRestRawSignalAddNoiseProcess::Initialize() {
     fOutputSignalEvent = new TRestRawSignalEvent();
 }
 
-void TRestRawSignalAddNoiseProcess::LoadConfig(string configFilename, string name) {
+void TRestRawSignalAddNoiseProcess::LoadConfig(const string& configFilename, const string& name) {
     if (LoadConfigFromFile(configFilename, name) == -1) LoadDefaultConfig();
 }
 
@@ -104,18 +105,17 @@ void TRestRawSignalAddNoiseProcess::InitProcess() {
     // TRestEventProcess::InitProcess();
 }
 
-TRestEvent* TRestRawSignalAddNoiseProcess::ProcessEvent(TRestEvent* evInput) {
-    fInputSignalEvent = (TRestRawSignalEvent*)evInput;
+TRestEvent* TRestRawSignalAddNoiseProcess::ProcessEvent(TRestEvent* inputEvent) {
+    fInputSignalEvent = (TRestRawSignalEvent*)inputEvent;
 
-    // cout<<"Number of signals "<< fInputSignalEvent->GetNumberOfSignals()<<
-    // endl;
-
-    if (fInputSignalEvent->GetNumberOfSignals() <= 0) return nullptr;
+    if (fInputSignalEvent->GetNumberOfSignals() <= 0) {
+        return nullptr;
+    }
 
     for (int n = 0; n < fInputSignalEvent->GetNumberOfSignals(); n++) {
         TRestRawSignal noiseSignal;
 
-        // Asign ID and add noise
+        // Assign ID and add noise
         fInputSignalEvent->GetSignal(n)->GetWhiteNoiseSignal(&noiseSignal, fNoiseLevel);
         noiseSignal.SetSignalID(fInputSignalEvent->GetSignal(n)->GetSignalID());
 

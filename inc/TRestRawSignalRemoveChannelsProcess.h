@@ -38,9 +38,9 @@ class TRestRawSignalRemoveChannelsProcess : public TRestEventProcess {
     TRestRawSignalEvent* fOutputSignalEvent;  //!
 #endif
 
-    void InitFromConfigFile();
+    void InitFromConfigFile() override;
 
-    void Initialize();
+    void Initialize() override;
 
     void LoadDefaultConfig();
 
@@ -53,12 +53,12 @@ class TRestRawSignalRemoveChannelsProcess : public TRestEventProcess {
     any GetInputEvent() const override { return fInputSignalEvent; }
     any GetOutputEvent() const override { return fOutputSignalEvent; }
 
-    TRestEvent* ProcessEvent(TRestEvent* eventInput);
+    TRestEvent* ProcessEvent(TRestEvent* inputEvent) override;
 
-    void LoadConfig(std::string configFilename, std::string name = "");
+    void LoadConfig(const std::string& configFilename, const std::string& name = "");
 
     /// It prints out the process parameters stored in the metadata structure
-    void PrintMetadata() {
+    void PrintMetadata() override {
         BeginPrintProcess();
 
         for (unsigned int n = 0; n < fChannelIds.size(); n++)
@@ -80,6 +80,6 @@ class TRestRawSignalRemoveChannelsProcess : public TRestEventProcess {
     // Destructor
     ~TRestRawSignalRemoveChannelsProcess();
 
-    ClassDef(TRestRawSignalRemoveChannelsProcess, 1);
+    ClassDefOverride(TRestRawSignalRemoveChannelsProcess, 1);
 };
 #endif

@@ -103,12 +103,12 @@ class TRestRawUSTCToSignalProcess : public TRestRawToSignalProcess {
 #endif
 
    public:
-    void InitProcess();
-    void Initialize();
+    void InitProcess() override;
+    void Initialize() override;
 
-    TRestEvent* ProcessEvent(TRestEvent* evInput);
+    TRestEvent* ProcessEvent(TRestEvent* inputEvent) override;
 
-    void EndProcess();
+    void EndProcess() override;
 
     bool FillBuffer();
 
@@ -132,6 +132,6 @@ class TRestRawUSTCToSignalProcess : public TRestRawToSignalProcess {
     // Destructor
     ~TRestRawUSTCToSignalProcess();
 
-    ClassDef(TRestRawUSTCToSignalProcess, 3);
+    ClassDefOverride(TRestRawUSTCToSignalProcess, 3);
 };
 #endif

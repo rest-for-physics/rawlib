@@ -121,9 +121,9 @@ void TRestRawSignalViewerProcess::Initialize() {
 ///
 /// \param configFilename A const char* giving the path to an RML file.
 /// \param name The name of the specific metadata. It will be used to find the
-/// correspondig TRestGeant4AnalysisProcess section inside the RML.
+/// corresponding TRestGeant4AnalysisProcess section inside the RML.
 ///
-void TRestRawSignalViewerProcess::LoadConfig(std::string configFilename, std::string name) {
+void TRestRawSignalViewerProcess::LoadConfig(const string& configFilename, const string& name) {
     if (LoadConfigFromFile(configFilename, name)) LoadDefaultConfig();
 }
 
@@ -136,11 +136,11 @@ void TRestRawSignalViewerProcess::InitProcess() { this->CreateCanvas(); }
 ///////////////////////////////////////////////
 /// \brief The main processing event function
 ///
-TRestEvent* TRestRawSignalViewerProcess::ProcessEvent(TRestEvent* evInput) {
+TRestEvent* TRestRawSignalViewerProcess::ProcessEvent(TRestEvent* inputEvent) {
     TString obsName;
 
     // no need for verbose copy now
-    fSignalEvent = (TRestRawSignalEvent*)evInput;
+    fSignalEvent = (TRestRawSignalEvent*)inputEvent;
 
     fCanvas->cd();
     eveCounter++;

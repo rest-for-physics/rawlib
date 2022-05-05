@@ -151,9 +151,9 @@ void TRestRawCommonNoiseReductionProcess::Initialize() {
 ///
 /// \param configFilename A const char* giving the path to an RML file.
 /// \param name The name of the specific metadata. It will be used to find the
-/// correspondig TRestGeant4AnalysisProcess section inside the RML.
+/// corresponding TRestGeant4AnalysisProcess section inside the RML.
 ///
-void TRestRawCommonNoiseReductionProcess::LoadConfig(std::string configFilename, std::string name) {
+void TRestRawCommonNoiseReductionProcess::LoadConfig(const string& configFilename, const string& name) {
     if (LoadConfigFromFile(configFilename, name)) LoadDefaultConfig();
 }
 
@@ -165,8 +165,8 @@ void TRestRawCommonNoiseReductionProcess::InitProcess() {}
 ///////////////////////////////////////////////
 /// \brief The main processing event function
 ///
-TRestEvent* TRestRawCommonNoiseReductionProcess::ProcessEvent(TRestEvent* evInput) {
-    fInputEvent = (TRestRawSignalEvent*)evInput;
+TRestEvent* TRestRawCommonNoiseReductionProcess::ProcessEvent(TRestEvent* inputEvent) {
+    fInputEvent = (TRestRawSignalEvent*)inputEvent;
 
     if (fInputEvent->GetNumberOfSignals() < fMinSignalsRequired) {
         for (int sgnl = 0; sgnl < fInputEvent->GetNumberOfSignals(); sgnl++) {
