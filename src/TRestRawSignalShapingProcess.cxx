@@ -203,7 +203,7 @@ TRestEvent* TRestRawSignalShapingProcess::ProcessEvent(TRestEvent* evInput) {
 
     if (fInputSignalEvent->GetNumberOfSignals() <= 0) return nullptr;
 
-    double* response;
+    std::vector<double> response;
     Int_t Nr = 0;
 
     /// This is done for every event however we could do it inside InitProcess!
@@ -213,8 +213,7 @@ TRestEvent* TRestRawSignalShapingProcess::ProcessEvent(TRestEvent* evInput) {
         Nr = 2 * cBin;
         Double_t sigma = fShapingTime;
         
-        vector<double> a(Nr);
-        response = &a[0];
+        response.resize(Nr);
     
         for (int i = 0; i < Nr; i++) {
             response[i] = TMath::Exp(-0.5 * (i - cBin) * (i - cBin) / sigma / sigma);
@@ -223,8 +222,7 @@ TRestEvent* TRestRawSignalShapingProcess::ProcessEvent(TRestEvent* evInput) {
     } else if (fShapingType == "exponential") {
         Nr = (Int_t)(5 * fShapingTime);
         
-        vector<double> a(Nr);
-        response = &a[0];
+        response.resize(Nr);
         
         for (int i = 0; i < Nr; i++) {
             Double_t coeff = ((Double_t)i) / fShapingTime;
@@ -233,8 +231,7 @@ TRestEvent* TRestRawSignalShapingProcess::ProcessEvent(TRestEvent* evInput) {
     } else if (fShapingType == "shaper") {
         Nr = (Int_t)(5 * fShapingTime);
 
-        vector<double> a(Nr);
-        response = &a[0];
+        response.resize(Nr);
         
         for (int i = 0; i < Nr; i++) {
             Double_t coeff = ((Double_t)i) / fShapingTime;
@@ -243,8 +240,7 @@ TRestEvent* TRestRawSignalShapingProcess::ProcessEvent(TRestEvent* evInput) {
     } else if (fShapingType == "shaperSin") {
         Nr = (Int_t)(5 * fShapingTime);
 
-        vector<double> a(Nr);
-        response = &a[0];
+        response.resize(Nr);
         
         for (int i = 0; i < Nr; i++) {
             Double_t coeff = ((Double_t)i) / fShapingTime;
