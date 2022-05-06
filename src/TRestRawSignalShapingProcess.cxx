@@ -211,16 +211,19 @@ TRestEvent* TRestRawSignalShapingProcess::ProcessEvent(TRestEvent* evInput) {
         Int_t cBin = (Int_t)(fShapingTime * 3.5);
         Nr = 2 * cBin;
         Double_t sigma = fShapingTime;
-
-        rsp = new double[Nr];
+        
+        double a[Nr];
+        rsp = a;
+    
         for (int i = 0; i < Nr; i++) {
             rsp[i] = TMath::Exp(-0.5 * (i - cBin) * (i - cBin) / sigma / sigma);
             rsp[i] = rsp[i] / TMath::Sqrt(2 * M_PI) / sigma;
         }
     } else if (fShapingType == "exponential") {
         Nr = (Int_t)(5 * fShapingTime);
-
-        rsp = new double[Nr];
+        
+        double a[Nr];
+        rsp = a;
         for (int i = 0; i < Nr; i++) {
             Double_t coeff = ((Double_t)i) / fShapingTime;
             rsp[i] = TMath::Exp(-coeff);
@@ -228,7 +231,8 @@ TRestEvent* TRestRawSignalShapingProcess::ProcessEvent(TRestEvent* evInput) {
     } else if (fShapingType == "shaper") {
         Nr = (Int_t)(5 * fShapingTime);
 
-        rsp = new double[Nr];
+        double a[Nr];
+        rsp = a;
         for (int i = 0; i < Nr; i++) {
             Double_t coeff = ((Double_t)i) / fShapingTime;
             rsp[i] = TMath::Exp(-3. * coeff) * coeff * coeff * coeff;
@@ -236,7 +240,8 @@ TRestEvent* TRestRawSignalShapingProcess::ProcessEvent(TRestEvent* evInput) {
     } else if (fShapingType == "shaperSin") {
         Nr = (Int_t)(5 * fShapingTime);
 
-        rsp = new double[Nr];
+        double a[Nr];
+        rsp = a;
         for (int i = 0; i < Nr; i++) {
             Double_t coeff = ((Double_t)i) / fShapingTime;
             rsp[i] = TMath::Exp(-3. * coeff) * coeff * coeff * coeff * sin(coeff);
@@ -257,7 +262,7 @@ TRestEvent* TRestRawSignalShapingProcess::ProcessEvent(TRestEvent* evInput) {
         TRestRawSignal inSignal = *fInputSignalEvent->GetSignal(n);
         Int_t nBins = inSignal.GetNumberOfPoints();
 
-        vector<double> out(nBins);
+        std::vector<double> out(nBins);
         for (int m = 0; m < nBins; m++) out[m] = 0;
 
         for (int m = 0; m < nBins; m++) {
