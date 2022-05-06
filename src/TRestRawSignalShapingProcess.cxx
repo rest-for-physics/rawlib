@@ -212,18 +212,18 @@ TRestEvent* TRestRawSignalShapingProcess::ProcessEvent(TRestEvent* evInput) {
         Int_t cBin = (Int_t)(fShapingTime * 3.5);
         Nr = 2 * cBin;
         Double_t sigma = fShapingTime;
-        
+
         response.resize(Nr);
-    
+
         for (int i = 0; i < Nr; i++) {
             response[i] = TMath::Exp(-0.5 * (i - cBin) * (i - cBin) / sigma / sigma);
             response[i] = response[i] / TMath::Sqrt(2 * M_PI) / sigma;
         }
     } else if (fShapingType == "exponential") {
         Nr = (Int_t)(5 * fShapingTime);
-        
+
         response.resize(Nr);
-        
+
         for (int i = 0; i < Nr; i++) {
             Double_t coeff = ((Double_t)i) / fShapingTime;
             response[i] = TMath::Exp(-coeff);
@@ -232,7 +232,7 @@ TRestEvent* TRestRawSignalShapingProcess::ProcessEvent(TRestEvent* evInput) {
         Nr = (Int_t)(5 * fShapingTime);
 
         response.resize(Nr);
-        
+
         for (int i = 0; i < Nr; i++) {
             Double_t coeff = ((Double_t)i) / fShapingTime;
             response[i] = TMath::Exp(-3. * coeff) * coeff * coeff * coeff;
@@ -241,7 +241,7 @@ TRestEvent* TRestRawSignalShapingProcess::ProcessEvent(TRestEvent* evInput) {
         Nr = (Int_t)(5 * fShapingTime);
 
         response.resize(Nr);
-        
+
         for (int i = 0; i < Nr; i++) {
             Double_t coeff = ((Double_t)i) / fShapingTime;
             response[i] = TMath::Exp(-3. * coeff) * coeff * coeff * coeff * sin(coeff);
@@ -271,7 +271,8 @@ TRestEvent* TRestRawSignalShapingProcess::ProcessEvent(TRestEvent* evInput) {
                     for (int n = -Nr / 2; m + n < nBins && n < Nr / 2; n++)
                         if (m + n >= 0) out[m + n] += response[n + Nr / 2] * inSignal.GetData(m);
                 } else
-                    for (int n = 0; m + n < nBins && n < Nr; n++) out[m + n] += response[n] * inSignal.GetData(m);
+                    for (int n = 0; m + n < nBins && n < Nr; n++)
+                        out[m + n] += response[n] * inSignal.GetData(m);
             }
         }
 
@@ -280,7 +281,6 @@ TRestEvent* TRestRawSignalShapingProcess::ProcessEvent(TRestEvent* evInput) {
 
         fOutputSignalEvent->AddSignal(shapingSignal);
     }
-
 
     return fOutputSignalEvent;
 }
