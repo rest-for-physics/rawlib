@@ -97,6 +97,7 @@
 /// <hr>
 ///
 #include "TRestRawSignalChannelActivityProcess.h"
+
 using namespace std;
 
 ClassImp(TRestRawSignalChannelActivityProcess);
@@ -142,7 +143,7 @@ void TRestRawSignalChannelActivityProcess::Initialize() {
     SetSectionName(this->ClassName());
     SetLibraryVersion(LIBRARY_VERSION);
 
-    fSignalEvent = NULL;
+    fSignalEvent = nullptr;
 }
 
 ///////////////////////////////////////////////

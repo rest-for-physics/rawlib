@@ -23,12 +23,13 @@
 #ifndef RestCore_TRestRawSignal
 #define RestCore_TRestRawSignal
 
-#include <iostream>
-
 #include <TGraph.h>
 #include <TObject.h>
 #include <TString.h>
 #include <TVector2.h>
+#include <string>
+
+#include <iostream>
 
 //! It defines a Short_t array with a physical parameter that evolves in time
 //! using a fixed time bin.
@@ -36,7 +37,9 @@ class TRestRawSignal : public TObject {
    private:
     void CalculateThresholdIntegral();
 
-    void CalculateBaseLineSigma(Int_t startBin, Int_t endBin);
+    void CalculateBaseLineSigmaSD(Int_t startBin, Int_t endBin);
+
+    void CalculateBaseLineSigmaIQR(Int_t startBin, Int_t endBin);
 
    protected:
     /// An integer value used to attribute a unique identification number to the
@@ -52,7 +55,7 @@ class TRestRawSignal : public TObject {
     /// A TGraph pointer used to store the TRestRawSignal drawing
     TGraph* fGraph;  //!
 
-    /// A vector containing the index of points that are identified over
+    /// A std::vector containing the index of points that are identified over
     /// threshold.
     std::vector<Int_t> fPointsOverThreshold;  //!
 
@@ -89,7 +92,7 @@ class TRestRawSignal : public TObject {
     /// Returns the actual number of points, or size of the signal
     Int_t GetNumberOfPoints() { return fSignalData.size(); }
 
-    /// Returns a vector containing the indexes of data points over threshold
+    /// Returns a std::vector containing the indexes of data points over threshold
     std::vector<Int_t> GetPointsOverThreshold() { return fPointsOverThreshold; }
 
     /// Returns the maximum value found in the data points. It includes baseline
@@ -110,8 +113,8 @@ class TRestRawSignal : public TObject {
     /// CalculateBaseLine.
     Double_t GetBaseLine() { return fBaseLine; }
 
-    /// Returns the value of baseline that it is initialized after calling
-    /// CalculateBaseLineSigma.
+    /// Returns the value of baseline sigma that it is initialized after calling
+    /// CalculateBaseLineSigmaSD or CalculateBaseLineSigmaIQR.
     Double_t GetBaseLineSigma() { return fBaseLineSigma; }
 
     /// Returns the range defined by user
@@ -143,7 +146,7 @@ class TRestRawSignal : public TObject {
     void SetTailPoints(Int_t p) { fTailPoints = p; }
 
     /// It sets/constrains the range for any calculation.
-    void SetRange(TVector2 rng) { fRange = rng; }
+    void SetRange(TVector2 range) { fRange = range; }
 
     void SetRangeToMax() { fRange = TVector2(0, GetNumberOfPoints()); }
 
@@ -196,11 +199,19 @@ class TRestRawSignal : public TObject {
 
     void GetSignalSmoothed(TRestRawSignal* smthSignal, Int_t averagingPoints);
 
+    std::vector<Float_t> GetSignalSmoothed(Int_t averagingPoints);
+
     void GetWhiteNoiseSignal(TRestRawSignal* noiseSgnl, Double_t noiseLevel = 1.);
 
-    void CalculateBaseLine(Int_t startBin, Int_t endBin);
+    void CalculateBaseLineMean(Int_t startBin, Int_t endBin);
+
+    void CalculateBaseLineMedian(Int_t startBin, Int_t endBin);
+
+    void CalculateBaseLine(Int_t startBin, Int_t endBin, std::string option = "");
 
     //   Double_t GetStandardDeviation(Int_t startBin, Int_t endBin);
+
+    void GetBaseLineCorrected(TRestRawSignal* smthSignal, Int_t averagingPoints);
 
     void AddOffset(Short_t offset);
 

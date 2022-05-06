@@ -84,10 +84,12 @@
 /// <hr>
 ///
 #include "TRestRawCommonNoiseReductionProcess.h"
+
 using namespace std;
+
 #include <algorithm>
-#include <iostream>  // std::cout
-#include <vector>    // std::vector
+#include <iostream>
+#include <vector>
 
 ClassImp(TRestRawCommonNoiseReductionProcess);
 
@@ -135,7 +137,7 @@ void TRestRawCommonNoiseReductionProcess::Initialize() {
     SetSectionName(this->ClassName());
     SetLibraryVersion(LIBRARY_VERSION);
 
-    fInputEvent = NULL;
+    fInputEvent = nullptr;
     fOutputEvent = new TRestRawSignalEvent();
 }
 
@@ -166,7 +168,7 @@ void TRestRawCommonNoiseReductionProcess::InitProcess() {}
 TRestEvent* TRestRawCommonNoiseReductionProcess::ProcessEvent(TRestEvent* evInput) {
     fInputEvent = (TRestRawSignalEvent*)evInput;
 
-    if( fInputEvent->GetNumberOfSignals() < fMinSignalsRequired ){
+    if (fInputEvent->GetNumberOfSignals() < fMinSignalsRequired) {
         for (int sgnl = 0; sgnl < fInputEvent->GetNumberOfSignals(); sgnl++) {
             fOutputEvent->AddSignal(*fInputEvent->GetSignal(sgnl));
         }
@@ -321,7 +323,7 @@ TRestEvent* TRestRawCommonNoiseReductionProcess::ProcessEvent(TRestEvent* evInpu
         }
         return fOutputEvent;
     }
-    return NULL;
+    return nullptr;
 }
 
 ///////////////////////////////////////////////

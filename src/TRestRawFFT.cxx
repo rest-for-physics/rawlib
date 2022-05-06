@@ -15,19 +15,19 @@
 ///                 Javier Galan
 ///_______________________________________________________________________________
 
+#include "TRestRawFFT.h"
+
 #include <TComplex.h>
 #include <TVirtualFFT.h>
 
-#include "TRestRawFFT.h"
 using namespace std;
 
-ClassImp(TRestRawFFT)
-    //______________________________________________________________________________
-    TRestRawFFT::TRestRawFFT() {
+ClassImp(TRestRawFFT);
+
+TRestRawFFT::TRestRawFFT() {
     // TRestRawFFT default constructor
 }
 
-//______________________________________________________________________________
 TRestRawFFT::~TRestRawFFT() {
     // TRestRawFFT destructor
 }

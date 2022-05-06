@@ -59,6 +59,7 @@
 /// <hr>
 ///
 #include "TRestRawSignalGeneralFitProcess.h"
+
 using namespace std;
 
 ClassImp(TRestRawSignalGeneralFitProcess);
@@ -104,7 +105,7 @@ void TRestRawSignalGeneralFitProcess::Initialize() {
     SetSectionName(this->ClassName());
     SetLibraryVersion(LIBRARY_VERSION);
 
-    fRawSignalEvent = NULL;
+    fRawSignalEvent = nullptr;
 }
 
 ///////////////////////////////////////////////
@@ -298,7 +299,7 @@ TRestEvent* TRestRawSignalGeneralFitProcess::ProcessEvent(TRestEvent* evInput) {
     */
 
     // If cut condition matches the event will be not registered.
-    if (ApplyCut()) return NULL;
+    if (ApplyCut()) return nullptr;
 
     return fRawSignalEvent;
 }
@@ -319,4 +320,3 @@ void TRestRawSignalGeneralFitProcess::EndProcess() {
         fFitFunc = nullptr;
     }
 }
-

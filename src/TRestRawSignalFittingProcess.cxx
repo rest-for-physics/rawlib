@@ -98,6 +98,7 @@
 /// <hr>
 ///
 #include "TRestRawSignalFittingProcess.h"
+
 using namespace std;
 
 ClassImp(TRestRawSignalFittingProcess);
@@ -143,7 +144,7 @@ void TRestRawSignalFittingProcess::Initialize() {
     SetSectionName(this->ClassName());
     SetLibraryVersion(LIBRARY_VERSION);
 
-    fRawSignalEvent = NULL;
+    fRawSignalEvent = nullptr;
 }
 
 ///////////////////////////////////////////////
@@ -207,14 +208,14 @@ TRestEvent* TRestRawSignalFittingProcess::ProcessEvent(TRestEvent* evInput) {
                          "sin((x-[3])/[2])/(1+TMath::Exp(-10000*(x-[3])))",
                          0, 511);
         f->SetParameters(0, 2000, 70, 80);
-        //f->SetParameters(0, 0);  // Initial values adjusted from Desmos
-        //f->SetParLimits(0, 150, 350);
-        //f->SetParameters(1, 2000);
-        //f->SetParLimits(1, 30, 90000);
-        //f->SetParameters(2, 70);
-        //f->SetParLimits(2, 10, 80);
-        //f->SetParameters(3, 80);
-        //f->SetParLimits(3, 150, 250);
+        // f->SetParameters(0, 0);  // Initial values adjusted from Desmos
+        // f->SetParLimits(0, 150, 350);
+        // f->SetParameters(1, 2000);
+        // f->SetParLimits(1, 30, 90000);
+        // f->SetParameters(2, 70);
+        // f->SetParLimits(2, 10, 80);
+        // f->SetParameters(3, 80);
+        // f->SetParLimits(3, 150, 250);
         f->SetParNames("Baseline", "Amplitude", "ShapingTime", "PeakPosition");
 
         // Create histogram from signal
@@ -243,7 +244,7 @@ TRestEvent* TRestRawSignalFittingProcess::ProcessEvent(TRestEvent* evInput) {
         amplitudeFit[singleSignal->GetID()] = f->GetParameter(1);
         shapingtimeFit[singleSignal->GetID()] = f->GetParameter(2);
         peakpositionFit[singleSignal->GetID()] = f->GetParameter(3);
-        
+
         fShaping = f->GetParameter(2);
         fStartPosition = f->GetParameter(3);
         fBaseline = f->GetParameter(0);
@@ -313,7 +314,7 @@ TRestEvent* TRestRawSignalFittingProcess::ProcessEvent(TRestEvent* evInput) {
     */
 
     // If cut condition matches the event will be not registered.
-    if (ApplyCut()) return NULL;
+    if (ApplyCut()) return nullptr;
 
     return fRawSignalEvent;
 }
@@ -330,4 +331,3 @@ void TRestRawSignalFittingProcess::EndProcess() {
     // Comment this if you don't want it.
     // TRestEventProcess::EndProcess();
 }
-

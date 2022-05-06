@@ -24,6 +24,7 @@
 #define RestCore_TRestRawMultiCoBoAsAdToSignalProcess
 
 #include <map>
+
 #include "TRestRawSignalEvent.h"
 #include "TRestRawToSignalProcess.h"
 
@@ -32,10 +33,12 @@ struct CoBoDataFrame {
         timeStamp = 0;
         evId = -1;
         asadId = -1;
-        for (int m = 0; m < 272; m++) chHit[m] = kFALSE;
-
-        for (int m = 0; m < 272; m++)
-            for (int l = 0; l < 512; l++) data[m][l] = 0;
+        for (bool& m : chHit) m = kFALSE;
+        for (auto& m : data) {
+            for (int& l : m) {
+                l = 0;
+            }
+        }
     }
     TTimeStamp timeStamp;
     Bool_t chHit[272];
@@ -48,7 +51,9 @@ struct CoBoDataFrame {
 
 struct CoBoHeaderFrame {
     CoBoHeaderFrame() {
-        for (int m = 0; m < 256; m++) frameHeader[m] = 0;
+        for (unsigned char& m : frameHeader) {
+            m = 0;
+        }
         // 4294967295 == -1  --> ends reading
         // 4294967294 == -2  --> just initialized
         eventIdx = (unsigned int)4294967294;
@@ -72,27 +77,27 @@ struct CoBoHeaderFrame {
     // int fEveTimeNanoSec;
 
     void Show() {
-        cout << "------ Frame Header ------" << endl;
-        cout << "frameSize " << frameSize << endl;
+        std::cout << "------ Frame Header ------" << endl;
+        std::cout << "frameSize " << frameSize << endl;
 
-        cout << "frameType " << frameType << endl;
-        cout << "revision " << revision << endl;
-        cout << "headerSize " << headerSize << endl;
-        cout << "itemSize " << itemSize << endl;
-        cout << "nItems " << nItems << endl;
-        cout << "eventTime " << eventTime << endl;
-        cout << "eventIdx " << eventIdx << endl;
+        std::cout << "frameType " << frameType << endl;
+        std::cout << "revision " << revision << endl;
+        std::cout << "headerSize " << headerSize << endl;
+        std::cout << "itemSize " << itemSize << endl;
+        std::cout << "nItems " << nItems << endl;
+        std::cout << "eventTime " << eventTime << endl;
+        std::cout << "eventIdx " << eventIdx << endl;
 
-        cout << "asadIdx " << asadIdx << endl;
-        cout << "readOffset " << readOffset << endl;
-        cout << "status " << status << endl;
+        std::cout << "asadIdx " << asadIdx << endl;
+        std::cout << "readOffset " << readOffset << endl;
+        std::cout << "status " << status << endl;
     }
 };
 
 class TRestRawMultiCoBoAsAdToSignalProcess : public TRestRawToSignalProcess {
    private:
 #ifndef __CINT__
-    TRestRawSignal sgnl;  //!
+    TRestRawSignal signal;  //!
 
     UChar_t frameDataP[2048];    //!///for partial readout data frame
     UChar_t frameDataF[278528];  //!///for full readout data frame
@@ -101,7 +106,7 @@ class TRestRawMultiCoBoAsAdToSignalProcess : public TRestRawToSignalProcess {
 
     std::map<int, CoBoDataFrame> fDataFrame;  //!///asadId, dataframe
 
-    vector<CoBoHeaderFrame> fHeaderFrame;  //!///reserves a header frame for each file
+    std::vector<CoBoHeaderFrame> fHeaderFrame;  //!///reserves a header frame for each file
 
     int fCurrentEvent = -1;  //!
     int fNextEvent = -1;     //!
@@ -110,7 +115,7 @@ class TRestRawMultiCoBoAsAdToSignalProcess : public TRestRawToSignalProcess {
    public:
     void InitProcess();
 
-    Bool_t AddInputFile(string file);
+    Bool_t AddInputFile(std::string file);
 
     void Initialize();
 
@@ -137,8 +142,6 @@ class TRestRawMultiCoBoAsAdToSignalProcess : public TRestRawToSignalProcess {
     // Destructor
     ~TRestRawMultiCoBoAsAdToSignalProcess();
 
-    ClassDef(TRestRawMultiCoBoAsAdToSignalProcess,
-             1);  // Template for a REST "event process" class inherited from
-                  // TRestEventProcess
+    ClassDef(TRestRawMultiCoBoAsAdToSignalProcess, 1);
 };
 #endif

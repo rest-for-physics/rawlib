@@ -18,12 +18,11 @@
 #ifndef RestCore_TRestRawFFT
 #define RestCore_TRestRawFFT
 
-#include <iostream>
-
 #include <TArrayD.h>
 #include <TObject.h>
-
 #include <TRestRawSignal.h>
+
+#include <iostream>
 
 class TRestRawFFT : public TObject {
    protected:
@@ -78,7 +77,7 @@ class TRestRawFFT : public TObject {
     void WriteFrequencyToTextFile(TString filename);
     void WriteTimeSignalToTextFile(TString filename);
 
-    // Construtor
+    // Constructor
     TRestRawFFT();
     // Destructor
     ~TRestRawFFT();

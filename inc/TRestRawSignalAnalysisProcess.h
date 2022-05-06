@@ -23,39 +23,38 @@
 #ifndef RestCore_TRestRawSignalAnalysisProcess
 #define RestCore_TRestRawSignalAnalysisProcess
 
-#include <TH1D.h>
 #include <TRestRawSignalEvent.h>
 
 #include "TRestEventProcess.h"
 
-//! An analysis REST process to extract valuable information from RawSignal type
-//! of data.
+//! An analysis process to extract valuable information from a TRestRawSignalEvent.
 class TRestRawSignalAnalysisProcess : public TRestEventProcess {
    private:
     /// A pointer to the specific TRestRawSignalEvent input
     TRestRawSignalEvent* fSignalEvent;  //!
 
-    Double_t fFirstEventTime;             //!
-    vector<Double_t> fPreviousEventTime;  //!
-
-    time_t timeStored;  //!
-
     /// Just a flag to quickly determine if we have to apply the range filter
     Bool_t fRangeEnabled = false;  //!
 
-    // parameters
+    /// The range where the baseline range will be calculated
     TVector2 fBaseLineRange = TVector2(5, 55);
+
+    /// The range where the observables will be calculated
     TVector2 fIntegralRange = TVector2(10, 500);
+
+    /// The number of sigmas over baseline fluctuations to identify a point overthreshold
     Double_t fPointThreshold = 2;
+
+    /// A parameter to define a minimum signal fluctuation. Measured in sigmas.
     Double_t fSignalThreshold = 5;
+
+    /// The minimum number of points over threshold to identify a signal as such
     Int_t fPointsOverThreshold = 5;
 
     /// It defines the signals id range where analysis is applied
     TVector2 fSignalsRange = TVector2(-1, -1);  //<
 
     void Initialize();
-
-    void LoadDefaultConfig();
 
    protected:
     // add here the members of your event process
@@ -66,9 +65,6 @@ class TRestRawSignalAnalysisProcess : public TRestEventProcess {
 
     void InitProcess();
     TRestEvent* ProcessEvent(TRestEvent* eventInput);
-    void EndProcess();
-
-    void LoadConfig(std::string cfgFilename, std::string name = "");
 
     void PrintMetadata() {
         BeginPrintProcess();
@@ -86,11 +82,9 @@ class TRestRawSignalAnalysisProcess : public TRestEventProcess {
 
     TString GetProcessName() { return (TString) "rawSignalAnalysis"; }
 
-    TRestRawSignalAnalysisProcess();  // Constructor
-    TRestRawSignalAnalysisProcess(char* cfgFileName);
+    TRestRawSignalAnalysisProcess();   // Constructor
     ~TRestRawSignalAnalysisProcess();  // Destructor
 
     ClassDef(TRestRawSignalAnalysisProcess, 4);
-    // Template for a REST "event process" class inherited from TRestEventProcess
 };
 #endif

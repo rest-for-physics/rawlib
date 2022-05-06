@@ -96,7 +96,7 @@
 #define PFX_END_OF_BUILT_EVENT 0x0008    // End of built event
 #define PFX_EVPERIOD_HSTAT_BINS 0x0007   // Inter Event Time statistics and histogram
 #define PFX_SOBE_SIZE 0x0006             // Start of built event + Size
-#define PFX_NULL_CONTENT 0x0000          // Null content
+#define PFX_NULL_CONTENT 0x0000          // NULL content
 //
 // Prefix Codes for 14-bit data content
 //
@@ -183,7 +183,9 @@
 unsigned char cur_fr[MAX_EVENT_SIZE];  // Current frame
 
 #include "TRestRawMultiFEMINOSToSignalProcess.h"
+
 using namespace std;
+
 #include "TTimeStamp.h"
 
 Int_t nChannels = 0;
@@ -201,7 +203,7 @@ TRestRawMultiFEMINOSToSignalProcess::~TRestRawMultiFEMINOSToSignalProcess() {}
 
 void TRestRawMultiFEMINOSToSignalProcess::LoadDetectorSetupData() {
     if (fRunInfo == nullptr) {
-        cout << "'fRunInfo' is null" << endl;
+        cout << "'fRunInfo' is nullptr" << endl;
         return;
     }
 }
@@ -289,8 +291,8 @@ TRestEvent* TRestRawMultiFEMINOSToSignalProcess::ProcessEvent(TRestEvent* evInpu
                 if (fread(sh, sizeof(unsigned short), 1, fInputBinFile) != 1) {
                     debug << "End of file reached." << endl;
 
-                    // The processing thread will be finished when return NULL is reached
-                    return NULL;
+                    // The processing thread will be finished when return nullptr is reached
+                    return nullptr;
                 }
                 totalBytesReaded += sizeof(unsigned short);
 
@@ -388,8 +390,8 @@ TRestEvent* TRestRawMultiFEMINOSToSignalProcess::ProcessEvent(TRestEvent* evInpu
         }
     }
 
-    // The processing thread will be finished if return NULL is reached
-    return NULL;
+    // The processing thread will be finished if return nullptr is reached
+    return nullptr;
 }
 
 Bool_t TRestRawMultiFEMINOSToSignalProcess::ReadFrame(void* fr, int fr_sz) {

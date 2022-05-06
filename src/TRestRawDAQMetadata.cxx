@@ -61,7 +61,7 @@
 using namespace std;
 
 ClassImp(TRestRawDAQMetadata);
-//______________________________________________________________________________
+
 TRestRawDAQMetadata::TRestRawDAQMetadata() { Initialize(); }
 
 TRestRawDAQMetadata::TRestRawDAQMetadata(char* cfgFileName) : TRestMetadata(cfgFileName) {
@@ -78,10 +78,8 @@ void TRestRawDAQMetadata::Initialize() {
     SetLibraryVersion(LIBRARY_VERSION);
 }
 
-//______________________________________________________________________________
 TRestRawDAQMetadata::~TRestRawDAQMetadata() { cout << "Deleting TRestRawDAQMetadata" << endl; }
 
-//______________________________________________________________________________
 void TRestRawDAQMetadata::InitFromConfigFile() {
     // string daqString;
 
@@ -180,8 +178,6 @@ UInt_t TRestRawDAQMetadata::GetValFromString(TString var, TString line) {
 
     unsigned int varSize = var.Sizeof();
     unsigned int lineSize = line.Sizeof();
-
-    // cout<<varSize<<"  "<<lineSize<<endl;
 
     TString diff(line(varSize - 1, lineSize - 1));
 

@@ -48,7 +48,7 @@ class TRestRawFindResponseSignalProcess : public TRestEventProcess {
     TRestEvent* ProcessEvent(TRestEvent* eventInput);
     void EndProcess();
 
-    void LoadConfig(std::string cfgFilename, string name = "");
+    void LoadConfig(std::string cfgFilename, std::string name = "");
 
     void PrintMetadata() {
         BeginPrintProcess();
@@ -56,7 +56,7 @@ class TRestRawFindResponseSignalProcess : public TRestEventProcess {
         EndPrintProcess();
     }
 
-    TRestMetadata* GetProcessMetadata() { return NULL; }
+    TRestMetadata* GetProcessMetadata() { return nullptr; }
 
     TString GetProcessName() { return (TString) "findResponseSignal"; }
 

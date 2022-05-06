@@ -30,6 +30,7 @@
 #endif
 
 #include <TRestRawSignalEvent.h>
+
 #include "TRestEventProcess.h"
 
 //! A pure analysis process to generate histograms with detector channels
