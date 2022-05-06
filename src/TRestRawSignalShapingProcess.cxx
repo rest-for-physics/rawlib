@@ -217,6 +217,14 @@ TRestEvent* TRestRawSignalShapingProcess::ProcessEvent(TRestEvent* evInput) {
             rsp[i] = TMath::Exp(-0.5 * (i - cBin) * (i - cBin) / sigma / sigma);
             rsp[i] = rsp[i] / TMath::Sqrt(2 * M_PI) / sigma;
         }
+    } else if (fShapingType == "exponential") {
+        Nr = (Int_t)(5 * fShapingTime);
+
+        rsp = new double[Nr];
+        for (int i = 0; i < Nr; i++) {
+            Double_t coeff = ((Double_t)i) / fShapingTime;
+            rsp[i] = TMath::Exp(-coeff);
+        }
     } else if (fShapingType == "shaper") {
         Nr = (Int_t)(5 * fShapingTime);
 
