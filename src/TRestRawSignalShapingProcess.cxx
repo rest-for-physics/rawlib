@@ -203,7 +203,7 @@ TRestEvent* TRestRawSignalShapingProcess::ProcessEvent(TRestEvent* evInput) {
 
     if (fInputSignalEvent->GetNumberOfSignals() <= 0) return nullptr;
 
-    double* rsp;
+    std::vector<double> response;
     Int_t Nr = 0;
 
     /// This is done for every event however we could do it inside InitProcess!
@@ -213,26 +213,38 @@ TRestEvent* TRestRawSignalShapingProcess::ProcessEvent(TRestEvent* evInput) {
         Nr = 2 * cBin;
         Double_t sigma = fShapingTime;
 
-        rsp = new double[Nr];
+        response.resize(Nr);
+
         for (int i = 0; i < Nr; i++) {
-            rsp[i] = TMath::Exp(-0.5 * (i - cBin) * (i - cBin) / sigma / sigma);
-            rsp[i] = rsp[i] / TMath::Sqrt(2 * M_PI) / sigma;
+            response[i] = TMath::Exp(-0.5 * (i - cBin) * (i - cBin) / sigma / sigma);
+            response[i] = response[i] / TMath::Sqrt(2 * M_PI) / sigma;
+        }
+    } else if (fShapingType == "exponential") {
+        Nr = (Int_t)(5 * fShapingTime);
+
+        response.resize(Nr);
+
+        for (int i = 0; i < Nr; i++) {
+            Double_t coeff = ((Double_t)i) / fShapingTime;
+            response[i] = TMath::Exp(-coeff);
         }
     } else if (fShapingType == "shaper") {
         Nr = (Int_t)(5 * fShapingTime);
 
-        rsp = new double[Nr];
+        response.resize(Nr);
+
         for (int i = 0; i < Nr; i++) {
             Double_t coeff = ((Double_t)i) / fShapingTime;
-            rsp[i] = TMath::Exp(-3. * coeff) * coeff * coeff * coeff;
+            response[i] = TMath::Exp(-3. * coeff) * coeff * coeff * coeff;
         }
     } else if (fShapingType == "shaperSin") {
         Nr = (Int_t)(5 * fShapingTime);
 
-        rsp = new double[Nr];
+        response.resize(Nr);
+
         for (int i = 0; i < Nr; i++) {
             Double_t coeff = ((Double_t)i) / fShapingTime;
-            rsp[i] = TMath::Exp(-3. * coeff) * coeff * coeff * coeff * sin(coeff);
+            response[i] = TMath::Exp(-3. * coeff) * coeff * coeff * coeff * sin(coeff);
         }
     } else {
         if (GetVerboseLevel() >= REST_Warning)
@@ -240,10 +252,10 @@ TRestEvent* TRestRawSignalShapingProcess::ProcessEvent(TRestEvent* evInput) {
         return nullptr;
     }
 
-    // Making sure that rsp integral is 1, and applying the gain
+    // Making sure that response integral is 1, and applying the gain
     Double_t sum = 0;
-    for (int n = 0; n < Nr; n++) sum += rsp[n];
-    for (int n = 0; n < Nr; n++) rsp[n] = rsp[n] * fShapingGain / sum;
+    for (int n = 0; n < Nr; n++) sum += response[n];
+    for (int n = 0; n < Nr; n++) response[n] = response[n] * fShapingGain / sum;
 
     for (int n = 0; n < fInputSignalEvent->GetNumberOfSignals(); n++) {
         TRestRawSignal shapingSignal = TRestRawSignal();
@@ -257,9 +269,10 @@ TRestEvent* TRestRawSignalShapingProcess::ProcessEvent(TRestEvent* evInput) {
             if (inSignal.GetData(m) >= 0) {
                 if (fShapingType == "gaus") {
                     for (int n = -Nr / 2; m + n < nBins && n < Nr / 2; n++)
-                        if (m + n >= 0) out[m + n] += rsp[n + Nr / 2] * inSignal.GetData(m);
+                        if (m + n >= 0) out[m + n] += response[n + Nr / 2] * inSignal.GetData(m);
                 } else
-                    for (int n = 0; m + n < nBins && n < Nr; n++) out[m + n] += rsp[n] * inSignal.GetData(m);
+                    for (int n = 0; m + n < nBins && n < Nr; n++)
+                        out[m + n] += response[n] * inSignal.GetData(m);
             }
         }
 
@@ -268,8 +281,6 @@ TRestEvent* TRestRawSignalShapingProcess::ProcessEvent(TRestEvent* evInput) {
 
         fOutputSignalEvent->AddSignal(shapingSignal);
     }
-
-    delete[] rsp;
 
     return fOutputSignalEvent;
 }
