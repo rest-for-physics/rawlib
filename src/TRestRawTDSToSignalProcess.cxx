@@ -27,21 +27,13 @@
 /// processing can continue inside with the REST framework libraries.
 ///
 /// ### Parameters
-/// Inherits from TRestRawToSignalProcess: 
-/// * **pedScript**: Not used
-/// * **runScript**: Not used
+/// Inherits from TRestRawToSignalProcess, only electronics type is required: 
 /// * **electronics**: You need to write here TDS
-/// * **fileFormat**: Not used
 ///
 /// ### Examples
 /// Similar to TRestRawToSignalProcess, jus use TDS as electronics parameter
 /// \code
-///   <addProcess type="TRestRawTDSToSignalProcess" name="virtualDAQ" value="ON">
-///     <parameter name="pedScript" value="ped"/>
-///     <parameter name="runScript" value="run"/>
-///     <parameter name="electronics" value="TDS"/>
-///     <parameter name="fileFormat" value="SJTU" />
-///  </addProcess>
+///   <addProcess type="TRestRawTDSToSignalProcess" name="tdsDAQ" electronics="TDS"/>
 /// \endcode
 ///
 ///----------------------------------------------------------------------
