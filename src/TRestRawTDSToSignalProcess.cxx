@@ -31,7 +31,7 @@
 /// * **electronics**: You need to write here TDS
 ///
 /// ### Examples
-/// Similar to TRestRawToSignalProcess, jus use TDS as electronics parameter
+/// Similar to TRestRawToSignalProcess, we just define the `electronics` parameter as `TDS`
 /// \code
 ///   <addProcess type="TRestRawTDSToSignalProcess" name="tdsDAQ" electronics="TDS"/>
 /// \endcode
