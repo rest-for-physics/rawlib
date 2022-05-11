@@ -132,7 +132,6 @@ class TRestRawUSTCToSignalProcess : public TRestRawToSignalProcess {
     // Destructor
     ~TRestRawUSTCToSignalProcess();
 
-    ClassDef(TRestRawUSTCToSignalProcess, 3);  // Template for a REST "event process" class inherited from
-                                               // TRestEventProcess
+    ClassDef(TRestRawUSTCToSignalProcess, 3);
 };
 #endif

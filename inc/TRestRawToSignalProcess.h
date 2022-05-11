@@ -23,8 +23,8 @@
 #ifndef RestCore_TRestRawToSignalProcess
 #define RestCore_TRestRawToSignalProcess
 
-#include "TRestEventProcess.h"
-#include "TRestRawSignalEvent.h"
+#include <TRestEventProcess.h>
+#include <TRestRawSignalEvent.h>
 
 //! A base class for any process reading a binary external file as input to REST
 class TRestRawToSignalProcess : public TRestEventProcess {
@@ -58,7 +58,7 @@ class TRestRawToSignalProcess : public TRestEventProcess {
     void LoadDefaultConfig();
 
    public:
-    virtual any GetInputEvent() { return any((TRestEvent*)NULL); }
+    virtual any GetInputEvent() { return any((TRestEvent*)nullptr); }
     virtual any GetOutputEvent() { return fSignalEvent; }
 
     virtual void Initialize();
@@ -66,7 +66,7 @@ class TRestRawToSignalProcess : public TRestEventProcess {
     virtual TRestEvent* ProcessEvent(TRestEvent* evInput) = 0;
     virtual void EndProcess();
     // virtual TString GetProcessName()=0;
-    TRestMetadata* GetProcessMetadata() { return NULL; }
+    TRestMetadata* GetProcessMetadata() { return nullptr; }
 
     void SetRunOrigin(Int_t run_origin) { fRunOrigin = run_origin; }
     void SetSubRunOrigin(Int_t sub_run_origin) { fSubRunOrigin = sub_run_origin; }
@@ -95,7 +95,6 @@ class TRestRawToSignalProcess : public TRestEventProcess {
     // Destructor
     ~TRestRawToSignalProcess();
 
-    ClassDef(TRestRawToSignalProcess, 1);  // Template for a REST "event process" class inherited from
-                                           // TRestEventProcess
+    ClassDef(TRestRawToSignalProcess, 1);
 };
 #endif

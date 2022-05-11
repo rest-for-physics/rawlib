@@ -87,7 +87,6 @@ class TRestRawSignalShapingProcess : public TRestEventProcess {
     TRestRawSignalShapingProcess(char* cfgFileName);
     ~TRestRawSignalShapingProcess();
 
-    ClassDef(TRestRawSignalShapingProcess, 2);  // Template for a REST "event process" class inherited from
-                                                // TRestEventProcess
+    ClassDef(TRestRawSignalShapingProcess, 2);
 };
 #endif

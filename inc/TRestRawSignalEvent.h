@@ -26,21 +26,19 @@
 #include <TArrayD.h>
 #include <TAxis.h>
 #include <TGraph.h>
-#include <TMultiGraph.h>
 #include <TObject.h>
 #include <TPad.h>
+#include <TRestEvent.h>
 #include <TVector2.h>
 
 #include <iostream>
 #include <string>
 
-#include "TRestEvent.h"
 #include "TRestRawSignal.h"
 
 //! An event container for time rawdata signals with fixed length
 class TRestRawSignalEvent : public TRestEvent {
    protected:
-    TMultiGraph* mg;     //!
     TGraph* gr;          //!
     Double_t fMinTime;   //!
     Double_t fMaxTime;   //!
@@ -72,19 +70,17 @@ class TRestRawSignalEvent : public TRestEvent {
         for (int n = 0; n < GetNumberOfSignals(); n++) fSignal[n].SetTailPoints(p);
     }
 
-    void SetBaseLineRange(TVector2 blRange, std::string option= "") { SetBaseLineRange(blRange.X(), blRange.Y(), option); }
+    /// It sets the range to be used for the baseline calculation and calls
+    /// TRestRawSignal::CalculateBaseLine()
+    void SetBaseLineRange(TVector2 blRange, std::string option = "") {
+        SetBaseLineRange(blRange.X(), blRange.Y(), option);
+    }
 
-    void SetBaseLineRange(Int_t from, Int_t to, std::string option="") {
+    /// It sets the range to be used for the baseline calculation and calls
+    /// TRestRawSignal::CalculateBaseLine()
+    void SetBaseLineRange(Int_t from, Int_t to, std::string option = "") {
         fBaseLineRange = TVector2(from, to);
         for (int n = 0; n < GetNumberOfSignals(); n++) fSignal[n].CalculateBaseLine(from, to, option);
-    }
-	
-	/// Uses for the baseline calculation not the standard deviation but IQR (interquartile range) divided by 1.349
-    void SetBaseLineRangeRobust(TVector2 blRange) { SetBaseLineRangeRobust(blRange.X(), blRange.Y()); }
-
-    void SetBaseLineRangeRobust(Int_t from, Int_t to) {
-        fBaseLineRange = TVector2(from, to);
-        for (int n = 0; n < GetNumberOfSignals(); n++) fSignal[n].CalculateBaseLineRobust(from, to);
     }
 
     void SetRange(TVector2 range) { SetRange(range.X(), range.Y()); }
@@ -122,7 +118,7 @@ class TRestRawSignalEvent : public TRestEvent {
 
     TRestRawSignal* GetSignalById(Int_t sid) {
         Int_t index = GetSignalIndex(sid);
-        if (index < 0) return NULL;
+        if (index < 0) return nullptr;
 
         return &fSignal[index];
     }
@@ -137,7 +133,7 @@ class TRestRawSignalEvent : public TRestEvent {
 
     Double_t GetBaseLineAverage();
     Double_t GetBaseLineSigmaAverage();
-    //   void SubstractBaselines();
+    //   void SubtractBaselines();
     Double_t GetIntegral();
     Double_t GetThresholdIntegral();
 
@@ -155,14 +151,15 @@ class TRestRawSignalEvent : public TRestEvent {
     void Initialize();
     void PrintEvent();
 
-    TPad* DrawEvent(TString option = "");
+    TPad* DrawEvent(const TString& option = "");
+    void DrawSignals(TPad* pad, const std::vector<Int_t>& signals);
     TPad* DrawSignal(Int_t signal, TString option = "");
 
-    // Construtor
+    // Constructor
     TRestRawSignalEvent();
     // Destructor
     virtual ~TRestRawSignalEvent();
 
-    ClassDef(TRestRawSignalEvent, 1);  // REST event superclass
+    ClassDef(TRestRawSignalEvent, 1);
 };
 #endif

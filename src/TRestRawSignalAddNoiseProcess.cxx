@@ -58,22 +58,21 @@
 ///
 
 #include "TRestRawSignalAddNoiseProcess.h"
+
 using namespace std;
 
 #include <TFile.h>
 
 ClassImp(TRestRawSignalAddNoiseProcess);
-//______________________________________________________________________________
+
 TRestRawSignalAddNoiseProcess::TRestRawSignalAddNoiseProcess() { Initialize(); }
 
-//______________________________________________________________________________
 TRestRawSignalAddNoiseProcess::TRestRawSignalAddNoiseProcess(char* cfgFileName) {
     Initialize();
 
     if (LoadConfigFromFile(cfgFileName) == -1) LoadDefaultConfig();
 }
 
-//______________________________________________________________________________
 TRestRawSignalAddNoiseProcess::~TRestRawSignalAddNoiseProcess() {
     delete fOutputSignalEvent;
     // TRestRawSignalAddNoiseProcess destructor
@@ -84,12 +83,11 @@ void TRestRawSignalAddNoiseProcess::LoadDefaultConfig() {
     SetTitle("Default config");
 }
 
-//______________________________________________________________________________
 void TRestRawSignalAddNoiseProcess::Initialize() {
     SetSectionName(this->ClassName());
     SetLibraryVersion(LIBRARY_VERSION);
 
-    fInputSignalEvent = NULL;
+    fInputSignalEvent = nullptr;
     fOutputSignalEvent = new TRestRawSignalEvent();
 }
 
@@ -97,7 +95,6 @@ void TRestRawSignalAddNoiseProcess::LoadConfig(string cfgFilename, string name) 
     if (LoadConfigFromFile(cfgFilename, name) == -1) LoadDefaultConfig();
 }
 
-//______________________________________________________________________________
 void TRestRawSignalAddNoiseProcess::InitProcess() {
     // Function to be executed once at the beginning of process
     // (before starting the process of the events)
@@ -107,14 +104,13 @@ void TRestRawSignalAddNoiseProcess::InitProcess() {
     // TRestEventProcess::InitProcess();
 }
 
-//______________________________________________________________________________
 TRestEvent* TRestRawSignalAddNoiseProcess::ProcessEvent(TRestEvent* evInput) {
     fInputSignalEvent = (TRestRawSignalEvent*)evInput;
 
     // cout<<"Number of signals "<< fInputSignalEvent->GetNumberOfSignals()<<
     // endl;
 
-    if (fInputSignalEvent->GetNumberOfSignals() <= 0) return NULL;
+    if (fInputSignalEvent->GetNumberOfSignals() <= 0) return nullptr;
 
     for (int n = 0; n < fInputSignalEvent->GetNumberOfSignals(); n++) {
         TRestRawSignal noiseSignal;
@@ -129,7 +125,6 @@ TRestEvent* TRestRawSignalAddNoiseProcess::ProcessEvent(TRestEvent* evInput) {
     return fOutputSignalEvent;
 }
 
-//______________________________________________________________________________
 void TRestRawSignalAddNoiseProcess::EndProcess() {
     // Function to be executed once at the end of the process
     // (after all events have been processed)

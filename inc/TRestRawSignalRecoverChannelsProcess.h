@@ -20,27 +20,36 @@
  * For the list of contributors see $REST_PATH/CREDITS.                  *
  *************************************************************************/
 
-#ifndef RestCore_TRestRawSignalAddNoiseProcess
-#define RestCore_TRestRawSignalAddNoiseProcess
+#ifndef RestCore_TRestRawSignalRecoverChannelsProcess
+#define RestCore_TRestRawSignalRecoverChannelsProcess
 
-#include <TRestRawSignalEvent.h>
-
+#ifdef REST_DetectorLib
+#include "TRestDetectorReadout.h"
+#endif
 #include "TRestEventProcess.h"
+#include "TRestRawSignalEvent.h"
 
-//! A process to add/emulate electronic noise into a TRestRawSignalEvent
-class TRestRawSignalAddNoiseProcess : public TRestEventProcess {
+//! A process allowing to recover selected channels from a TRestRawSignalEvent
+class TRestRawSignalRecoverChannelsProcess : public TRestEventProcess {
    private:
-    TRestRawSignalEvent* fInputSignalEvent;
-    TRestRawSignalEvent* fOutputSignalEvent;
+    /// A pointer to the specific TRestRawSignalEvent input
+    TRestRawSignalEvent* fInputSignalEvent;  //!
+
+    /// A pointer to the specific TRestRawSignalEvent input
+    TRestRawSignalEvent* fOutputSignalEvent;  //!
+
+#ifdef REST_DetectorLib
+    /// A pointer to the readout previously defined inside REST.
+    TRestDetectorReadout* fReadout;  //!
+#endif
 
     void Initialize();
 
     void LoadDefaultConfig();
 
-    Double_t fNoiseLevel = 10;
+    void GetAdjacentSignalIds(Int_t signalId, Int_t& idLeft, Int_t& idRight);
 
-   protected:
-    // add here the members of your event process
+    std::vector<Int_t> fChannelIds;
 
    public:
     any GetInputEvent() { return fInputSignalEvent; }
@@ -48,28 +57,32 @@ class TRestRawSignalAddNoiseProcess : public TRestEventProcess {
 
     void InitProcess();
     TRestEvent* ProcessEvent(TRestEvent* eventInput);
-    void EndProcess();
 
     void LoadConfig(std::string cfgFilename, std::string name = "");
 
+    /// It prints out the process parameters stored in the metadata structure
     void PrintMetadata() {
         BeginPrintProcess();
 
-        metadata << "Noise Level : " << fNoiseLevel << endl;
+        for (unsigned int n = 0; n < fChannelIds.size(); n++)
+            metadata << "Channel id to recover : " << fChannelIds[n] << endl;
 
         EndPrintProcess();
     }
 
-    TRestMetadata* GetProcessMetadata() { return nullptr; }
+    /// Returns a new instance of this class
+    TRestEventProcess* Maker() { return new TRestRawSignalRecoverChannelsProcess; }
 
-    TString GetProcessName() { return (TString) "rawSignalAddNoise"; }
+    /// Returns the name of this process
+    TString GetProcessName() { return (TString) "recoverChannels"; }
 
     // Constructor
-    TRestRawSignalAddNoiseProcess();
-    TRestRawSignalAddNoiseProcess(char* cfgFileName);
-    // Destructor
-    ~TRestRawSignalAddNoiseProcess();
+    TRestRawSignalRecoverChannelsProcess();
+    TRestRawSignalRecoverChannelsProcess(char* cfgFileName);
 
-    ClassDef(TRestRawSignalAddNoiseProcess, 1);
+    // Destructor
+    ~TRestRawSignalRecoverChannelsProcess();
+
+    ClassDef(TRestRawSignalRecoverChannelsProcess, 1);
 };
 #endif
