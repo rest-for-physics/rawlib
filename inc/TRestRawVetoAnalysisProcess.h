@@ -115,6 +115,6 @@ class TRestRawVetoAnalysisProcess : public TRestEventProcess {
 
     // If new members are added, removed or modified in this class version number
     // must be increased!
-    ClassDefOverride(TRestRawVetoAnalysisProcess, 1);
+    ClassDefOverride(TRestRawVetoAnalysisProcess, 2);
 };
 #endif
