@@ -27,8 +27,14 @@
  ///       <parameter name="signalsRange" value="(4610,4900)" />
  ///       <parameter name="smoothingWindow" value="75" />
  ///   </addProcess>
- /// \endcode                             
+ /// \endcode
+ /// \htmlonly <style>div.image img[src="doc_TRestRawBaseLineCorrectionProcess1.png"]{width:750px;}</style> \endhtmlonly
  ///
+ /// ![A raw signal with and without TRestBaseLineCorrectionProcess with smoothing window size 75](doc_TRestRawBaseLineCorrectionProcess1.png) 
+ /// 
+ /// \htmlonly <style>div.image img[src="doc_TRestRawBaseLineCorrectionProcess2.png"]{width:750px;}</style> \endhtmlonly
+ ///
+ /// ![A raw signal with and without TRestBaseLineCorrectionProcess with smoothing window size 75](doc_TRestRawBaseLineCorrectionProcess2.png) 
  /// <hr>
  ///
  /// \warning **⚠ REST is under continous development.** This documentation
