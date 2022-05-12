@@ -631,21 +631,66 @@ void TRestRawSignal::GetSignalSmoothed(TRestRawSignal* smthSignal, Int_t averagi
 /// \param averagingPoints It defines the number of neightbour consecutive
 /// points used to average the signal
 ///
-std::vector<Float_t> TRestRawSignal::GetSignalSmoothed(Int_t averagingPoints) {
+/// \param option If the option is set to "EXCLUDE OUTLIERS", points that are too far away from the median baseline will be ignored to improve the smoothing result
+///
+std::vector<Float_t> TRestRawSignal::GetSignalSmoothed(Int_t averagingPoints, std::string option) {
+    
     std::vector<Float_t> result;
+
+    if (option == ""){
+        
+        averagingPoints = (averagingPoints / 2) * 2 + 1;  // make it odd >= averagingPoints
+
+        Float_t sumAvg = (Float_t)GetIntegralInRange(0, averagingPoints) / averagingPoints;
+
+        for (int i = 0; i <= averagingPoints / 2; i++) result.push_back(sumAvg);
+
+        for (int i = averagingPoints / 2 + 1; i < GetNumberOfPoints() - averagingPoints / 2; i++) {
+            sumAvg -= this->GetRawData(i - (averagingPoints / 2 + 1)) / averagingPoints;
+            sumAvg += this->GetRawData(i + averagingPoints / 2) / averagingPoints;
+            result.push_back(sumAvg);
+        }
+
+        for (int i = GetNumberOfPoints() - averagingPoints / 2; i < GetNumberOfPoints(); i++)
+            result.push_back(sumAvg);
+    } else if (ToUpper(option) == "EXCLUDE OUTLIERS"){
+        result = GetSignalSmoothed_ExcludeOutliers(averagingPoints);
+    } else {
+        cout << "TRestRawSignal::GetSignalSmoothed. Error! No such option!" << endl;
+    }
+    return result;
+}
+
+///////////////////////////////////////////////
+/// \brief It smoothes the existing signal and returns it in a vector of Float_t values. This method excludes points which are far off from the BaseLine IQR (e.g. signals).
+/// In case the baseline parameters were not calculated yet, this method calls CalculateBaseLine with the "ROBUST" option on the entire signal range minus 5 bins on the edges.
+///
+/// \param averagingPoints It defines the number of neightbour consecutive
+/// points used to average the signal
+///
+std::vector<Float_t> TRestRawSignal::GetSignalSmoothed_ExcludeOutliers(Int_t averagingPoints) {
+    std::vector<Float_t> result;
+
+    if (fBaseLine == 0) CalculateBaseLine(5, GetNumberOfPoints() - 5, "ROBUST");
 
     averagingPoints = (averagingPoints / 2) * 2 + 1;  // make it odd >= averagingPoints
 
     Float_t sumAvg = (Float_t)GetIntegralInRange(0, averagingPoints) / averagingPoints;
 
+    // Points at the beginning, where we can calculate a moving average
     for (int i = 0; i <= averagingPoints / 2; i++) result.push_back(sumAvg);
 
+    // Points in the middle
+    float_t amplitude;
     for (int i = averagingPoints / 2 + 1; i < GetNumberOfPoints() - averagingPoints / 2; i++) {
-        sumAvg -= this->GetRawData(i - (averagingPoints / 2 + 1)) / averagingPoints;
-        sumAvg += this->GetRawData(i + averagingPoints / 2) / averagingPoints;
+        amplitude = this->GetRawData(i - (averagingPoints / 2 + 1));
+        sumAvg -= (std::abs(amplitude - fBaseLine) > 3*fBaseLineSigma)? fBaseLine / averagingPoints : amplitude / averagingPoints;
+        amplitude = this->GetRawData(i + averagingPoints / 2);
+        sumAvg += (std::abs(amplitude - fBaseLine) > 3*fBaseLineSigma)? fBaseLine / averagingPoints : amplitude / averagingPoints;
         result.push_back(sumAvg);
     }
 
+    // Points at the end, where we can calculate a moving average
     for (int i = GetNumberOfPoints() - averagingPoints / 2; i < GetNumberOfPoints(); i++)
         result.push_back(sumAvg);
     return result;
@@ -664,7 +709,7 @@ std::vector<Float_t> TRestRawSignal::GetSignalSmoothed(Int_t averagingPoints) {
 void TRestRawSignal::GetBaseLineCorrected(TRestRawSignal* smthSignal, Int_t averagingPoints) {
     smthSignal->Initialize();
 
-    std::vector<Float_t> averagedSignal = GetSignalSmoothed(averagingPoints);
+    std::vector<Float_t> averagedSignal = GetSignalSmoothed(averagingPoints, "EXCLUDE OUTLIERS");
 
     for (unsigned int i = 0; i < GetNumberOfPoints(); i++) {
         smthSignal->AddPoint(GetRawData(i) - averagedSignal[i]);
