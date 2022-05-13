@@ -97,10 +97,12 @@ TRestEvent* TRestRawBaseLineCorrectionProcess::ProcessEvent(TRestEvent * evInput
                 continue;
             }
 
-            TRestRawSignal sgnl2( ) ;
-            sgnl->GetBaseLineCorrected(&sgnl2, fSmoothingWindow);
-            sgnl2.SetID( sngl->GetID( ) );
-            fOutputEvent->AddSignal( sgnl2 );
+            TRestRawSignal* sgnl2 = new TRestRawSignal();
+            int sID = sgnl->GetID();
+
+            sgnl->GetBaseLineCorrected(sgnl2,fSmoothingWindow);
+            sgnl2->SetID(sID);
+            fOutputEvent->AddSignal(*sgnl2);
         }
     
     return fOutputEvent;
