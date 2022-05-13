@@ -23,42 +23,42 @@
 #ifndef RESTProc_TRestRawBaseLineCorrectionProcess
 #define RESTProc_TRestRawBaseLineCorrectionProcess
 
-#include "TRestRawSignalEvent.h"
-#include "TRestRawSignalEvent.h"
 #include "TRestEventProcess.h"
+#include "TRestRawSignalEvent.h"
 
 class TRestRawBaseLineCorrectionProcess : public TRestEventProcess {
-private:
+   private:
     // We define specific input/output event data holders
-    TRestRawSignalEvent* fInputEvent;  //!
+    TRestRawSignalEvent* fInputEvent;   //!
     TRestRawSignalEvent* fOutputEvent;  //!
 
-    void Initialize();
+    void Initialize() override;
 
     /// It defines the signals id range where analysis is applied
     TVector2 fSignalsRange = TVector2(-1, -1);
-    
+
     /// Time window width in bins for the moving average filter for baseline correction
-	Int_t fSmoothingWindow = 75;
+    Int_t fSmoothingWindow = 75;
 
     /// Just a flag to quickly determine if we have to apply the range filter
     Bool_t fRangeEnabled = false;  //!
 
-public:
-    any GetInputEvent() { return fInputEvent; }
-    any GetOutputEvent() { return fOutputEvent; }
+   public:
+    any GetInputEvent() const override { return fInputEvent; }
+    any GetOutputEvent() const override { return fOutputEvent; }
 
-    void InitProcess();
+    void InitProcess() override;
 
-    TRestEvent* ProcessEvent(TRestEvent* eventInput);
+    TRestEvent* ProcessEvent(TRestEvent* eventInput) override;
 
-    void EndProcess();
+    void EndProcess() override;
 
-    void PrintMetadata() {
+    void PrintMetadata() override {
         BeginPrintProcess();
 
         metadata << "Smoothing window size: " << fSmoothingWindow << endl;
-        metadata << "Baseline correction applied to signals with IDs in range (" << fSignalsRange.X() << "," << fSignalsRange.Y() << ")" << endl; 
+        metadata << "Baseline correction applied to signals with IDs in range (" << fSignalsRange.X() << ","
+                 << fSignalsRange.Y() << ")" << endl;
 
         EndPrintProcess();
     }
@@ -68,7 +68,6 @@ public:
 
     // ROOT class definition helper. Increase the number in it every time
     // you add/rename/remove the process parameters
-    ClassDef(TRestRawBaseLineCorrectionProcess, 1);
-
+    ClassDefOverride(TRestRawBaseLineCorrectionProcess, 1);
 };
 #endif
