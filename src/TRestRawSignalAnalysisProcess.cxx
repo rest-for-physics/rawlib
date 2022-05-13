@@ -365,7 +365,7 @@ TRestEvent* TRestRawSignalAnalysisProcess::ProcessEvent(TRestEvent* inputEvent) 
     SetObservableValue("NumberOfGoodSignals", nGoodSignals);
 
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    // SubstractBaselines
+    // SubtractBaselines
     // After this the signal gets zero-ed, for the following analysis
     // Keep in mind, to add raw signal analysis, we must write code at before
     // This is where most of the problems occur
@@ -382,7 +382,7 @@ TRestEvent* TRestRawSignalAnalysisProcess::ProcessEvent(TRestEvent* inputEvent) 
     //
     // We do not substract baselines then now, as it was done before
     //
-    // fSignalEvent->SubstractBaselines(fBaseLineRange.X(), fBaseLineRange.Y());
+    // fSignalEvent->SubtractBaselines(fBaseLineRange.X(), fBaseLineRange.Y());
     //
     // Methods in TRestRawSignal have been updated to consider baseline.
     // TRestRawSignal now implements that internally. We need to define the

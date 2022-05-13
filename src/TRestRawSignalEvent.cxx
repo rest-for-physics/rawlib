@@ -280,7 +280,7 @@ Double_t TRestRawSignalEvent::GetBaseLineSigmaAverage() {
 /// calculation if a baseline range is provided in the argument (as it is done
 /// in
 /// InitializeThresholdIntegral). This method should be probably removed.
-// void TRestRawSignalEvent::SubstractBaselines() {
+// void TRestRawSignalEvent::SubtractBaselines() {
 //    for (int sgnl = 0; sgnl < GetNumberOfSignals(); sgnl++)
 //    GetSignal(sgnl)->SubstractBaseline();
 //}
