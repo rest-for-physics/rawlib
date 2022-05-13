@@ -37,21 +37,21 @@ class TRestRawMultiFEMINOSToSignalProcess : public TRestRawToSignalProcess {
     Int_t fCounter = 0;  //!
 
    public:
-    void InitProcess();
-    void Initialize();
-    TRestEvent* ProcessEvent(TRestEvent* evInput);
-    TString GetProcessName() { return (TString) "MultiFEMINOSToSignal"; }
+    void InitProcess() override;
+    void Initialize() override;
+    TRestEvent* ProcessEvent(TRestEvent* inputEvent) override;
+    const char* GetProcessName() const override { return "MultiFEMINOSToSignal"; }
 
     Bool_t ReadFrame(void* fr, int fr_sz);
 
     // Constructor
     TRestRawMultiFEMINOSToSignalProcess();
-    TRestRawMultiFEMINOSToSignalProcess(char* cfgFileName);
+    TRestRawMultiFEMINOSToSignalProcess(const char* configFilename);
     // Destructor
     ~TRestRawMultiFEMINOSToSignalProcess();
 
-    ClassDef(TRestRawMultiFEMINOSToSignalProcess,
-             1);  // Template for a REST "event process" class inherited from
-                  // TRestEventProcess
+    ClassDefOverride(TRestRawMultiFEMINOSToSignalProcess,
+                     1);  // Template for a REST "event process" class inherited from
+                          // TRestEventProcess
 };
 #endif

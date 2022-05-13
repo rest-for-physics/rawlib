@@ -117,12 +117,12 @@ TRestRawSignalChannelActivityProcess::TRestRawSignalChannelActivityProcess() { I
 /// The default behaviour is that the config file must be specified with
 /// full path, absolute or relative.
 ///
-/// \param cfgFileName A const char* giving the path to an RML file.
+/// \param configFilename A const char* giving the path to an RML file.
 ///
-TRestRawSignalChannelActivityProcess::TRestRawSignalChannelActivityProcess(char* cfgFileName) {
+TRestRawSignalChannelActivityProcess::TRestRawSignalChannelActivityProcess(const char* configFilename) {
     Initialize();
 
-    if (LoadConfigFromFile(cfgFileName)) LoadDefaultConfig();
+    if (LoadConfigFromFile(configFilename)) LoadDefaultConfig();
 }
 
 ///////////////////////////////////////////////
@@ -154,12 +154,12 @@ void TRestRawSignalChannelActivityProcess::Initialize() {
 /// the path to the config file must be specified using full path, absolute or
 /// relative.
 ///
-/// \param cfgFileName A const char* giving the path to an RML file.
+/// \param configFilename A const char* giving the path to an RML file.
 /// \param name The name of the specific metadata. It will be used to find the
-/// correspondig TRestGeant4AnalysisProcess section inside the RML.
+/// corresponding TRestGeant4AnalysisProcess section inside the RML.
 ///
-void TRestRawSignalChannelActivityProcess::LoadConfig(std::string cfgFilename, std::string name) {
-    if (LoadConfigFromFile(cfgFilename, name)) LoadDefaultConfig();
+void TRestRawSignalChannelActivityProcess::LoadConfig(const string& configFilename, const string& name) {
+    if (LoadConfigFromFile(configFilename, name)) LoadDefaultConfig();
 }
 
 ///////////////////////////////////////////////
@@ -218,8 +218,8 @@ void TRestRawSignalChannelActivityProcess::InitProcess() {
 ///////////////////////////////////////////////
 /// \brief The main processing event function
 ///
-TRestEvent* TRestRawSignalChannelActivityProcess::ProcessEvent(TRestEvent* evInput) {
-    fSignalEvent = (TRestRawSignalEvent*)evInput;
+TRestEvent* TRestRawSignalChannelActivityProcess::ProcessEvent(TRestEvent* inputEvent) {
+    fSignalEvent = (TRestRawSignalEvent*)inputEvent;
 
     Int_t Nlow = 0;
     Int_t Nhigh = 0;
@@ -270,7 +270,7 @@ TRestEvent* TRestRawSignalChannelActivityProcess::ProcessEvent(TRestEvent* evInp
 
 ///////////////////////////////////////////////
 /// \brief Function to include required actions after all events have been
-/// processed. In this process it will take care of writting the histograms
+/// processed. In this process it will take care of writing the histograms
 /// to disk.
 ///
 void TRestRawSignalChannelActivityProcess::EndProcess() {

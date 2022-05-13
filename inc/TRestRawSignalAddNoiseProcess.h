@@ -23,9 +23,9 @@
 #ifndef RestCore_TRestRawSignalAddNoiseProcess
 #define RestCore_TRestRawSignalAddNoiseProcess
 
-#include <TRestRawSignalEvent.h>
+#include <TRestEventProcess.h>
 
-#include "TRestEventProcess.h"
+#include "TRestRawSignalEvent.h"
 
 //! A process to add/emulate electronic noise into a TRestRawSignalEvent
 class TRestRawSignalAddNoiseProcess : public TRestEventProcess {
@@ -33,26 +33,29 @@ class TRestRawSignalAddNoiseProcess : public TRestEventProcess {
     TRestRawSignalEvent* fInputSignalEvent;
     TRestRawSignalEvent* fOutputSignalEvent;
 
-    void Initialize();
+    void Initialize() override;
 
     void LoadDefaultConfig();
 
-    Double_t fNoiseLevel = 10;
+    Double_t fNoiseLevel = 10.0;
 
    protected:
     // add here the members of your event process
 
    public:
-    any GetInputEvent() { return fInputSignalEvent; }
-    any GetOutputEvent() { return fOutputSignalEvent; }
+    inline Double_t GetNoiseLevel() const { return fNoiseLevel; }
+    inline void SetNoiseLevel(Double_t noiseLevel) { fNoiseLevel = noiseLevel; }
 
-    void InitProcess();
-    TRestEvent* ProcessEvent(TRestEvent* eventInput);
-    void EndProcess();
+    any GetInputEvent() const override { return fInputSignalEvent; }
+    any GetOutputEvent() const override { return fOutputSignalEvent; }
 
-    void LoadConfig(std::string cfgFilename, std::string name = "");
+    void InitProcess() override;
+    TRestEvent* ProcessEvent(TRestEvent* inputEvent) override;
+    void EndProcess() override;
 
-    void PrintMetadata() {
+    void LoadConfig(const std::string& configFilename, const std::string& name = "");
+
+    inline void PrintMetadata() override {
         BeginPrintProcess();
 
         metadata << "Noise Level : " << fNoiseLevel << endl;
@@ -60,16 +63,16 @@ class TRestRawSignalAddNoiseProcess : public TRestEventProcess {
         EndPrintProcess();
     }
 
-    TRestMetadata* GetProcessMetadata() { return nullptr; }
+    TRestMetadata* GetProcessMetadata() const { return nullptr; }
 
-    TString GetProcessName() { return (TString) "rawSignalAddNoise"; }
+    const char* GetProcessName() const override { return "rawSignalAddNoise"; }
 
     // Constructor
     TRestRawSignalAddNoiseProcess();
-    TRestRawSignalAddNoiseProcess(char* cfgFileName);
+    TRestRawSignalAddNoiseProcess(const char* configFilename);
     // Destructor
     ~TRestRawSignalAddNoiseProcess();
 
-    ClassDef(TRestRawSignalAddNoiseProcess, 1);
+    ClassDefOverride(TRestRawSignalAddNoiseProcess, 1);
 };
 #endif

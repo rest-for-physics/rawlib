@@ -68,10 +68,10 @@ ClassImp(TRestRawToSignalProcess);
 
 TRestRawToSignalProcess::TRestRawToSignalProcess() { Initialize(); }
 
-TRestRawToSignalProcess::TRestRawToSignalProcess(char* cfgFileName) {
+TRestRawToSignalProcess::TRestRawToSignalProcess(const char* configFilename) {
     Initialize();
 
-    if (LoadConfigFromFile(cfgFileName)) LoadDefaultConfig();
+    if (LoadConfigFromFile(configFilename)) LoadDefaultConfig();
 }
 
 TRestRawToSignalProcess::~TRestRawToSignalProcess() {
@@ -79,8 +79,8 @@ TRestRawToSignalProcess::~TRestRawToSignalProcess() {
     delete fSignalEvent;
 }
 
-void TRestRawToSignalProcess::LoadConfig(string cfgFilename, string name) {
-    if (LoadConfigFromFile(cfgFilename, name) == -1) {
+void TRestRawToSignalProcess::LoadConfig(const string& configFilename, const string& name) {
+    if (LoadConfigFromFile(configFilename, name) == -1) {
         cout << "Loading default" << endl;
         LoadDefaultConfig();
     }
@@ -129,19 +129,8 @@ void TRestRawToSignalProcess::InitFromConfigFile() {
 }
 
 void TRestRawToSignalProcess::LoadDefaultConfig() {
-    // if (GetVerboseLevel() <= REST_Warning) {
-    //    cout << "REST WARNING: TRestRawToSignalProcess " << endl;
-    //    cout << "Error Loading config file " << endl;
-    //}
-
-    // if (GetVerboseLevel() >= REST_Debug) GetChar();
-
     fElectronicsType = "SingleFeminos";
     fMinPoints = 512;
-}
-
-void TRestRawToSignalProcess::EndProcess() {
-    // close binary file??? Already done
 }
 
 Bool_t TRestRawToSignalProcess::OpenInputFiles(vector<string> files) {

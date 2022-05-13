@@ -66,29 +66,29 @@ class TRestRawVetoAnalysisProcess : public TRestEventProcess {
     Double_t fSignalThreshold;
     Int_t fPointsOverThreshold;
 
-    void InitFromConfigFile();
+    void InitFromConfigFile() override;
 
-    void Initialize();
+    void Initialize() override;
 
     void LoadDefaultConfig();
 
    protected:
    public:
-    any GetInputEvent() { return fSignalEvent; }
-    any GetOutputEvent() { return fSignalEvent; }
+    any GetInputEvent() const override { return fSignalEvent; }
+    any GetOutputEvent() const override { return fSignalEvent; }
 
-    void InitProcess();
-    TRestEvent* ProcessEvent(TRestEvent* evInput);
+    void InitProcess() override;
+    TRestEvent* ProcessEvent(TRestEvent* inputEvent) override;
 
-    void LoadConfig(std::string cfgFilename, std::string name = "");
+    void LoadConfig(const std::string& configFilename, const std::string& name = "");
 
-    void PrintMetadata();
+    void PrintMetadata() override;
 
     /// Returns a new instance of this class
     TRestEventProcess* Maker() { return new TRestRawVetoAnalysisProcess; }
 
     /// Returns the name of this process
-    TString GetProcessName() { return (TString) "vetoAnalysis"; }
+    const char* GetProcessName() const override { return "vetoAnalysis"; }
 
     /// Returns the veto IDs, if they where defined in a list
     std::vector<double> GetVetoSignalIDs() { return fVetoSignalId; }
@@ -109,12 +109,12 @@ class TRestRawVetoAnalysisProcess : public TRestEventProcess {
     std::string GetGroupIds(std::string groupName);
 
     TRestRawVetoAnalysisProcess();
-    TRestRawVetoAnalysisProcess(char* cfgFileName);
+    TRestRawVetoAnalysisProcess(const char* configFilename);
 
     ~TRestRawVetoAnalysisProcess();
 
     // If new members are added, removed or modified in this class version number
     // must be increased!
-    ClassDef(TRestRawVetoAnalysisProcess, 2);
+    ClassDefOverride(TRestRawVetoAnalysisProcess, 2);
 };
 #endif

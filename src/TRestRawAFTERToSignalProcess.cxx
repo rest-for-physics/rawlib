@@ -88,7 +88,7 @@ TRestRawAFTERToSignalProcess::TRestRawAFTERToSignalProcess() { Initialize(); }
 /// The default behaviour is that the config file must be specified with
 /// full path, absolute or relative.
 ///
-/// \param cfgFileName A const char* giving the path to an RML file.
+/// \param configFilename A const char* giving the path to an RML file.
 ///
 
 ///////////////////////////////////////////////
@@ -140,7 +140,7 @@ void TRestRawAFTERToSignalProcess::InitProcess() {
 ///////////////////////////////////////////////
 /// \brief The main processing event function
 ///
-TRestEvent* TRestRawAFTERToSignalProcess::ProcessEvent(TRestEvent* evInput) {
+TRestEvent* TRestRawAFTERToSignalProcess::ProcessEvent(TRestEvent* inputEvent) {
     EventHeader head;
     DataPacketHeader pHeader;
     DataPacketEnd pEnd;

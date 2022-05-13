@@ -78,8 +78,8 @@ ClassImp(TRestRawFEUDreamToSignalProcess);
 
 TRestRawFEUDreamToSignalProcess::TRestRawFEUDreamToSignalProcess() { Initialize(); }
 
-TRestRawFEUDreamToSignalProcess::TRestRawFEUDreamToSignalProcess(char* cfgFileName)
-    : TRestRawToSignalProcess(cfgFileName) {
+TRestRawFEUDreamToSignalProcess::TRestRawFEUDreamToSignalProcess(const char* configFilename)
+    : TRestRawToSignalProcess(configFilename) {
     Initialize();
 }
 
@@ -104,7 +104,7 @@ void TRestRawFEUDreamToSignalProcess::InitProcess() {
     totalBytesReaded = 0;
 }
 
-TRestEvent* TRestRawFEUDreamToSignalProcess::ProcessEvent(TRestEvent* evInput) {
+TRestEvent* TRestRawFEUDreamToSignalProcess::ProcessEvent(TRestEvent* inputEvent) {
     FeuReadOut Feu;
     bool badreadfg = false;
 
