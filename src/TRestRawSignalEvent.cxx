@@ -92,7 +92,7 @@ void TRestRawSignalEvent::Initialize() {
 }
 
 void TRestRawSignalEvent::AddSignal(TRestRawSignal& s) {
-    if (signalIDExists(s.GetSignalID())) {
+    if (SignalIDExists(s.GetSignalID())) {
         cout << "Warning. Signal ID : " << s.GetSignalID()
              << " already exists. Signal will not be added to signal event" << endl;
         return;

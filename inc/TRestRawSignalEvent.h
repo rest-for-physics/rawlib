@@ -54,7 +54,7 @@ class TRestRawSignalEvent : public TRestEvent {
     void SetMaxAndMin();
 
    public:
-    Bool_t signalIDExists(Int_t sID) {
+    Bool_t SignalIDExists(Int_t sID) {
         if (GetSignalIndex(sID) == -1) return false;
         return true;
     }
