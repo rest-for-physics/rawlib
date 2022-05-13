@@ -638,21 +638,23 @@ std::vector<Float_t> TRestRawSignal::GetSignalSmoothed(Int_t averagingPoints, st
     std::vector<Float_t> result;
 
     if (option == ""){
+
+        result.resize(GetNumberOfPoints());
         
         averagingPoints = (averagingPoints / 2) * 2 + 1;  // make it odd >= averagingPoints
 
         Float_t sumAvg = (Float_t)GetIntegralInRange(0, averagingPoints) / averagingPoints;
 
-        for (int i = 0; i <= averagingPoints / 2; i++) result.push_back(sumAvg);
+        for (int i = 0; i <= averagingPoints / 2; i++) result[i] = sumAvg;
 
         for (int i = averagingPoints / 2 + 1; i < GetNumberOfPoints() - averagingPoints / 2; i++) {
             sumAvg -= this->GetRawData(i - (averagingPoints / 2 + 1)) / averagingPoints;
             sumAvg += this->GetRawData(i + averagingPoints / 2) / averagingPoints;
-            result.push_back(sumAvg);
+            result[i] = sumAvg;
         }
 
         for (int i = GetNumberOfPoints() - averagingPoints / 2; i < GetNumberOfPoints(); i++)
-            result.push_back(sumAvg);
+            result[i] = sumAvg;
     } else if (ToUpper(option) == "EXCLUDE OUTLIERS"){
         result = GetSignalSmoothed_ExcludeOutliers(averagingPoints);
     } else {
@@ -669,7 +671,8 @@ std::vector<Float_t> TRestRawSignal::GetSignalSmoothed(Int_t averagingPoints, st
 /// points used to average the signal
 ///
 std::vector<Float_t> TRestRawSignal::GetSignalSmoothed_ExcludeOutliers(Int_t averagingPoints) {
-    std::vector<Float_t> result;
+    
+    std::vector<Float_t> result(GetNumberOfPoints());
 
     if (fBaseLine == 0) CalculateBaseLine(5, GetNumberOfPoints() - 5, "ROBUST");
 
@@ -678,7 +681,7 @@ std::vector<Float_t> TRestRawSignal::GetSignalSmoothed_ExcludeOutliers(Int_t ave
     Float_t sumAvg = (Float_t)GetIntegralInRange(0, averagingPoints) / averagingPoints;
 
     // Points at the beginning, where we can calculate a moving average
-    for (int i = 0; i <= averagingPoints / 2; i++) result.push_back(sumAvg);
+    for (int i = 0; i <= averagingPoints / 2; i++) result[i] = sumAvg;
 
     // Points in the middle
     float_t amplitude;
@@ -687,19 +690,19 @@ std::vector<Float_t> TRestRawSignal::GetSignalSmoothed_ExcludeOutliers(Int_t ave
         sumAvg -= (std::abs(amplitude - fBaseLine) > 3*fBaseLineSigma)? fBaseLine / averagingPoints : amplitude / averagingPoints;
         amplitude = this->GetRawData(i + averagingPoints / 2);
         sumAvg += (std::abs(amplitude - fBaseLine) > 3*fBaseLineSigma)? fBaseLine / averagingPoints : amplitude / averagingPoints;
-        result.push_back(sumAvg);
+        result[i] = sumAvg;
     }
 
     // Points at the end, where we can calculate a moving average
     for (int i = GetNumberOfPoints() - averagingPoints / 2; i < GetNumberOfPoints(); i++)
-        result.push_back(sumAvg);
+        result[i] = sumAvg;
     return result;
 }
 
 ///////////////////////////////////////////////
 /// \brief It applies the moving average filter (GetSignalSmoothed) to the signal, which is then subtracted
 /// from the raw data, resulting in a corrected baseline. The returned signal is placed at the signal pointer
-/// given by argument.
+/// given by the argument.
 ///
 /// \param smthSignal The pointer to the TRestRawSignal which will contain the corrected signal
 ///
