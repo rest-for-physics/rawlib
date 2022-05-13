@@ -50,7 +50,7 @@ class TRestRawCommonNoiseReductionProcess : public TRestEventProcess {
     /// Minimum number of signals required to apply the process.
     Int_t fMinSignalsRequired = 200;
 
-    void Initialize();
+    void Initialize() override;
 
     void LoadDefaultConfig();
 
@@ -58,18 +58,18 @@ class TRestRawCommonNoiseReductionProcess : public TRestEventProcess {
     // add here the members of your event process
 
    public:
-    any GetInputEvent() { return fInputEvent; }
-    any GetOutputEvent() { return fOutputEvent; }
+    any GetInputEvent() const override { return fInputEvent; }
+    any GetOutputEvent() const override { return fOutputEvent; }
 
-    void InitProcess();
+    void InitProcess() override;
 
-    TRestEvent* ProcessEvent(TRestEvent* eventInput);
+    TRestEvent* ProcessEvent(TRestEvent* inputEvent) override;
 
-    void EndProcess();
+    void EndProcess() override;
 
-    void LoadConfig(std::string cfgFilename, std::string name = "");
+    void LoadConfig(const std::string& configFilename, const std::string& name = "");
 
-    void PrintMetadata() {
+    void PrintMetadata() override {
         BeginPrintProcess();
 
         metadata << " mode : [" << fMode << "]";
@@ -86,15 +86,15 @@ class TRestRawCommonNoiseReductionProcess : public TRestEventProcess {
     TRestEventProcess* Maker() { return new TRestRawCommonNoiseReductionProcess; }
 
     /// Returns the reduced process name
-    TString GetProcessName() { return (TString) "commonNoiseReduction"; }
+    const char* GetProcessName() const override { return "commonNoiseReduction"; }
 
     // Constructor
     TRestRawCommonNoiseReductionProcess();
-    TRestRawCommonNoiseReductionProcess(char* cfgFileName);
+    TRestRawCommonNoiseReductionProcess(const char* configFilename);
 
     // Destructor
     ~TRestRawCommonNoiseReductionProcess();
 
-    ClassDef(TRestRawCommonNoiseReductionProcess, 2);
+    ClassDefOverride(TRestRawCommonNoiseReductionProcess, 2);
 };
 #endif

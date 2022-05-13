@@ -36,7 +36,7 @@ class TRestRawSignalFittingProcess : public TRestEventProcess {
     /// A pointer to the specific TRestRawSignalEvent input
     TRestRawSignalEvent* fRawSignalEvent;  //!
 
-    void Initialize();
+    void Initialize() override;
 
     void LoadDefaultConfig();
 
@@ -49,32 +49,32 @@ class TRestRawSignalFittingProcess : public TRestEventProcess {
     // add here the members of your event process
 
    public:
-    any GetInputEvent() { return fRawSignalEvent; }
-    any GetOutputEvent() { return fRawSignalEvent; }
+    any GetInputEvent() const override { return fRawSignalEvent; }
+    any GetOutputEvent() const override { return fRawSignalEvent; }
 
-    Double_t GetShaping() { return fShaping; }
-    Double_t GetStartPosition() { return fStartPosition; }
-    Double_t GetBaseline() { return fBaseline; }
-    Double_t GetAmplitude() { return fAmplitude; }
+    inline Double_t GetShaping() const { return fShaping; }
+    inline Double_t GetStartPosition() const { return fStartPosition; }
+    inline Double_t GetBaseline() const { return fBaseline; }
+    inline Double_t GetAmplitude() const { return fAmplitude; }
 
-    void InitProcess();
-    TRestEvent* ProcessEvent(TRestEvent* eventInput);
-    void EndProcess();
+    void InitProcess() override;
+    TRestEvent* ProcessEvent(TRestEvent* inputEvent) override;
+    void EndProcess() override;
 
-    void LoadConfig(std::string cfgFilename, std::string name = "");
+    void LoadConfig(const std::string& configFilename, const std::string& name = "");
 
-    void PrintMetadata() {
+    void PrintMetadata() override {
         BeginPrintProcess();
 
         EndPrintProcess();
     }
 
-    TString GetProcessName() { return (TString) "rawSignalFitting"; }
+    const char* GetProcessName() const override { return "rawSignalFitting"; }
 
     TRestRawSignalFittingProcess();  // Constructor
-    TRestRawSignalFittingProcess(char* cfgFileName);
+    TRestRawSignalFittingProcess(const char* configFilename);
     ~TRestRawSignalFittingProcess();  // Destructor
 
-    ClassDef(TRestRawSignalFittingProcess, 2);
+    ClassDefOverride(TRestRawSignalFittingProcess, 2);
 };
 #endif

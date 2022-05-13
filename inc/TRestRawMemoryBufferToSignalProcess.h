@@ -62,7 +62,7 @@ class TRestRawMemoryBufferToSignalProcess : public TRestEventProcess {
     /// A pointer to the specific TRestRawSignalEvent input
     TRestRawSignalEvent* fOutputRawSignalEvent;  //!
 
-    /// A pointer to the daqInfo data structure containning relevant information
+    /// A pointer to the daqInfo data structure containing relevant information
     /// shared by the daq
     daqInfo* fShMem_daqInfo;  //!
 
@@ -97,26 +97,26 @@ class TRestRawMemoryBufferToSignalProcess : public TRestEventProcess {
     void SemaphoreGreen(int id);
     void SemaphoreRed(int id);
 
-    void InitFromConfigFile();
+    void InitFromConfigFile() override;
 
-    void Initialize();
+    void Initialize() override;
 
     void LoadDefaultConfig();
 
    protected:
    public:
-    any GetInputEvent() { return any((TRestEvent*)nullptr); }
-    any GetOutputEvent() { return fOutputRawSignalEvent; }
+    any GetInputEvent() const override { return any((TRestEvent*)nullptr); }
+    any GetOutputEvent() const override { return fOutputRawSignalEvent; }
 
-    void InitProcess();
+    void InitProcess() override;
 
-    void BeginOfEventProcess();
-    TRestEvent* ProcessEvent(TRestEvent* eventInput);
+    void BeginOfEventProcess(TRestEvent* inputEvent = nullptr) override;
+    TRestEvent* ProcessEvent(TRestEvent* inputEvent) override;
 
-    void LoadConfig(std::string cfgFilename, std::string name = "");
+    void LoadConfig(const std::string& configFilename, const std::string& name = "");
 
     /// It prints out the process parameters stored in the metadata structure
-    void PrintMetadata() {
+    void PrintMetadata() override {
         BeginPrintProcess();
 
         EndPrintProcess();
@@ -126,15 +126,15 @@ class TRestRawMemoryBufferToSignalProcess : public TRestEventProcess {
     TRestEventProcess* Maker() { return new TRestRawMemoryBufferToSignalProcess; }
 
     /// Returns the name of this process
-    TString GetProcessName() { return (TString) "sharedMemoryBufferToSignalEvent"; }
+    const char* GetProcessName() const override { return "sharedMemoryBufferToSignalEvent"; }
 
     // Constructor
     TRestRawMemoryBufferToSignalProcess();
-    TRestRawMemoryBufferToSignalProcess(char* cfgFileName);
+    TRestRawMemoryBufferToSignalProcess(const char* configFilename);
 
     // Destructor
     ~TRestRawMemoryBufferToSignalProcess();
 
-    ClassDef(TRestRawMemoryBufferToSignalProcess, 1);
+    ClassDefOverride(TRestRawMemoryBufferToSignalProcess, 1);
 };
 #endif
