@@ -53,7 +53,7 @@ class TRestRawBaseLineCorrectionProcess : public TRestEventProcess {
 
     void EndProcess() override;
 
-    void PrintMetadata() override {
+    void PrintMetadata() {
         BeginPrintProcess();
 
         metadata << "Smoothing window size: " << fSmoothingWindow << endl;
@@ -62,6 +62,9 @@ class TRestRawBaseLineCorrectionProcess : public TRestEventProcess {
 
         EndPrintProcess();
     }
+
+    /// Returns a new instance of this class
+    TRestEventProcess* Maker() { return new TRestRawBaseLineCorrectionProcess; }
 
     /// Returns the name of this process
     const char* GetProcessName() const override { return "baseLineCorrection"; }
