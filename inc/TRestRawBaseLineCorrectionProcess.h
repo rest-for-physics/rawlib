@@ -53,12 +53,11 @@ class TRestRawBaseLineCorrectionProcess : public TRestEventProcess {
 
     void EndProcess() override;
 
-    void PrintMetadata() {
+    void PrintMetadata() override {
         BeginPrintProcess();
 
         metadata << "Smoothing window size: " << fSmoothingWindow << endl;
-        metadata << "Baseline correction applied to signals with IDs in range (" << fSignalsRange.X() << ","
-                 << fSignalsRange.Y() << ")" << endl;
+        metadata << "Baseline correction applied to signals with IDs in range (" << fSignalsRange.X() << "," << fSignalsRange.Y() << ")" << endl;
 
         EndPrintProcess();
     }
