@@ -63,6 +63,9 @@ class TRestRawBaseLineCorrectionProcess : public TRestEventProcess {
         EndPrintProcess();
     }
 
+    /// Returns the name of this process
+    const char* GetProcessName() const override { return "baseLineCorrection"; }
+
     TRestRawBaseLineCorrectionProcess();
     ~TRestRawBaseLineCorrectionProcess();
 
