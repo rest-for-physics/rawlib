@@ -41,6 +41,8 @@ class TRestRawSignal : public TObject {
 
     void CalculateBaseLineSigmaIQR(Int_t startBin, Int_t endBin);
 
+    std::vector<Float_t> GetSignalSmoothed_ExcludeOutliers(Int_t averagingPoints);
+
    protected:
     /// An integer value used to attribute a unique identification number to the
     /// signal.
@@ -199,7 +201,7 @@ class TRestRawSignal : public TObject {
 
     void GetSignalSmoothed(TRestRawSignal* smoothedSignal, Int_t averagingPoints);
 
-    std::vector<Float_t> GetSignalSmoothed(Int_t averagingPoints);
+    std::vector<Float_t> GetSignalSmoothed(Int_t averagingPoints, std::string option = "");
 
     void GetWhiteNoiseSignal(TRestRawSignal* noiseSignal, Double_t noiseLevel = 1.);
 
