@@ -129,12 +129,12 @@ TRestRawSignalConvolutionFittingProcess::TRestRawSignalConvolutionFittingProcess
 /// The default behaviour is that the config file must be specified with
 /// full path, absolute or relative.
 ///
-/// \param cfgFileName A const char* giving the path to an RML file.
+/// \param configFilename A const char* giving the path to an RML file.
 ///
-TRestRawSignalConvolutionFittingProcess::TRestRawSignalConvolutionFittingProcess(char* cfgFileName) {
+TRestRawSignalConvolutionFittingProcess::TRestRawSignalConvolutionFittingProcess(const char* configFilename) {
     Initialize();
 
-    if (LoadConfigFromFile(cfgFileName)) LoadDefaultConfig();
+    if (LoadConfigFromFile(configFilename)) LoadDefaultConfig();
 }
 
 ///////////////////////////////////////////////
@@ -166,12 +166,12 @@ void TRestRawSignalConvolutionFittingProcess::Initialize() {
 /// the path to the config file must be specified using full path, absolute or
 /// relative.
 ///
-/// \param cfgFileName A const char* giving the path to an RML file.
+/// \param configFilename A const char* giving the path to an RML file.
 /// \param name The name of the specific metadata. It will be used to find the
-/// correspondig TRestGeant4AnalysisProcess section inside the RML.
+/// corresponding TRestGeant4AnalysisProcess section inside the RML.
 ///
-void TRestRawSignalConvolutionFittingProcess::LoadConfig(std::string cfgFilename, std::string name) {
-    if (LoadConfigFromFile(cfgFilename, name)) LoadDefaultConfig();
+void TRestRawSignalConvolutionFittingProcess::LoadConfig(const string& configFilename, const string& name) {
+    if (LoadConfigFromFile(configFilename, name)) LoadDefaultConfig();
 }
 
 ///////////////////////////////////////////////
@@ -184,9 +184,9 @@ void TRestRawSignalConvolutionFittingProcess::InitProcess() {
 ///////////////////////////////////////////////
 /// \brief The main processing event function
 ///
-TRestEvent* TRestRawSignalConvolutionFittingProcess::ProcessEvent(TRestEvent* evInput) {
+TRestEvent* TRestRawSignalConvolutionFittingProcess::ProcessEvent(TRestEvent* inputEvent) {
     // no need for verbose copy now
-    fRawSignalEvent = (TRestRawSignalEvent*)evInput;
+    fRawSignalEvent = (TRestRawSignalEvent*)inputEvent;
 
     debug << "TRestRawSignalConvolutionFittingProcess::ProcessEvent. Event ID : " << fRawSignalEvent->GetID()
           << endl;

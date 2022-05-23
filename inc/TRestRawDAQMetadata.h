@@ -31,9 +31,9 @@
 //! A metadata class to store DAQ information.
 class TRestRawDAQMetadata : public TRestMetadata {
    private:
-    void InitFromConfigFile();
+    void InitFromConfigFile() override;
 
-    virtual void Initialize();
+    void Initialize() override;
 
    protected:
     TString fOutBinFileName;
@@ -48,13 +48,13 @@ class TRestRawDAQMetadata : public TRestMetadata {
                                       // convert it to nS
 
    public:
-    void PrintMetadata();
+    void PrintMetadata() override;
     void PrintRunScript();
     void PrintPedScript();
 
     // Constructor
     TRestRawDAQMetadata();
-    TRestRawDAQMetadata(char* cfgFileName);
+    TRestRawDAQMetadata(const char* configFilename);
     // Destructor
     virtual ~TRestRawDAQMetadata();
 
@@ -62,10 +62,10 @@ class TRestRawDAQMetadata : public TRestMetadata {
     void SetParFromPedBuffer();  // Set gain and shaping time from a given buffer
     void SetOutBinFileName(TString fName) { fOutBinFileName = fName; }
 
-    UInt_t GetGain() { return fGain; }
-    UInt_t GetShappingTime() { return fShappingTime; }
+    inline UInt_t GetGain() const { return fGain; }
+    inline UInt_t GetShappingTime() const { return fShappingTime; }
     UInt_t GetValFromString(TString var, TString line);
 
-    ClassDef(TRestRawDAQMetadata, 1);  // REST run class
+    ClassDefOverride(TRestRawDAQMetadata, 1);  // REST run class
 };
 #endif

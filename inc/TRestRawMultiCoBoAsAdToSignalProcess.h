@@ -113,21 +113,21 @@ class TRestRawMultiCoBoAsAdToSignalProcess : public TRestRawToSignalProcess {
 #endif
 
    public:
-    void InitProcess();
+    void InitProcess() override;
 
-    Bool_t AddInputFile(std::string file);
+    Bool_t AddInputFile(std::string file) override;
 
-    void Initialize();
+    void Initialize() override;
 
     Bool_t InitializeStartTimeStampFromFilename(TString fName);
 
-    TRestEvent* ProcessEvent(TRestEvent* evInput);
+    TRestEvent* ProcessEvent(TRestEvent* inputEvent) override;
 
-    void EndProcess();
+    void EndProcess() override;
 
     Bool_t FillBuffer(Int_t n);
 
-    bool fillbuffer();
+    bool FillBuffer();
 
     bool ReadFrameHeader(CoBoHeaderFrame& Frame);
 
@@ -138,10 +138,12 @@ class TRestRawMultiCoBoAsAdToSignalProcess : public TRestRawToSignalProcess {
 
     // Constructor
     TRestRawMultiCoBoAsAdToSignalProcess();
-    TRestRawMultiCoBoAsAdToSignalProcess(char* cfgFileName);
+    TRestRawMultiCoBoAsAdToSignalProcess(const char* configFilename);
     // Destructor
     ~TRestRawMultiCoBoAsAdToSignalProcess();
 
-    ClassDef(TRestRawMultiCoBoAsAdToSignalProcess, 1);
+    const char* GetProcessName() const override { return "RawMultiCoBoAsAdToSignal"; }
+
+    ClassDefOverride(TRestRawMultiCoBoAsAdToSignalProcess, 1);
 };
 #endif

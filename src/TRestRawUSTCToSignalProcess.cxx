@@ -71,7 +71,7 @@ ClassImp(TRestRawUSTCToSignalProcess);
 
 TRestRawUSTCToSignalProcess::TRestRawUSTCToSignalProcess() { Initialize(); }
 
-TRestRawUSTCToSignalProcess::TRestRawUSTCToSignalProcess(char* cfgFileName) { Initialize(); }
+TRestRawUSTCToSignalProcess::TRestRawUSTCToSignalProcess(const char* configFilename) { Initialize(); }
 
 TRestRawUSTCToSignalProcess::~TRestRawUSTCToSignalProcess() {
     // TRestRawUSTCToSignalProcess destructor
@@ -127,7 +127,7 @@ void TRestRawUSTCToSignalProcess::InitProcess() {
     }
 }
 
-TRestEvent* TRestRawUSTCToSignalProcess::ProcessEvent(TRestEvent* evInput) {
+TRestEvent* TRestRawUSTCToSignalProcess::ProcessEvent(TRestEvent* inputEvent) {
     while (1) {
         if (EndReading()) {
             return nullptr;

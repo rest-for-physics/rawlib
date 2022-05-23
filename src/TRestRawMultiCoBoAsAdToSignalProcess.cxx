@@ -69,7 +69,7 @@ ClassImp(TRestRawMultiCoBoAsAdToSignalProcess);
 
 TRestRawMultiCoBoAsAdToSignalProcess::TRestRawMultiCoBoAsAdToSignalProcess() { Initialize(); }
 
-TRestRawMultiCoBoAsAdToSignalProcess::TRestRawMultiCoBoAsAdToSignalProcess(char* cfgFileName) {
+TRestRawMultiCoBoAsAdToSignalProcess::TRestRawMultiCoBoAsAdToSignalProcess(const char* configFilename) {
     Initialize();
 }
 
@@ -174,13 +174,13 @@ Bool_t TRestRawMultiCoBoAsAdToSignalProcess::AddInputFile(string file) {
     return false;
 }
 
-TRestEvent* TRestRawMultiCoBoAsAdToSignalProcess::ProcessEvent(TRestEvent* evInput) {
+TRestEvent* TRestRawMultiCoBoAsAdToSignalProcess::ProcessEvent(TRestEvent* inputEvent) {
     fSignalEvent->Initialize();
 
     if (EndReading()) {
         return nullptr;
     }
-    if (!fillbuffer()) {
+    if (!FillBuffer()) {
         fSignalEvent->SetOK(false);
         return fSignalEvent;
     }
@@ -252,7 +252,7 @@ void TRestRawMultiCoBoAsAdToSignalProcess::EndProcess() {
 
 // true: finish filling
 // false: error when filling
-bool TRestRawMultiCoBoAsAdToSignalProcess::fillbuffer() {
+bool TRestRawMultiCoBoAsAdToSignalProcess::FillBuffer() {
     // if the file is opened but not read, read header frame
     for (int i = 0; i < fInputFiles.size(); i++) {
         if (fInputFiles[i] && ftell(fInputFiles[i]) == 0) {

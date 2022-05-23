@@ -87,12 +87,12 @@ TRestRawFindResponseSignalProcess::TRestRawFindResponseSignalProcess() { Initial
 /// The default behaviour is that the config file must be specified with
 /// full path, absolute or relative.
 ///
-/// \param cfgFileName A const char* giving the path to an RML file.
+/// \param configFilename A const char* giving the path to an RML file.
 ///
-TRestRawFindResponseSignalProcess::TRestRawFindResponseSignalProcess(char* cfgFileName) {
+TRestRawFindResponseSignalProcess::TRestRawFindResponseSignalProcess(const char* configFilename) {
     Initialize();
 
-    if (LoadConfigFromFile(cfgFileName) == -1) LoadDefaultConfig();
+    if (LoadConfigFromFile(configFilename) == -1) LoadDefaultConfig();
 
     PrintMetadata();
     // TRestRawFindResponseSignalProcess default constructor
@@ -131,12 +131,12 @@ void TRestRawFindResponseSignalProcess::Initialize() {
 /// the path to the config file must be specified using full path, absolute or
 /// relative.
 ///
-/// \param cfgFileName A const char* giving the path to an RML file.
+/// \param configFilename A const char* giving the path to an RML file.
 /// \param name The name of the specific metadata. It will be used to find the
-/// correspondig TRestGeant4AnalysisProcess section inside the RML.
+/// corresponding TRestGeant4AnalysisProcess section inside the RML.
 ///
-void TRestRawFindResponseSignalProcess::LoadConfig(string cfgFilename, string name) {
-    if (LoadConfigFromFile(cfgFilename, name) == -1) LoadDefaultConfig();
+void TRestRawFindResponseSignalProcess::LoadConfig(const string& configFilename, const string& name) {
+    if (LoadConfigFromFile(configFilename, name) == -1) LoadDefaultConfig();
 }
 
 ///////////////////////////////////////////////
@@ -148,8 +148,8 @@ void TRestRawFindResponseSignalProcess::InitProcess() {}
 ///////////////////////////////////////////////
 /// \brief The main processing event function
 ///
-TRestEvent* TRestRawFindResponseSignalProcess::ProcessEvent(TRestEvent* evInput) {
-    fInputSignalEvent = (TRestRawSignalEvent*)evInput;
+TRestEvent* TRestRawFindResponseSignalProcess::ProcessEvent(TRestEvent* inputEvent) {
+    fInputSignalEvent = (TRestRawSignalEvent*)inputEvent;
 
     // We accept signals that are inside a given condition.
     // TODO: Now it is also possible to use ApplyCut and <cut definitions?

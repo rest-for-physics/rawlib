@@ -66,6 +66,7 @@
 /// <hr>
 ///
 #include "TRestRawSignalRecoverChannelsProcess.h"
+
 using namespace std;
 
 ClassImp(TRestRawSignalRecoverChannelsProcess);
@@ -85,12 +86,12 @@ TRestRawSignalRecoverChannelsProcess::TRestRawSignalRecoverChannelsProcess() { I
 /// The default behaviour is that the config file must be specified with
 /// full path, absolute or relative.
 ///
-/// \param cfgFileName A const char* giving the path to an RML file.
+/// \param configFilename A const char* giving the path to an RML file.
 ///
-TRestRawSignalRecoverChannelsProcess::TRestRawSignalRecoverChannelsProcess(char* cfgFileName) {
+TRestRawSignalRecoverChannelsProcess::TRestRawSignalRecoverChannelsProcess(const char* configFilename) {
     Initialize();
 
-    if (LoadConfigFromFile(cfgFileName) == -1) LoadDefaultConfig();
+    if (LoadConfigFromFile(configFilename) == -1) LoadDefaultConfig();
 
     PrintMetadata();
 }
@@ -128,12 +129,12 @@ void TRestRawSignalRecoverChannelsProcess::Initialize() {
 /// the path to the config file must be specified using full path, absolute or
 /// relative.
 ///
-/// \param cfgFileName A const char* giving the path to an RML file.
+/// \param configFilename A const char* giving the path to an RML file.
 /// \param name The name of the specific metadata. It will be used to find the
 /// correspondig TRestGeant4AnalysisProcess section inside the RML.
 ///
-void TRestRawSignalRecoverChannelsProcess::LoadConfig(string cfgFilename, string name) {
-    if (LoadConfigFromFile(cfgFilename, name) == -1) LoadDefaultConfig();
+void TRestRawSignalRecoverChannelsProcess::LoadConfig(const string& configFilename, const string& name) {
+    if (LoadConfigFromFile(configFilename, name) == -1) LoadDefaultConfig();
 }
 
 ///////////////////////////////////////////////
@@ -146,7 +147,7 @@ void TRestRawSignalRecoverChannelsProcess::InitProcess() {
     fReadout = GetMetadata<TRestDetectorReadout>();
 
     if (fReadout == nullptr) {
-        cout << "REST ERRORRRR : Readout has not been initialized" << endl;
+        cout << "REST ERROR: Readout has not been initialized" << endl;
         exit(-1);
     }
 #else
@@ -173,6 +174,8 @@ TRestEvent* TRestRawSignalRecoverChannelsProcess::ProcessEvent(TRestEvent* evInp
         GetAdjacentSignalIds(fChannelIds[x], idL, idR);
         // cout << "Channel id : " << fChannelIds[x] << " Left : " << idL << " Right
         // : " << idR << endl;
+
+        if( fOutputSignalEvent->GetSignalIndex(fChannelIds[x])> 0 ) fOutputSignalEvent->RemoveSignalWithId(fChannelIds[x]);
 
         if (idL == -1 || idR == -1) continue;
 
