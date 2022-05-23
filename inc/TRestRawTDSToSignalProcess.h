@@ -25,7 +25,7 @@
 
 #include "TRestRawToSignalProcess.h"
 
-//Struct that holds block header TDS data format
+// Struct that holds block header TDS data format
 struct ANABlockHead {
     uint64_t TimeStamp;
     uint64_t RTTicks;
@@ -39,7 +39,7 @@ struct ANABlockHead {
     uint8_t NegPolarity[4];
 };
 
-//Struct that holds event header TDS data format
+// Struct that holds event header TDS data format
 struct ANAEventHead {
     uint64_t clockTicksLT;
     uint64_t clockTicksRT;
@@ -48,42 +48,42 @@ struct ANAEventHead {
 //! A process to read binary files produced with TDS (Tektronix oscilloscope) DAQ
 class TRestRawTDSToSignalProcess : public TRestRawToSignalProcess {
    protected:
-    //Time stamp for block header
-    double tNow=0;        //!
+    // Time stamp for block header
+    double tNow = 0;  //!
 
-    //Number of samples per block
-    int nSamples;         //!
-    
-    //Number of acquired channels 
-    int nChannels;        //!
-    
-    //Number of points per horizontal axis
-    int pulseDepth;       //!
-    
-    //Event counter
-    int nEvents = 0;      //!
+    // Number of samples per block
+    int nSamples;  //!
 
-    //Check if pulses are negative or positive
+    // Number of acquired channels
+    int nChannels;  //!
+
+    // Number of points per horizontal axis
+    int pulseDepth;  //!
+
+    // Event counter
+    int nEvents = 0;  //!
+
+    // Check if pulses are negative or positive
     bool negPolarity[4];  //!
 
-    //Sampling rate in MHz
+    // Sampling rate in MHz
     double fRate = 0;
 
-    //Vertical scale in mV/Division 
+    // Vertical scale in mV/Division
     double fScale[4] = {0, 0, 0, 0};
 
    public:
-    void Initialize();
-    void InitProcess();
-    TRestEvent* ProcessEvent(TRestEvent* evInput);
-    TString GetProcessName() { return (TString) "TDSToSignal"; }
-    TRestMetadata* GetProcessMetadata() { return nullptr; }
+    void Initialize() override;
+    void InitProcess() override;
+    TRestEvent* ProcessEvent(TRestEvent* inputEvent) override;
+    const char* GetProcessName() const override { return "TDSToSignal"; }
+    TRestMetadata* GetProcessMetadata() const { return nullptr; }
 
     Bool_t isExternal() { return true; }
 
     TRestRawTDSToSignalProcess();
     ~TRestRawTDSToSignalProcess();
 
-    ClassDef(TRestRawTDSToSignalProcess, 1);
+    ClassDefOverride(TRestRawTDSToSignalProcess, 1);
 };
 #endif
