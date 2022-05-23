@@ -23,11 +23,11 @@
 //////////////////////////////////////////////////////////////////////////
 /// The TRestRawTDSToSignalProcess is a process used to read a binary file
 /// produced by the read binary files produced with TDS (Tektronix oscilloscope) DAQ,
-/// The results are stores following TRestRawSignalEvent format ,and then it 
+/// The results are stores following TRestRawSignalEvent format ,and then it
 /// processing can continue inside with the REST framework libraries.
 ///
 /// ### Parameters
-/// Inherits from TRestRawToSignalProcess, only electronics type is required: 
+/// Inherits from TRestRawToSignalProcess, only electronics type is required:
 /// * **electronics**: You need to write here TDS
 ///
 /// ### Examples
@@ -37,20 +37,19 @@
 /// \endcode
 ///
 ///----------------------------------------------------------------------
-///                                                                      
-/// REST-for-Physics - Software for Rare Event Searches Toolkit 		    
-///                                                                      
-/// History of developments:                                             
-///                                                                      
-/// 2022-05: First implementation of TRestDummyProcess
+///
+/// REST-for-Physics - Software for Rare Event Searches Toolkit
+///
+/// History of developments:
+///
+/// 2022-05: First implementation of TRestRawTDSToSignalProcess
 /// JuanAn Garcia
-///                                                                      
-/// \class TRestRawTDSToSignalProcess                                              
+///
+/// \class TRestRawTDSToSignalProcess
 /// \author: JuanAn Garcia juanangp@unizar.es
-///                                                                      
-/// <hr>                                                                 
-///                                                                      
-
+///
+/// <hr>
+///
 
 #include "TRestRawTDSToSignalProcess.h"
 
@@ -66,22 +65,19 @@ TRestRawTDSToSignalProcess::TRestRawTDSToSignalProcess() { Initialize(); }
 ///
 TRestRawTDSToSignalProcess::~TRestRawTDSToSignalProcess() {}
 
-///////////////////////////////////////////////                          
-/// \brief Function to initialize input/output event members and define  
+///////////////////////////////////////////////
+/// \brief Function to initialize input/output event members and define
 /// the section name, calls parent TRestRawToSignalProcess::Initialize()
-/// 
-void TRestRawTDSToSignalProcess::Initialize() {
-    TRestRawToSignalProcess::Initialize();
+///
+void TRestRawTDSToSignalProcess::Initialize() { TRestRawToSignalProcess::Initialize(); }
 
-}
-
-///////////////////////////////////////////////                           
+///////////////////////////////////////////////
 /// \brief Process initialization. Read first header
 /// block and initializes several variables such as:
 /// nSamples, nChannels, fRate, pulseDepth, fScale and
 /// negPolarity. It also sets the start timeStamp for
-/// the run 
-///      
+/// the run
+///
 void TRestRawTDSToSignalProcess::InitProcess() {
     ANABlockHead blockhead;
     if (fread(&blockhead, sizeof(blockhead), 1, fInputBinFile) != 1) return;
@@ -105,37 +101,36 @@ void TRestRawTDSToSignalProcess::InitProcess() {
 /// \brief The main processing event function
 ///
 TRestEvent* TRestRawTDSToSignalProcess::ProcessEvent(TRestEvent* evInput) {
-
-    //TDS block and event header
+    // TDS block and event header
     ANABlockHead blockhead;
     ANAEventHead eventhead;
 
-    //Initialize fSignalEvent, so it is empty if already filled in
+    // Initialize fSignalEvent, so it is empty if already filled in
     fSignalEvent->Initialize();
 
-    //Read block header if any, note that we have nSamples events between 2 block headers
+    // Read block header if any, note that we have nSamples events between 2 block headers
     if (nEvents % nSamples == 0 && nEvents != 0) {
         if (fread(&blockhead, sizeof(blockhead), 1, fInputBinFile) != 1) return nullptr;
         totalBytesReaded += sizeof(blockhead);
-        //Update timestamp from the blockHeader
-        tNow =  static_cast<double>(blockhead.TimeStamp);
+        // Update timestamp from the blockHeader
+        tNow = static_cast<double>(blockhead.TimeStamp);
     }
 
-    //Always read event header at the beginning of event
+    // Always read event header at the beginning of event
     if (fread(&eventhead, sizeof(eventhead), 1, fInputBinFile) != 1) return nullptr;
     totalBytesReaded += sizeof(eventhead);
-    //This vector holds data which has a length of pulseDepth
+    // This vector holds data which has a length of pulseDepth
     std::vector<Char_t> buffer(pulseDepth);
     fSignalEvent->SetID(nEvents);
     fSignalEvent->SetTime(tNow + static_cast<double>(eventhead.clockTicksLT) * 1E-6);
-    //Need to initialize TRestRawSignal with the proper data length
+    // Need to initialize TRestRawSignal with the proper data length
     TRestRawSignal sgnl(pulseDepth);
 
-    //We loop over the recorded channels, we have one data frame per channel
+    // We loop over the recorded channels, we have one data frame per channel
     for (int i = 0; i < nChannels; i++) {
         sgnl.SetSignalID(i);
         fSignalEvent->AddSignal(sgnl);
-        //Read data frame and store in buffer
+        // Read data frame and store in buffer
         if (fread((char*)&buffer[0], pulseDepth, 1, fInputBinFile) != 1) return nullptr;
         totalBytesReaded += pulseDepth;
         for (int j = 0; j < pulseDepth; j++) {
@@ -146,7 +141,7 @@ TRestEvent* TRestRawTDSToSignalProcess::ProcessEvent(TRestEvent* evInput) {
         }
     }
 
-    //Set end time stamp for the run
+    // Set end time stamp for the run
     fRunInfo->SetEndTimeStamp(tNow + static_cast<double>(eventhead.clockTicksLT) * 1E-6);
     nEvents++;
 
