@@ -148,7 +148,7 @@ Bool_t TRestRawToSignalProcess::OpenInputFiles(vector<string> files) {
     if (nFiles > 0) {
         fInputBinFile = fInputFiles[0];
     } else {
-        RESTFerr << "No input file is opened, in process: " << this->ClassName() << "!" << RESTendl;
+        RESTError << "No input file is opened, in process: " << this->ClassName() << "!" << RESTendl;
         exit(1);
     }
 
@@ -159,7 +159,7 @@ Bool_t TRestRawToSignalProcess::OpenInputFiles(vector<string> files) {
 Bool_t TRestRawToSignalProcess::AddInputFile(string file) {
     for (int i = 0; i < fInputFileNames.size(); i++) {
         if (fInputFileNames[i] == file) {
-            RESTFerr << "file: \"" << file << "\" already added!" << RESTendl;
+            RESTError << "file: \"" << file << "\" already added!" << RESTendl;
             return false;
         }
     }

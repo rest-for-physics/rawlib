@@ -110,7 +110,7 @@ void TRestRawUSTCToSignalProcess::InitProcess() {
     if ((!GetNextFrame(frame)) || (!ReadFrameData(frame))) {
         FixToNextFrame(fInputFiles[fCurrentFile]);
         if ((!GetNextFrame(frame)) || (!ReadFrameData(frame))) {
-            RESTFerr << "TRestRawUSTCToSignalProcess: Failed to read the first data "
+            RESTError << "TRestRawUSTCToSignalProcess: Failed to read the first data "
                     "frame in file, may be wrong "
                     "input?"
                  << RESTendl;

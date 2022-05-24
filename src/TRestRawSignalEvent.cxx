@@ -476,7 +476,7 @@ TPad* TRestRawSignalEvent::DrawEvent(const TString& option) {
             else if (str.find("-") != string::npos)
                 optList_4 = Vector_cast<string, TString>(Split((string)tmpStr3, "-"));
             else
-                RESTFerr << "TRestRawSignalEvent::DrawEvent not valid ids format!" << RESTendl;
+                RESTError << "TRestRawSignalEvent::DrawEvent not valid ids format!" << RESTendl;
 
             sRangeInit = StringToInteger((string)optList_4[0]);
             sRangeEnd = StringToInteger((string)optList_4[1]);
