@@ -86,9 +86,9 @@ void TRestRawTDSToSignalProcess::InitProcess() {
     nChannels = blockhead.NHits / blockhead.NEvents;
     fRate = blockhead.SRate;
     pulseDepth = blockhead.PSize;
-    debug << "nSamples " << nSamples << " NChannels " << nChannels << endl;
-    debug << "SRATE: " << (double)fRate << " PULSE DEPTH: " << pulseDepth
-          << " PRETRIGGER: " << blockhead.Pretrigger << endl;
+    RESTDebug << "nSamples " << nSamples << " NChannels " << nChannels << RESTendl;
+    RESTDebug << "SRATE: " << (double)fRate << " PULSE DEPTH: " << pulseDepth
+          << " PRETRIGGER: " << blockhead.Pretrigger << RESTendl;
     for (int i = 0; i < nChannels; i++) {
         fScale[i] = blockhead.mVdiv[i];
         negPolarity[i] = blockhead.NegPolarity[i];

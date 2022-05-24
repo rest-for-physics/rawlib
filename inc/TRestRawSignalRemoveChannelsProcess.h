@@ -62,7 +62,7 @@ class TRestRawSignalRemoveChannelsProcess : public TRestEventProcess {
         BeginPrintProcess();
 
         for (unsigned int n = 0; n < fChannelIds.size(); n++)
-            metadata << "Channel id to remove : " << fChannelIds[n] << endl;
+            RESTMetadata << "Channel id to remove : " << fChannelIds[n] << RESTendl;
 
         EndPrintProcess();
     }

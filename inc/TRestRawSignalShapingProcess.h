@@ -73,11 +73,11 @@ class TRestRawSignalShapingProcess : public TRestEventProcess {
     inline void PrintMetadata() override {
         BeginPrintProcess();
 
-        metadata << "Shaping type : " << fShapingType << endl;
-        metadata << "Shaping time : " << fShapingTime << endl;
-        metadata << "Amplitude gain : " << fShapingGain << endl;
+        RESTMetadata << "Shaping type : " << fShapingType << RESTendl;
+        RESTMetadata << "Shaping time : " << fShapingTime << RESTendl;
+        RESTMetadata << "Amplitude gain : " << fShapingGain << RESTendl;
         if (fShapingType == "responseFile") {
-            metadata << "Response file : " << fResponseFilename << endl;
+            RESTMetadata << "Response file : " << fResponseFilename << RESTendl;
         }
 
         EndPrintProcess();

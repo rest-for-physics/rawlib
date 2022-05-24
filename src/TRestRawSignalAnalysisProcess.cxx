@@ -478,7 +478,7 @@ TRestEvent* TRestRawSignalAnalysisProcess::ProcessEvent(TRestEvent* inputEvent) 
     SetObservableValue("MaxPeakTimeDelay", peakTimeDelay);
     SetObservableValue("AveragePeakTime", peakTimeAverage);
 
-    if (GetVerboseLevel() >= REST_Debug) {
+    if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Debug) {
         for (auto i : fObservablesDefined) {
             fAnalysisTree->PrintObservable(i.second);
         }

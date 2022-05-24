@@ -352,10 +352,10 @@ TRestEvent* TRestRawVetoAnalysisProcess::ProcessEvent(TRestEvent* inputEvent) {
         }
     }
 
-    if (GetVerboseLevel() >= REST_Debug) {
+    if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Debug) {
         fSignalEvent->PrintEvent();
 
-        if (GetVerboseLevel() >= REST_Extreme) GetChar();
+        if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Extreme) GetChar();
     }
 
     return fSignalEvent;
@@ -429,29 +429,29 @@ void TRestRawVetoAnalysisProcess::PrintMetadata() {
 
     // Print output metadata using, metadata << endl;
     for (unsigned int i = 0; i < fVetoGroupNames.size(); i++) {
-        metadata << "Veto group " << fVetoGroupNames[i] << " signal IDs: " << fVetoGroupIds[i] << endl;
+        RESTMetadata << "Veto group " << fVetoGroupNames[i] << " signal IDs: " << fVetoGroupIds[i] << RESTendl;
     }
 
     if (fVetoSignalId[0] != -1) {
         for (unsigned int i = 0; i < fVetoSignalId.size(); i++) {
-            metadata << "Veto signal ID: " << fVetoSignalId[i] << endl;
+            RESTMetadata << "Veto signal ID: " << fVetoSignalId[i] << RESTendl;
         }
     } else {
-        metadata << " " << endl;
-        metadata << "All veto signal IDs: ";
+        RESTMetadata << " " << RESTendl;
+        RESTMetadata << "All veto signal IDs: ";
         for (unsigned int i = 0; i < fVetoGroupIds.size() - 1; i++) {
-            metadata << fVetoGroupIds[i] << ",";
+            RESTMetadata << fVetoGroupIds[i] << ",";
         }
-        metadata << fVetoGroupIds[fVetoGroupIds.size() - 1] << endl;
+        RESTMetadata << fVetoGroupIds[fVetoGroupIds.size() - 1] << RESTendl;
     }
     if (fThreshold != -1) {
-        metadata << "Veto threshold: " << fThreshold << endl;
+        RESTMetadata << "Veto threshold: " << fThreshold << RESTendl;
     }
     if (fTimeWindow[0] != -1) {
-        metadata << "Peak time window: (" << fTimeWindow[0] << ", " << fTimeWindow[1] << ")" << endl;
+        RESTMetadata << "Peak time window: (" << fTimeWindow[0] << ", " << fTimeWindow[1] << ")" << RESTendl;
     }
-    metadata << "Noise reduction: Points over Threshold parameters = (" << fPointThreshold << ", "
-             << fSignalThreshold << ", " << fPointsOverThreshold << ")" << endl;
+    RESTMetadata << "Noise reduction: Points over Threshold parameters = (" << fPointThreshold << ", "
+             << fSignalThreshold << ", " << fPointsOverThreshold << ")" << RESTendl;
 
     EndPrintProcess();
 }

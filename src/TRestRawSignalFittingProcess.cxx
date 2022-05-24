@@ -177,7 +177,7 @@ TRestEvent* TRestRawSignalFittingProcess::ProcessEvent(TRestEvent* inputEvent) {
     // no need for verbose copy now
     fRawSignalEvent = (TRestRawSignalEvent*)inputEvent;
 
-    debug << "TRestRawSignalFittingProcess::ProcessEvent. Event ID : " << fRawSignalEvent->GetID() << endl;
+    RESTDebug << "TRestRawSignalFittingProcess::ProcessEvent. Event ID : " << fRawSignalEvent->GetID() << RESTendl;
 
     Double_t SigmaMean = 0;
     Double_t Sigma[fRawSignalEvent->GetNumberOfSignals()];
@@ -279,15 +279,15 @@ TRestEvent* TRestRawSignalFittingProcess::ProcessEvent(TRestEvent* inputEvent) {
     RatioSigmaMaxPeakMean = RatioSigmaMaxPeakMean / fRawSignalEvent->GetNumberOfSignals();
     SetObservableValue("FitRatioSigmaMaxPeakMean", RatioSigmaMaxPeakMean);
 
-    debug << "SigmaMean: " << SigmaMean << endl;
-    debug << "SigmaMeanStdDev: " << SigmaMeanStdDev << endl;
-    debug << "ChiSquareMean: " << ChiSquareMean << endl;
-    debug << "RatioSigmaMaxPeakMean: " << RatioSigmaMaxPeakMean << endl;
+    RESTDebug << "SigmaMean: " << SigmaMean << RESTendl;
+    RESTDebug << "SigmaMeanStdDev: " << SigmaMeanStdDev << RESTendl;
+    RESTDebug << "ChiSquareMean: " << ChiSquareMean << RESTendl;
+    RESTDebug << "RatioSigmaMaxPeakMean: " << RatioSigmaMaxPeakMean << RESTendl;
     for (int k = 0; k < fRawSignalEvent->GetNumberOfSignals(); k++) {
-        debug << "Standard deviation of signal number " << k << ": " << Sigma[k] << endl;
-        debug << "Chi square of fit signal number " << k << ": " << ChiSquare[k] << endl;
-        debug << "Sandard deviation divided by amplitude of signal number " << k << ": "
-              << RatioSigmaMaxPeak[k] << endl;
+        RESTDebug << "Standard deviation of signal number " << k << ": " << Sigma[k] << RESTendl;
+        RESTDebug << "Chi square of fit signal number " << k << ": " << ChiSquare[k] << RESTendl;
+        RESTDebug << "Sandard deviation divided by amplitude of signal number " << k << ": "
+              << RatioSigmaMaxPeak[k] << RESTendl;
     }
 
     /// We define (or re-define) the baseline range and calculation range of our
