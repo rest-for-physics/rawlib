@@ -476,7 +476,7 @@ TPad* TRestRawSignalEvent::DrawEvent(const TString& option) {
             else if (str.find("-") != string::npos)
                 optList_4 = Vector_cast<string, TString>(Split((string)tmpStr3, "-"));
             else
-                ferr << "TRestRawSignalEvent::DrawEvent not valid ids format!" << endl;
+                RESTError << "TRestRawSignalEvent::DrawEvent not valid ids format!" << RESTendl;
 
             sRangeInit = StringToInteger((string)optList_4[0]);
             sRangeEnd = StringToInteger((string)optList_4[1]);
@@ -499,11 +499,11 @@ TPad* TRestRawSignalEvent::DrawEvent(const TString& option) {
 
         // If threshold and baseline options are given
         if (ThresCheck && BLCheck) {
-            debug << "Draw only good signals with: " << endl;
-            debug << "  Signal threshold: " << signalTh << endl;
-            debug << "  Point threshold: " << pointTh << endl;
-            debug << "  Points over threshold: " << nOver << endl;
-            debug << "  Base line range: (" << baseLineRangeInit << "," << baseLineRangeEnd << ")" << endl;
+            RESTDebug << "Draw only good signals with: " << RESTendl;
+            RESTDebug << "  Signal threshold: " << signalTh << RESTendl;
+            RESTDebug << "  Point threshold: " << pointTh << RESTendl;
+            RESTDebug << "  Points over threshold: " << nOver << RESTendl;
+            RESTDebug << "  Base line range: (" << baseLineRangeInit << "," << baseLineRangeEnd << ")" << RESTendl;
 
             for (int n = 0; n < nSignals; n++) {
                 fSignal[n].CalculateBaseLine(baseLineRangeInit, baseLineRangeEnd);
@@ -540,8 +540,8 @@ TPad* TRestRawSignalEvent::DrawEvent(const TString& option) {
         if (separation != string::npos) {
             TString firstSignal = optList[0](0, separation);
             TString lastSignal = optList[0](separation + 1, str.size());
-            debug << "First signal: " << firstSignal << endl;
-            debug << "Last signal: " << lastSignal << endl;
+            RESTDebug << "First signal: " << firstSignal << RESTendl;
+            RESTDebug << "Last signal: " << lastSignal << RESTendl;
 
             if (StringToInteger((string)lastSignal) >= fSignal.size()) {
                 fPad->SetTitle("No Such Signal");
@@ -552,12 +552,12 @@ TPad* TRestRawSignalEvent::DrawEvent(const TString& option) {
             sprintf(title, "Event ID %d", this->GetID());
 
             if (ThresCheck && BLCheck) {
-                debug << "Draw only good signals with: " << endl;
-                debug << "  Signal threshold: " << signalTh << endl;
-                debug << "  Point threshold: " << pointTh << endl;
-                debug << "  Points over threshold: " << nOver << endl;
-                debug << "  Base line range: (" << baseLineRangeInit << "," << baseLineRangeEnd << ")"
-                      << endl;
+                RESTDebug << "Draw only good signals with: " << RESTendl;
+                RESTDebug << "  Signal threshold: " << signalTh << RESTendl;
+                RESTDebug << "  Point threshold: " << pointTh << RESTendl;
+                RESTDebug << "  Points over threshold: " << nOver << RESTendl;
+                RESTDebug << "  Base line range: (" << baseLineRangeInit << "," << baseLineRangeEnd << ")"
+                      << RESTendl;
 
                 for (int n = 0; n < nSignals; n++) {
                     if (n < StringToInteger((string)firstSignal) || n > StringToInteger((string)lastSignal))
@@ -619,7 +619,7 @@ void TRestRawSignalEvent::DrawSignals(TPad* pad, const std::vector<Int_t>& signa
         color++;
     }
 
-    debug << "Max SID " << maxSID << endl;
+    RESTDebug << "Max SID " << maxSID << RESTendl;
 
     if (maxSID == -1) {
         cout << "No signals ID found" << endl;
@@ -738,7 +738,7 @@ TPad* TRestRawSignalEvent::DrawSignal(Int_t signal, TString option) {
     sgnl->CalculateBaseLine(baseLineRangeInit, baseLineRangeEnd);
     sgnl->InitializePointsOverThreshold(TVector2(pointTh, signalTh), nOver);
 
-    info << "Drawing signal. Event ID : " << this->GetID() << " Signal ID : " << sgnl->GetID() << endl;
+    RESTInfo << "Drawing signal. Event ID : " << this->GetID() << " Signal ID : " << sgnl->GetID() << RESTendl;
 
     for (int n = 0; n < sgnl->GetNumberOfPoints(); n++) gr->SetPoint(n, n, sgnl->GetData(n));
 

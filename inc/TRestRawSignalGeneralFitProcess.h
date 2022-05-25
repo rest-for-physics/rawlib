@@ -73,8 +73,8 @@ class TRestRawSignalGeneralFitProcess : public TRestEventProcess {
     void PrintMetadata() override {
         BeginPrintProcess();
 
-        metadata << "Function std::string: " << fFunction << endl;
-        metadata << "Range: ( " << fFunctionRange.X() << " , " << fFunctionRange.Y() << " ) " << endl;
+        RESTMetadata << "Function std::string: " << fFunction << RESTendl;
+        RESTMetadata << "Range: ( " << fFunctionRange.X() << " , " << fFunctionRange.Y() << " ) " << RESTendl;
 
         EndPrintProcess();
     }

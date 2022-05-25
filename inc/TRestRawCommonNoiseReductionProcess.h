@@ -72,12 +72,12 @@ class TRestRawCommonNoiseReductionProcess : public TRestEventProcess {
     void PrintMetadata() override {
         BeginPrintProcess();
 
-        metadata << " mode : [" << fMode << "]";
-        if (fMode == 0) metadata << " --> Mode 0 activated." << endl;
-        if (fMode == 1) metadata << " --> Mode 1 activated." << endl;
-        metadata << " centerWidth : " << fCenterWidth << endl;
-        metadata << "blocks : [" << fBlocks << "]" << endl;
-        metadata << " Minimum number of signals : " << fMinSignalsRequired << endl;
+        RESTMetadata << " mode : [" << fMode << "]";
+        if (fMode == 0) RESTMetadata << " --> Mode 0 activated." << RESTendl;
+        if (fMode == 1) RESTMetadata << " --> Mode 1 activated." << RESTendl;
+        RESTMetadata << " centerWidth : " << fCenterWidth << RESTendl;
+        RESTMetadata << "blocks : [" << fBlocks << "]" << RESTendl;
+        RESTMetadata << " Minimum number of signals : " << fMinSignalsRequired << RESTendl;
 
         EndPrintProcess();
     }

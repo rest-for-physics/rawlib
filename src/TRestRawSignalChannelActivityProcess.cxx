@@ -176,7 +176,7 @@ void TRestRawSignalChannelActivityProcess::InitProcess() {
     fReadout = GetMetadata<TRestDetectorReadout>();
 
     debug << "TRestRawSignalChannelActivityProcess::InitProcess. Readout pointer : " << fReadout << endl;
-    if (GetVerboseLevel() >= REST_Info && fReadout) fReadout->PrintMetadata();
+    if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Info && fReadout) fReadout->PrintMetadata();
 #endif
 
     if (!fReadOnly) {
@@ -263,7 +263,7 @@ TRestEvent* TRestRawSignalChannelActivityProcess::ProcessEvent(TRestEvent* input
         }
     }
 
-    if (GetVerboseLevel() >= REST_Debug) fAnalysisTree->PrintObservables();
+    if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Debug) fAnalysisTree->PrintObservables();
 
     return fSignalEvent;
 }

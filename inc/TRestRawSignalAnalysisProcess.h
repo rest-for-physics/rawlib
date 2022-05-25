@@ -69,13 +69,13 @@ class TRestRawSignalAnalysisProcess : public TRestEventProcess {
     void PrintMetadata() override {
         BeginPrintProcess();
 
-        metadata << "Baseline range : ( " << fBaseLineRange.X() << " , " << fBaseLineRange.Y() << " ) "
-                 << endl;
-        metadata << "Integral range : ( " << fIntegralRange.X() << " , " << fIntegralRange.Y() << " ) "
-                 << endl;
-        metadata << "Point Threshold : " << fPointThreshold << " sigmas" << endl;
-        metadata << "Signal threshold : " << fSignalThreshold << " sigmas" << endl;
-        metadata << "Number of points over threshold : " << fPointsOverThreshold << endl;
+        RESTMetadata << "Baseline range : ( " << fBaseLineRange.X() << " , " << fBaseLineRange.Y() << " ) "
+                 << RESTendl;
+        RESTMetadata << "Integral range : ( " << fIntegralRange.X() << " , " << fIntegralRange.Y() << " ) "
+                 << RESTendl;
+        RESTMetadata << "Point Threshold : " << fPointThreshold << " sigmas" << RESTendl;
+        RESTMetadata << "Signal threshold : " << fSignalThreshold << " sigmas" << RESTendl;
+        RESTMetadata << "Number of points over threshold : " << fPointsOverThreshold << RESTendl;
 
         EndPrintProcess();
     }

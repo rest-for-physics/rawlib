@@ -244,7 +244,7 @@ void TRestRawMemoryBufferToSignalProcess::InitProcess() {
         exit(1);
     }
 
-    if (GetVerboseLevel() >= REST_Debug) {
+    if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Debug) {
         printf("Sem id : %d\n", fSemaphoreId);
 
         printf("Data ready : %d\n", fShMem_daqInfo->dataReady);
@@ -259,7 +259,7 @@ void TRestRawMemoryBufferToSignalProcess::InitProcess() {
         printf("Max samples : %d\n", fShMem_daqInfo->maxSamples);
         printf("Buffer size : %d\n", fShMem_daqInfo->bufferSize);
 
-        if (GetVerboseLevel() >= REST_Extreme) GetChar();
+        if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Extreme) GetChar();
     }
 
     int N_DATA = fShMem_daqInfo->bufferSize;
@@ -303,7 +303,7 @@ TRestEvent* TRestRawMemoryBufferToSignalProcess::ProcessEvent(TRestEvent* inputE
                 TRestRawSignal sgnl;
                 sgnl.SetSignalID(fShMem_Buffer[s * (maxSamples + 1)]);
 
-                if (GetVerboseLevel() >= REST_Debug)
+                if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Debug)
                     cout << "s : " << s << " id : " << sgnl.GetSignalID() << endl;
 
                 for (int n = 0; n < maxSamples; n++) {
@@ -311,7 +311,7 @@ TRestEvent* TRestRawMemoryBufferToSignalProcess::ProcessEvent(TRestEvent* inputE
                 }
                 fOutputRawSignalEvent->AddSignal(sgnl);
 
-                if (GetVerboseLevel() >= REST_Extreme) {
+                if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Extreme) {
                     sgnl.Print();
                     GetChar();
                 }
@@ -329,14 +329,14 @@ TRestEvent* TRestRawMemoryBufferToSignalProcess::ProcessEvent(TRestEvent* inputE
             SemaphoreGreen(fSemaphoreId);
             //// END Getting access to shared resources
 
-            if (GetVerboseLevel() >= REST_Info) {
+            if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Info) {
                 cout << "------------------------------------------" << endl;
                 cout << "Event ID : " << fOutputRawSignalEvent->GetID() << endl;
                 cout << "Time stamp : " << fOutputRawSignalEvent->GetTimeStamp() << endl;
                 cout << "Number of Signals : " << fOutputRawSignalEvent->GetNumberOfSignals() << endl;
                 cout << "------------------------------------------" << endl;
 
-                if (GetVerboseLevel() >= REST_Debug) {
+                if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Debug) {
                     for (Int_t n = 0; n < fOutputRawSignalEvent->GetNumberOfSignals(); n++)
                         cout << "Signal N : " << n
                              << " daq id : " << fOutputRawSignalEvent->GetSignal(n)->GetID() << endl;

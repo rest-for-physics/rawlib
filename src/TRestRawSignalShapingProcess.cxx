@@ -240,7 +240,7 @@ TRestEvent* TRestRawSignalShapingProcess::ProcessEvent(TRestEvent* inputEvent) {
             response[i] = TMath::Exp(-3. * coeff) * coeff * coeff * coeff * sin(coeff);
         }
     } else {
-        if (GetVerboseLevel() >= REST_Warning)
+        if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Warning)
             cout << "REST WARNING. Shaping type : " << fShapingType << " is not defined!!" << endl;
         return nullptr;
     }

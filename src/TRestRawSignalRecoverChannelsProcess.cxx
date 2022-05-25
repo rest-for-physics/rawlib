@@ -151,9 +151,9 @@ void TRestRawSignalRecoverChannelsProcess::InitProcess() {
         exit(-1);
     }
 #else
-    ferr << "TRestRawSignalRecoverChannelsProcess will not be active." << endl;
-    ferr << "REST was not compiled with detectorlib" << endl;
-    ferr << "Please, remove this process or compile REST with detector library" << endl;
+    RESTError << "TRestRawSignalRecoverChannelsProcess will not be active." << RESTendl;
+    RESTError << "REST was not compiled with detectorlib" << RESTendl;
+    RESTError << "Please, remove this process or compile REST with detector library" << RESTendl;
 #endif
 }
 

@@ -153,13 +153,13 @@ TRestEvent* TRestRawSignalRemoveChannelsProcess::ProcessEvent(TRestEvent* inputE
 
         if (!removeChannel) fOutputSignalEvent->AddSignal(*sgnl);
 
-        if (GetVerboseLevel() >= REST_Extreme) cout << "Channel ID : " << sgnl->GetID() << endl;
+        if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Extreme) cout << "Channel ID : " << sgnl->GetID() << endl;
 
-        if (GetVerboseLevel() >= REST_Debug && removeChannel)
+        if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Debug && removeChannel)
             cout << "Removing channel id : " << sgnl->GetID() << endl;
     }
 
-    if (GetVerboseLevel() >= REST_Extreme) GetChar();
+    if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Extreme) GetChar();
 
     return fOutputSignalEvent;
 }

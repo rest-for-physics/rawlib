@@ -118,19 +118,19 @@ class TRestRawSignalChannelActivityProcess : public TRestEventProcess {
     void PrintMetadata() override {
         BeginPrintProcess();
 
-        metadata << "Low signal threshold activity : " << fLowThreshold << endl;
-        metadata << "High signal threshold activity : " << fHighThreshold << endl;
+        RESTMetadata << "Low signal threshold activity : " << fLowThreshold << RESTendl;
+        RESTMetadata << "High signal threshold activity : " << fHighThreshold << RESTendl;
 
-        metadata << "Number of daq histogram channels : " << fDaqChannels << endl;
-        metadata << "Start daq channel : " << fDaqStartChannel << endl;
-        metadata << "End daq channel : " << fDaqEndChannel << endl;
+        RESTMetadata << "Number of daq histogram channels : " << fDaqChannels << RESTendl;
+        RESTMetadata << "Start daq channel : " << fDaqStartChannel << RESTendl;
+        RESTMetadata << "End daq channel : " << fDaqEndChannel << RESTendl;
 
 #ifdef REST_DetectorLib
-        metadata << "Number of readout histogram channels : " << fReadoutChannels << endl;
-        metadata << "Start readout channel : " << fReadoutStartChannel << endl;
-        metadata << "End readout channel : " << fReadoutEndChannel << endl;
+        RESTMetadata << "Number of readout histogram channels : " << fReadoutChannels << RESTendl;
+        RESTMetadata << "Start readout channel : " << fReadoutStartChannel << RESTendl;
+        RESTMetadata << "End readout channel : " << fReadoutEndChannel << RESTendl;
 #else
-        metadata << "Some Detector features in this process are not available!" << endl;
+        RESTMetadata << "Some Detector features in this process are not available!" << RESTendl;
 #endif
 
         EndPrintProcess();

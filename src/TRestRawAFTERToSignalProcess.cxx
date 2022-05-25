@@ -161,10 +161,10 @@ TRestEvent* TRestRawAFTERToSignalProcess::ProcessEvent(TRestEvent* inputEvent) {
     payload = head.eventSize;
     frameBits = sizeof(head);
 
-    debug << "Event number from header --> 0x" << std::hex << head.eventNumb << std::dec << endl;
-    debug << " event header size " << sizeof(head) << endl;
-    debug << " total rawdata size 0x" << std::hex << head.eventSize << std::dec << endl;
-    debug << "Payload " << payload << endl;
+    RESTDebug << "Event number from header --> 0x" << std::hex << head.eventNumb << std::dec << RESTendl;
+    RESTDebug << " event header size " << sizeof(head) << RESTendl;
+    RESTDebug << " total rawdata size 0x" << std::hex << head.eventSize << std::dec << RESTendl;
+    RESTDebug << "Payload " << payload << RESTendl;
 
     fSignalEvent->SetID(head.eventNumb);
 
@@ -208,51 +208,51 @@ TRestEvent* TRestRawAFTERToSignalProcess::ProcessEvent(TRestEvent* inputEvent) {
             prevTime = eventTime;
             first = false;
 
-            debug << "Timestamp: " << eventTime << endl;
+            RESTDebug << "Timestamp: " << eventTime << RESTendl;
         }
 
-        debug << "******Event data packet header:******" << endl;
+        RESTDebug << "******Event data packet header:******" << RESTendl;
 
-        debug << "Size " << ntohs(pHeader.size) << endl;
+        RESTDebug << "Size " << ntohs(pHeader.size) << RESTendl;
 
-        debug << "Event data packet header: " << endl;
-        debug << std::hex << "Size 0x" << ntohs(pHeader.size) << endl;
+        RESTDebug << "Event data packet header: " << RESTendl;
+        RESTDebug << std::hex << "Size 0x" << ntohs(pHeader.size) << RESTendl;
 #ifdef NEW_DAQ_T2K_2_X
-        debug << "DCC 0x" << ntohs(pHeader.dcc) << endl;
+        RESTDebug << "DCC 0x" << ntohs(pHeader.dcc) << RESTendl;
 #endif
-        debug << "Hdr word 0x" << ntohs(pHeader.hdr) << endl;
-        debug << "Args 0x" << ntohs(pHeader.args) << endl;
-        debug << "TS_H 0x" << ntohs(pHeader.ts_h) << endl;
-        debug << "TS_L 0x" << ntohs(pHeader.ts_l) << endl;
-        debug << "Ecnt 0x" << ntohs(pHeader.ecnt) << endl;
-        debug << "Scnt 0x" << ntohs(pHeader.scnt) << std::dec << endl;
+        RESTDebug << "Hdr word 0x" << ntohs(pHeader.hdr) << RESTendl;
+        RESTDebug << "Args 0x" << ntohs(pHeader.args) << RESTendl;
+        RESTDebug << "TS_H 0x" << ntohs(pHeader.ts_h) << RESTendl;
+        RESTDebug << "TS_L 0x" << ntohs(pHeader.ts_l) << RESTendl;
+        RESTDebug << "Ecnt 0x" << ntohs(pHeader.ecnt) << RESTendl;
+        RESTDebug << "Scnt 0x" << ntohs(pHeader.scnt) << std::dec << RESTendl;
 
 #ifdef NEW_DAQ_T2K_2_X
-        debug << "RawDCC Head 0x" << std::hex << ntohs(pHeader.dcc) << std::dec << " Version "
+        RESTDebug << "RawDCC Head 0x" << std::hex << ntohs(pHeader.dcc) << std::dec << " Version "
               << GET_EVENT_TYPE(ntohs(pHeader.dcc));
-        debug << " Flag " << ((ntohs(pHeader.dcc) & 0x3000) >> 12);
-        debug << " RT " << ((ntohs(pHeader.dcc) & 0x0C00) >> 10) << " DCCInd "
+        RESTDebug << " Flag " << ((ntohs(pHeader.dcc) & 0x3000) >> 12);
+        RESTDebug << " RT " << ((ntohs(pHeader.dcc) & 0x0C00) >> 10) << " DCCInd "
               << ((ntohs(pHeader.dcc) & 0x03F0) >> 4);
-        debug << " FEMInd " << (ntohs(pHeader.dcc) & 0x000F) << endl;
+        RESTDebug << " FEMInd " << (ntohs(pHeader.dcc) & 0x000F) << RESTendl;
 
-        debug << "FEM0Ind " << ntohs(pHeader.hdr) << " Type " << ((ntohs(pHeader.hdr) & 0xF000) >> 12);
-        debug << " L " << ((ntohs(pHeader.hdr) & 0x0800) >> 11);
-        debug << " U " << ((ntohs(pHeader.hdr) & 0x0800) >> 10) << " FECFlags "
+        RESTDebug << "FEM0Ind " << ntohs(pHeader.hdr) << " Type " << ((ntohs(pHeader.hdr) & 0xF000) >> 12);
+        RESTDebug << " L " << ((ntohs(pHeader.hdr) & 0x0800) >> 11);
+        RESTDebug << " U " << ((ntohs(pHeader.hdr) & 0x0800) >> 10) << " FECFlags "
               << ((ntohs(pHeader.hdr) & 0x03F0) >> 4);
-        debug << " Index " << (ntohs(pHeader.hdr) & 0x000F) << endl;
+        RESTDebug << " Index " << (ntohs(pHeader.hdr) & 0x000F) << RESTendl;
 
-        debug << "RawFEM 0x" << std::hex << ntohs(pHeader.args) << std::dec << " M "
+        RESTDebug << "RawFEM 0x" << std::hex << ntohs(pHeader.args) << std::dec << " M "
               << ((ntohs(pHeader.args) & 0x8000) >> 15);
-        debug << " N " << ((ntohs(pHeader.args) & 0x4000) >> 14) << " Zero "
+        RESTDebug << " N " << ((ntohs(pHeader.args) & 0x4000) >> 14) << " Zero "
               << ((ntohs(pHeader.args) & 0x1000) >> 13);
-        debug << " Arg2 " << GET_RB_ARG2(ntohs(pHeader.args)) << " Arg2 " << GET_RB_ARG1(ntohs(pHeader.args))
-              << endl;
-        debug << "TimeStampH " << ntohs(pHeader.ts_h) << endl;
-        debug << "TimeStampL " << ntohs(pHeader.ts_l) << endl;
-        debug << "RawEvType 0x" << std::hex << ntohs(pHeader.ecnt) << std::dec << " EvTy "
+        RESTDebug << " Arg2 " << GET_RB_ARG2(ntohs(pHeader.args)) << " Arg2 " << GET_RB_ARG1(ntohs(pHeader.args))
+              << RESTendl;
+        RESTDebug << "TimeStampH " << ntohs(pHeader.ts_h) << RESTendl;
+        RESTDebug << "TimeStampL " << ntohs(pHeader.ts_l) << RESTendl;
+        RESTDebug << "RawEvType 0x" << std::hex << ntohs(pHeader.ecnt) << std::dec << " EvTy "
               << GET_EVENT_TYPE(ntohs(pHeader.ecnt));
-        debug << " EventCount " << GET_EVENT_COUNT(ntohs(pHeader.ecnt)) << endl;
-        debug << "Samples " << ntohs(pHeader.scnt) << endl;
+        RESTDebug << " EventCount " << GET_EVENT_COUNT(ntohs(pHeader.ecnt)) << RESTendl;
+        RESTDebug << "Samples " << ntohs(pHeader.scnt) << RESTendl;
 #endif
 
         tempAsic1 = GET_RB_ARG1(ntohs(pHeader.args));
@@ -261,7 +261,7 @@ TRestEvent* TRestRawAFTERToSignalProcess::ProcessEvent(TRestEvent* inputEvent) {
         asicN = (10 * (tempAsic1 % 6) / 2 + tempAsic2) % 4;
         fecN = (10 * (tempAsic1 % 6) / 2 + tempAsic2) / 4;
 
-        debug << " channel " << channel << " asic " << asicN << " fec " << fecN << endl;
+        RESTDebug << " channel " << channel << " asic " << asicN << " fec " << fecN << RESTendl;
 
         sampleCountRead = ntohs(pHeader.scnt);
         pay = sampleCountRead % 2;
@@ -300,20 +300,20 @@ TRestEvent* TRestRawAFTERToSignalProcess::ProcessEvent(TRestEvent* inputEvent) {
             data = ntohs(dat);
 
             std::bitset<16> bs(data);
-            debug << bs << endl;
+            RESTDebug << bs << RESTendl;
 
             if (((data & 0xFE00) >> 9) == 8) {
                 timeBin = GET_CELL_INDEX(data);
                 if (timeBin == 511) isData = false;
-                debug << data << " Time bin " << timeBin << endl;
+                RESTDebug << data << " Time bin " << timeBin << RESTendl;
             } else if ((((data & 0xF000) >> 12) == 0) && isData) {
                 fSignalEvent->AddChargeToSignal(physChannel, timeBin, data);
-                debug << "Time bin " << timeBin << " ADC: " << data << endl;
+                RESTDebug << "Time bin " << timeBin << " ADC: " << data << RESTendl;
                 timeBin++;
             }
         }
 
-        debug << pay << endl;
+        RESTDebug << pay << RESTendl;
         if (pay) {
             fread(&dat, sizeof(uint16_t), 1, fInputBinFile);
             frameBits += sizeof(uint16_t);
@@ -322,15 +322,15 @@ TRestEvent* TRestRawAFTERToSignalProcess::ProcessEvent(TRestEvent* inputEvent) {
         fread(&pEnd, sizeof(DataPacketEnd), 1, fInputBinFile);
         frameBits += sizeof(DataPacketEnd);
 
-        debug << "Read "
+        RESTDebug << "Read "
               << sampleCountRead * sizeof(uint16_t) + sizeof(DataPacketHeader) + sizeof(DataPacketEnd) +
                      sampleCountRead % 2 * sizeof(uint16_t)
               << " vs HeadSize " << ntohs(pHeader.size) << " Diff "
               << ntohs(pHeader.size) - (sampleCountRead + sizeof(DataPacketHeader) + sizeof(DataPacketEnd) +
                                         sampleCountRead % 2)
-              << endl;
-        debug << "Trailer_H " << ntohs(pEnd.crc1) << " Trailer_L " << ntohs(pEnd.crc2) << endl;
-        debug << "Trailer " << eventTime << "\n" << endl;
+              << RESTendl;
+        RESTDebug << "Trailer_H " << ntohs(pEnd.crc1) << " Trailer_L " << ntohs(pEnd.crc2) << RESTendl;
+        RESTDebug << "Trailer " << eventTime << "\n" << RESTendl;
 
     }  // end while
     totalBytesReaded += frameBits;
@@ -338,7 +338,7 @@ TRestEvent* TRestRawAFTERToSignalProcess::ProcessEvent(TRestEvent* inputEvent) {
     // printf("Event ID %d time stored
     // %.3lf\n",fSignalEvent->GetID(),fSignalEvent->GetTime());
 
-    debug << "End of event " << endl;
+    RESTDebug << "End of event " << RESTendl;
 
     return fSignalEvent;
 }

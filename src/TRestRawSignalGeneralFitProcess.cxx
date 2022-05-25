@@ -138,7 +138,7 @@ TRestEvent* TRestRawSignalGeneralFitProcess::ProcessEvent(TRestEvent* inputEvent
     // no need for verbose copy now
     fRawSignalEvent = (TRestRawSignalEvent*)inputEvent;
 
-    debug << "TRestRawSignalGeneralFitProcess::ProcessEvent. Event ID : " << fRawSignalEvent->GetID() << endl;
+    RESTDebug << "TRestRawSignalGeneralFitProcess::ProcessEvent. Event ID : " << fRawSignalEvent->GetID() << RESTendl;
 
     Double_t SigmaMean = 0;
     Double_t Sigma[fRawSignalEvent->GetNumberOfSignals()];
@@ -215,8 +215,8 @@ TRestEvent* TRestRawSignalGeneralFitProcess::ProcessEvent(TRestEvent* inputEvent
         for (int i = 0; i < fFitFunc->GetNpar(); i++) {
             param[i][singleSignal->GetID()] = fFitFunc->GetParameter(i);
             paramErr[i][singleSignal->GetID()] = fFitFunc->GetParError(i);
-            debug << "Parameter " << i << ": " << param[i][singleSignal->GetID()] << endl;
-            debug << "Error parameter " << i << ": " << paramErr[i][singleSignal->GetID()] << endl;
+            RESTDebug << "Parameter " << i << ": " << param[i][singleSignal->GetID()] << RESTendl;
+            RESTDebug << "Error parameter " << i << ": " << paramErr[i][singleSignal->GetID()] << RESTendl;
         }
 
         /*baselineFit[singleSignal->GetID()] = f->GetParameter(0);
@@ -264,15 +264,15 @@ TRestEvent* TRestRawSignalGeneralFitProcess::ProcessEvent(TRestEvent* inputEvent
     RatioSigmaMaxPeakMean = RatioSigmaMaxPeakMean / fRawSignalEvent->GetNumberOfSignals();
     SetObservableValue("FitRatioSigmaMaxPeakMean", RatioSigmaMaxPeakMean);
 
-    debug << "SigmaMean: " << SigmaMean << endl;
-    debug << "SigmaMeanStdDev: " << SigmaMeanStdDev << endl;
-    debug << "ChiSquareMean: " << ChiSquareMean << endl;
-    debug << "RatioSigmaMaxPeakMean: " << RatioSigmaMaxPeakMean << endl;
+    RESTDebug << "SigmaMean: " << SigmaMean << RESTendl;
+    RESTDebug << "SigmaMeanStdDev: " << SigmaMeanStdDev << RESTendl;
+    RESTDebug << "ChiSquareMean: " << ChiSquareMean << RESTendl;
+    RESTDebug << "RatioSigmaMaxPeakMean: " << RatioSigmaMaxPeakMean << RESTendl;
     for (int k = 0; k < fRawSignalEvent->GetNumberOfSignals(); k++) {
-        debug << "Standard deviation of signal number " << k << ": " << Sigma[k] << endl;
-        debug << "Chi square of fit signal number " << k << ": " << ChiSquare[k] << endl;
-        debug << "Sandard deviation divided by amplitude of signal number " << k << ": "
-              << RatioSigmaMaxPeak[k] << endl;
+        RESTDebug << "Standard deviation of signal number " << k << ": " << Sigma[k] << RESTendl;
+        RESTDebug << "Chi square of fit signal number " << k << ": " << ChiSquare[k] << RESTendl;
+        RESTDebug << "Sandard deviation divided by amplitude of signal number " << k << ": "
+              << RatioSigmaMaxPeak[k] << RESTendl;
     }
 
     /// We define (or re-define) the baseline range and calculation range of our
