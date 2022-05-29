@@ -1,6 +1,10 @@
 set(LibraryVersion "1.6")
 add_definitions(-DLIBRARY_VERSION="${LibraryVersion}")
 
+if (CMAKE_SYSTEM_NAME MATCHES "Windows")
+    set(excludes TRestRawMemoryBufferToSignalProcess)
+endif (CMAKE_SYSTEM_NAME MATCHES "Windows")
+
 COMPILELIB("")
 
 file(GLOB_RECURSE MAC "${CMAKE_CURRENT_SOURCE_DIR}/macros/*")

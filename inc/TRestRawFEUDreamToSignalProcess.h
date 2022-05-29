@@ -31,7 +31,11 @@
 #include <TROOT.h>
 #include <TSystem.h>
 #include <TTree.h>
+#ifndef WIN32
 #include <arpa/inet.h>
+#else
+#include <Winsock.h>
+#endif
 #include <signal.h>
 #include <stdint.h>
 #include <stdio.h>
