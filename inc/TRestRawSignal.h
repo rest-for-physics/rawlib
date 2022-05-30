@@ -23,12 +23,13 @@
 #ifndef RestCore_TRestRawSignal
 #define RestCore_TRestRawSignal
 
-#include <iostream>
-
 #include <TGraph.h>
 #include <TObject.h>
 #include <TString.h>
 #include <TVector2.h>
+
+#include <iostream>
+#include <string>
 
 //! It defines a Short_t array with a physical parameter that evolves in time
 //! using a fixed time bin.
@@ -36,7 +37,11 @@ class TRestRawSignal : public TObject {
    private:
     void CalculateThresholdIntegral();
 
-    void CalculateBaseLineSigma(Int_t startBin, Int_t endBin);
+    void CalculateBaseLineSigmaSD(Int_t startBin, Int_t endBin);
+
+    void CalculateBaseLineSigmaIQR(Int_t startBin, Int_t endBin);
+
+    std::vector<Float_t> GetSignalSmoothed_ExcludeOutliers(Int_t averagingPoints);
 
    protected:
     /// An integer value used to attribute a unique identification number to the
@@ -52,7 +57,7 @@ class TRestRawSignal : public TObject {
     /// A TGraph pointer used to store the TRestRawSignal drawing
     TGraph* fGraph;  //!
 
-    /// A vector containing the index of points that are identified over
+    /// A std::vector containing the index of points that are identified over
     /// threshold.
     std::vector<Int_t> fPointsOverThreshold;  //!
 
@@ -60,7 +65,7 @@ class TRestRawSignal : public TObject {
     /// threshold.
     Double_t fThresholdIntegral = -1;  //!
 
-    /// It defines the number of points to inclulde before point over threshold
+    /// It defines the number of points to include before point over threshold
     /// definition. NOT implemented.
     Int_t fHeadPoints;  //!
 
@@ -68,7 +73,7 @@ class TRestRawSignal : public TObject {
     /// definition. NOT implemented.
     Int_t fTailPoints;  //!
 
-    /// This baseline value will be substracted from GetData for any raw signal
+    /// This baseline value will be subtracted from GetData for any raw signal
     /// observable calculation.
     Double_t fBaseLine = 0;  //!
 
@@ -81,74 +86,74 @@ class TRestRawSignal : public TObject {
     TVector2 fRange = TVector2(0, 0);  //!
 
     /// Returns the value of signal ID
-    Int_t GetSignalID() { return fSignalID; }
+    inline Int_t GetSignalID() const { return fSignalID; }
 
     /// Returns the value of signal ID
-    Int_t GetID() { return fSignalID; }
+    inline Int_t GetID() const { return fSignalID; }
 
     /// Returns the actual number of points, or size of the signal
-    Int_t GetNumberOfPoints() { return fSignalData.size(); }
+    inline Int_t GetNumberOfPoints() const { return fSignalData.size(); }
 
-    /// Returns a vector containing the indexes of data points over threshold
-    std::vector<Int_t> GetPointsOverThreshold() { return fPointsOverThreshold; }
+    /// Returns a std::vector containing the indexes of data points over threshold
+    inline std::vector<Int_t> GetPointsOverThreshold() const { return fPointsOverThreshold; }
 
     /// Returns the maximum value found in the data points. It includes baseline
     /// correction
-    Double_t GetMaxValue() { return GetMaxPeakValue(); }
+    inline Double_t GetMaxValue() { return GetMaxPeakValue(); }
 
     /// Returns the lowest value found in the data points. It includes baseline
     /// correction
-    Double_t GetMinValue() { return GetMinPeakValue(); }
+    inline Double_t GetMinValue() { return GetMinPeakValue(); }
 
     /// Returns the number of head points used on points over threshold definition
-    Int_t GetHeadPoints() { return fHeadPoints; }
+    inline Int_t GetHeadPoints() const { return fHeadPoints; }
 
     /// Returns the number of tail points used on points over threshold definition
-    Int_t GetTailPoints() { return fTailPoints; }
+    inline Int_t GetTailPoints() const { return fTailPoints; }
 
     /// Returns the value of baseline that it is initialized after calling
     /// CalculateBaseLine.
-    Double_t GetBaseLine() { return fBaseLine; }
+    inline Double_t GetBaseLine() const { return fBaseLine; }
 
-    /// Returns the value of baseline that it is initialized after calling
-    /// CalculateBaseLineSigma.
-    Double_t GetBaseLineSigma() { return fBaseLineSigma; }
+    /// Returns the value of baseline sigma that it is initialized after calling
+    /// CalculateBaseLineSigmaSD or CalculateBaseLineSigmaIQR.
+    inline Double_t GetBaseLineSigma() const { return fBaseLineSigma; }
 
     /// Returns the range defined by user
-    TVector2 GetRange() { return fRange; }
+    inline TVector2 GetRange() const { return fRange; }
 
     /// Returns false if the baseline and its baseline fluctuation was not
     /// initialized.
-    Bool_t isBaseLineInitialized() {
+    inline Bool_t isBaseLineInitialized() {
         if (fBaseLineSigma == 0 && fBaseLine == 0) return false;
         return true;
     }
 
-    Double_t GetData(Int_t n);
+    Double_t GetData(Int_t n) const;
 
-    Double_t GetRawData(Int_t n);
+    Double_t GetRawData(Int_t n) const;
 
     Short_t operator[](Int_t n);
 
     /// It sets the id number of the signal
-    void SetSignalID(Int_t sID) { fSignalID = sID; }
+    inline void SetSignalID(Int_t sID) { fSignalID = sID; }
 
     /// It sets the id number of the signal
-    void SetID(Int_t sID) { fSignalID = sID; }
+    inline void SetID(Int_t sID) { fSignalID = sID; }
 
     /// It sets the number of head points
-    void SetHeadPoints(Int_t p) { fHeadPoints = p; }
+    inline void SetHeadPoints(Int_t p) { fHeadPoints = p; }
 
     /// It sets the number of tail points
-    void SetTailPoints(Int_t p) { fTailPoints = p; }
+    inline void SetTailPoints(Int_t p) { fTailPoints = p; }
 
     /// It sets/constrains the range for any calculation.
-    void SetRange(TVector2 rng) { fRange = rng; }
+    inline void SetRange(const TVector2& range) { fRange = range; }
 
-    void SetRangeToMax() { fRange = TVector2(0, GetNumberOfPoints()); }
+    inline void SetRangeToMax() { fRange = TVector2(0, GetNumberOfPoints()); }
 
     /// It sets/constrains the range for any calculation.
-    void SetRange(Int_t from, Int_t to) { fRange = TVector2(from, to); }
+    inline void SetRange(Int_t from, Int_t to) { fRange = TVector2(from, to); }
 
     void Reset();
 
@@ -162,7 +167,7 @@ class TRestRawSignal : public TObject {
 
     void IncreaseBinBy(Int_t bin, Double_t data);
 
-    void InitializePointsOverThreshold(TVector2 thrPar, Int_t nPointsOver, Int_t nPointsFlat = 512);
+    void InitializePointsOverThreshold(const TVector2& thrPar, Int_t nPointsOver, Int_t nPointsFlat = 512);
 
     Double_t GetIntegral();
 
@@ -190,27 +195,33 @@ class TRestRawSignal : public TObject {
 
     Int_t GetMinPeakBin();
 
-    Bool_t IsACDSaturation(int Nflat = 3, int OverThres = 3600);
+    Bool_t IsADCSaturation(int Nflat = 3);
 
-    void GetDifferentialSignal(TRestRawSignal* diffSgnl, Int_t smearPoints);
+    void GetDifferentialSignal(TRestRawSignal* diffSignal, Int_t smearPoints);
 
-    void GetSignalSmoothed(TRestRawSignal* smthSignal, Int_t averagingPoints);
+    void GetSignalSmoothed(TRestRawSignal* smoothedSignal, Int_t averagingPoints);
 
-    void GetWhiteNoiseSignal(TRestRawSignal* noiseSgnl, Double_t noiseLevel = 1.);
+    std::vector<Float_t> GetSignalSmoothed(Int_t averagingPoints, std::string option = "");
 
-    void CalculateBaseLine(Int_t startBin, Int_t endBin);
+    void GetWhiteNoiseSignal(TRestRawSignal* noiseSignal, Double_t noiseLevel = 1.);
 
-    //   Double_t GetStandardDeviation(Int_t startBin, Int_t endBin);
+    void CalculateBaseLineMean(Int_t startBin, Int_t endBin);
+
+    void CalculateBaseLineMedian(Int_t startBin, Int_t endBin);
+
+    void CalculateBaseLine(Int_t startBin, Int_t endBin, const std::string& option = "");
+
+    void GetBaseLineCorrected(TRestRawSignal* smoothedSignal, Int_t averagingPoints);
 
     void AddOffset(Short_t offset);
 
-    void SignalAddition(TRestRawSignal* inSgnl);
+    void SignalAddition(const TRestRawSignal& signal);
 
     void Scale(Double_t value);
 
-    void WriteSignalToTextFile(TString filename);
+    void WriteSignalToTextFile(const TString& filename);
 
-    void Print();
+    void Print() const;
 
     TGraph* GetGraph(Int_t color = 1);
 

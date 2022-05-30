@@ -25,7 +25,7 @@
 /// Fit every TRestRawSignal in a TRestRawSignalEvent with AGET theoretical
 /// curve times a logistic function. This logistic function acts like a step function
 /// to select only the positive range of the AGET function.
-/// Working with raw signal (without substracting baseline).
+/// Working with raw signal (without subtracting baseline).
 ///
 /// From TRestRawSignal -> TH1 -> Measure goodness of fit
 ///
@@ -58,23 +58,23 @@
 ///
 /// * **FitSigmaMean**: Mean over all pulses in the event of square root of the
 /// squared
-/// difference betweeen raw signal and fit divided by number of bins.
+/// difference between raw signal and fit divided by number of bins.
 ///
 /// * **FitSigmaStdDev**: Standard deviation over all pulses in the event of
 /// square root of the squared
-/// difference betweeen raw signal and fit divided by number of bins.
+/// difference between raw signal and fit divided by number of bins.
 ///
 /// * **FitChiSquareMean**: Mean over all pulses in the event of chi square of
 /// the fit.
 ///
 /// * **FitRatioSigmaMaxPeakMean**: Mean over all pulses in the event of square
 /// root of the squared
-/// difference betweeen raw signal and fit divided by number of bins and divided
+/// difference between raw signal and fit divided by number of bins and divided
 /// by amplitude of the pulse.
 ///
 /// <hr>
 ///
-/// \warning **⚠ REST is under continous development.** This documentation
+/// \warning **⚠ REST is under continuous development.** This documentation
 /// is offered to you by the REST community. Your HELP is needed to keep this
 /// code up to date. Your feedback will be worth to support this software, please
 /// report any problems/suggestions you may find while using it at [The REST Framework
@@ -98,6 +98,7 @@
 /// <hr>
 ///
 #include "TRestRawSignalFittingProcess.h"
+
 using namespace std;
 
 ClassImp(TRestRawSignalFittingProcess);
@@ -117,12 +118,12 @@ TRestRawSignalFittingProcess::TRestRawSignalFittingProcess() { Initialize(); }
 /// The default behaviour is that the config file must be specified with
 /// full path, absolute or relative.
 ///
-/// \param cfgFileName A const char* giving the path to an RML file.
+/// \param configFilename A const char* giving the path to an RML file.
 ///
-TRestRawSignalFittingProcess::TRestRawSignalFittingProcess(char* cfgFileName) {
+TRestRawSignalFittingProcess::TRestRawSignalFittingProcess(const char* configFilename) {
     Initialize();
 
-    if (LoadConfigFromFile(cfgFileName)) LoadDefaultConfig();
+    if (LoadConfigFromFile(configFilename)) LoadDefaultConfig();
 }
 
 ///////////////////////////////////////////////
@@ -143,7 +144,7 @@ void TRestRawSignalFittingProcess::Initialize() {
     SetSectionName(this->ClassName());
     SetLibraryVersion(LIBRARY_VERSION);
 
-    fRawSignalEvent = NULL;
+    fRawSignalEvent = nullptr;
 }
 
 ///////////////////////////////////////////////
@@ -154,12 +155,12 @@ void TRestRawSignalFittingProcess::Initialize() {
 /// the path to the config file must be specified using full path, absolute or
 /// relative.
 ///
-/// \param cfgFileName A const char* giving the path to an RML file.
+/// \param configFilename A const char* giving the path to an RML file.
 /// \param name The name of the specific metadata. It will be used to find the
-/// correspondig TRestGeant4AnalysisProcess section inside the RML.
+/// corresponding TRestGeant4AnalysisProcess section inside the RML.
 ///
-void TRestRawSignalFittingProcess::LoadConfig(std::string cfgFilename, std::string name) {
-    if (LoadConfigFromFile(cfgFilename, name)) LoadDefaultConfig();
+void TRestRawSignalFittingProcess::LoadConfig(const string& configFilename, const string& name) {
+    if (LoadConfigFromFile(configFilename, name)) LoadDefaultConfig();
 }
 
 ///////////////////////////////////////////////
@@ -172,11 +173,11 @@ void TRestRawSignalFittingProcess::InitProcess() {
 ///////////////////////////////////////////////
 /// \brief The main processing event function
 ///
-TRestEvent* TRestRawSignalFittingProcess::ProcessEvent(TRestEvent* evInput) {
+TRestEvent* TRestRawSignalFittingProcess::ProcessEvent(TRestEvent* inputEvent) {
     // no need for verbose copy now
-    fRawSignalEvent = (TRestRawSignalEvent*)evInput;
+    fRawSignalEvent = (TRestRawSignalEvent*)inputEvent;
 
-    debug << "TRestRawSignalFittingProcess::ProcessEvent. Event ID : " << fRawSignalEvent->GetID() << endl;
+    RESTDebug << "TRestRawSignalFittingProcess::ProcessEvent. Event ID : " << fRawSignalEvent->GetID() << RESTendl;
 
     Double_t SigmaMean = 0;
     Double_t Sigma[fRawSignalEvent->GetNumberOfSignals()];
@@ -187,13 +188,13 @@ TRestEvent* TRestRawSignalFittingProcess::ProcessEvent(TRestEvent* evInput) {
 
     map<int, Double_t> baselineFit;
     map<int, Double_t> amplitudeFit;
-    map<int, Double_t> shapingtimeFit;
-    map<int, Double_t> peakpositionFit;
+    map<int, Double_t> shapingTimeFit;
+    map<int, Double_t> peakPositionFit;
 
     baselineFit.clear();
     amplitudeFit.clear();
-    shapingtimeFit.clear();
-    peakpositionFit.clear();
+    shapingTimeFit.clear();
+    peakPositionFit.clear();
 
     for (int s = 0; s < fRawSignalEvent->GetNumberOfSignals(); s++) {
         TRestRawSignal* singleSignal = fRawSignalEvent->GetSignal(s);
@@ -207,14 +208,14 @@ TRestEvent* TRestRawSignalFittingProcess::ProcessEvent(TRestEvent* evInput) {
                          "sin((x-[3])/[2])/(1+TMath::Exp(-10000*(x-[3])))",
                          0, 511);
         f->SetParameters(0, 2000, 70, 80);
-        //f->SetParameters(0, 0);  // Initial values adjusted from Desmos
-        //f->SetParLimits(0, 150, 350);
-        //f->SetParameters(1, 2000);
-        //f->SetParLimits(1, 30, 90000);
-        //f->SetParameters(2, 70);
-        //f->SetParLimits(2, 10, 80);
-        //f->SetParameters(3, 80);
-        //f->SetParLimits(3, 150, 250);
+        // f->SetParameters(0, 0);  // Initial values adjusted from Desmos
+        // f->SetParLimits(0, 150, 350);
+        // f->SetParameters(1, 2000);
+        // f->SetParLimits(1, 30, 90000);
+        // f->SetParameters(2, 70);
+        // f->SetParLimits(2, 10, 80);
+        // f->SetParameters(3, 80);
+        // f->SetParLimits(3, 150, 250);
         f->SetParNames("Baseline", "Amplitude", "ShapingTime", "PeakPosition");
 
         // Create histogram from signal
@@ -241,9 +242,9 @@ TRestEvent* TRestRawSignalFittingProcess::ProcessEvent(TRestEvent* evInput) {
 
         baselineFit[singleSignal->GetID()] = f->GetParameter(0);
         amplitudeFit[singleSignal->GetID()] = f->GetParameter(1);
-        shapingtimeFit[singleSignal->GetID()] = f->GetParameter(2);
-        peakpositionFit[singleSignal->GetID()] = f->GetParameter(3);
-        
+        shapingTimeFit[singleSignal->GetID()] = f->GetParameter(2);
+        peakPositionFit[singleSignal->GetID()] = f->GetParameter(3);
+
         fShaping = f->GetParameter(2);
         fStartPosition = f->GetParameter(3);
         fBaseline = f->GetParameter(0);
@@ -255,8 +256,8 @@ TRestEvent* TRestRawSignalFittingProcess::ProcessEvent(TRestEvent* evInput) {
     //////////// Fitted parameters Map Observables /////////////
     SetObservableValue("FitBaseline_map", baselineFit);
     SetObservableValue("FitAmplitude_map", amplitudeFit);
-    SetObservableValue("FitShapingTime_map", shapingtimeFit);
-    SetObservableValue("FitPeakPosition_map", peakpositionFit);
+    SetObservableValue("FitShapingTime_map", shapingTimeFit);
+    SetObservableValue("FitPeakPosition_map", peakPositionFit);
 
     //////////// Sigma Mean Observable /////////////
     SigmaMean = SigmaMean / (fRawSignalEvent->GetNumberOfSignals());
@@ -278,15 +279,15 @@ TRestEvent* TRestRawSignalFittingProcess::ProcessEvent(TRestEvent* evInput) {
     RatioSigmaMaxPeakMean = RatioSigmaMaxPeakMean / fRawSignalEvent->GetNumberOfSignals();
     SetObservableValue("FitRatioSigmaMaxPeakMean", RatioSigmaMaxPeakMean);
 
-    debug << "SigmaMean: " << SigmaMean << endl;
-    debug << "SigmaMeanStdDev: " << SigmaMeanStdDev << endl;
-    debug << "ChiSquareMean: " << ChiSquareMean << endl;
-    debug << "RatioSigmaMaxPeakMean: " << RatioSigmaMaxPeakMean << endl;
+    RESTDebug << "SigmaMean: " << SigmaMean << RESTendl;
+    RESTDebug << "SigmaMeanStdDev: " << SigmaMeanStdDev << RESTendl;
+    RESTDebug << "ChiSquareMean: " << ChiSquareMean << RESTendl;
+    RESTDebug << "RatioSigmaMaxPeakMean: " << RatioSigmaMaxPeakMean << RESTendl;
     for (int k = 0; k < fRawSignalEvent->GetNumberOfSignals(); k++) {
-        debug << "Standard deviation of signal number " << k << ": " << Sigma[k] << endl;
-        debug << "Chi square of fit signal number " << k << ": " << ChiSquare[k] << endl;
-        debug << "Sandard deviation divided by amplitude of signal number " << k << ": "
-              << RatioSigmaMaxPeak[k] << endl;
+        RESTDebug << "Standard deviation of signal number " << k << ": " << Sigma[k] << RESTendl;
+        RESTDebug << "Chi square of fit signal number " << k << ": " << ChiSquare[k] << RESTendl;
+        RESTDebug << "Sandard deviation divided by amplitude of signal number " << k << ": "
+              << RatioSigmaMaxPeak[k] << RESTendl;
     }
 
     /// We define (or re-define) the baseline range and calculation range of our
@@ -313,7 +314,7 @@ TRestEvent* TRestRawSignalFittingProcess::ProcessEvent(TRestEvent* evInput) {
     */
 
     // If cut condition matches the event will be not registered.
-    if (ApplyCut()) return NULL;
+    if (ApplyCut()) return nullptr;
 
     return fRawSignalEvent;
 }
@@ -330,4 +331,3 @@ void TRestRawSignalFittingProcess::EndProcess() {
     // Comment this if you don't want it.
     // TRestEventProcess::EndProcess();
 }
-

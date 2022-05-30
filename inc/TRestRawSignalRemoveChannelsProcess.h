@@ -38,9 +38,9 @@ class TRestRawSignalRemoveChannelsProcess : public TRestEventProcess {
     TRestRawSignalEvent* fOutputSignalEvent;  //!
 #endif
 
-    void InitFromConfigFile();
+    void InitFromConfigFile() override;
 
-    void Initialize();
+    void Initialize() override;
 
     void LoadDefaultConfig();
 
@@ -50,19 +50,19 @@ class TRestRawSignalRemoveChannelsProcess : public TRestEventProcess {
     TVector2 fSignalRange = TVector2(-1, -1);
 
    public:
-    any GetInputEvent() { return fInputSignalEvent; }
-    any GetOutputEvent() { return fOutputSignalEvent; }
+    any GetInputEvent() const override { return fInputSignalEvent; }
+    any GetOutputEvent() const override { return fOutputSignalEvent; }
 
-    TRestEvent* ProcessEvent(TRestEvent* eventInput);
+    TRestEvent* ProcessEvent(TRestEvent* inputEvent) override;
 
-    void LoadConfig(std::string cfgFilename, string name = "");
+    void LoadConfig(const std::string& configFilename, const std::string& name = "");
 
     /// It prints out the process parameters stored in the metadata structure
-    void PrintMetadata() {
+    void PrintMetadata() override {
         BeginPrintProcess();
 
         for (unsigned int n = 0; n < fChannelIds.size(); n++)
-            metadata << "Channel id to remove : " << fChannelIds[n] << endl;
+            RESTMetadata << "Channel id to remove : " << fChannelIds[n] << RESTendl;
 
         EndPrintProcess();
     }
@@ -71,15 +71,15 @@ class TRestRawSignalRemoveChannelsProcess : public TRestEventProcess {
     TRestEventProcess* Maker() { return new TRestRawSignalRemoveChannelsProcess; }
 
     /// Returns the name of this process
-    TString GetProcessName() { return (TString) "removeChannels"; }
+    const char* GetProcessName() const override { return "removeChannels"; }
 
     // Constructor
     TRestRawSignalRemoveChannelsProcess();
-    TRestRawSignalRemoveChannelsProcess(char* cfgFileName);
+    TRestRawSignalRemoveChannelsProcess(const char* configFilename);
 
     // Destructor
     ~TRestRawSignalRemoveChannelsProcess();
 
-    ClassDef(TRestRawSignalRemoveChannelsProcess, 1);
+    ClassDefOverride(TRestRawSignalRemoveChannelsProcess, 1);
 };
 #endif

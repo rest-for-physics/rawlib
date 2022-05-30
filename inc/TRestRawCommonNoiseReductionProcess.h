@@ -24,11 +24,11 @@
 #define RestCore_TRestRawCommonNoiseReductionProcess
 
 #include <TRestRawSignalEvent.h>
+
 #include "TRestEventProcess.h"
 #include "TRestRawSignal.h"
 
-//! A process to substract the common channels noise from RawSignal type of
-//! data.
+//! A process to subtract the common channels noise from RawSignal type
 class TRestRawCommonNoiseReductionProcess : public TRestEventProcess {
    private:
     /// A pointer to the specific TRestRawSignalEvent input
@@ -47,7 +47,10 @@ class TRestRawCommonNoiseReductionProcess : public TRestEventProcess {
     /// the average.
     Int_t fCenterWidth = 10;
 
-    void Initialize();
+    /// Minimum number of signals required to apply the process.
+    Int_t fMinSignalsRequired = 200;
+
+    void Initialize() override;
 
     void LoadDefaultConfig();
 
@@ -55,25 +58,26 @@ class TRestRawCommonNoiseReductionProcess : public TRestEventProcess {
     // add here the members of your event process
 
    public:
-    any GetInputEvent() { return fInputEvent; }
-    any GetOutputEvent() { return fOutputEvent; }
+    any GetInputEvent() const override { return fInputEvent; }
+    any GetOutputEvent() const override { return fOutputEvent; }
 
-    void InitProcess();
+    void InitProcess() override;
 
-    TRestEvent* ProcessEvent(TRestEvent* eventInput);
+    TRestEvent* ProcessEvent(TRestEvent* inputEvent) override;
 
-    void EndProcess();
+    void EndProcess() override;
 
-    void LoadConfig(std::string cfgFilename, std::string name = "");
+    void LoadConfig(const std::string& configFilename, const std::string& name = "");
 
-    void PrintMetadata() {
+    void PrintMetadata() override {
         BeginPrintProcess();
 
-        metadata << " mode : [" << fMode << "]";
-        if (fMode == 0) metadata << " --> Mode 0 activated." << endl;
-        if (fMode == 1) metadata << " --> Mode 1 activated." << endl;
-        metadata << " centerWidth : " << fCenterWidth << endl;
-        metadata << "blocks : [" << fBlocks << "]";
+        RESTMetadata << " mode : [" << fMode << "]";
+        if (fMode == 0) RESTMetadata << " --> Mode 0 activated." << RESTendl;
+        if (fMode == 1) RESTMetadata << " --> Mode 1 activated." << RESTendl;
+        RESTMetadata << " centerWidth : " << fCenterWidth << RESTendl;
+        RESTMetadata << "blocks : [" << fBlocks << "]" << RESTendl;
+        RESTMetadata << " Minimum number of signals : " << fMinSignalsRequired << RESTendl;
 
         EndPrintProcess();
     }
@@ -82,15 +86,15 @@ class TRestRawCommonNoiseReductionProcess : public TRestEventProcess {
     TRestEventProcess* Maker() { return new TRestRawCommonNoiseReductionProcess; }
 
     /// Returns the reduced process name
-    TString GetProcessName() { return (TString) "commonNoiseReduction"; }
+    const char* GetProcessName() const override { return "commonNoiseReduction"; }
 
     // Constructor
     TRestRawCommonNoiseReductionProcess();
-    TRestRawCommonNoiseReductionProcess(char* cfgFileName);
+    TRestRawCommonNoiseReductionProcess(const char* configFilename);
 
     // Destructor
     ~TRestRawCommonNoiseReductionProcess();
 
-    ClassDef(TRestRawCommonNoiseReductionProcess, 2);
+    ClassDefOverride(TRestRawCommonNoiseReductionProcess, 2);
 };
 #endif

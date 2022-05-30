@@ -33,7 +33,7 @@ class TRestRawFindResponseSignalProcess : public TRestEventProcess {
     TRestRawSignalEvent* fInputSignalEvent;   //!
     TRestRawSignalEvent* fOutputSignalEvent;  //!
 
-    void Initialize();
+    void Initialize() override;
 
     void LoadDefaultConfig();
 
@@ -41,29 +41,29 @@ class TRestRawFindResponseSignalProcess : public TRestEventProcess {
     // add here the members of your event process
 
    public:
-    any GetInputEvent() { return fInputSignalEvent; }
-    any GetOutputEvent() { return fOutputSignalEvent; }
+    any GetInputEvent() const override { return fInputSignalEvent; }
+    any GetOutputEvent() const override { return fOutputSignalEvent; }
 
-    void InitProcess();
-    TRestEvent* ProcessEvent(TRestEvent* eventInput);
-    void EndProcess();
+    void InitProcess() override;
+    TRestEvent* ProcessEvent(TRestEvent* inputEvent) override;
+    void EndProcess() override;
 
-    void LoadConfig(std::string cfgFilename, string name = "");
+    void LoadConfig(const std::string& configFilename, const std::string& name = "");
 
-    void PrintMetadata() {
+    void PrintMetadata() override {
         BeginPrintProcess();
 
         EndPrintProcess();
     }
 
-    TRestMetadata* GetProcessMetadata() { return NULL; }
+    TRestMetadata* GetProcessMetadata() const { return nullptr; }
 
-    TString GetProcessName() { return (TString) "findResponseSignal"; }
+    const char* GetProcessName() const override { return "findResponseSignal"; }
 
     TRestRawFindResponseSignalProcess();
-    TRestRawFindResponseSignalProcess(char* cfgFileName);
+    TRestRawFindResponseSignalProcess(const char* configFilename);
     ~TRestRawFindResponseSignalProcess();
 
-    ClassDef(TRestRawFindResponseSignalProcess, 1);
+    ClassDefOverride(TRestRawFindResponseSignalProcess, 1);
 };
 #endif

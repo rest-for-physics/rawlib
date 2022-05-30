@@ -78,12 +78,12 @@ TRestRawSignalViewerProcess::TRestRawSignalViewerProcess() { Initialize(); }
 /// The default behaviour is that the config file must be specified with
 /// full path, absolute or relative.
 ///
-/// \param cfgFileName A const char* giving the path to an RML file.
+/// \param configFilename A const char* giving the path to an RML file.
 ///
-TRestRawSignalViewerProcess::TRestRawSignalViewerProcess(char* cfgFileName) {
+TRestRawSignalViewerProcess::TRestRawSignalViewerProcess(const char* configFilename) {
     Initialize();
 
-    if (LoadConfigFromFile(cfgFileName)) LoadDefaultConfig();
+    if (LoadConfigFromFile(configFilename)) LoadDefaultConfig();
 }
 
 ///////////////////////////////////////////////
@@ -104,7 +104,7 @@ void TRestRawSignalViewerProcess::Initialize() {
     SetSectionName(this->ClassName());
     SetLibraryVersion(LIBRARY_VERSION);
 
-    fSignalEvent = NULL;
+    fSignalEvent = nullptr;
 
     fDrawRefresh = 0;
 
@@ -119,12 +119,12 @@ void TRestRawSignalViewerProcess::Initialize() {
 /// the path to the config file must be specified using full path, absolute or
 /// relative.
 ///
-/// \param cfgFileName A const char* giving the path to an RML file.
+/// \param configFilename A const char* giving the path to an RML file.
 /// \param name The name of the specific metadata. It will be used to find the
-/// correspondig TRestGeant4AnalysisProcess section inside the RML.
+/// corresponding TRestGeant4AnalysisProcess section inside the RML.
 ///
-void TRestRawSignalViewerProcess::LoadConfig(std::string cfgFilename, std::string name) {
-    if (LoadConfigFromFile(cfgFilename, name)) LoadDefaultConfig();
+void TRestRawSignalViewerProcess::LoadConfig(const string& configFilename, const string& name) {
+    if (LoadConfigFromFile(configFilename, name)) LoadDefaultConfig();
 }
 
 ///////////////////////////////////////////////
@@ -136,21 +136,24 @@ void TRestRawSignalViewerProcess::InitProcess() { this->CreateCanvas(); }
 ///////////////////////////////////////////////
 /// \brief The main processing event function
 ///
-TRestEvent* TRestRawSignalViewerProcess::ProcessEvent(TRestEvent* evInput) {
+TRestEvent* TRestRawSignalViewerProcess::ProcessEvent(TRestEvent* inputEvent) {
     TString obsName;
 
     // no need for verbose copy now
-    fSignalEvent = (TRestRawSignalEvent*)evInput;
+    fSignalEvent = (TRestRawSignalEvent*)inputEvent;
 
     fCanvas->cd();
     eveCounter++;
     if (eveCounter >= fDrawRefresh) {
         eveCounter = 0;
         sgnCounter = 0;
-        if (GetVerboseLevel() >= REST_Debug) {
+        if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Debug) {
             GetAnalysisTree()->PrintObservables();
         }
-        for (unsigned int i = 0; i < fDrawingObjects.size(); i++) delete fDrawingObjects[i];
+        for (auto object : fDrawingObjects) {
+            delete object;
+        }
+
         fDrawingObjects.clear();
 
         TPad* pad2 = DrawSignal(sgnCounter);
@@ -159,11 +162,11 @@ TRestEvent* TRestRawSignalViewerProcess::ProcessEvent(TRestEvent* evInput) {
         pad2->Draw();
         fCanvas->Update();
 
-        fout.setborder("");
-        fout.setorientation(1);
-        fout << "Press Enter to continue\nPress Esc to stop viewing\nPress n/p to "
+        RESTcout.setborder("");
+        RESTcout.setorientation(TRestStringOutput::REST_Display_Orientation::kLeft);
+        RESTcout << "Press Enter to continue\nPress Esc to stop viewing\nPress n/p to "
                 "switch signals"
-             << endl;
+             << RESTendl;
 
         while (1) {
             int a = GetChar("");
@@ -185,7 +188,7 @@ TRestEvent* TRestRawSignalViewerProcess::ProcessEvent(TRestEvent* evInput) {
                     pad2->Draw();
                     fCanvas->Update();
                 } else {
-                    warning << "cannot plot signal with id " << sgnCounter << endl;
+                    RESTWarning << "cannot plot signal with id " << sgnCounter << RESTendl;
                 }
             } else if (a == 112 || a == 80)  // p
             {
@@ -196,7 +199,7 @@ TRestEvent* TRestRawSignalViewerProcess::ProcessEvent(TRestEvent* evInput) {
                     pad2->Draw();
                     fCanvas->Update();
                 } else {
-                    warning << "cannot plot signal with id " << sgnCounter << endl;
+                    RESTWarning << "cannot plot signal with id " << sgnCounter << RESTendl;
                 }
             }
             while (getchar() != '\n')
@@ -235,8 +238,8 @@ TPad* TRestRawSignalViewerProcess::DrawSignal(Int_t signal) {
 
     TRestRawSignal* sgnl = fSignalEvent->GetSignal(signal);
 
-    info << "Drawing signal. Event ID : " << fSignalEvent->GetID() << " Signal ID : " << sgnl->GetID()
-         << endl;
+    RESTInfo << "Drawing signal. Event ID : " << fSignalEvent->GetID() << " Signal ID : " << sgnl->GetID()
+         << RESTendl;
 
     for (int n = 0; n < sgnl->GetNumberOfPoints(); n++) gr->SetPoint(n, n, sgnl->GetData(n));
 

@@ -23,17 +23,6 @@
 #ifndef RestCore_TRestFEUDreamToSignalProcess
 #define RestCore_TRestFEUDreamToSignalProcess
 
-#include "TRestRawSignalEvent.h"
-#include "TRestRawToSignalProcess.h"
-
-#include <arpa/inet.h>
-#include <signal.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
-
 #include <TError.h>
 #include <TF1.h>
 #include <TH1D.h>
@@ -42,13 +31,22 @@
 #include <TROOT.h>
 #include <TSystem.h>
 #include <TTree.h>
-
 #include <arpa/inet.h>
+#include <signal.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+
 #include <iostream>
 #include <list>
 #include <map>
 #include <string>
 #include <vector>
+
+#include "TRestRawSignalEvent.h"
+#include "TRestRawToSignalProcess.h"
 #include "math.h"
 
 //! An process to read binary data from FEUDream electronics
@@ -149,19 +147,19 @@ class TRestRawFEUDreamToSignalProcess : public TRestRawToSignalProcess {
     bool ReadFeuTrailer(FeuReadOut& feu);
     bool ReadEvent(FeuReadOut& feu);
 
-    void InitProcess();
-    void Initialize();
-    TRestEvent* ProcessEvent(TRestEvent* evInput);
-    TString GetProcessName() { return (TString) "DreamToSignal"; }
+    void InitProcess() override;
+    void Initialize() override;
+    TRestEvent* ProcessEvent(TRestEvent* inputEvent) override;
+    const char* GetProcessName() const override { return "DreamToSignal"; }
 
     // Constructor
     TRestRawFEUDreamToSignalProcess();
-    TRestRawFEUDreamToSignalProcess(char* cfgFileName);
+    TRestRawFEUDreamToSignalProcess(const char* configFilename);
 
     // Destructor
     ~TRestRawFEUDreamToSignalProcess();
 
-    ClassDef(TRestRawFEUDreamToSignalProcess, 1);
+    ClassDefOverride(TRestRawFEUDreamToSignalProcess, 1);
 };
 
 #endif

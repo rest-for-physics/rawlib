@@ -24,10 +24,8 @@
 #define RestCore_TRestRawSignalViewerProcess
 
 #include <TH1D.h>
-
+#include <TRestEventProcess.h>
 #include <TRestRawSignalEvent.h>
-
-#include "TRestEventProcess.h"
 
 //! A generic viewer REST process to visualize raw signals and
 //! parameters obtained from the anlysisTree on the processes canvas.
@@ -35,8 +33,8 @@ class TRestRawSignalViewerProcess : public TRestEventProcess {
    private:
     TRestRawSignalEvent* fSignalEvent;  //!
 
-    vector<TObject*> fDrawingObjects;  //!
-    Double_t fDrawRefresh;             //!
+    std::vector<TObject*> fDrawingObjects;  //!
+    Double_t fDrawRefresh;                  //!
 
     TVector2 fBaseLineRange;  //!
     int eveCounter = 0;       //!
@@ -45,9 +43,9 @@ class TRestRawSignalViewerProcess : public TRestEventProcess {
     TPad* DrawSignal(Int_t signal);
     TPad* DrawObservables();
 
-    void InitFromConfigFile();
+    void InitFromConfigFile() override;
 
-    void Initialize();
+    void Initialize() override;
 
     void LoadDefaultConfig();
 
@@ -55,32 +53,31 @@ class TRestRawSignalViewerProcess : public TRestEventProcess {
     // add here the members of your event process
 
    public:
-    any GetInputEvent() { return fSignalEvent; }
-    any GetOutputEvent() { return fSignalEvent; }
+    any GetInputEvent() const override { return fSignalEvent; }
+    any GetOutputEvent() const override { return fSignalEvent; }
 
-    void InitProcess();
-    TRestEvent* ProcessEvent(TRestEvent* eventInput);
-    void EndProcess();
+    void InitProcess() override;
+    TRestEvent* ProcessEvent(TRestEvent* inputEvent) override;
+    void EndProcess() override;
 
-    void LoadConfig(std::string cfgFilename, std::string name = "");
+    void LoadConfig(const std::string& configFilename, const std::string& name = "");
 
-    void PrintMetadata() {
+    void PrintMetadata() override {
         BeginPrintProcess();
 
-        cout << "Refresh value : " << fDrawRefresh << endl;
+        std::cout << "Refresh value : " << fDrawRefresh << std::endl;
 
         EndPrintProcess();
     }
 
-    TString GetProcessName() { return (TString) "rawSignalViewer"; }
+    const char* GetProcessName() const override { return "rawSignalViewer"; }
 
     // Constructor
     TRestRawSignalViewerProcess();
-    TRestRawSignalViewerProcess(char* cfgFileName);
+    TRestRawSignalViewerProcess(const char* configFilename);
     // Destructor
     ~TRestRawSignalViewerProcess();
 
-    ClassDef(TRestRawSignalViewerProcess, 1);  // Template for a REST "event process" class inherited from
-                                               // TRestEventProcess
+    ClassDefOverride(TRestRawSignalViewerProcess, 1);
 };
 #endif

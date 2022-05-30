@@ -60,22 +60,23 @@
 // int counter = 0;
 
 #include "TRestRawUSTCToSignalProcess.h"
+
 using namespace std;
+
 #include <bitset>
+
 #include "TTimeStamp.h"
 
 ClassImp(TRestRawUSTCToSignalProcess);
-//______________________________________________________________________________
+
 TRestRawUSTCToSignalProcess::TRestRawUSTCToSignalProcess() { Initialize(); }
 
-TRestRawUSTCToSignalProcess::TRestRawUSTCToSignalProcess(char* cfgFileName) { Initialize(); }
+TRestRawUSTCToSignalProcess::TRestRawUSTCToSignalProcess(const char* configFilename) { Initialize(); }
 
-//______________________________________________________________________________
 TRestRawUSTCToSignalProcess::~TRestRawUSTCToSignalProcess() {
     // TRestRawUSTCToSignalProcess destructor
 }
 
-//______________________________________________________________________________
 void TRestRawUSTCToSignalProcess::Initialize() {
     TRestRawToSignalProcess::Initialize();
 
@@ -109,10 +110,10 @@ void TRestRawUSTCToSignalProcess::InitProcess() {
     if ((!GetNextFrame(frame)) || (!ReadFrameData(frame))) {
         FixToNextFrame(fInputFiles[fCurrentFile]);
         if ((!GetNextFrame(frame)) || (!ReadFrameData(frame))) {
-            ferr << "TRestRawUSTCToSignalProcess: Failed to read the first data "
+            RESTError << "TRestRawUSTCToSignalProcess: Failed to read the first data "
                     "frame in file, may be wrong "
                     "input?"
-                 << endl;
+                 << RESTendl;
             exit(1);
         }
     }
@@ -121,21 +122,21 @@ void TRestRawUSTCToSignalProcess::InitProcess() {
     AddBuffer(frame);
 
     if (fCurrentEvent != 0) {
-        warning << "TRestRawUSTCToSignalProcess : first event is not with id 0 !" << endl;
-        warning << "The first Id is " << fCurrentEvent << ". May be input file not the first file?" << endl;
+        RESTWarning << "TRestRawUSTCToSignalProcess : first event is not with id 0 !" << RESTendl;
+        RESTWarning << "The first Id is " << fCurrentEvent << ". May be input file not the first file?" << RESTendl;
     }
 }
 
-TRestEvent* TRestRawUSTCToSignalProcess::ProcessEvent(TRestEvent* evInput) {
+TRestEvent* TRestRawUSTCToSignalProcess::ProcessEvent(TRestEvent* inputEvent) {
     while (1) {
         if (EndReading()) {
-            return NULL;
+            return nullptr;
         }
         if (!FillBuffer()) {
             fSignalEvent->SetOK(false);
         }
         if (fEventBuffer[fCurrentBuffer].size() == 0) {
-            debug << "Blank event " << fCurrentEvent << " !" << endl;
+            RESTDebug << "Blank event " << fCurrentEvent << " !" << RESTendl;
             fCurrentEvent++;
             ClearBuffer();
         } else {
@@ -146,8 +147,8 @@ TRestEvent* TRestRawUSTCToSignalProcess::ProcessEvent(TRestEvent* evInput) {
     fSignalEvent->Initialize();
     fSignalEvent->SetID(fCurrentEvent);
 
-    debug << "------------------------------------" << endl;
-    debug << "Generating event with ID: " << fCurrentEvent << endl;
+    RESTDebug << "------------------------------------" << RESTendl;
+    RESTDebug << "Generating event with ID: " << fCurrentEvent << RESTendl;
 
     // some event level operation
     USTCDataFrame* frame0 = &fEventBuffer[fCurrentBuffer][0];
@@ -167,14 +168,14 @@ TRestEvent* TRestRawUSTCToSignalProcess::ProcessEvent(TRestEvent* evInput) {
             }
             fSignalEvent->AddSignal(sgnl);
 
-            debug << "AsAdId, AgetId, chnId, max value: " << frame->boardId << ", " << frame->chipId << ", "
-                  << frame->channelId << ", " << sgnl.GetMaxValue() << endl;
+            RESTDebug << "AsAdId, AgetId, chnId, max value: " << frame->boardId << ", " << frame->chipId << ", "
+                  << frame->channelId << ", " << sgnl.GetMaxValue() << RESTendl;
 
         } else {
-            warning << "TRestRawUSTCToSignalProcess : unmatched signal frame!" << endl;
-            warning << "ID (supposed, received): " << fCurrentEvent << ", " << frame->evId << endl;
-            warning << "Time (supposed, received) : " << evtTime << ", " << frame->eventTime << endl;
-            warning << endl;
+            RESTWarning << "TRestRawUSTCToSignalProcess : unmatched signal frame!" << RESTendl;
+            RESTWarning << "ID (supposed, received): " << fCurrentEvent << ", " << frame->evId << RESTendl;
+            RESTWarning << "Time (supposed, received) : " << evtTime << ", " << frame->eventTime << RESTendl;
+            RESTWarning << RESTendl;
             fSignalEvent->SetOK(false);
             fCurrentEvent++;
             ClearBuffer();
@@ -184,7 +185,7 @@ TRestEvent* TRestRawUSTCToSignalProcess::ProcessEvent(TRestEvent* evInput) {
 
     ClearBuffer();
 
-    if (GetVerboseLevel() >= REST_Debug) {
+    if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Debug) {
         cout << "------------------------------------" << endl;
         GetChar();
     }
@@ -193,7 +194,7 @@ TRestEvent* TRestRawUSTCToSignalProcess::ProcessEvent(TRestEvent* evInput) {
     fSignalEvent->SetSubRunOrigin(fSubRunOrigin);
 
     // cout << fSignalEvent->GetNumberOfSignals() << endl;
-    // if( fSignalEvent->GetNumberOfSignals( ) == 0 ) return NULL;
+    // if( fSignalEvent->GetNumberOfSignals( ) == 0 ) return nullptr;
     fCurrentEvent++;
 
     return fSignalEvent;
@@ -201,12 +202,12 @@ TRestEvent* TRestRawUSTCToSignalProcess::ProcessEvent(TRestEvent* evInput) {
 
 void TRestRawUSTCToSignalProcess::EndProcess() {
     for (int i = 0; i < errorevents.size(); i++) {
-        warning << "Event " << errorevents[i] << " contains error !" << endl;
+        RESTWarning << "Event " << errorevents[i] << " contains error !" << RESTendl;
     }
     if (errorevents.size() > 0 && unknownerrors > 0) {
-        warning << "There are also " << unknownerrors << " errors from unknown events! " << endl;
+        RESTWarning << "There are also " << unknownerrors << " errors from unknown events! " << RESTendl;
     } else if (unknownerrors > 0) {
-        warning << "There are " << unknownerrors << " errors from unknown events! " << endl;
+        RESTWarning << "There are " << unknownerrors << " errors from unknown events! " << RESTendl;
     }
 
     errorevents.clear();
@@ -233,7 +234,7 @@ bool TRestRawUSTCToSignalProcess::FillBuffer() {
             break;
         }
         if (!ReadFrameData(frame)) {
-            warning << "error reading frame data in file " << fCurrentFile << endl;
+            RESTWarning << "error reading frame data in file " << fCurrentFile << RESTendl;
             FixToNextFrame(fInputFiles[fCurrentFile]);
             GetNextFrame(frame);
             ReadFrameData(frame);
@@ -301,7 +302,7 @@ bool TRestRawUSTCToSignalProcess::OpenNextFile(USTCDataFrame& frame) {
 }
 
 bool TRestRawUSTCToSignalProcess::GetNextFrame(USTCDataFrame& frame) {
-    if (fInputFiles[fCurrentFile] == NULL) {
+    if (fInputFiles[fCurrentFile] == nullptr) {
         return OpenNextFile(frame);
     }
 #ifdef V4_Readout_Format
@@ -310,7 +311,7 @@ bool TRestRawUSTCToSignalProcess::GetNextFrame(USTCDataFrame& frame) {
         if (fread(Protocol, PROTOCOL_SIZE, 1, fInputFiles[fCurrentFile]) != 1 ||
             feof(fInputFiles[fCurrentFile])) {
             fclose(fInputFiles[fCurrentFile]);
-            fInputFiles[fCurrentFile] = NULL;
+            fInputFiles[fCurrentFile] = nullptr;
             return OpenNextFile(frame);
         }
         totalBytesReaded += PROTOCOL_SIZE;
@@ -326,7 +327,7 @@ bool TRestRawUSTCToSignalProcess::GetNextFrame(USTCDataFrame& frame) {
                           fInputFiles[fCurrentFile]) != 1 ||
                     feof(fInputFiles[fCurrentFile])) {
                     fclose(fInputFiles[fCurrentFile]);
-                    fInputFiles[fCurrentFile] = NULL;
+                    fInputFiles[fCurrentFile] = nullptr;
                     return OpenNextFile(frame);
                 }
                 totalBytesReaded += ENDING_SIZE;
@@ -337,7 +338,7 @@ bool TRestRawUSTCToSignalProcess::GetNextFrame(USTCDataFrame& frame) {
                           fInputFiles[fCurrentFile]) != 1 ||
                     feof(fInputFiles[fCurrentFile])) {
                     fclose(fInputFiles[fCurrentFile]);
-                    fInputFiles[fCurrentFile] = NULL;
+                    fInputFiles[fCurrentFile] = nullptr;
                     return OpenNextFile(frame);
                 }
                 totalBytesReaded += HEADER_SIZE;
@@ -348,7 +349,7 @@ bool TRestRawUSTCToSignalProcess::GetNextFrame(USTCDataFrame& frame) {
                           fInputFiles[fCurrentFile]) != 1 ||
                     feof(fInputFiles[fCurrentFile])) {
                     fclose(fInputFiles[fCurrentFile]);
-                    fInputFiles[fCurrentFile] = NULL;
+                    fInputFiles[fCurrentFile] = nullptr;
                     return OpenNextFile(frame);
                 }
                 totalBytesReaded += DATA_SIZE;
@@ -361,13 +362,13 @@ bool TRestRawUSTCToSignalProcess::GetNextFrame(USTCDataFrame& frame) {
 #else
     if (fread(frame.data, DATA_SIZE, 1, fInputFiles[fCurrentFile]) != 1 || feof(fInputFiles[fCurrentFile])) {
         fclose(fInputFiles[fCurrentFile]);
-        fInputFiles[fCurrentFile] = NULL;
+        fInputFiles[fCurrentFile] = nullptr;
         return OpenNextFile(frame);
     }
     totalBytesReaded += DATA_SIZE;
 
     if (frame.data[0] * 0x100 + frame.data[1] != 0xEEEE) {
-        warning << "wrong header!" << endl;
+        RESTarning << "wrong header!" << RESTendl;
         return false;
     }
 #endif  // V4_Readout_Format
@@ -377,7 +378,7 @@ bool TRestRawUSTCToSignalProcess::GetNextFrame(USTCDataFrame& frame) {
 
 // it find the next flag of frame, e.g. 0xffff or 0xac0f
 void TRestRawUSTCToSignalProcess::FixToNextFrame(FILE* f) {
-    if (f == NULL) return;
+    if (f == nullptr) return;
     UChar_t buffer[PROTOCOL_SIZE];
     int n = 0;
     while (1) {
@@ -395,19 +396,19 @@ void TRestRawUSTCToSignalProcess::FixToNextFrame(FILE* f) {
                           fInputFiles[fCurrentFile]) != 1 ||
                     feof(fInputFiles[fCurrentFile])) {
                     fclose(f);
-                    f = NULL;
+                    f = nullptr;
                     break;
                 }
                 n += HEADER_SIZE;
-                warning << "successfully switched to next frame ( + " << n << " byte)" << endl;
-                warning << endl;
+                RESTWarning << "successfully switched to next frame ( + " << n << " byte)" << RESTendl;
+                RESTWarning << RESTendl;
                 break;
             }
         }
 #else
         if (!(buffer[0] ^ 0xff) && !(buffer[1] ^ 0xff) && !(buffer[2] ^ 0xff) && !(buffer[3] ^ 0xff)) {
-            warning << "successfully switched to next frame ( + " << n << " byte)" << endl;
-            warning << endl;
+            RESTWarning << "successfully switched to next frame ( + " << n << " byte)" << RESTendl;
+            RESTWarning << RESTendl;
             break;
         }
 #endif
@@ -523,19 +524,19 @@ bool TRestRawUSTCToSignalProcess::AddBuffer(USTCDataFrame& frame) {
     }
 #else
     if (frame.evId >= fCurrentEvent + fEventBuffer.size()) {
-        warning << "too large event id for buffering!" << endl;
-        warning << "this may due to the inconherence of event id. Increase the "
+        RESTWarning << "too large event id for buffering!" << RESTendl;
+        RESTWarning << "this may due to the inconherence of event id. Increase the "
                    "buffer number!"
-                << endl;
-        warning << "Current Event, Burrfering event : " << fCurrentEvent << ", " << frame.evId << endl;
+                << RESTendl;
+        RESTWarning << "Current Event, Burrfering event : " << fCurrentEvent << ", " << frame.evId << RESTendl;
         return false;
     }
     if (frame.evId < fCurrentEvent) {
-        warning << "skipping a signal from old event!" << endl;
-        warning << "the cause may be that too much events are mixing. Increase the "
+        RESTWarning << "skipping a signal from old event!" << RESTendl;
+        RESTWarning << "the cause may be that too much events are mixing. Increase the "
                    "buffer number!"
-                << endl;
-        warning << "Current Event, Burrfering event : " << fCurrentEvent << ", " << frame.evId << endl;
+                << RESTendl;
+        RESTWarning << "Current Event, Burrfering event : " << fCurrentEvent << ", " << frame.evId << RESTendl;
         return false;
     }
     int pos = frame.evId - fCurrentEvent + fCurrentBuffer;
@@ -555,11 +556,16 @@ void TRestRawUSTCToSignalProcess::ClearBuffer() {
 }
 
 Bool_t TRestRawUSTCToSignalProcess::EndReading() {
-    for (int n = 0; n < nFiles; n++) {
-        if (fInputFiles[n] != NULL) return kFALSE;
+    for (const auto& file : fInputFiles) {
+        if (file != nullptr) {
+            return false;
+        }
     }
-    for (int n = 0; n < fEventBuffer.size(); n++) {
-        if (fEventBuffer[n].size() != 0) return kFALSE;
+
+    for (const auto& eventBuffer : fEventBuffer) {
+        if (!eventBuffer.empty()) {
+            return false;
+        }
     }
 
     return kTRUE;

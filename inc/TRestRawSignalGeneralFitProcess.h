@@ -36,12 +36,12 @@ class TRestRawSignalGeneralFitProcess : public TRestEventProcess {
     /// A pointer to the specific TRestRawSignalEvent input
     TRestRawSignalEvent* fRawSignalEvent;  //!
 
-    void Initialize();
+    void Initialize() override;
 
     void LoadDefaultConfig();
 
     TVector2 fFunctionRange = TVector2(0, 0);
-    string fFunction;
+    std::string fFunction;
 
     TF1* fFitFunc = nullptr;  //!
 
@@ -54,38 +54,37 @@ class TRestRawSignalGeneralFitProcess : public TRestEventProcess {
     // add here the members of your event process
 
    public:
-    any GetInputEvent() { return fRawSignalEvent; }
-    any GetOutputEvent() { return fRawSignalEvent; }
+    any GetInputEvent() const override { return fRawSignalEvent; }
+    any GetOutputEvent() const override { return fRawSignalEvent; }
 
     TF1* GetFunction() { return fFitFunc; }
 
     /*Double_t GetShaping() { return fShaping; }
-    Double_t GetStartPosition() { return fStartPosition; }
-    Double_t GetBaseline() { return fBaseline; }
-    Double_t GetAmplitude() { return fAmplitude; }*/
+   inline Double_t GetStartPosition() const { return fStartPosition; }
+   inline Double_t GetBaseline() const { return fBaseline; }
+   inline Double_t GetAmplitude() const { return fAmplitude; }*/
 
-    void InitProcess();
-    TRestEvent* ProcessEvent(TRestEvent* eventInput);
-    void EndProcess();
+    void InitProcess() override;
+    TRestEvent* ProcessEvent(TRestEvent* inputEvent) override;
+    void EndProcess() override;
 
-    void LoadConfig(std::string cfgFilename, std::string name = "");
+    void LoadConfig(const std::string& configFilename, const std::string& name = "");
 
-    void PrintMetadata() {
+    void PrintMetadata() override {
         BeginPrintProcess();
 
-        metadata << "Function string: " << fFunction << endl;
-        metadata << "Range: ( " << fFunctionRange.X() << " , " << fFunctionRange.Y() << " ) " << endl;
+        RESTMetadata << "Function std::string: " << fFunction << RESTendl;
+        RESTMetadata << "Range: ( " << fFunctionRange.X() << " , " << fFunctionRange.Y() << " ) " << RESTendl;
 
         EndPrintProcess();
     }
 
-    TString GetProcessName() { return (TString) "rawSignalGeneralFit"; }
+    const char* GetProcessName() const override { return "rawSignalGeneralFit"; }
 
     TRestRawSignalGeneralFitProcess();  // Constructor
-    TRestRawSignalGeneralFitProcess(char* cfgFileName);
+    TRestRawSignalGeneralFitProcess(const char* configFilename);
     ~TRestRawSignalGeneralFitProcess();  // Destructor
 
-    ClassDef(TRestRawSignalGeneralFitProcess, 2);
-    // Template for a REST "event process" class inherited from TRestEventProcess
+    ClassDefOverride(TRestRawSignalGeneralFitProcess, 2);
 };
 #endif

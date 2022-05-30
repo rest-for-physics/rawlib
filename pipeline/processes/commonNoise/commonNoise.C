@@ -4,7 +4,7 @@ Int_t commonNoise() {
     TRestRawSignal* sgnl = new TRestRawSignal();
     for (int n = 0; n < 512; n++) sgnl->AddPoint((Short_t)(50 * TMath::Sin(2 * TMath::Pi() * n / 200)));
 
-    for (int n = 0; n < 20; n++) {
+    for (int n = 0; n < 205; n++) {
         sgnl->SetID(n);
         ev->AddSignal(*sgnl);
     }

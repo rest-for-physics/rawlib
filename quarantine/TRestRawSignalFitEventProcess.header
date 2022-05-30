@@ -24,6 +24,7 @@
 #define RestCore_TRestRawSignalFitEventProcess
 
 #include <TRestRawSignalEvent.h>
+
 #include "TF1Convolution.h"
 #include "TH1D.h"
 #include "TMath.h"
@@ -61,14 +62,14 @@ class TRestRawSignalFitEventProcess : public TRestEventProcess {
     // add here the members of your event process
 
    public:
-    any GetInputEvent() { return fRawSignalEvent; }
-    any GetOutputEvent() { return fRawSignalEvent; }
+    any GetInputEvent() const override { return fRawSignalEvent; }
+    any GetOutputEvent() const override { return fRawSignalEvent; }
 
     void InitProcess();
     TRestEvent* ProcessEvent(TRestEvent* eventInput);
     void EndProcess();
 
-    void LoadConfig(std::string cfgFilename, std::string name = "");
+    void LoadConfig(const std::string& configFilename, const std::string& name = "");
 
     void PrintMetadata() {
         BeginPrintProcess();
@@ -106,27 +107,26 @@ class TRestRawSignalFitEventProcess : public TRestEventProcess {
             metadata << "Amplitude gauss initial value : " << fAmplitudeInitialValue << endl;
         }
 
-        if (fAgetFit == true) {
+        if (fAgetFit) {
             metadata << "Fitting mode : AGET" << endl;
         }
-        if (fAgetFit == false) {
+        if (!fAgetFit) {
             metadata << "Fitting mode : Convolution" << endl;
         }
-        
-        if (fAddAllPulses == true) {
+
+        if (fAddAllPulses) {
             metadata << "Adding all pulses in the event" << endl;
         }
 
         EndPrintProcess();
     }
 
-    TString GetProcessName() { return (TString) "rawSignalFitEvent"; }
+    const char* GetProcessName() const override { return  "rawSignalFitEvent"; }
 
     TRestRawSignalFitEventProcess();  // Constructor
-    TRestRawSignalFitEventProcess(char* cfgFileName);
+    TRestRawSignalFitEventProcess(const char* configFilename);
     ~TRestRawSignalFitEventProcess();  // Destructor
 
     ClassDef(TRestRawSignalFitEventProcess, 3);
-    // Template for a REST "event process" class inherited from TRestEventProcess
 };
 #endif

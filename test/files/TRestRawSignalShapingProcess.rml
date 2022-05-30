@@ -1,0 +1,5 @@
+<TRestRawSignalShapingProcess name="testProcess">
+    <parameter name="shapingType" value="responseFile"/>
+    <parameter name="shapingTime" value="5.0"/>
+    <parameter name="shapingGain" value="20.0"/>
+</TRestRawSignalShapingProcess>

@@ -58,9 +58,9 @@ namespace daq_metadata_types {
 //! A metadata class to store DAQ information.
 class TRestRawDAQMetadata : public TRestMetadata {
    private:
-    void InitFromConfigFile();
+    void InitFromConfigFile() override;
 
-    virtual void Initialize();
+    void Initialize() override;
 
    protected:
     TString fElectronicsType;            // DCC, FEMINOS, ARC, ...
@@ -76,12 +76,12 @@ class TRestRawDAQMetadata : public TRestMetadata {
 
    public:
 
-    virtual void PrintMetadata();
+    void PrintMetadata() override;
     void ReadIp(const std::string &param, Int_t *ip );
 
-    // Construtor
+    // Constructor
     TRestRawDAQMetadata();
-    TRestRawDAQMetadata(const char* cfgFileName);
+    TRestRawDAQMetadata(const char* configFilename);
     // Destructor
     virtual ~TRestRawDAQMetadata();
 
@@ -94,7 +94,6 @@ class TRestRawDAQMetadata : public TRestMetadata {
     Int_t* GetBaseIp() { return fBaseIp; }
     Int_t* GetLocalIp() { return fLocalIp; }
     UInt_t GetCompressMode(){return fCompressMode;}       // 0 uncompressed, 1 compress
-    UInt_t GetValFromString(TString var, TString line);
     TString GetDecodingFile(){return GetParameter("decodingFile");}
     std::vector <FECMetadata> GetFECs(){return fFEC;}
 
@@ -104,6 +103,6 @@ class TRestRawDAQMetadata : public TRestMetadata {
     void ReadFEC();
     void DumpFEC(const FECMetadata &fec);
 
-    ClassDef(TRestRawDAQMetadata, 2);  // REST run class
+    ClassDefOverride(TRestRawDAQMetadata, 2);  // REST run class
 };
 #endif

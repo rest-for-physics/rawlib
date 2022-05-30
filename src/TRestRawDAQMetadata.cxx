@@ -61,10 +61,10 @@
 using namespace std;
 
 ClassImp(TRestRawDAQMetadata);
-//______________________________________________________________________________
+
 TRestRawDAQMetadata::TRestRawDAQMetadata() { Initialize(); }
 
-TRestRawDAQMetadata::TRestRawDAQMetadata(const char* cfgFileName) : TRestMetadata(cfgFileName) {
+TRestRawDAQMetadata::TRestRawDAQMetadata(const char* configFilename) : TRestMetadata(configFilename) {
     Initialize();
 
     LoadConfigFromFile(fConfigFileName);
@@ -75,12 +75,8 @@ void TRestRawDAQMetadata::Initialize() {
     SetLibraryVersion(LIBRARY_VERSION);
 }
 
-//______________________________________________________________________________
-TRestRawDAQMetadata::~TRestRawDAQMetadata() { 
+TRestRawDAQMetadata::~TRestRawDAQMetadata() { }
 
- }
-
-//______________________________________________________________________________
 void TRestRawDAQMetadata::InitFromConfigFile() {
     // string daqString;
 
@@ -104,21 +100,21 @@ void TRestRawDAQMetadata::ReadIp(const std::string &param, Int_t *ip ){
 }
 
 void TRestRawDAQMetadata::PrintMetadata() {
-    metadata << "+++++++++++++++++++++++++++++++++++++++++++++" << endl;
-    metadata << this->ClassName() << " content" << endl;
-    metadata << "+++++++++++++++++++++++++++++++++++++++++++++" << endl;
-    metadata << "Base IP : " << fBaseIp[0]<<"."<< fBaseIp[1]<<"."<< fBaseIp[2]<<"."<< fBaseIp[3]<< endl;
-    metadata << "Local IP : " << fLocalIp[0]<<"."<< fLocalIp[1]<<"."<< fLocalIp[2]<<"."<< fLocalIp[3]<< endl;
-    metadata << "ElectronicsType : " << fElectronicsType.Data() << endl;
-    metadata << "Clock div : 0x" <<std::hex << fClockDiv <<std::dec<< endl;
-    metadata << "Trigger type : " << fTriggerType.Data() << endl;
-    metadata << "Acquisition type : " << fAcquisitionType.Data() << endl;
-    metadata << "Number of events : " << fNEvents << endl;
+    RESTMetadata << "+++++++++++++++++++++++++++++++++++++++++++++" << RESTendl;
+    RESTMetadata << this->ClassName() << " content" << RESTendl;
+    RESTMetadata << "+++++++++++++++++++++++++++++++++++++++++++++" << RESTendl;
+    RESTMetadata << "Base IP : " << fBaseIp[0]<<"."<< fBaseIp[1]<<"."<< fBaseIp[2]<<"."<< fBaseIp[3]<< RESTendl;
+    RESTMetadata << "Local IP : " << fLocalIp[0]<<"."<< fLocalIp[1]<<"."<< fLocalIp[2]<<"."<< fLocalIp[3]<< RESTendl;
+    RESTMetadata << "ElectronicsType : " << fElectronicsType.Data() << RESTendl;
+    RESTMetadata << "Clock div : 0x" <<std::hex << fClockDiv <<std::dec<< RESTendl;
+    RESTMetadata << "Trigger type : " << fTriggerType.Data() << RESTendl;
+    RESTMetadata << "Acquisition type : " << fAcquisitionType.Data() << RESTendl;
+    RESTMetadata << "Number of events : " << fNEvents << RESTendl;
 
       for(auto f : fFEC)DumpFEC(f);
-    metadata << "+++++++++++++++++++++++++++++++++++++++++++++" << endl;
+        RESTMetadata << "+++++++++++++++++++++++++++++++++++++++++++++" << RESTendl;
 
-    cout << endl;
+    RESTMetadata << RESTendl;
 }
 
 void TRestRawDAQMetadata::ReadFEC(){
@@ -213,28 +209,28 @@ void TRestRawDAQMetadata::ReadFEC(){
 
 void TRestRawDAQMetadata::DumpFEC(const FECMetadata &fec){
 
-    metadata << "+++++++++++++++++++++++++++++++++++++++++++++" << endl;
-    metadata << "FEC id:"<<fec.id << endl;
-    metadata << "IP: "<<fec.ip[0]<<"."<<fec.ip[1]<<"."<<fec.ip[2]<<"."<<fec.ip[3]<< endl;
-    metadata << "Chip type: "<<fec.chipType<<endl;
-    metadata << "Clock Div: 0x"<<std::hex << fec.clockDiv <<std::dec<<endl;
+    RESTMetadata << "+++++++++++++++++++++++++++++++++++++++++++++" << RESTendl;
+    RESTMetadata << "FEC id:"<<fec.id << RESTendl;
+    RESTMetadata << "IP: "<<fec.ip[0]<<"."<<fec.ip[1]<<"."<<fec.ip[2]<<"."<<fec.ip[3]<< RESTendl;
+    RESTMetadata << "Chip type: "<<fec.chipType<< RESTendl;
+    RESTMetadata << "Clock Div: 0x"<<std::hex << fec.clockDiv <<std::dec<< RESTendl;
       for(int i=0;i<4;i++){
         if(!fec.asic_isActive[i])continue;
-        metadata << "+++++++++++++++++++++++++++++++++++++++++++++" << endl;
-        metadata <<"ASIC "<<i<<endl;
-        metadata << "Polarity: "<<fec.asic_polarity[i]<<endl;
-        metadata <<"Gain: 0x"<<std::hex << fec.asic_gain[i] <<std::dec<<endl;
-        metadata <<"ShappingTime: 0x"<<std::hex << fec.asic_shappingTime[i] <<std::dec<<endl;
-        metadata <<"Channel start: "<< fec.asic_channelStart[i] <<endl;
-        metadata <<"Channel end: "<< fec.asic_channelEnd[i] <<endl;
-        metadata <<"Active channels: "<<endl;
+        RESTMetadata << "+++++++++++++++++++++++++++++++++++++++++++++" << RESTendl;
+        RESTMetadata <<"ASIC "<<i<< RESTendl;
+        RESTMetadata << "Polarity: "<<fec.asic_polarity[i]<< RESTendl;
+        RESTMetadata <<"Gain: 0x"<<std::hex << fec.asic_gain[i] <<std::dec<< RESTendl;
+        RESTMetadata <<"ShappingTime: 0x"<<std::hex << fec.asic_shappingTime[i] <<std::dec<< RESTendl;
+        RESTMetadata <<"Channel start: "<< fec.asic_channelStart[i] << RESTendl;
+        RESTMetadata <<"Channel end: "<< fec.asic_channelEnd[i] << RESTendl;
+        RESTMetadata <<"Active channels: "<< RESTendl;
           for(int c=0;c<79;c++){
-            if(fec.asic_channelActive[c])metadata<<c<<"; ";
-            if(c>0 && c%10 == 0)metadata<<endl;
+            if(fec.asic_channelActive[c]) RESTMetadata<<c<<"; ";
+            if(c>0 && c%10 == 0) RESTMetadata<< RESTendl;
           }
-        metadata<<endl;
+        RESTMetadata<< RESTendl;
       }
-    metadata << "+++++++++++++++++++++++++++++++++++++++++++++" << endl;
+    RESTMetadata << "+++++++++++++++++++++++++++++++++++++++++++++" << RESTendl;
 
 }
 
