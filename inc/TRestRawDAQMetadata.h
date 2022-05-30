@@ -96,7 +96,7 @@ class TRestRawDAQMetadata : public TRestMetadata {
     UInt_t GetCompressMode(){return fCompressMode;}       // 0 uncompressed, 1 compress
     UInt_t GetValFromString(TString var, TString line);
     TString GetDecodingFile(){return GetParameter("decodingFile");}
-    std::vector <FECMetadata> GetFECs(){return fFEC;};
+    std::vector <FECMetadata> GetFECs(){return fFEC;}
 
     void SetAcquisitionType (const std::string &typ){fAcquisitionType = typ;}
     void SetNEvents(const Int_t & nEv){fNEvents=nEv;}

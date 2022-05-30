@@ -163,39 +163,39 @@ void TRestRawDAQMetadata::ReadFEC(){
 
           if(id=="*"){//Wildcard
             for(int i=0;i<4;i++){
-              fec.asic[i].gain = gain;
-              fec.asic[i].shappingTime = shappingTime;
-              fec.asic[i].isActive = asicActive;
-              fec.asic[i].polarity = polarity;
-              fec.asic[i].pedCenter = pedCenter;
-              fec.asic[i].pedThr = pedThr;
+              fec.asic_gain[i] = gain;
+              fec.asic_shappingTime[i] = shappingTime;
+              fec.asic_isActive[i] = asicActive;
+              fec.asic_polarity[i] = polarity;
+              fec.asic_pedCenter[i] = pedCenter;
+              fec.asic_pedThr[i] = pedThr;
               bool isFirst = true;
                 for(int c=0;c<79;c++){
-                  fec.asic[i].channelActive[c]=channelActive[c];
+                  fec.asic_channelActive[i][c]=channelActive[c];
                     if(channelActive[c] && isFirst){
-                      fec.asic[i].channelStart = c;
+                      fec.asic_channelStart[i] = c;
                       isFirst=false;
                     }
-                    if(channelActive[c])fec.asic[i].channelEnd = c;
+                    if(channelActive[c])fec.asic_channelEnd[i] = c;
                 }
             }
           } else {
             int i= StringToInteger(id);
             if(i<4){
-              fec.asic[i].gain = gain;
-              fec.asic[i].shappingTime = shappingTime;
-              fec.asic[i].isActive = asicActive;
-              fec.asic[i].polarity = polarity;
-              fec.asic[i].pedCenter = pedCenter;
-              fec.asic[i].pedThr = pedThr;
+              fec.asic_gain[i] = gain;
+              fec.asic_shappingTime[i] = shappingTime;
+              fec.asic_isActive[i] = asicActive;
+              fec.asic_polarity[i] = polarity;
+              fec.asic_pedCenter[i] = pedCenter;
+              fec.asic_pedThr[i] = pedThr;
               bool isFirst = true;
                 for(int c=0;c<79;c++){
-                  fec.asic[i].channelActive[c]=channelActive[c];
+                  fec.asic_channelActive[i][c]=channelActive[c];
                     if(channelActive[c] && isFirst){
-                      fec.asic[i].channelStart = c;
+                      fec.asic_channelStart[i] = c;
                       isFirst=false;
                     }
-                    if(channelActive[c])fec.asic[i].channelEnd = c;
+                    if(channelActive[c])fec.asic_channelEnd[i] = c;
                 }
             }
           }
@@ -219,17 +219,17 @@ void TRestRawDAQMetadata::DumpFEC(const FECMetadata &fec){
     metadata << "Chip type: "<<fec.chipType<<endl;
     metadata << "Clock Div: 0x"<<std::hex << fec.clockDiv <<std::dec<<endl;
       for(int i=0;i<4;i++){
-        if(!fec.asic[i].isActive)continue;
+        if(!fec.asic_isActive[i])continue;
         metadata << "+++++++++++++++++++++++++++++++++++++++++++++" << endl;
         metadata <<"ASIC "<<i<<endl;
-        metadata << "Polarity: "<<fec.asic[i].polarity<<endl;
-        metadata <<"Gain: 0x"<<std::hex << fec.asic[i].gain <<std::dec<<endl;
-        metadata <<"ShappingTime: 0x"<<std::hex << fec.asic[i].shappingTime <<std::dec<<endl;
-        metadata <<"Channel start: "<< fec.asic[i].channelStart <<endl;
-        metadata <<"Channel end: "<< fec.asic[i].channelEnd <<endl;
+        metadata << "Polarity: "<<fec.asic_polarity[i]<<endl;
+        metadata <<"Gain: 0x"<<std::hex << fec.asic_gain[i] <<std::dec<<endl;
+        metadata <<"ShappingTime: 0x"<<std::hex << fec.asic_shappingTime[i] <<std::dec<<endl;
+        metadata <<"Channel start: "<< fec.asic_channelStart[i] <<endl;
+        metadata <<"Channel end: "<< fec.asic_channelEnd[i] <<endl;
         metadata <<"Active channels: "<<endl;
           for(int c=0;c<79;c++){
-            if(fec.asic[i].channelActive[c])metadata<<c<<"; ";
+            if(fec.asic_channelActive[c])metadata<<c<<"; ";
             if(c>0 && c%10 == 0)metadata<<endl;
           }
         metadata<<endl;
