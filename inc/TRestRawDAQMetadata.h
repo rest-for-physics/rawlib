@@ -25,35 +25,28 @@
 
 #include <iostream>
 
-#include "TRestMetadata.h"
 #include "FECMetadata.h"
+#include "TRestMetadata.h"
 #include "TString.h"
 
 namespace daq_metadata_types {
 
-  enum class acqTypes : int {
-    BACKGROUND,
-    CALIBRATION,
-    PEDESTAL
-  };
-  
-  enum class electronicsTypes : int {
-    DUMMY,
-    DCC,
-    FEMINOS
-  };
+enum class acqTypes : int { BACKGROUND, CALIBRATION, PEDESTAL };
 
-  enum class chipTypes : int {
-    AFTER,
-    AGET
-  };
+enum class electronicsTypes : int { DUMMY, DCC, FEMINOS };
 
-  const std::map<std::string, acqTypes> acqTypes_map = {{"background",acqTypes::BACKGROUND}, {"calibration",acqTypes::CALIBRATION},{"pedestal",acqTypes::PEDESTAL}};
-  const std::map<std::string, electronicsTypes> electronicsTypes_map = {{"DUMMY",electronicsTypes::DUMMY}, {"DCC",electronicsTypes::DCC}, {"FEMINOS",electronicsTypes::FEMINOS}};
-  const std::map<std::string, chipTypes> chipTypes_map = {{"after",chipTypes::AFTER}, {"aget",chipTypes::AGET}};
+enum class chipTypes : int { AFTER, AGET };
 
+const std::map<std::string, acqTypes> acqTypes_map = {{"background", acqTypes::BACKGROUND},
+                                                      {"calibration", acqTypes::CALIBRATION},
+                                                      {"pedestal", acqTypes::PEDESTAL}};
+const std::map<std::string, electronicsTypes> electronicsTypes_map = {{"DUMMY", electronicsTypes::DUMMY},
+                                                                      {"DCC", electronicsTypes::DCC},
+                                                                      {"FEMINOS", electronicsTypes::FEMINOS}};
+const std::map<std::string, chipTypes> chipTypes_map = {{"after", chipTypes::AFTER},
+                                                        {"aget", chipTypes::AGET}};
 
-}
+}  // namespace daq_metadata_types
 
 //! A metadata class to store DAQ information.
 class TRestRawDAQMetadata : public TRestMetadata {
@@ -63,21 +56,20 @@ class TRestRawDAQMetadata : public TRestMetadata {
     void Initialize() override;
 
    protected:
-    TString fElectronicsType;            // DCC, FEMINOS, ARC, ...
-    TString fChipType;                   // after or aget
-    UInt_t fClockDiv;                    // Clock division
-    Int_t fBaseIp[4] = {192,168,10,13};  //Base IP of the card
-    Int_t fLocalIp[4] = {192,168,10,10}; //Local IP of the host computer
-    TString fTriggerType;                // external or internal
-    TString fAcquisitionType;            // pedestal, calibration or background
-    UInt_t fCompressMode =0;             // 0 uncompressed, 1 compress
-    Int_t fNEvents=0;                    // 0 --> Infinite
-    std::vector<FECMetadata> fFEC;         //Vector of FECs with different info
+    TString fElectronicsType;                // DCC, FEMINOS, ARC, ...
+    TString fChipType;                       // after or aget
+    UInt_t fClockDiv;                        // Clock division
+    Int_t fBaseIp[4] = {192, 168, 10, 13};   // Base IP of the card
+    Int_t fLocalIp[4] = {192, 168, 10, 10};  // Local IP of the host computer
+    TString fTriggerType;                    // external or internal
+    TString fAcquisitionType;                // pedestal, calibration or background
+    UInt_t fCompressMode = 0;                // 0 uncompressed, 1 compress
+    Int_t fNEvents = 0;                      // 0 --> Infinite
+    std::vector<FECMetadata> fFEC;           // Vector of FECs with different info
 
    public:
-
     void PrintMetadata() override;
-    void ReadIp(const std::string &param, Int_t *ip );
+    void ReadIp(const std::string& param, Int_t* ip);
 
     // Constructor
     TRestRawDAQMetadata();
@@ -93,15 +85,15 @@ class TRestRawDAQMetadata : public TRestMetadata {
     Int_t GetNEvents() { return fNEvents; }
     Int_t* GetBaseIp() { return fBaseIp; }
     Int_t* GetLocalIp() { return fLocalIp; }
-    UInt_t GetCompressMode(){return fCompressMode;}       // 0 uncompressed, 1 compress
-    TString GetDecodingFile(){return GetParameter("decodingFile");}
-    std::vector <FECMetadata> GetFECs(){return fFEC;}
+    UInt_t GetCompressMode() { return fCompressMode; }  // 0 uncompressed, 1 compress
+    TString GetDecodingFile() { return GetParameter("decodingFile"); }
+    std::vector<FECMetadata> GetFECs() { return fFEC; }
 
-    void SetAcquisitionType (const std::string &typ){fAcquisitionType = typ;}
-    void SetNEvents(const Int_t & nEv){fNEvents=nEv;}
+    void SetAcquisitionType(const std::string& typ) { fAcquisitionType = typ; }
+    void SetNEvents(const Int_t& nEv) { fNEvents = nEv; }
 
     void ReadFEC();
-    void DumpFEC(const FECMetadata &fec);
+    void DumpFEC(const FECMetadata& fec);
 
     ClassDefOverride(TRestRawDAQMetadata, 2);  // REST run class
 };
