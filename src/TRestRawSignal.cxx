@@ -818,6 +818,11 @@ void TRestRawSignal::CalculateBaseLineSigmaIQR(Int_t startBin, Int_t endBin) {
     }
 }
 
+///////////////////////////////////////////////
+/// \brief This method calculate the baseline in a certain range and returns the maximum amplitude
+/// if the signal is above certain threshold. The calculations are performed in a fast way only
+/// using a single loop.
+///
 double TRestRawSignal::GetAmplitudeFast(const TVector2& baselineRange, double signalThreshold) {
     double max = 0;
     fBaseLineSigma = 0;
