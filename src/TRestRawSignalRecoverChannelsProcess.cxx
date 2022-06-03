@@ -187,7 +187,7 @@ TRestEvent* TRestRawSignalRecoverChannelsProcess::ProcessEvent(TRestEvent* evInp
         TRestRawSignal* recoveredSignal = new TRestRawSignal();
         recoveredSignal->SetID(fChannelIds[x]);
 
-        Short_t dataRecovered[nPoints];
+        vector<Short_t> dataRecovered(nPoints);
         for (int n = 0; n < nPoints; n++) dataRecovered[n] = 0;
 
         if (leftSgnl != nullptr) {

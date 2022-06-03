@@ -192,11 +192,11 @@ TRestEvent* TRestRawSignalConvolutionFittingProcess::ProcessEvent(TRestEvent* in
           << RESTendl;
 
     Double_t SigmaMean = 0;
-    Double_t Sigma[fRawSignalEvent->GetNumberOfSignals()];
+    vector<Double_t> Sigma(fRawSignalEvent->GetNumberOfSignals());
     Double_t RatioSigmaMaxPeakMean = 0;
-    Double_t RatioSigmaMaxPeak[fRawSignalEvent->GetNumberOfSignals()];
+    vector<Double_t> RatioSigmaMaxPeak(fRawSignalEvent->GetNumberOfSignals());
     Double_t ChiSquareMean = 0;
-    Double_t ChiSquare[fRawSignalEvent->GetNumberOfSignals()];
+    vector<Double_t> ChiSquare(fRawSignalEvent->GetNumberOfSignals());
 
     map<int, Double_t> amplitudeFit;
     map<int, Double_t> shapingtimeFit;
