@@ -175,7 +175,7 @@ void TRestRawSignalChannelActivityProcess::InitProcess() {
 #ifdef REST_DetectorLib
     fReadout = GetMetadata<TRestDetectorReadout>();
 
-    debug << "TRestRawSignalChannelActivityProcess::InitProcess. Readout pointer : " << fReadout << endl;
+    RESTDebug << "TRestRawSignalChannelActivityProcess::InitProcess. Readout pointer : " << fReadout << RESTendl;
     if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Info && fReadout) fReadout->PrintMetadata();
 #endif
 

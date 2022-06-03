@@ -5,7 +5,13 @@ if (CMAKE_SYSTEM_NAME MATCHES "Windows")
     set(excludes TRestRawMemoryBufferToSignalProcess)
 endif (CMAKE_SYSTEM_NAME MATCHES "Windows")
 
-COMPILELIB("")
+set( deps detector )
+
+if (NOT ${RESTLIB_DETECTOR} MATCHES "ON")
+    list(REMOVE_ITEM deps detector)
+endif ()
+
+COMPILELIB(deps)
 
 file(GLOB_RECURSE MAC "${CMAKE_CURRENT_SOURCE_DIR}/macros/*")
 INSTALL(FILES ${MAC} DESTINATION ./macros/raw)
