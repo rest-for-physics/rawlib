@@ -33,6 +33,8 @@
 //! A process allowing to recover selected channels from a TRestRawSignalEvent
 class TRestRawSignalRecoverChannelsProcess : public TRestEventProcess {
    private:
+    std::vector<Int_t> fChannelIds;  //<
+
     /// A pointer to the specific TRestRawSignalEvent input
     TRestRawSignalEvent* fInputSignalEvent;  //!
 
@@ -49,8 +51,6 @@ class TRestRawSignalRecoverChannelsProcess : public TRestEventProcess {
     void LoadDefaultConfig();
 
     void GetAdjacentSignalIds(Int_t signalId, Int_t& idLeft, Int_t& idRight);
-
-    std::vector<Int_t> fChannelIds;
 
    public:
     any GetInputEvent() const override { return fInputSignalEvent; }
