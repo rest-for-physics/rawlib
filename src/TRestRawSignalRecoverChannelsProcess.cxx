@@ -143,18 +143,18 @@ void TRestRawSignalRecoverChannelsProcess::LoadConfig(const string& configFilena
 /// TRestDetectorReadout.
 ///
 void TRestRawSignalRecoverChannelsProcess::InitProcess() {
-#ifdef REST_DetectorLib
+    // #ifdef REST_DetectorLib
     fReadout = GetMetadata<TRestDetectorReadout>();
 
     if (fReadout == nullptr) {
         cout << "REST ERROR: Readout has not been initialized" << endl;
         exit(-1);
     }
-#else
-    RESTError << "TRestRawSignalRecoverChannelsProcess will not be active." << RESTendl;
-    RESTError << "REST was not compiled with detectorlib" << RESTendl;
-    RESTError << "Please, remove this process or compile REST with detector library" << RESTendl;
-#endif
+    // #else
+    //     RESTError << "TRestRawSignalRecoverChannelsProcess will not be active." << RESTendl;
+    //     RESTError << "REST was not compiled with detectorlib" << RESTendl;
+    //     RESTError << "Please, remove this process or compile REST with detector library" << RESTendl;
+    // #endif
 }
 
 ///////////////////////////////////////////////
@@ -175,7 +175,8 @@ TRestEvent* TRestRawSignalRecoverChannelsProcess::ProcessEvent(TRestEvent* evInp
         // cout << "Channel id : " << fChannelIds[x] << " Left : " << idL << " Right
         // : " << idR << endl;
 
-        if( fOutputSignalEvent->GetSignalIndex(fChannelIds[x])> 0 ) fOutputSignalEvent->RemoveSignalWithId(fChannelIds[x]);
+        if (fOutputSignalEvent->GetSignalIndex(fChannelIds[x]) > 0)
+            fOutputSignalEvent->RemoveSignalWithId(fChannelIds[x]);
 
         if (idL == -1 || idR == -1) continue;
 
@@ -223,7 +224,7 @@ TRestEvent* TRestRawSignalRecoverChannelsProcess::ProcessEvent(TRestEvent* evInp
 
 void TRestRawSignalRecoverChannelsProcess::GetAdjacentSignalIds(Int_t signalId, Int_t& idLeft,
                                                                 Int_t& idRight) {
-#ifdef REST_DetectorLib
+    // #ifdef REST_DetectorLib
     for (int p = 0; p < fReadout->GetNumberOfReadoutPlanes(); p++) {
         TRestDetectorReadoutPlane* plane = fReadout->GetReadoutPlane(p);
         for (int m = 0; m < plane->GetNumberOfModules(); m++) {
@@ -242,7 +243,7 @@ void TRestRawSignalRecoverChannelsProcess::GetAdjacentSignalIds(Int_t signalId, 
             }
         }
     }
-#endif
+    // #endif
 
     idLeft = -1;
     idRight = -1;

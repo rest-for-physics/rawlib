@@ -23,9 +23,9 @@
 #ifndef RestCore_TRestRawSignalRecoverChannelsProcess
 #define RestCore_TRestRawSignalRecoverChannelsProcess
 
-#ifdef REST_DetectorLib
+// #ifdef REST_DetectorLib
 #include <TRestDetectorReadout.h>
-#endif
+// #endif
 #include <TRestEventProcess.h>
 
 #include "TRestRawSignalEvent.h"
@@ -39,10 +39,8 @@ class TRestRawSignalRecoverChannelsProcess : public TRestEventProcess {
     /// A pointer to the specific TRestRawSignalEvent input
     TRestRawSignalEvent* fOutputSignalEvent;  //!
 
-#ifdef REST_DetectorLib
     /// A pointer to the readout previously defined inside REST.
     TRestDetectorReadout* fReadout;  //!
-#endif
 
     void Initialize() override;
 
