@@ -34,7 +34,7 @@
 /// \code
 /// <TRestRawSignalRecoverChannelsProcess name="returnChannels"
 /// title="Recovering few channels" verboseLevel="debug" >
-///     <parameter name="channelIds" value="17,27,67" />
+///     <parameter name="channelIds" value="{17,27,67}" />
 /// </TRestRawSignalRecoverChannelsProcess>
 /// \endcode
 ///
@@ -175,7 +175,8 @@ TRestEvent* TRestRawSignalRecoverChannelsProcess::ProcessEvent(TRestEvent* evInp
         // cout << "Channel id : " << fChannelIds[x] << " Left : " << idL << " Right
         // : " << idR << endl;
 
-        if( fOutputSignalEvent->GetSignalIndex(fChannelIds[x])> 0 ) fOutputSignalEvent->RemoveSignalWithId(fChannelIds[x]);
+        if (fOutputSignalEvent->GetSignalIndex(fChannelIds[x]) > 0)
+            fOutputSignalEvent->RemoveSignalWithId(fChannelIds[x]);
 
         if (idL == -1 || idR == -1) continue;
 
