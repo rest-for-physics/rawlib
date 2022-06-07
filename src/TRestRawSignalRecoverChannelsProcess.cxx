@@ -175,7 +175,7 @@ TRestEvent* TRestRawSignalRecoverChannelsProcess::ProcessEvent(TRestEvent* evInp
         // cout << "Channel id : " << fChannelIds[x] << " Left : " << idL << " Right
         // : " << idR << endl;
 
-        if( fOutputSignalEvent->GetSignalIndex(fChannelIds[x]) > 0) fOutputSignalEvent->RemoveSignalWithId(fChannelIds[x]);
+        if( fOutputSignalEvent->GetSignalIndex(fChannelIds[x])> 0 ) fOutputSignalEvent->RemoveSignalWithId(fChannelIds[x]);
 
         if (idL == -1 || idR == -1) continue;
 
