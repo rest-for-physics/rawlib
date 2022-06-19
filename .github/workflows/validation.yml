@@ -1,0 +1,125 @@
+
+name: Validation
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+  release:
+
+  workflow_dispatch:
+
+env:
+  CMAKE_BUILD_TYPE: Release
+  REST_PATH: /rest/rawlib/install
+  BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  framework-validation:
+    uses: rest-for-physics/framework/.github/workflows/validation.yml@master
+  
+  libCheck:
+    name: Validate library
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/lobis/root-geant4-garfield:rest-for-physics-dev
+    steps:
+      - uses: actions/checkout@v3
+      - run:  python3 pipeline/validateLibrary.py .
+
+  build-rawlib:
+    name: Build only rawlib
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/lobis/root-geant4-garfield:rest-for-physics-dev
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build and install
+        uses: rest-for-physics/framework/.github/actions/build@master
+        with:
+          cmake-flags: "-DCMAKE_INSTALL_PREFIX=${{ env.REST_PATH }} -DCMAKE_BUILD_TYPE=${{ env.CMAKE_BUILD_TYPE }} -DREST_WELCOME=ON -DRESTLIB_RAW=ON"
+          branch: ${{ env.BRANCH_NAME }}
+      - name: Cache framework installation
+        id: rawlib-install-cache
+        uses: actions/cache@v3
+        with:
+          key: ${{ env.BRANCH_NAME }}-${{ github.sha }}
+          path: ${{ env.REST_PATH }}
+
+  Process:
+    name: Check processes
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/lobis/root-geant4-garfield:rest-for-physics-dev
+    needs: [ build-rawlib ]
+    steps:
+    - uses: actions/checkout@v3
+    - name: Restore cache
+      uses: actions/cache@v3
+      id: rawlib-install-cache
+      with:
+        key: ${{ env.BRANCH_NAME }}-${{ github.sha }}
+        path: ${{ env.REST_PATH }}
+    - name: Add signal noise
+      run: |
+        source ${{ env.REST_PATH }}/thisREST.sh
+        cd pipeline/processes/noise
+        python addNoise.py
+    - name: Common Noise
+      run: |
+        source ${{ env.REST_PATH }}/thisREST.sh
+        cd pipeline/processes/commonNoise
+        restRoot -b -q commonNoise.C
+    - name: Veto Analysis
+      run: |
+        source ${{ env.REST_PATH }}/thisREST.sh
+        cd pipeline/processes/veto
+        restManager --c veto.rml --f ../../data/R01208_Ar2Iso_Background14h_14Vetos_IccubFEC-000.aqs
+        python vetoValidation.py
+    - name: Signal Shaping
+      run: |
+        source ${{ env.REST_PATH }}/thisREST.sh
+        cd pipeline/processes/shaping
+        restRoot -b -q shaping.C
+    - name: Fitting Process
+      run: |
+        source ${{ env.REST_PATH }}/thisREST.sh
+        cd pipeline/processes/fit
+        restRoot -b -q fit.C
+    - name: General Fit Process
+      run: |
+        source ${{ env.REST_PATH }}/thisREST.sh
+        cd pipeline/processes/fit
+        restRoot -b -q GeneralFit.C
+    - name: Analysis Process
+      run: |
+        source ${{ env.REST_PATH }}/thisREST.sh
+        cd pipeline/processes/analysis
+        restManager --c veto.rml --f ../../data/R01208_Ar2Iso_Background14h_14Vetos_IccubFEC-000.aqs
+        restRoot -b -q validate.C
+
+  DreamData:
+    name: Process Dream data
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/lobis/root-geant4-garfield:rest-for-physics-dev
+    needs: [ build-rawlib ]
+    steps:
+    - uses: actions/checkout@v3
+    - name: Restore cache
+      uses: actions/cache@v3
+      id: rawlib-install-cache
+      with:
+        key: ${{ env.BRANCH_NAME }}-${{ github.sha }}
+        path: ${{ env.REST_PATH }}
+    - name: Dream data
+      run: |
+        source ${{ env.REST_PATH }}/thisREST.sh
+        cd pipeline/external/dream
+        restManager --c dream.rml --f dummyDreamData.fdf
+        restRoot -b -q dream.C
