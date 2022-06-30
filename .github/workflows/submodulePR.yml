@@ -28,4 +28,4 @@ jobs:
       with:
         branch: ${{ env.BRANCH_NAME }}
         repository: "rest-for-physics/framework"
-        token: ${{ secrets.GITHUB_TOKEN }}
+        token: ${{ secrets.REST_TOKEN }}
