@@ -45,6 +45,8 @@ class TRestRawSignalChannelActivityProcess : public TRestEventProcess {
     TRestDetectorReadout* fReadout;  //!
 #endif
 
+    void InitFromConfigFile() override;
+
     void Initialize() override;
 
     void LoadDefaultConfig();
@@ -57,10 +59,10 @@ class TRestRawSignalChannelActivityProcess : public TRestEventProcess {
     Double_t fHighThreshold = 50;
 
     /// The number of bins at the daq channels histogram
-    Int_t fDaqChannels = 300;
+    Int_t fDaqHistogramChannels = 300;
 
     /// The number of bins at the readout channels histogram
-    Int_t fReadoutChannels = 128;
+    Int_t fReadoutHistogramChannels = 128;
 
     /// The first channel at the daq channels histogram
     Int_t fDaqStartChannel = 4320;
@@ -121,12 +123,12 @@ class TRestRawSignalChannelActivityProcess : public TRestEventProcess {
         RESTMetadata << "Low signal threshold activity : " << fLowThreshold << RESTendl;
         RESTMetadata << "High signal threshold activity : " << fHighThreshold << RESTendl;
 
-        RESTMetadata << "Number of daq histogram channels : " << fDaqChannels << RESTendl;
+        RESTMetadata << "Number of daq histogram channels : " << fDaqHistogramChannels << RESTendl;
         RESTMetadata << "Start daq channel : " << fDaqStartChannel << RESTendl;
         RESTMetadata << "End daq channel : " << fDaqEndChannel << RESTendl;
 
 #ifdef REST_DetectorLib
-        RESTMetadata << "Number of readout histogram channels : " << fReadoutChannels << RESTendl;
+        RESTMetadata << "Number of readout histogram channels : " << fReadoutHistogramChannels << RESTendl;
         RESTMetadata << "Start readout channel : " << fReadoutStartChannel << RESTendl;
         RESTMetadata << "End readout channel : " << fReadoutEndChannel << RESTendl;
 #else

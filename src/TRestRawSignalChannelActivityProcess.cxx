@@ -175,40 +175,43 @@ void TRestRawSignalChannelActivityProcess::InitProcess() {
 #ifdef REST_DetectorLib
     fReadout = GetMetadata<TRestDetectorReadout>();
 
-    RESTDebug << "TRestRawSignalChannelActivityProcess::InitProcess. Readout pointer : " << fReadout << RESTendl;
-    if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Info && fReadout) fReadout->PrintMetadata();
+    RESTDebug << "TRestRawSignalChannelActivityProcess::InitProcess. Readout pointer : " << fReadout
+              << RESTendl;
+    if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Info && fReadout)
+        fReadout->PrintMetadata();
 #endif
 
     if (!fReadOnly) {
-        fDaqChannelsHisto = new TH1D("daqChannelActivityRaw", "daqChannelActivityRaw", fDaqChannels,
+        fDaqChannelsHisto = new TH1D("daqChannelActivityRaw", "daqChannelActivityRaw", fDaqHistogramChannels,
                                      fDaqStartChannel, fDaqEndChannel);
 #ifdef REST_DetectorLib
         if (fReadout) {
-            fReadoutChannelsHisto = new TH1D("rChannelActivityRaw", "readoutChannelActivity",
-                                             fReadoutChannels, fReadoutStartChannel, fReadoutEndChannel);
+            fReadoutChannelsHisto =
+                new TH1D("rChannelActivityRaw", "readoutChannelActivity", fReadoutHistogramChannels,
+                         fReadoutStartChannel, fReadoutEndChannel);
             fReadoutChannelsHisto_OneSignal =
-                new TH1D("rChannelActivityRaw_1", "readoutChannelActivity", fReadoutChannels,
+                new TH1D("rChannelActivityRaw_1", "readoutChannelActivity", fReadoutHistogramChannels,
                          fReadoutStartChannel, fReadoutEndChannel);
             fReadoutChannelsHisto_OneSignal_High =
-                new TH1D("rChannelActivityRaw_1H", "readoutChannelActivity", fReadoutChannels,
+                new TH1D("rChannelActivityRaw_1H", "readoutChannelActivity", fReadoutHistogramChannels,
                          fReadoutStartChannel, fReadoutEndChannel);
             fReadoutChannelsHisto_TwoSignals =
-                new TH1D("rChannelActivityRaw_2", "readoutChannelActivity", fReadoutChannels,
+                new TH1D("rChannelActivityRaw_2", "readoutChannelActivity", fReadoutHistogramChannels,
                          fReadoutStartChannel, fReadoutEndChannel);
             fReadoutChannelsHisto_TwoSignals_High =
-                new TH1D("rChannelActivityRaw_2H", "readoutChannelActivity", fReadoutChannels,
+                new TH1D("rChannelActivityRaw_2H", "readoutChannelActivity", fReadoutHistogramChannels,
                          fReadoutStartChannel, fReadoutEndChannel);
             fReadoutChannelsHisto_ThreeSignals =
-                new TH1D("rChannelActivityRaw_3", "readoutChannelActivity", fReadoutChannels,
+                new TH1D("rChannelActivityRaw_3", "readoutChannelActivity", fReadoutHistogramChannels,
                          fReadoutStartChannel, fReadoutEndChannel);
             fReadoutChannelsHisto_ThreeSignals_High =
-                new TH1D("rChannelActivityRaw_3H", "readoutChannelActivity", fReadoutChannels,
+                new TH1D("rChannelActivityRaw_3H", "readoutChannelActivity", fReadoutHistogramChannels,
                          fReadoutStartChannel, fReadoutEndChannel);
             fReadoutChannelsHisto_MultiSignals =
-                new TH1D("rChannelActivityRaw_M", "readoutChannelActivity", fReadoutChannels,
+                new TH1D("rChannelActivityRaw_M", "readoutChannelActivity", fReadoutHistogramChannels,
                          fReadoutStartChannel, fReadoutEndChannel);
             fReadoutChannelsHisto_MultiSignals_High =
-                new TH1D("rChannelActivityRaw_MH", "readoutChannelActivity", fReadoutChannels,
+                new TH1D("rChannelActivityRaw_MH", "readoutChannelActivity", fReadoutHistogramChannels,
                          fReadoutStartChannel, fReadoutEndChannel);
         }
 #endif
@@ -263,7 +266,8 @@ TRestEvent* TRestRawSignalChannelActivityProcess::ProcessEvent(TRestEvent* input
         }
     }
 
-    if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Debug) fAnalysisTree->PrintObservables();
+    if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Debug)
+        fAnalysisTree->PrintObservables();
 
     return fSignalEvent;
 }
@@ -292,4 +296,20 @@ void TRestRawSignalChannelActivityProcess::EndProcess() {
         }
 #endif
     }
+}
+
+///////////////////////////////////////////////
+/// \brief Function to read input parameters from the RML
+/// TRestRawSignalChannelActivityProcess metadata section
+///
+void TRestRawSignalChannelActivityProcess::InitFromConfigFile() {
+    fLowThreshold = StringToDouble(GetParameter("lowThreshold", "25"));
+    fHighThreshold = StringToDouble(GetParameter("highThreshold", "50"));
+
+    fDaqHistogramChannels = StringToInteger(GetParameter("daqChannels", "300"));
+    fDaqStartChannel = StringToInteger(GetParameter("daqStartCh", "4320"));
+    fDaqEndChannel = StringToInteger(GetParameter("daqEndCh", "4620"));
+    fReadoutHistogramChannels = StringToInteger(GetParameter("readoutChannels", "128"));
+    fReadoutStartChannel = StringToInteger(GetParameter("readoutStartCh", "0"));
+    fReadoutEndChannel = StringToInteger(GetParameter("readoutEndCh", "128"));
 }
