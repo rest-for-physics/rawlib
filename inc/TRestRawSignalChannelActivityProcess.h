@@ -59,7 +59,7 @@ class TRestRawSignalChannelActivityProcess : public TRestEventProcess {
     Double_t fHighThreshold;
 
     /// The number of bins at the daq channels histogram
-    Int_t fDaqHitsogramChannels;
+    Int_t fDaqHistogramChannels;
 
     /// The number of bins at the readout channels histogram
     Int_t fReadoutHistogramChannels;
