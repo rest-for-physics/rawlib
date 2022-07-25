@@ -53,28 +53,28 @@ class TRestRawSignalChannelActivityProcess : public TRestEventProcess {
 
    protected:
     /// The value of the lower signal threshold to add it to the histogram
-    Double_t fLowThreshold = 25;
+    Double_t fLowThreshold;
 
     /// The value of the higher signal threshold to add it to the histogram
-    Double_t fHighThreshold = 50;
+    Double_t fHighThreshold;
 
     /// The number of bins at the daq channels histogram
-    Int_t fDaqHistogramChannels = 300;
+    Int_t fDaqHitsogramChannels;
 
     /// The number of bins at the readout channels histogram
-    Int_t fReadoutHistogramChannels = 128;
+    Int_t fReadoutHistogramChannels;
 
     /// The first channel at the daq channels histogram
-    Int_t fDaqStartChannel = 4320;
+    Int_t fDaqStartChannel;
 
     /// The last channel at the daq channels histogram
-    Int_t fDaqEndChannel = 4620;
+    Int_t fDaqEndChannel;
 
     /// The first channel at the readout channels histogram
-    Int_t fReadoutStartChannel = 0;
+    Int_t fReadoutStartChannel;
 
     /// The last channel at the readout channels histogram
-    Int_t fReadoutEndChannel = 128;
+    Int_t fReadoutEndChannel;
 
     /// The daq channels histogram
     TH1D* fDaqChannelsHisto;  //!
