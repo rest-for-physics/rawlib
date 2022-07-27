@@ -47,8 +47,6 @@ class TRestRawSignalChannelActivityProcess : public TRestEventProcess {
 
     void Initialize() override;
 
-    void LoadDefaultConfig();
-
    protected:
     /// The value of the lower signal threshold to add it to the histogram
     Double_t fLowThreshold = 25;
@@ -112,8 +110,6 @@ class TRestRawSignalChannelActivityProcess : public TRestEventProcess {
     TRestEvent* ProcessEvent(TRestEvent* inputEvent) override;
     void EndProcess() override;
 
-    void LoadConfig(const std::string& configFilename, const std::string& name = "");
-
     /// It prints out the process parameters stored in the metadata structure
     void PrintMetadata() override {
         BeginPrintProcess();
@@ -139,10 +135,7 @@ class TRestRawSignalChannelActivityProcess : public TRestEventProcess {
     /// Returns the name of this process
     const char* GetProcessName() const override { return "rawSignalChannelActivity"; }
 
-    // Constructor
     TRestRawSignalChannelActivityProcess();
-    TRestRawSignalChannelActivityProcess(const char* configFilename);
-    // Destructor
     ~TRestRawSignalChannelActivityProcess();
 
     ClassDefOverride(TRestRawSignalChannelActivityProcess, 3);
