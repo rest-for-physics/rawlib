@@ -38,11 +38,11 @@
 class TRestRawSignalChannelActivityProcess : public TRestEventProcess {
    private:
     /// A pointer to the specific TRestRawSignalEvent input
-    TRestRawSignalEvent* fSignalEvent;  //!
+    TRestRawSignalEvent* fSignalEvent = nullptr;  //!
 
 #ifdef REST_DetectorLib
     /// A pointer to the readout metadata information accessible to TRestRun
-    TRestDetectorReadout* fReadout;  //!
+    TRestDetectorReadout* fReadout = nullptr;  //!
 #endif
 
     void Initialize() override;
@@ -73,34 +73,34 @@ class TRestRawSignalChannelActivityProcess : public TRestEventProcess {
     Int_t fReadoutEndChannel = 128;
 
     /// The daq channels histogram
-    TH1D* fDaqChannelsHisto;  //!
+    TH1D* fDaqChannelsHisto = nullptr;  //!
 
     /// The readout channels histogram
-    TH1D* fReadoutChannelsHisto;  //!
+    TH1D* fReadoutChannelsHisto = nullptr;  //!
 
     /// The readout channels histogram built with 1-signal events (low threshold)
-    TH1D* fReadoutChannelsHisto_OneSignal;  //!
+    TH1D* fReadoutChannelsHisto_OneSignal = nullptr;  //!
 
     /// The readout channels histogram built with 1-signal events (high threshold)
-    TH1D* fReadoutChannelsHisto_OneSignal_High;  //!
+    TH1D* fReadoutChannelsHisto_OneSignal_High = nullptr;  //!
 
     /// The readout channels histogram built with 2-signal events (low threshold)
-    TH1D* fReadoutChannelsHisto_TwoSignals;  //!
+    TH1D* fReadoutChannelsHisto_TwoSignals = nullptr;  //!
 
     /// The readout channels histogram built with 2-signal events (high threshold)
-    TH1D* fReadoutChannelsHisto_TwoSignals_High;  //!
+    TH1D* fReadoutChannelsHisto_TwoSignals_High = nullptr;  //!
 
     /// The readout channels histogram built with 3-signal events (low threshold)
-    TH1D* fReadoutChannelsHisto_ThreeSignals;  //!
+    TH1D* fReadoutChannelsHisto_ThreeSignals = nullptr;  //!
 
     /// The readout channels histogram built with 3-signal events (high threshold)
-    TH1D* fReadoutChannelsHisto_ThreeSignals_High;  //!
+    TH1D* fReadoutChannelsHisto_ThreeSignals_High = nullptr;  //!
 
     /// The readout channels histogram built more than 3-signal events (low threshold)
-    TH1D* fReadoutChannelsHisto_MultiSignals;  //!
+    TH1D* fReadoutChannelsHisto_MultiSignals = nullptr;  //!
 
     /// The readout channels histogram built more than 3-signal events (high threshold)
-    TH1D* fReadoutChannelsHisto_MultiSignals_High;  //!
+    TH1D* fReadoutChannelsHisto_MultiSignals_High = nullptr;  //!
 
    public:
     any GetInputEvent() const override { return fSignalEvent; }
