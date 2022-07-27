@@ -36,17 +36,6 @@
 //! A pure analysis process to generate histograms with detector channels
 //! activity
 class TRestRawSignalChannelActivityProcess : public TRestEventProcess {
-   private:
-    /// A pointer to the specific TRestRawSignalEvent input
-    TRestRawSignalEvent* fSignalEvent = nullptr;  //!
-
-#ifdef REST_DetectorLib
-    /// A pointer to the readout metadata information accessible to TRestRun
-    TRestDetectorReadout* fReadout = nullptr;  //!
-#endif
-
-    void Initialize() override;
-
    protected:
     /// The value of the lower signal threshold to add it to the histogram
     Double_t fLowThreshold = 25;
@@ -101,6 +90,17 @@ class TRestRawSignalChannelActivityProcess : public TRestEventProcess {
 
     /// The readout channels histogram built more than 3-signal events (high threshold)
     TH1D* fReadoutChannelsHisto_MultiSignals_High = nullptr;  //!
+
+   private:
+    /// A pointer to the specific TRestRawSignalEvent input
+    TRestRawSignalEvent* fSignalEvent = nullptr;  //!
+
+#ifdef REST_DetectorLib
+    /// A pointer to the readout metadata information accessible to TRestRun
+    TRestDetectorReadout* fReadout = nullptr;  //!
+#endif
+
+    void Initialize() override;
 
    public:
     any GetInputEvent() const override { return fSignalEvent; }
