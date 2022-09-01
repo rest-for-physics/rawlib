@@ -31,8 +31,7 @@
 #include <iostream>
 #include <string>
 
-//! It defines a Short_t array with a physical parameter that evolves in time
-//! using a fixed time bin.
+//! It defines a Short_t array with a physical parameter that evolves in time using a fixed time bin.
 class TRestRawSignal : public TObject {
    private:
     void CalculateThresholdIntegral();
@@ -44,8 +43,7 @@ class TRestRawSignal : public TObject {
     std::vector<Float_t> GetSignalSmoothed_ExcludeOutliers(Int_t averagingPoints);
 
    protected:
-    /// An integer value used to attribute a unique identification number to the
-    /// signal.
+    /// An integer value used to attribute a unique identification number to the signal.
     Int_t fSignalID;
 
     /// Vector with the data of the signal
@@ -57,32 +55,25 @@ class TRestRawSignal : public TObject {
     /// A TGraph pointer used to store the TRestRawSignal drawing
     TGraph* fGraph;  //!
 
-    /// A std::vector containing the index of points that are identified over
-    /// threshold.
+    /// A std::vector containing the index of points that are identified over threshold.
     std::vector<Int_t> fPointsOverThreshold;  //!
 
-    /// It stores the integral value obtained from the points identified over
-    /// threshold.
+    /// It stores the integral value obtained from the points identified over threshold.
     Double_t fThresholdIntegral = -1;  //!
 
-    /// It defines the number of points to include before point over threshold
-    /// definition. NOT implemented.
+    /// It defines the number of points to include before point over threshold definition. NOT implemented.
     Int_t fHeadPoints;  //!
 
-    /// It defines the number of points to include after point over threshold
-    /// definition. NOT implemented.
+    /// It defines the number of points to include after point over threshold definition. NOT implemented.
     Int_t fTailPoints;  //!
 
-    /// This baseline value will be subtracted from GetData for any raw signal
-    /// observable calculation.
+    /// This baseline value will be subtracted from GetData for any raw signal observable calculation.
     Double_t fBaseLine = 0;  //!
 
-    /// The baseline fluctuation calculated as the standard deviation of the
-    /// baseline.
+    /// The baseline fluctuation calculated as the standard deviation of the baseline.
     Double_t fBaseLineSigma = 0;  //!
 
-    /// Any signal calculation will be restricted to the following range
-    /// definition.
+    /// Any signal calculation will be restricted to the following range definition.
     TVector2 fRange = TVector2(0, 0);  //!
 
     /// Returns the value of signal ID
@@ -97,12 +88,10 @@ class TRestRawSignal : public TObject {
     /// Returns a std::vector containing the indexes of data points over threshold
     inline std::vector<Int_t> GetPointsOverThreshold() const { return fPointsOverThreshold; }
 
-    /// Returns the maximum value found in the data points. It includes baseline
-    /// correction
+    /// Returns the maximum value found in the data points. It includes baseline correction
     inline Double_t GetMaxValue() { return GetMaxPeakValue(); }
 
-    /// Returns the lowest value found in the data points. It includes baseline
-    /// correction
+    /// Returns the lowest value found in the data points. It includes baseline correction
     inline Double_t GetMinValue() { return GetMinPeakValue(); }
 
     /// Returns the number of head points used on points over threshold definition
@@ -115,15 +104,14 @@ class TRestRawSignal : public TObject {
     /// CalculateBaseLine.
     inline Double_t GetBaseLine() const { return fBaseLine; }
 
-    /// Returns the value of baseline sigma that it is initialized after calling
-    /// CalculateBaseLineSigmaSD or CalculateBaseLineSigmaIQR.
+    /// Returns the value of baseline sigma that it is initialized after calling CalculateBaseLineSigmaSD or
+    /// CalculateBaseLineSigmaIQR.
     inline Double_t GetBaseLineSigma() const { return fBaseLineSigma; }
 
     /// Returns the range defined by user
     inline TVector2 GetRange() const { return fRange; }
 
-    /// Returns false if the baseline and its baseline fluctuation was not
-    /// initialized.
+    /// Returns false if the baseline and its baseline fluctuation was not initialized.
     inline Bool_t isBaseLineInitialized() {
         if (fBaseLineSigma == 0 && fBaseLine == 0) return false;
         return true;
