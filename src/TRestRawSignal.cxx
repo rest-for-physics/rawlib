@@ -486,7 +486,8 @@ Double_t TRestRawSignal::GetMaxPeakValue() { return GetData(GetMaxPeakBin()); }
 /// \brief It returns the bin at which the maximum peak amplitude happens
 ///
 Int_t TRestRawSignal::GetMaxPeakBin() {
-    Double_t max = -1E10;
+    Double_t max = numeric_limits<Double_t>::min();
+
     Int_t index = 0;
 
     if (fRange.Y() == 0 || fRange.Y() > GetNumberOfPoints()) fRange.SetY(GetNumberOfPoints());
@@ -513,7 +514,7 @@ Double_t TRestRawSignal::GetMinPeakValue() { return GetData(GetMinPeakBin()); }
 /// \brief It returns the bin at which the minimum peak amplitude happens
 ///
 Int_t TRestRawSignal::GetMinPeakBin() {
-    Double_t min = 1E10;
+    Double_t min = numeric_limits<Double_t>::max();
     Int_t index = 0;
 
     if (fRange.Y() == 0 || fRange.Y() > GetNumberOfPoints()) fRange.SetY(GetNumberOfPoints());
@@ -629,16 +630,15 @@ void TRestRawSignal::GetSignalSmoothed(TRestRawSignal* smoothedSignal, Int_t ave
 /// \param averagingPoints It defines the number of neightbour consecutive
 /// points used to average the signal
 ///
-/// \param option If the option is set to "EXCLUDE OUTLIERS", points that are too far away from the median baseline will be ignored to improve the smoothing result
+/// \param option If the option is set to "EXCLUDE OUTLIERS", points that are too far away from the median
+/// baseline will be ignored to improve the smoothing result
 ///
 std::vector<Float_t> TRestRawSignal::GetSignalSmoothed(Int_t averagingPoints, std::string option) {
-    
     std::vector<Float_t> result;
 
-    if (option == ""){
-
+    if (option == "") {
         result.resize(GetNumberOfPoints());
-        
+
         averagingPoints = (averagingPoints / 2) * 2 + 1;  // make it odd >= averagingPoints
 
         Float_t sumAvg = (Float_t)GetIntegralInRange(0, averagingPoints) / averagingPoints;
@@ -653,7 +653,7 @@ std::vector<Float_t> TRestRawSignal::GetSignalSmoothed(Int_t averagingPoints, st
 
         for (int i = GetNumberOfPoints() - averagingPoints / 2; i < GetNumberOfPoints(); i++)
             result[i] = sumAvg;
-    } else if (ToUpper(option) == "EXCLUDE OUTLIERS"){
+    } else if (ToUpper(option) == "EXCLUDE OUTLIERS") {
         result = GetSignalSmoothed_ExcludeOutliers(averagingPoints);
     } else {
         cout << "TRestRawSignal::GetSignalSmoothed. Error! No such option!" << endl;
@@ -662,14 +662,15 @@ std::vector<Float_t> TRestRawSignal::GetSignalSmoothed(Int_t averagingPoints, st
 }
 
 ///////////////////////////////////////////////
-/// \brief It smoothes the existing signal and returns it in a vector of Float_t values. This method excludes points which are far off from the BaseLine IQR (e.g. signals).
-/// In case the baseline parameters were not calculated yet, this method calls CalculateBaseLine with the "ROBUST" option on the entire signal range minus 5 bins on the edges.
+/// \brief It smooths the existing signal and returns it in a vector of Float_t values. This method excludes
+/// points which are far off from the BaseLine IQR (e.g. signals). In case the baseline parameters were not
+/// calculated yet, this method calls CalculateBaseLine with the "ROBUST" option on the entire signal range
+/// minus 5 bins on the edges.
 ///
 /// \param averagingPoints It defines the number of neightbour consecutive
 /// points used to average the signal
 ///
 std::vector<Float_t> TRestRawSignal::GetSignalSmoothed_ExcludeOutliers(Int_t averagingPoints) {
-    
     std::vector<Float_t> result(GetNumberOfPoints());
 
     if (fBaseLine == 0) CalculateBaseLine(5, GetNumberOfPoints() - 5, "ROBUST");
@@ -685,15 +686,16 @@ std::vector<Float_t> TRestRawSignal::GetSignalSmoothed_ExcludeOutliers(Int_t ave
     float_t amplitude;
     for (int i = averagingPoints / 2 + 1; i < GetNumberOfPoints() - averagingPoints / 2; i++) {
         amplitude = this->GetRawData(i - (averagingPoints / 2 + 1));
-        sumAvg -= (std::abs(amplitude - fBaseLine) > 3*fBaseLineSigma)? fBaseLine / averagingPoints : amplitude / averagingPoints;
+        sumAvg -= (std::abs(amplitude - fBaseLine) > 3 * fBaseLineSigma) ? fBaseLine / averagingPoints
+                                                                         : amplitude / averagingPoints;
         amplitude = this->GetRawData(i + averagingPoints / 2);
-        sumAvg += (std::abs(amplitude - fBaseLine) > 3*fBaseLineSigma)? fBaseLine / averagingPoints : amplitude / averagingPoints;
+        sumAvg += (std::abs(amplitude - fBaseLine) > 3 * fBaseLineSigma) ? fBaseLine / averagingPoints
+                                                                         : amplitude / averagingPoints;
         result[i] = sumAvg;
     }
 
     // Points at the end, where we can calculate a moving average
-    for (int i = GetNumberOfPoints() - averagingPoints / 2; i < GetNumberOfPoints(); i++)
-        result[i] = sumAvg;
+    for (int i = GetNumberOfPoints() - averagingPoints / 2; i < GetNumberOfPoints(); i++) result[i] = sumAvg;
     return result;
 }
 
