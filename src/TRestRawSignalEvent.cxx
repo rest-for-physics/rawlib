@@ -606,7 +606,7 @@ TPad* TRestRawSignalEvent::DrawEvent(const TString& option) {
 ///
 void TRestRawSignalEvent::DrawSignals(TPad* pad, const std::vector<Int_t>& signals) {
     int maxSID = -1;
-    int max = 0;
+    int max = numeric_limits<Short_t>::min();
     int graphIndex = 1;
 
     for (const auto& s : signals) {
