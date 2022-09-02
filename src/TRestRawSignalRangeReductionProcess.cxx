@@ -81,7 +81,7 @@ TRestEvent* TRestRawSignalRangeReductionProcess::ProcessEvent(TRestEvent* inputE
     for (int n = 0; n < fInputRawSignalEvent->GetNumberOfSignals(); n++) {
         const TRestRawSignal* inputSignal = fInputRawSignalEvent->GetSignal(n);
         TRestRawSignal signal;
-        signal.SetHeadPoints(inputSignal->GetSignalID());
+        signal.SetSignalID(inputSignal->GetSignalID());
 
         for (int i = 0; i < inputSignal->GetNumberOfPoints(); i++) {
             const Double_t value = (Double_t)inputSignal->GetData(i);
