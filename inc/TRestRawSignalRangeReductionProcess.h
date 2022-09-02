@@ -47,7 +47,7 @@ class TRestRawSignalRangeReductionProcess : public TRestEventProcess {
     inline Double_t GetResolutionInNumberOfBits() const { return fResolutionInBits; }
     void SetResolutionInNumberOfBits(UShort_t nBits);
 
-    inline TVector2 GetDigitizationRange() const { return fDigitizationInputRange; }
+    inline TVector2 GetDigitizationInputRange() const { return fDigitizationInputRange; }
     void SetDigitizationInputRange(const TVector2& range);
 
     any GetInputEvent() const override { return fInputSignalEvent; }

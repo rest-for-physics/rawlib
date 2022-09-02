@@ -63,7 +63,7 @@ void TRestRawSignalRangeReductionProcess::InitFromConfigFile() {
     const resolutionInBits = GetParameter("resolutionInBits", fResolutionInBits);
     SetResolutionInBits(resolutionInBits);
 
-    const DigitizationRange = GetParameter("range", fDigitizationInputRange);
+    const DigitizationRange = GetParameter("inputRange", fDigitizationInputRange);
     SetDigitizationInputRange(DigitizationRange);
 }
 
