@@ -32,11 +32,11 @@
 //! signal to a 12 bit signal (between 0 and 4095) for example.
 class TRestRawSignalRangeReductionProcess : public TRestEventProcess {
    private:
-    TRestRawSignalEvent* fInputSignalEvent;
-    TRestRawSignalEvent* fOutputSignalEvent;
+    TRestRawSignalEvent* fInputRawSignalEvent;
+    TRestRawSignalEvent* fOutputRawSignalEvent;
 
     void Initialize() override;
-
+    void InitFromConfigFile() override;
     void LoadDefaultConfig();
 
     UShort_t fResolutionInBits = 12;  // from 1 to 16 bits
@@ -50,8 +50,8 @@ class TRestRawSignalRangeReductionProcess : public TRestEventProcess {
     inline TVector2 GetDigitizationInputRange() const { return fDigitizationInputRange; }
     void SetDigitizationInputRange(const TVector2& range);
 
-    any GetInputEvent() const override { return fInputSignalEvent; }
-    any GetOutputEvent() const override { return fOutputSignalEvent; }
+    any GetInputEvent() const override { return fInputRawSignalEvent; }
+    any GetOutputEvent() const override { return fOutputRawSignalEvent; }
 
     void InitProcess() override;
     TRestEvent* ProcessEvent(TRestEvent* inputEvent) override;

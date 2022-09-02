@@ -26,8 +26,9 @@ TEST(TRestRawSignalRangeReductionProcess, Default) {
     EXPECT_TRUE(process.GetProcessName() == "rawSignalRangeReductionProcess");
 
     EXPECT_TRUE(process.GetResolutionInNumberOfBits() == 12);
-    EXPECT_TRUE(process.GetDigitizationInputRange() ==
-                TVector2(std::numeric_limits<Short_t>::min(), std::numeric_limits<Short_t>::max()));
+
+    EXPECT_TRUE(process.GetDigitizationInputRange().X() == numeric_limits<Short_t>::min());
+    EXPECT_TRUE(process.GetDigitizationInputRange().Y() == numeric_limits<Short_t>::max());
 }
 
 TEST(TRestRawSignalRangeReductionProcess, FromRml) {
@@ -36,5 +37,7 @@ TEST(TRestRawSignalRangeReductionProcess, FromRml) {
     process.PrintMetadata();
 
     EXPECT_TRUE(process.GetResolutionInNumberOfBits() == 10);
-    EXPECT_TRUE(process.GetDigitizationInputRange() == TVector2(-1000, 10000));
+
+    EXPECT_TRUE(process.GetDigitizationInputRange().X() == -1000);
+    EXPECT_TRUE(process.GetDigitizationInputRange().Y() == 10000);
 }

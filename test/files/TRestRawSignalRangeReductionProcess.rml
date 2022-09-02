@@ -1,4 +1,4 @@
 <TRestRawSignalRangeReductionProcess name="testProcess">
     <parameter name="resolutionInBits" value="10"/>
-    <parameter name="inputRange" value="(-1000, 10000)"/>
+    <parameter name="inputRange" value="(-1000,10000)"/>
 </TRestRawSignalRangeReductionProcess>

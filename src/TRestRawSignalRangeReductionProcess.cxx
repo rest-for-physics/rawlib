@@ -26,11 +26,6 @@ using namespace std;
 
 ClassImp(TRestRawSignalRangeReductionProcess);
 
-TRestRawSignalRangeReductionProcess::Initialize() {
-    fInputSignalEvent = nullptr;
-    fOutputRawSignalEvent = new TRestRawSignalEvent();
-}
-
 TRestRawSignalRangeReductionProcess::TRestRawSignalRangeReductionProcess() { Initialize(); }
 
 TRestRawSignalRangeReductionProcess::TRestRawSignalRangeReductionProcess(const char* configFilename) {
@@ -40,7 +35,7 @@ TRestRawSignalRangeReductionProcess::TRestRawSignalRangeReductionProcess(const c
     }
 }
 
-TRestRawSignalRangeReductionProcess::~TRestRawSignalRangeReductionProcess() { delete fOutputSignalEvent; }
+TRestRawSignalRangeReductionProcess::~TRestRawSignalRangeReductionProcess() { delete fOutputRawSignalEvent; }
 
 void TRestRawSignalRangeReductionProcess::LoadDefaultConfig() {
     SetName("rawSignalRangeReductionProcess-default");
@@ -51,8 +46,8 @@ void TRestRawSignalRangeReductionProcess::Initialize() {
     SetSectionName(this->ClassName());
     SetLibraryVersion(LIBRARY_VERSION);
 
-    fInputSignalEvent = nullptr;
-    fOutputSignalEvent = new TRestRawSignalEvent();
+    fInputRawSignalEvent = nullptr;
+    fOutputRawSignalEvent = new TRestRawSignalEvent();
 }
 
 void TRestRawSignalRangeReductionProcess::LoadConfig(const string& configFilename, const string& name) {
@@ -60,29 +55,37 @@ void TRestRawSignalRangeReductionProcess::LoadConfig(const string& configFilenam
 }
 
 void TRestRawSignalRangeReductionProcess::InitFromConfigFile() {
-    const resolutionInBits = GetParameter("resolutionInBits", fResolutionInBits);
-    SetResolutionInBits(resolutionInBits);
+    const UShort_t resolutionInBits =
+        (UShort_t)StringToDouble(GetParameter("resolutionInBits", fResolutionInBits));
+    SetResolutionInNumberOfBits(resolutionInBits);
 
-    const DigitizationRange = GetParameter("inputRange", fDigitizationInputRange);
+    const TVector2 DigitizationRange = Get2DVectorParameterWithUnits("inputRange", fDigitizationInputRange);
     SetDigitizationInputRange(DigitizationRange);
 }
 
 void TRestRawSignalRangeReductionProcess::InitProcess() { PrintMetadata(); }
 
 TRestEvent* TRestRawSignalRangeReductionProcess::ProcessEvent(TRestEvent* inputEvent) {
-    fInputSignalEvent = (TRestRawSignalEvent*)inputEvent;
+    fInputRawSignalEvent = (TRestRawSignalEvent*)inputEvent;
 
-    if (fInputSignalEvent->GetNumberOfSignals() <= 0) {
+    if (fInputRawSignalEvent->GetNumberOfSignals() <= 0) {
         return nullptr;
     }
 
-    for (int n = 0; n < fInputSignalEvent->GetNumberOfSignals(); n++) {
-        TRestRawSignal signal = fInputSignalEvent->GetSignal(n);
+    for (int n = 0; n < fInputRawSignalEvent->GetNumberOfSignals(); n++) {
+        const TRestRawSignal* inputSignal = fInputRawSignalEvent->GetSignal(n);
+        TRestRawSignal signal;
+        signal.SetHeadPoints(inputSignal->GetSignalID());
 
-        fOutputSignalEvent->AddSignal(signal);
+        for (int i = 0; i < inputSignal->GetNumberOfPoints(); i++) {
+            const auto value = inputSignal->GetData(i);
+            signal.AddPoint(value);
+        }
+
+        fOutputRawSignalEvent->AddSignal(signal);
     }
 
-    return fOutputSignalEvent;
+    return fOutputRawSignalEvent;
 }
 
 void TRestRawSignalRangeReductionProcess::SetResolutionInNumberOfBits(UShort_t nBits) {
@@ -94,11 +97,11 @@ void TRestRawSignalRangeReductionProcess::SetResolutionInNumberOfBits(UShort_t n
     fResolutionInBits = nBits;
 }
 
-void TRestRawSignalRangeReductionProcess::SetDigitizationRange(const TVector2& range) {
+void TRestRawSignalRangeReductionProcess::SetDigitizationInputRange(const TVector2& range) {
     fDigitizationInputRange = range;
 
-    const limitMin = std::numeric_limits<Short_t>::min();
-    const limitMax = std::numeric_limits<Short_t>::max();
+    const auto limitMin = std::numeric_limits<Short_t>::min();
+    const auto limitMax = std::numeric_limits<Short_t>::max();
     if (range.X() < limitMin) {
         RESTWarning << "TRestRawSignalRangeReductionProcess::SetDigitizationRange - user set start of "
                        "Digitization range to "
