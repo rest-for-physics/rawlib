@@ -63,7 +63,11 @@ void TRestRawSignalRangeReductionProcess::InitFromConfigFile() {
     SetDigitizationInputRange(DigitizationRange);
 }
 
-void TRestRawSignalRangeReductionProcess::InitProcess() { PrintMetadata(); }
+void TRestRawSignalRangeReductionProcess::InitProcess() {
+    fDigitizationOutputRange = {0, TMath::Power(2, fResolutionInBits) - 1};
+
+    PrintMetadata();
+}
 
 TRestEvent* TRestRawSignalRangeReductionProcess::ProcessEvent(TRestEvent* inputEvent) {
     fInputRawSignalEvent = (TRestRawSignalEvent*)inputEvent;
@@ -72,14 +76,24 @@ TRestEvent* TRestRawSignalRangeReductionProcess::ProcessEvent(TRestEvent* inputE
         return nullptr;
     }
 
+    const Double_t conversionFactor = (fDigitizationOutputRange.Y() - fDigitizationOutputRange.X()) /
+                                      (fDigitizationInputRange.Y() - fDigitizationInputRange.X());
     for (int n = 0; n < fInputRawSignalEvent->GetNumberOfSignals(); n++) {
         const TRestRawSignal* inputSignal = fInputRawSignalEvent->GetSignal(n);
         TRestRawSignal signal;
         signal.SetHeadPoints(inputSignal->GetSignalID());
 
         for (int i = 0; i < inputSignal->GetNumberOfPoints(); i++) {
-            const auto value = inputSignal->GetData(i);
-            signal.AddPoint(value);
+            const Double_t value = (Double_t)inputSignal->GetData(i);
+            Double_t newValue =
+                fDigitizationOutputRange.X() + (value - fDigitizationInputRange.X()) * conversionFactor;
+            if (newValue < fDigitizationOutputRange.X()) {
+                newValue = fDigitizationOutputRange.X();
+            } else if (newValue > fDigitizationOutputRange.Y()) {
+                newValue = fDigitizationOutputRange.Y();
+            }
+            const Short_t newValueDigitized = (Short_t)round(newValue);
+            signal.AddPoint(newValueDigitized);
         }
 
         fOutputRawSignalEvent->AddSignal(signal);

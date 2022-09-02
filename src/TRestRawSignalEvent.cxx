@@ -85,10 +85,11 @@ void TRestRawSignalEvent::Initialize() {
     fSignal.clear();
     fPad = nullptr;
     gr = nullptr;
-    fMinValue = 1E10;
-    fMaxValue = -1E10;
-    fMinTime = 1E10;
-    fMaxTime = -1E10;
+
+    fMinValue = numeric_limits<Double_t>::max();
+    fMaxValue = numeric_limits<Double_t>::min();
+    fMinTime = numeric_limits<Double_t>::max();
+    fMaxTime = numeric_limits<Double_t>::min();
 }
 
 void TRestRawSignalEvent::AddSignal(TRestRawSignal& s) {

@@ -35,7 +35,6 @@ class TRestRawSignalRangeReductionProcess : public TRestEventProcess {
     TRestRawSignalEvent* fInputRawSignalEvent;
     TRestRawSignalEvent* fOutputRawSignalEvent;
 
-    void Initialize() override;
     void InitFromConfigFile() override;
     void LoadDefaultConfig();
 
@@ -43,7 +42,11 @@ class TRestRawSignalRangeReductionProcess : public TRestEventProcess {
     TVector2 fDigitizationInputRange =
         TVector2(std::numeric_limits<Short_t>::min(), std::numeric_limits<Short_t>::max());
 
+    TVector2 fDigitizationOutputRange;  //!
+
    public:
+    void Initialize() override;
+
     inline Double_t GetResolutionInNumberOfBits() const { return fResolutionInBits; }
     void SetResolutionInNumberOfBits(UShort_t nBits);
 

@@ -41,3 +41,30 @@ TEST(TRestRawSignalRangeReductionProcess, FromRml) {
     EXPECT_TRUE(process.GetDigitizationInputRange().X() == -1000);
     EXPECT_TRUE(process.GetDigitizationInputRange().Y() == 10000);
 }
+
+TEST(TRestRawSignalRangeReductionProcess, Event) {
+    TRestRawSignalRangeReductionProcess process;
+    process.SetResolutionInNumberOfBits(12);
+    process.SetDigitizationInputRange({-2000, 12000});
+
+    TRestRawSignalEvent event;
+    TRestRawSignal signal;
+    for (int i = 0; i < 512; i++) {
+        if (i == 100) {
+            signal.AddPoint(process.GetDigitizationInputRange().Y());
+        } else {
+            signal.AddPoint(process.GetDigitizationInputRange().X());
+        }
+    }
+    event.AddSignal(signal);
+
+    process.Initialize();
+    process.InitProcess();
+    const auto output = (TRestRawSignalEvent*)process.ProcessEvent(&event);
+
+    const auto outputSignal = output->GetSignal(0);
+
+    output->PrintEvent();
+    EXPECT_TRUE(outputSignal->GetMinValue() == 0);
+    EXPECT_TRUE(outputSignal->GetMaxValue() == 4095);
+}
