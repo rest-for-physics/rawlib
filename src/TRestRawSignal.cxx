@@ -885,11 +885,12 @@ TGraph* TRestRawSignal::GetGraph(Int_t color) {
     fGraph->SetLineWidth(2);
     fGraph->SetLineColor(color % 8 + 1);
     fGraph->SetMarkerStyle(7);
-    fGraph->GetXaxis()->SetLimits(0, GetNumberOfPoints());
 
     for (int i = 0; i < GetNumberOfPoints(); i++) {
         fGraph->SetPoint(i, i, GetData(i));
     }
 
+    fGraph->GetXaxis()->SetLimits(0, GetNumberOfPoints());
+    
     return fGraph;
 }
