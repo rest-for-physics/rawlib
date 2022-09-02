@@ -880,17 +880,15 @@ void TRestRawSignal::Print() const {
 ///
 TGraph* TRestRawSignal::GetGraph(Int_t color) {
     delete fGraph;
-
     fGraph = new TGraph();
 
     fGraph->SetLineWidth(2);
     fGraph->SetLineColor(color % 8 + 1);
     fGraph->SetMarkerStyle(7);
+    fGraph->GetXaxis()->SetLimits(0, GetNumberOfPoints());
 
-    int points = 0;
-    for (int n = 0; n < GetNumberOfPoints(); n++) {
-        fGraph->SetPoint(points, n, GetData(n));
-        points++;
+    for (int i = 0; i < GetNumberOfPoints(); i++) {
+        fGraph->SetPoint(i, i, GetData(i));
     }
 
     return fGraph;
