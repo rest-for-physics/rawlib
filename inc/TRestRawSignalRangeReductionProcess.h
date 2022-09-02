@@ -40,15 +40,15 @@ class TRestRawSignalRangeReductionProcess : public TRestEventProcess {
     void LoadDefaultConfig();
 
     UShort_t fResolutionInBits = 12;  // from 1 to 16 bits
-    TVector2 fDigitalizationInputRange =
+    TVector2 fDigitizationInputRange =
         TVector2(std::numeric_limits<Short_t>::min(), std::numeric_limits<Short_t>::max());
 
    public:
     inline Double_t GetResolutionInNumberOfBits() const { return fResolutionInBits; }
     void SetResolutionInNumberOfBits(UShort_t nBits);
 
-    inline TVector2 GetDigitalizationRange() const { return fDigitalizationInputRange; }
-    void SetDigitalizationInputRange(const TVector2& range);
+    inline TVector2 GetDigitizationRange() const { return fDigitizationInputRange; }
+    void SetDigitizationInputRange(const TVector2& range);
 
     any GetInputEvent() const override { return fInputSignalEvent; }
     any GetOutputEvent() const override { return fOutputSignalEvent; }
@@ -62,8 +62,8 @@ class TRestRawSignalRangeReductionProcess : public TRestEventProcess {
         BeginPrintProcess();
 
         RESTMetadata << "Resolution in bits: " << fResolutionInBits << RESTendl;
-        RESTMetadata << "Digitalization range: (" << fDigitalizationInputRange.X() << ", "
-                     << fDigitalizationInputRange.Y() << ")" << RESTendl;
+        RESTMetadata << "Digitization range: (" << fDigitizationInputRange.X() << ", "
+                     << fDigitizationInputRange.Y() << ")" << RESTendl;
 
         EndPrintProcess();
     }

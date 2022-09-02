@@ -63,8 +63,8 @@ void TRestRawSignalRangeReductionProcess::InitFromConfigFile() {
     const resolutionInBits = GetParameter("resolutionInBits", fResolutionInBits);
     SetResolutionInBits(resolutionInBits);
 
-    const digitalizationRange = GetParameter("range", fDigitalizationInputRange);
-    SetDigitalizationInputRange(digitalizationRange);
+    const DigitizationRange = GetParameter("range", fDigitizationInputRange);
+    SetDigitizationInputRange(DigitizationRange);
 }
 
 void TRestRawSignalRangeReductionProcess::InitProcess() { PrintMetadata(); }
@@ -94,23 +94,23 @@ void TRestRawSignalRangeReductionProcess::SetResolutionInNumberOfBits(UShort_t n
     fResolutionInBits = nBits;
 }
 
-void TRestRawSignalRangeReductionProcess::SetDigitalizationRange(const TVector2& range) {
-    fDigitalizationInputRange = range;
+void TRestRawSignalRangeReductionProcess::SetDigitizationRange(const TVector2& range) {
+    fDigitizationInputRange = range;
 
     const limitMin = std::numeric_limits<Short_t>::min();
     const limitMax = std::numeric_limits<Short_t>::max();
     if (range.X() < limitMin) {
-        RESTWarning << "TRestRawSignalRangeReductionProcess::SetDigitalizationRange - user set start of "
-                       "digitalization range to "
+        RESTWarning << "TRestRawSignalRangeReductionProcess::SetDigitizationRange - user set start of "
+                       "Digitization range to "
                     << range.X() << " which is below the limit of " << limitMin << ". Setting range start to "
                     << limitMin << RESTendl;
-        fDigitalizationInputRange = TVector2(limitMin, range.Y());
+        fDigitizationInputRange = TVector2(limitMin, range.Y());
     }
     if (range.Y() > limitMax) {
-        RESTWarning << "TRestRawSignalRangeReductionProcess::SetDigitalizationRange - user set end of "
-                       "digitalization range to "
+        RESTWarning << "TRestRawSignalRangeReductionProcess::SetDigitizationRange - user set end of "
+                       "Digitization range to "
                     << range.Y() << " which is above the limit of " << limitMax << ". Setting end start to "
                     << limitMax << RESTendl;
-        fDigitalizationInputRange = TVector2(range.X(), limitMax);
+        fDigitizationInputRange = TVector2(range.X(), limitMax);
     }
 }
