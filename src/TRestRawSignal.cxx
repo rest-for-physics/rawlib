@@ -59,13 +59,14 @@
 ///
 #include "TRestRawSignal.h"
 
-#include <numeric>
-
-using namespace std;
-
+#include <TAxis.h>
 #include <TF1.h>
 #include <TMath.h>
 #include <TRandom3.h>
+
+#include <numeric>
+
+using namespace std;
 
 ClassImp(TRestRawSignal);
 
@@ -890,7 +891,17 @@ TGraph* TRestRawSignal::GetGraph(Int_t color) {
         fGraph->SetPoint(i, i, GetData(i));
     }
 
-    fGraph->GetXaxis()->SetLimits(0, GetNumberOfPoints());
-    
+    fGraph->GetXaxis()->SetLimits(0, GetNumberOfPoints() - 1);
+
+    /*
+     * To draw x axis in multiples of 2
+    for (int i = 0; i < values.size(); i++) {
+        if (i % 32 != 0 && i != values.size() - 1){
+            continue;
+        }
+        fGraph->GetXaxis()->SetBinLabel(fGraph->GetXaxis()->FindBin(i), std::to_string(i).c_str());
+    }
+     */
+
     return fGraph;
 }
