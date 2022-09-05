@@ -68,7 +68,7 @@ void TRestRawSignalTREXSidesProcess::Initialize() {
 /// \brief Process initialization.
 ///
 void TRestRawSignalTREXSidesProcess::InitProcess() {
-    if (fSignalsRange.X() != -1 && fSignalsRange.Y() != -1) fRangeEnabled = true;
+    
 }
 
 ///////////////////////////////////////////////
@@ -79,17 +79,17 @@ TRestEvent* TRestRawSignalTREXSidesProcess::ProcessEvent(TRestEvent* evInput) {
     
     int south = 0, north = 0;
     
-    for( int j=0; j<fRawSignalEvent->GetNumberOfSignals(); j++ ){ //fRawSignalEvent->GetNumberOfSignals()
-        TRestRawSignal* singleSignal = fRawSignalEvent->GetSignal(j);
+    for( int j=0; j<fSignalEvent->GetNumberOfSignals(); j++ ){ //fRawSignalEvent->GetNumberOfSignals()
+        TRestRawSignal* singleSignal = fSignalEvent->GetSignal(j);
         
-        if(singleSignal->GetID()<fHalfIdRange){debug << "Signal " << j << " in plane SOUTH" << endl; south = 1;}
-        if(singleSignal->GetID()>=fHalfIdRange){debug << "Signal " << j << " in plane NORTH" << endl; north = 1;}
+        if(singleSignal->GetID()<fHalfIdRange){RESTDebug << "Signal " << j << " in plane SOUTH" << RESTendl; south = 1;}
+        if(singleSignal->GetID()>=fHalfIdRange){RESTDebug << "Signal " << j << " in plane NORTH" << RESTendl; north = 1;}
     }
     
-    if(south>0&&north==0){debug << "SOUTH event" << endl; SetObservableValue("DetectorSide", south-north);} // 1
-    if(south==0&&north>0){debug << "NORTH event" << endl; SetObservableValue("DetectorSide", south-north);} // -1
-    if(south>0&&north>0){debug << "BOTH sides event" << endl; SetObservableValue("DetectorSide", south+north);} // 2
-    if(south==0&&north==0){debug << "Empty event" << endl; SetObservableValue("DetectorSide", south-north);} // 0
+    if(south>0&&north==0){RESTDebug << "SOUTH event" << RESTendl; SetObservableValue("DetectorSide", south-north);} // 1
+    if(south==0&&north>0){RESTDebug << "NORTH event" << RESTendl; SetObservableValue("DetectorSide", south-north);} // -1
+    if(south>0&&north>0){RESTDebug << "BOTH sides event" << RESTendl; SetObservableValue("DetectorSide", south+north);} // 2
+    if(south==0&&north==0){RESTDebug << "Empty event" << RESTendl; SetObservableValue("DetectorSide", south-north);} // 0
     
     // If cut condition matches the event will be not registered.
     if (ApplyCut()) return nullptr;

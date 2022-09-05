@@ -52,7 +52,7 @@ class TRestRawSignalTREXSidesProcess : public TRestEventProcess {
     void PrintMetadata() {
         BeginPrintProcess();
 
-         RESTMetadata << "Half ID range : " << fHalfIdRange  << endl;
+         RESTMetadata << "Half ID range : " << fHalfIdRange  << RESTendl;
         
 
         EndPrintProcess();
