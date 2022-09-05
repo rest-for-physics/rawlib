@@ -129,12 +129,12 @@ TRestRawSignalConvolutionFittingProcess::TRestRawSignalConvolutionFittingProcess
 /// The default behaviour is that the config file must be specified with
 /// full path, absolute or relative.
 ///
-/// \param cfgFileName A const char* giving the path to an RML file.
+/// \param configFilename A const char* giving the path to an RML file.
 ///
-TRestRawSignalConvolutionFittingProcess::TRestRawSignalConvolutionFittingProcess(char* cfgFileName) {
+TRestRawSignalConvolutionFittingProcess::TRestRawSignalConvolutionFittingProcess(const char* configFilename) {
     Initialize();
 
-    if (LoadConfigFromFile(cfgFileName)) LoadDefaultConfig();
+    if (LoadConfigFromFile(configFilename)) LoadDefaultConfig();
 }
 
 ///////////////////////////////////////////////
@@ -166,12 +166,12 @@ void TRestRawSignalConvolutionFittingProcess::Initialize() {
 /// the path to the config file must be specified using full path, absolute or
 /// relative.
 ///
-/// \param cfgFileName A const char* giving the path to an RML file.
+/// \param configFilename A const char* giving the path to an RML file.
 /// \param name The name of the specific metadata. It will be used to find the
-/// correspondig TRestGeant4AnalysisProcess section inside the RML.
+/// corresponding TRestGeant4AnalysisProcess section inside the RML.
 ///
-void TRestRawSignalConvolutionFittingProcess::LoadConfig(std::string cfgFilename, std::string name) {
-    if (LoadConfigFromFile(cfgFilename, name)) LoadDefaultConfig();
+void TRestRawSignalConvolutionFittingProcess::LoadConfig(const string& configFilename, const string& name) {
+    if (LoadConfigFromFile(configFilename, name)) LoadDefaultConfig();
 }
 
 ///////////////////////////////////////////////
@@ -184,19 +184,19 @@ void TRestRawSignalConvolutionFittingProcess::InitProcess() {
 ///////////////////////////////////////////////
 /// \brief The main processing event function
 ///
-TRestEvent* TRestRawSignalConvolutionFittingProcess::ProcessEvent(TRestEvent* evInput) {
+TRestEvent* TRestRawSignalConvolutionFittingProcess::ProcessEvent(TRestEvent* inputEvent) {
     // no need for verbose copy now
-    fRawSignalEvent = (TRestRawSignalEvent*)evInput;
+    fRawSignalEvent = (TRestRawSignalEvent*)inputEvent;
 
-    debug << "TRestRawSignalConvolutionFittingProcess::ProcessEvent. Event ID : " << fRawSignalEvent->GetID()
-          << endl;
+    RESTDebug << "TRestRawSignalConvolutionFittingProcess::ProcessEvent. Event ID : " << fRawSignalEvent->GetID()
+          << RESTendl;
 
     Double_t SigmaMean = 0;
-    Double_t Sigma[fRawSignalEvent->GetNumberOfSignals()];
+    vector<Double_t> Sigma(fRawSignalEvent->GetNumberOfSignals());
     Double_t RatioSigmaMaxPeakMean = 0;
-    Double_t RatioSigmaMaxPeak[fRawSignalEvent->GetNumberOfSignals()];
+    vector<Double_t> RatioSigmaMaxPeak(fRawSignalEvent->GetNumberOfSignals());
     Double_t ChiSquareMean = 0;
-    Double_t ChiSquare[fRawSignalEvent->GetNumberOfSignals()];
+    vector<Double_t> ChiSquare(fRawSignalEvent->GetNumberOfSignals());
 
     map<int, Double_t> amplitudeFit;
     map<int, Double_t> shapingtimeFit;
@@ -300,15 +300,15 @@ TRestEvent* TRestRawSignalConvolutionFittingProcess::ProcessEvent(TRestEvent* ev
     RatioSigmaMaxPeakMean = RatioSigmaMaxPeakMean / fRawSignalEvent->GetNumberOfSignals();
     SetObservableValue("FitRatioSigmaMaxPeakMean", RatioSigmaMaxPeakMean);
 
-    debug << "SigmaMean: " << SigmaMean << endl;
-    debug << "SigmaMeanStdDev: " << SigmaMeanStdDev << endl;
-    debug << "ChiSquareMean: " << ChiSquareMean << endl;
-    debug << "RatioSigmaMaxPeakMean: " << RatioSigmaMaxPeakMean << endl;
+    RESTDebug << "SigmaMean: " << SigmaMean << RESTendl;
+    RESTDebug << "SigmaMeanStdDev: " << SigmaMeanStdDev << RESTendl;
+    RESTDebug << "ChiSquareMean: " << ChiSquareMean << RESTendl;
+    RESTDebug << "RatioSigmaMaxPeakMean: " << RatioSigmaMaxPeakMean << RESTendl;
     for (int k = 0; k < fRawSignalEvent->GetNumberOfSignals(); k++) {
-        debug << "Standard deviation of signal number " << k << ": " << Sigma[k] << endl;
-        debug << "Chi square of fit signal number " << k << ": " << ChiSquare[k] << endl;
-        debug << "Sandard deviation divided by amplitude of signal number " << k << ": "
-              << RatioSigmaMaxPeak[k] << endl;
+        RESTDebug << "Standard deviation of signal number " << k << ": " << Sigma[k] << RESTendl;
+        RESTDebug << "Chi square of fit signal number " << k << ": " << ChiSquare[k] << RESTendl;
+        RESTDebug << "Sandard deviation divided by amplitude of signal number " << k << ": "
+              << RatioSigmaMaxPeak[k] << RESTendl;
     }
 
     /// We define (or re-define) the baseline range and calculation range of our

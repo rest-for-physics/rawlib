@@ -20,50 +20,70 @@
  * For the list of contributors see $REST_PATH/CREDITS.                  *
  *************************************************************************/
 
-#ifndef RestCore_TRestRawFindResponseSignalProcess
-#define RestCore_TRestRawFindResponseSignalProcess
+#ifndef RestCore_TRestRawTDSToSignalProcess
+#define RestCore_TRestRawTDSToSignalProcess
 
-#include <TRestRawSignalEvent.h>
+#include "TRestRawToSignalProcess.h"
 
-#include "TRestEventProcess.h"
+// Struct that holds block header TDS data format
+struct ANABlockHead {
+    uint64_t TimeStamp;
+    uint64_t RTTicks;
+    uint64_t LTTicks;
+    uint64_t SRate;
+    uint16_t PSize;
+    uint16_t Pretrigger;
+    uint16_t mVdiv[4];
+    uint16_t NEvents;
+    uint16_t NHits;
+    uint8_t NegPolarity[4];
+};
 
-//! A process to find a representative signal to generate a response signal
-class TRestRawFindResponseSignalProcess : public TRestEventProcess {
-   private:
-    TRestRawSignalEvent* fInputSignalEvent;   //!
-    TRestRawSignalEvent* fOutputSignalEvent;  //!
+// Struct that holds event header TDS data format
+struct ANAEventHead {
+    uint64_t clockTicksLT;
+    uint64_t clockTicksRT;
+};
 
-    void Initialize() override;
-
-    void LoadDefaultConfig();
-
+//! A process to read binary files produced with TDS (Tektronix oscilloscope) DAQ
+class TRestRawTDSToSignalProcess : public TRestRawToSignalProcess {
    protected:
-    // add here the members of your event process
+    // Time stamp for block header
+    double tNow = 0;  //!
+
+    // Number of samples per block
+    int nSamples;  //!
+
+    // Number of acquired channels
+    int nChannels;  //!
+
+    // Number of points per horizontal axis
+    int pulseDepth;  //!
+
+    // Event counter
+    int nEvents = 0;  //!
+
+    // Check if pulses are negative or positive
+    bool negPolarity[4];  //!
+
+    // Sampling rate in MHz
+    double fRate = 0;
+
+    // Vertical scale in mV/Division
+    double fScale[4] = {0, 0, 0, 0};
 
    public:
-    any GetInputEvent() const override { return fInputSignalEvent; }
-    any GetOutputEvent() const override { return fOutputSignalEvent; }
-
+    void Initialize() override;
     void InitProcess() override;
     TRestEvent* ProcessEvent(TRestEvent* inputEvent) override;
-    void EndProcess() override;
-
-    void LoadConfig(const std::string& configFilename, const std::string& name = "");
-
-    void PrintMetadata() override {
-        BeginPrintProcess();
-
-        EndPrintProcess();
-    }
-
+    const char* GetProcessName() const override { return "TDSToSignal"; }
     TRestMetadata* GetProcessMetadata() const { return nullptr; }
 
-    const char* GetProcessName() const override { return "findResponseSignal"; }
+    Bool_t isExternal() { return true; }
 
-    TRestRawFindResponseSignalProcess();
-    TRestRawFindResponseSignalProcess(const char* configFilename);
-    ~TRestRawFindResponseSignalProcess();
+    TRestRawTDSToSignalProcess();
+    ~TRestRawTDSToSignalProcess();
 
-    ClassDefOverride(TRestRawFindResponseSignalProcess, 1);
+    ClassDefOverride(TRestRawTDSToSignalProcess, 1);
 };
 #endif

@@ -22,12 +22,20 @@ TEST(TRestRawSignalShapingProcess, TestFiles) {
 }
 
 TEST(TRestRawSignalShapingProcess, Default) {
-    TRestRawSignalShapingProcess rawSignalShapingProcess;
-    EXPECT_TRUE(rawSignalShapingProcess.GetProcessName() == "rawSignalShaping");  // default name
+    TRestRawSignalShapingProcess process;
+    EXPECT_TRUE(process.GetProcessName() == "rawSignalShaping");
+
+    EXPECT_TRUE(process.GetShapingType() == "shaperSin");
+    EXPECT_TRUE(process.GetShapingTime() == 10.0);
+    EXPECT_TRUE(process.GetShapingGain() == 1.0);
 }
 
 TEST(TRestRawSignalShapingProcess, FromRml) {
-    TRestRawSignalShapingProcess rawSignalShapingProcess((char*)restRawSignalShapingProcessRml.c_str());
+    TRestRawSignalShapingProcess process(restRawSignalShapingProcessRml.c_str());
 
-    rawSignalShapingProcess.PrintMetadata();
+    process.PrintMetadata();
+
+    EXPECT_TRUE(process.GetShapingType() == "responseFile");
+    EXPECT_TRUE(process.GetShapingTime() == 5.0);
+    EXPECT_TRUE(process.GetShapingGain() == 20.0);
 }

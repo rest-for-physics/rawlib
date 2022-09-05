@@ -77,20 +77,20 @@ struct CoBoHeaderFrame {
     // int fEveTimeNanoSec;
 
     void Show() {
-        std::cout << "------ Frame Header ------" << endl;
-        std::cout << "frameSize " << frameSize << endl;
+        std::cout << "------ Frame Header ------" << std::endl;
+        std::cout << "frameSize " << frameSize << std::endl;
 
-        std::cout << "frameType " << frameType << endl;
-        std::cout << "revision " << revision << endl;
-        std::cout << "headerSize " << headerSize << endl;
-        std::cout << "itemSize " << itemSize << endl;
-        std::cout << "nItems " << nItems << endl;
-        std::cout << "eventTime " << eventTime << endl;
-        std::cout << "eventIdx " << eventIdx << endl;
+        std::cout << "frameType " << frameType << std::endl;
+        std::cout << "revision " << revision << std::endl;
+        std::cout << "headerSize " << headerSize << std::endl;
+        std::cout << "itemSize " << itemSize << std::endl;
+        std::cout << "nItems " << nItems << std::endl;
+        std::cout << "eventTime " << eventTime << std::endl;
+        std::cout << "eventIdx " << eventIdx << std::endl;
 
-        std::cout << "asadIdx " << asadIdx << endl;
-        std::cout << "readOffset " << readOffset << endl;
-        std::cout << "status " << status << endl;
+        std::cout << "asadIdx " << asadIdx << std::endl;
+        std::cout << "readOffset " << readOffset << std::endl;
+        std::cout << "status " << status << std::endl;
     }
 };
 
@@ -113,21 +113,21 @@ class TRestRawMultiCoBoAsAdToSignalProcess : public TRestRawToSignalProcess {
 #endif
 
    public:
-    void InitProcess();
+    void InitProcess() override;
 
-    Bool_t AddInputFile(std::string file);
+    Bool_t AddInputFile(std::string file) override;
 
-    void Initialize();
+    void Initialize() override;
 
     Bool_t InitializeStartTimeStampFromFilename(TString fName);
 
-    TRestEvent* ProcessEvent(TRestEvent* evInput);
+    TRestEvent* ProcessEvent(TRestEvent* inputEvent) override;
 
-    void EndProcess();
+    void EndProcess() override;
 
     Bool_t FillBuffer(Int_t n);
 
-    bool fillbuffer();
+    bool FillBuffer();
 
     bool ReadFrameHeader(CoBoHeaderFrame& Frame);
 
@@ -138,10 +138,12 @@ class TRestRawMultiCoBoAsAdToSignalProcess : public TRestRawToSignalProcess {
 
     // Constructor
     TRestRawMultiCoBoAsAdToSignalProcess();
-    TRestRawMultiCoBoAsAdToSignalProcess(char* cfgFileName);
+    TRestRawMultiCoBoAsAdToSignalProcess(const char* configFilename);
     // Destructor
     ~TRestRawMultiCoBoAsAdToSignalProcess();
 
-    ClassDef(TRestRawMultiCoBoAsAdToSignalProcess, 1);
+    const char* GetProcessName() const override { return "RawMultiCoBoAsAdToSignal"; }
+
+    ClassDefOverride(TRestRawMultiCoBoAsAdToSignalProcess, 1);
 };
 #endif

@@ -29,7 +29,7 @@
 //! A base class for any process reading a binary external file as input to REST
 class TRestRawToSignalProcess : public TRestEventProcess {
    protected:
-    virtual void InitFromConfigFile();
+    void InitFromConfigFile() override;
     unsigned int payload;
     unsigned int frameBits;
     std::string fElectronicsType;  // AFTER or AGET
@@ -39,7 +39,7 @@ class TRestRawToSignalProcess : public TRestEventProcess {
     Long64_t totalBytesReaded;
     Long64_t totalBytes;
 
-    TRestRawSignalEvent* fSignalEvent = 0;  //!
+    TRestRawSignalEvent* fSignalEvent = nullptr;  //!
 #ifndef __CINT__
     FILE* fInputBinFile;  //!
 
@@ -58,43 +58,34 @@ class TRestRawToSignalProcess : public TRestEventProcess {
     void LoadDefaultConfig();
 
    public:
-    virtual any GetInputEvent() { return any((TRestEvent*)nullptr); }
-    virtual any GetOutputEvent() { return fSignalEvent; }
+    any GetInputEvent() const override { return any((TRestEvent*)nullptr); }
+    any GetOutputEvent() const override { return fSignalEvent; }
 
-    virtual void Initialize();
-    virtual void InitProcess() = 0;
-    virtual TRestEvent* ProcessEvent(TRestEvent* evInput) = 0;
-    virtual void EndProcess();
-    // virtual TString GetProcessName()=0;
-    TRestMetadata* GetProcessMetadata() { return nullptr; }
+    void PrintMetadata() override;
+    void Initialize() override;
+    TRestMetadata* GetProcessMetadata() const { return nullptr; }
 
-    void SetRunOrigin(Int_t run_origin) { fRunOrigin = run_origin; }
-    void SetSubRunOrigin(Int_t sub_run_origin) { fSubRunOrigin = sub_run_origin; }
+    inline void SetRunOrigin(Int_t runOrigin) { fRunOrigin = runOrigin; }
+    inline void SetSubRunOrigin(Int_t subRunOrigin) { fSubRunOrigin = subRunOrigin; }
 
-    void LoadConfig(std::string cfgFilename, std::string name = "");
+    void LoadConfig(const std::string& configFilename, const std::string& name = "");
 
-    virtual void PrintMetadata();
+    Bool_t OpenInputFiles(std::vector<std::string> files) override;
+    Bool_t AddInputFile(std::string file) override;
+    Bool_t ResetEntry() override;
 
-    // Bool_t OpenInputBinFile(TString fName);
-
-    virtual Bool_t OpenInputFiles(std::vector<std::string> files);
-    virtual Bool_t AddInputFile(std::string file);
-    Bool_t ResetEntry();
-
-    virtual Long64_t GetTotalBytesReaded() { return totalBytesReaded; }
-    virtual Long64_t GetTotalBytes() { return totalBytes; }
-    //  Int_t GetRunNumber(){return fRunNumber;}
-    //  Int_t GetRunIndex(){return fRunIndex;}
-    virtual std::string GetElectronicsType() { return fElectronicsType; }
+    Long64_t GetTotalBytesRead() const override { return totalBytesReaded; }
+    Long64_t GetTotalBytes() const override { return totalBytes; }
+    virtual std::string GetElectronicsType() const { return fElectronicsType; }
 
     Bool_t GoToNextFile();
 
     // Constructor
     TRestRawToSignalProcess();
-    TRestRawToSignalProcess(char* cfgFileName);
+    TRestRawToSignalProcess(const char* configFilename);
     // Destructor
     ~TRestRawToSignalProcess();
 
-    ClassDef(TRestRawToSignalProcess, 1);
+    ClassDefOverride(TRestRawToSignalProcess, 1);
 };
 #endif

@@ -24,14 +24,17 @@
 #define RestCore_TRestRawSignalRecoverChannelsProcess
 
 #ifdef REST_DetectorLib
-#include "TRestDetectorReadout.h"
+#include <TRestDetectorReadout.h>
 #endif
-#include "TRestEventProcess.h"
+#include <TRestEventProcess.h>
+
 #include "TRestRawSignalEvent.h"
 
 //! A process allowing to recover selected channels from a TRestRawSignalEvent
 class TRestRawSignalRecoverChannelsProcess : public TRestEventProcess {
    private:
+    std::vector<Int_t> fChannelIds;  //<
+
     /// A pointer to the specific TRestRawSignalEvent input
     TRestRawSignalEvent* fInputSignalEvent;  //!
 
@@ -43,30 +46,27 @@ class TRestRawSignalRecoverChannelsProcess : public TRestEventProcess {
     TRestDetectorReadout* fReadout;  //!
 #endif
 
-    void Initialize();
+    void Initialize() override;
 
     void LoadDefaultConfig();
 
     void GetAdjacentSignalIds(Int_t signalId, Int_t& idLeft, Int_t& idRight);
 
-    std::vector<Int_t> fChannelIds;
-
    public:
-    any GetInputEvent() { return fInputSignalEvent; }
-    any GetOutputEvent() { return fOutputSignalEvent; }
+    any GetInputEvent() const override { return fInputSignalEvent; }
+    any GetOutputEvent() const override { return fOutputSignalEvent; }
 
-    void InitProcess();
-    TRestEvent* ProcessEvent(TRestEvent* eventInput);
+    void InitProcess() override;
+    TRestEvent* ProcessEvent(TRestEvent* eventInput) override;
 
-    void LoadConfig(std::string cfgFilename, std::string name = "");
+    void LoadConfig(const std::string& configFilename, const std::string& name = "");
 
     /// It prints out the process parameters stored in the metadata structure
-    void PrintMetadata() {
+    void PrintMetadata() override {
         BeginPrintProcess();
-
-        for (unsigned int n = 0; n < fChannelIds.size(); n++)
-            metadata << "Channel id to recover : " << fChannelIds[n] << endl;
-
+        for (const auto& channelId : fChannelIds) {
+            RESTMetadata << "Channel id to recover: " << channelId << RESTendl;
+        }
         EndPrintProcess();
     }
 
@@ -74,15 +74,15 @@ class TRestRawSignalRecoverChannelsProcess : public TRestEventProcess {
     TRestEventProcess* Maker() { return new TRestRawSignalRecoverChannelsProcess; }
 
     /// Returns the name of this process
-    TString GetProcessName() { return (TString) "recoverChannels"; }
+    const char* GetProcessName() const override { return "recoverChannels"; }
 
     // Constructor
     TRestRawSignalRecoverChannelsProcess();
-    TRestRawSignalRecoverChannelsProcess(char* cfgFileName);
+    TRestRawSignalRecoverChannelsProcess(const char* configFilename);
 
     // Destructor
     ~TRestRawSignalRecoverChannelsProcess();
 
-    ClassDef(TRestRawSignalRecoverChannelsProcess, 1);
+    ClassDefOverride(TRestRawSignalRecoverChannelsProcess, 1);
 };
 #endif

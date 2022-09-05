@@ -37,9 +37,7 @@ class TRestRawSignalShapingProcess : public TRestEventProcess {
     /// A pointer to the specific TRestRawSignalEvent output
     TRestRawSignalEvent* fOutputSignalEvent;
 
-    void Initialize();
-
-    void LoadDefaultConfig();
+    void Initialize() override;
 
    protected:
     // add here the members of your event process
@@ -48,31 +46,39 @@ class TRestRawSignalShapingProcess : public TRestEventProcess {
     /// Types are : gaus, shaper, shaperSin, responseFile
     TString fShapingType = "shaperSin";
     /// The characteristic time of the shaping
-    Double_t fShapingTime = 10;
+    Double_t fShapingTime = 10.0;  // ns
     /// A value used to scale the input signal
-    Double_t fShapingGain = 1;
+    Double_t fShapingGain = 1.0;
 
    public:
-    any GetInputEvent() { return fInputSignalEvent; }
-    any GetOutputEvent() { return fOutputSignalEvent; }
+    inline TString GetShapingType() const { return fShapingType; }
+    inline void SetShapingType(const TString& samplingType) { fShapingType = samplingType; }
 
-    void InitProcess();
-    TRestEvent* ProcessEvent(TRestEvent* eventInput);
-    void EndProcess();
+    inline Double_t GetShapingTime() const { return fShapingTime; }
+    inline void SetShapingTime(Double_t shapingTime) { fShapingTime = shapingTime; }
 
-    void LoadConfig(std::string cfgFilename, std::string name = "");
+    inline Double_t GetShapingGain() const { return fShapingGain; }
+    inline void SetShapingGain(Double_t shapingGain) { fShapingGain = shapingGain; }
+
+    any GetInputEvent() const override { return fInputSignalEvent; }
+    any GetOutputEvent() const override { return fOutputSignalEvent; }
+
+    void InitProcess() override;
+    TRestEvent* ProcessEvent(TRestEvent* inputEvent) override;
+    void EndProcess() override;
+
+    void LoadConfig(const std::string& configFilename, const std::string& name = "");
 
     /// It prints out the process parameters stored in the metadata structure
-    void PrintMetadata() {
+    inline void PrintMetadata() override {
         BeginPrintProcess();
 
-        metadata << "Shaping type : " << fShapingType << endl;
-
-        metadata << "Shaping time : " << fShapingTime << endl;
-
-        metadata << "Amplitude gain : " << fShapingGain << endl;
-
-        if (fShapingType == "responseFile") metadata << "Response file : " << fResponseFilename << endl;
+        RESTMetadata << "Shaping type : " << fShapingType << RESTendl;
+        RESTMetadata << "Shaping time : " << fShapingTime << RESTendl;
+        RESTMetadata << "Amplitude gain : " << fShapingGain << RESTendl;
+        if (fShapingType == "responseFile") {
+            RESTMetadata << "Response file : " << fResponseFilename << RESTendl;
+        }
 
         EndPrintProcess();
     }
@@ -81,12 +87,12 @@ class TRestRawSignalShapingProcess : public TRestEventProcess {
     TRestEventProcess* Maker() { return new TRestRawSignalShapingProcess; }
 
     /// Returns the name of this process
-    TString GetProcessName() { return (TString) "rawSignalShaping"; }
+    const char* GetProcessName() const override { return "rawSignalShaping"; }
 
     TRestRawSignalShapingProcess();
-    TRestRawSignalShapingProcess(char* cfgFileName);
+    TRestRawSignalShapingProcess(const char* configFilename);
     ~TRestRawSignalShapingProcess();
 
-    ClassDef(TRestRawSignalShapingProcess, 2);
+    ClassDefOverride(TRestRawSignalShapingProcess, 2);
 };
 #endif

@@ -68,10 +68,10 @@ ClassImp(TRestRawToSignalProcess);
 
 TRestRawToSignalProcess::TRestRawToSignalProcess() { Initialize(); }
 
-TRestRawToSignalProcess::TRestRawToSignalProcess(char* cfgFileName) {
+TRestRawToSignalProcess::TRestRawToSignalProcess(const char* configFilename) {
     Initialize();
 
-    if (LoadConfigFromFile(cfgFileName)) LoadDefaultConfig();
+    if (LoadConfigFromFile(configFilename)) LoadDefaultConfig();
 }
 
 TRestRawToSignalProcess::~TRestRawToSignalProcess() {
@@ -79,8 +79,8 @@ TRestRawToSignalProcess::~TRestRawToSignalProcess() {
     delete fSignalEvent;
 }
 
-void TRestRawToSignalProcess::LoadConfig(string cfgFilename, string name) {
-    if (LoadConfigFromFile(cfgFilename, name) == -1) {
+void TRestRawToSignalProcess::LoadConfig(const string& configFilename, const string& name) {
+    if (LoadConfigFromFile(configFilename, name) == -1) {
         cout << "Loading default" << endl;
         LoadDefaultConfig();
     }
@@ -112,14 +112,15 @@ void TRestRawToSignalProcess::InitFromConfigFile() {
 
     PrintMetadata();
 
-    if (fElectronicsType == "SingleFeminos" || fElectronicsType == "TCMFeminos") return;
+    if (fElectronicsType == "SingleFeminos" || fElectronicsType == "TCMFeminos" || fElectronicsType == "TDS")
+        return;
 
     if (fElectronicsType == "FEUDream") {
         fgKeepFileOpen = false;
         return;
     }
 
-    if (GetVerboseLevel() >= REST_Warning) {
+    if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Warning) {
         cout << "REST WARNING: TRestRawToSignalProcess::InitFromConfigFile" << endl;
         cout << "Electronic type " << fElectronicsType << " not found " << endl;
         // cout << "Loading default config" << endl;
@@ -129,19 +130,8 @@ void TRestRawToSignalProcess::InitFromConfigFile() {
 }
 
 void TRestRawToSignalProcess::LoadDefaultConfig() {
-    // if (GetVerboseLevel() <= REST_Warning) {
-    //    cout << "REST WARNING: TRestRawToSignalProcess " << endl;
-    //    cout << "Error Loading config file " << endl;
-    //}
-
-    // if (GetVerboseLevel() >= REST_Debug) GetChar();
-
     fElectronicsType = "SingleFeminos";
     fMinPoints = 512;
-}
-
-void TRestRawToSignalProcess::EndProcess() {
-    // close binary file??? Already done
 }
 
 Bool_t TRestRawToSignalProcess::OpenInputFiles(vector<string> files) {
@@ -158,18 +148,18 @@ Bool_t TRestRawToSignalProcess::OpenInputFiles(vector<string> files) {
     if (nFiles > 0) {
         fInputBinFile = fInputFiles[0];
     } else {
-        ferr << "No input file is opened, in process: " << this->ClassName() << "!" << endl;
+        RESTError << "No input file is opened, in process: " << this->ClassName() << "!" << RESTendl;
         exit(1);
     }
 
-    debug << this->GetName() << " : opened " << nFiles << " files" << endl;
+    RESTDebug << this->GetName() << " : opened " << nFiles << " files" << RESTendl;
     return nFiles;
 }
 
 Bool_t TRestRawToSignalProcess::AddInputFile(string file) {
     for (int i = 0; i < fInputFileNames.size(); i++) {
         if (fInputFileNames[i] == file) {
-            ferr << "file: \"" << file << "\" already added!" << endl;
+            RESTError << "file: \"" << file << "\" already added!" << RESTendl;
             return false;
         }
     }
@@ -177,8 +167,8 @@ Bool_t TRestRawToSignalProcess::AddInputFile(string file) {
     FILE* f = fopen(file.c_str(), "rb");
 
     if (f == nullptr) {
-        warning << "REST WARNING. Input file for " << this->ClassName() << " does not exist!" << endl;
-        warning << "File : " << file << endl;
+        RESTWarning << "REST WARNING. Input file for " << this->ClassName() << " does not exist!" << RESTendl;
+        RESTWarning << "File : " << file << RESTendl;
         return false;
     }
 
@@ -208,15 +198,15 @@ Bool_t TRestRawToSignalProcess::ResetEntry() {
 void TRestRawToSignalProcess::PrintMetadata() {
     BeginPrintProcess();
 
-    metadata << " " << endl;
-    metadata << " ==================================== " << endl;
-    metadata << "DAQ : " << GetTitle() << endl;
-    metadata << "Electronics type : " << fElectronicsType << endl;
-    metadata << "Minimum number of points : " << fMinPoints << endl;
-    metadata << "All raw files open at beginning : " << fgKeepFileOpen << endl;
-    metadata << " ==================================== " << endl;
+    RESTMetadata << " " << RESTendl;
+    RESTMetadata << " ==================================== " << RESTendl;
+    RESTMetadata << "DAQ : " << GetTitle() << RESTendl;
+    RESTMetadata << "Electronics type : " << fElectronicsType << RESTendl;
+    RESTMetadata << "Minimum number of points : " << fMinPoints << RESTendl;
+    RESTMetadata << "All raw files open at beginning : " << fgKeepFileOpen << RESTendl;
+    RESTMetadata << " ==================================== " << RESTendl;
 
-    metadata << " " << endl;
+    RESTMetadata << " " << RESTendl;
 
     EndPrintProcess();
 }
@@ -230,12 +220,12 @@ Bool_t TRestRawToSignalProcess::GoToNextFile() {
             fclose(fInputBinFile);
             fInputBinFile = fopen(fInputFileNames[iCurFile].c_str(), "rb");
         }
-        info << "GoToNextFile(): Going to the next raw input file number " << iCurFile << " over " << nFiles
-             << endl;
-        info << "                Reading file name:  " << fInputFileNames[iCurFile] << endl;
+        RESTInfo << "GoToNextFile(): Going to the next raw input file number " << iCurFile << " over " << nFiles
+             << RESTendl;
+        RESTInfo << "                Reading file name:  " << fInputFileNames[iCurFile] << RESTendl;
         return true;
     } else {
-        info << "GoToNextFile(): No more file to read" << endl;
+        RESTInfo << "GoToNextFile(): No more file to read" << RESTendl;
     }
     return false;
 }

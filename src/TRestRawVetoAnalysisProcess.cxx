@@ -157,12 +157,12 @@ TRestRawVetoAnalysisProcess::TRestRawVetoAnalysisProcess() { Initialize(); }
 /// defined using the parameter `searchPath` in globals section. See
 /// TRestMetadata description.
 ///
-/// \param cfgFileName A const char* giving the path to an RML file.
+/// \param configFilename A const char* giving the path to an RML file.
 ///
-TRestRawVetoAnalysisProcess::TRestRawVetoAnalysisProcess(char* cfgFileName) {
+TRestRawVetoAnalysisProcess::TRestRawVetoAnalysisProcess(const char* configFilename) {
     Initialize();
 
-    LoadConfig(cfgFileName);
+    LoadConfig(configFilename);
 }
 
 ///////////////////////////////////////////////
@@ -186,12 +186,12 @@ void TRestRawVetoAnalysisProcess::LoadDefaultConfig() {
 /// the path to the config file must be specified using full path, absolute or
 /// relative.
 ///
-/// \param cfgFileName A const char* giving the path to an RML file.
+/// \param configFilename A const char* giving the path to an RML file.
 /// \param name The name of the specific metadata. It will be used to find the
-/// correspondig TRestRawVetoAnalysisProcess section inside the RML.
+/// corresponding TRestRawVetoAnalysisProcess section inside the RML.
 ///
-void TRestRawVetoAnalysisProcess::LoadConfig(std::string cfgFilename, std::string name) {
-    if (LoadConfigFromFile(cfgFilename, name)) LoadDefaultConfig();
+void TRestRawVetoAnalysisProcess::LoadConfig(const string& configFilename, const string& name) {
+    if (LoadConfigFromFile(configFilename, name)) LoadDefaultConfig();
 }
 
 ///////////////////////////////////////////////
@@ -217,8 +217,8 @@ void TRestRawVetoAnalysisProcess::Initialize() {
 ///////////////////////////////////////////////
 /// \brief The main processing event function
 ///
-TRestEvent* TRestRawVetoAnalysisProcess::ProcessEvent(TRestEvent* evInput) {
-    fSignalEvent = (TRestRawSignalEvent*)evInput;
+TRestEvent* TRestRawVetoAnalysisProcess::ProcessEvent(TRestEvent* inputEvent) {
+    fSignalEvent = (TRestRawSignalEvent*)inputEvent;
 
     map<int, Double_t> VetoMaxPeakAmplitude_map;
     map<int, Double_t> VetoPeakTime_map;
@@ -352,10 +352,10 @@ TRestEvent* TRestRawVetoAnalysisProcess::ProcessEvent(TRestEvent* evInput) {
         }
     }
 
-    if (GetVerboseLevel() >= REST_Debug) {
+    if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Debug) {
         fSignalEvent->PrintEvent();
 
-        if (GetVerboseLevel() >= REST_Extreme) GetChar();
+        if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Extreme) GetChar();
     }
 
     return fSignalEvent;
@@ -429,29 +429,29 @@ void TRestRawVetoAnalysisProcess::PrintMetadata() {
 
     // Print output metadata using, metadata << endl;
     for (unsigned int i = 0; i < fVetoGroupNames.size(); i++) {
-        metadata << "Veto group " << fVetoGroupNames[i] << " signal IDs: " << fVetoGroupIds[i] << endl;
+        RESTMetadata << "Veto group " << fVetoGroupNames[i] << " signal IDs: " << fVetoGroupIds[i] << RESTendl;
     }
 
     if (fVetoSignalId[0] != -1) {
         for (unsigned int i = 0; i < fVetoSignalId.size(); i++) {
-            metadata << "Veto signal ID: " << fVetoSignalId[i] << endl;
+            RESTMetadata << "Veto signal ID: " << fVetoSignalId[i] << RESTendl;
         }
     } else {
-        metadata << " " << endl;
-        metadata << "All veto signal IDs: ";
+        RESTMetadata << " " << RESTendl;
+        RESTMetadata << "All veto signal IDs: ";
         for (unsigned int i = 0; i < fVetoGroupIds.size() - 1; i++) {
-            metadata << fVetoGroupIds[i] << ",";
+            RESTMetadata << fVetoGroupIds[i] << ",";
         }
-        metadata << fVetoGroupIds[fVetoGroupIds.size() - 1] << endl;
+        RESTMetadata << fVetoGroupIds[fVetoGroupIds.size() - 1] << RESTendl;
     }
     if (fThreshold != -1) {
-        metadata << "Veto threshold: " << fThreshold << endl;
+        RESTMetadata << "Veto threshold: " << fThreshold << RESTendl;
     }
     if (fTimeWindow[0] != -1) {
-        metadata << "Peak time window: (" << fTimeWindow[0] << ", " << fTimeWindow[1] << ")" << endl;
+        RESTMetadata << "Peak time window: (" << fTimeWindow[0] << ", " << fTimeWindow[1] << ")" << RESTendl;
     }
-    metadata << "Noise reduction: Points over Threshold parameters = (" << fPointThreshold << ", "
-             << fSignalThreshold << ", " << fPointsOverThreshold << ")" << endl;
+    RESTMetadata << "Noise reduction: Points over Threshold parameters = (" << fPointThreshold << ", "
+             << fSignalThreshold << ", " << fPointsOverThreshold << ")" << RESTendl;
 
     EndPrintProcess();
 }

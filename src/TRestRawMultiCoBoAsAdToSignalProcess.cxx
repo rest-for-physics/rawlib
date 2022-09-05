@@ -69,7 +69,7 @@ ClassImp(TRestRawMultiCoBoAsAdToSignalProcess);
 
 TRestRawMultiCoBoAsAdToSignalProcess::TRestRawMultiCoBoAsAdToSignalProcess() { Initialize(); }
 
-TRestRawMultiCoBoAsAdToSignalProcess::TRestRawMultiCoBoAsAdToSignalProcess(char* cfgFileName) {
+TRestRawMultiCoBoAsAdToSignalProcess::TRestRawMultiCoBoAsAdToSignalProcess(const char* configFilename) {
     Initialize();
 }
 
@@ -174,20 +174,20 @@ Bool_t TRestRawMultiCoBoAsAdToSignalProcess::AddInputFile(string file) {
     return false;
 }
 
-TRestEvent* TRestRawMultiCoBoAsAdToSignalProcess::ProcessEvent(TRestEvent* evInput) {
+TRestEvent* TRestRawMultiCoBoAsAdToSignalProcess::ProcessEvent(TRestEvent* inputEvent) {
     fSignalEvent->Initialize();
 
     if (EndReading()) {
         return nullptr;
     }
-    if (!fillbuffer()) {
+    if (!FillBuffer()) {
         fSignalEvent->SetOK(false);
         return fSignalEvent;
     }
 
     // Int_t nextId = GetLowestEventId();
 
-    if (GetVerboseLevel() >= REST_Debug) {
+    if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Debug) {
         cout << "TRestRawMultiCoBoAsAdToSignalProcess: Generating event with ID: " << fCurrentEvent << endl;
     }
 
@@ -210,7 +210,7 @@ TRestEvent* TRestRawMultiCoBoAsAdToSignalProcess::ProcessEvent(TRestEvent* evInp
 
                     fSignalEvent->AddSignal(signal);
 
-                    if (GetVerboseLevel() >= REST_Extreme) {
+                    if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Extreme) {
                         cout << "AgetId, chnId, first value, max value: " << m / 68 << ", " << m % 68 << ", "
                              << signal.GetData(0) << ", " << signal.GetMaxValue() << endl;
                     }
@@ -222,7 +222,7 @@ TRestEvent* TRestRawMultiCoBoAsAdToSignalProcess::ProcessEvent(TRestEvent* evInp
         it++;
     }
 
-    if (GetVerboseLevel() >= REST_Debug) {
+    if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Debug) {
         cout << "TRestRawMultiCoBoAsAdToSignalProcess: event time is : " << tSt << endl;
         cout << "TRestRawMultiCoBoAsAdToSignalProcess: " << fSignalEvent->GetNumberOfSignals()
              << " signals added" << endl;
@@ -242,8 +242,8 @@ TRestEvent* TRestRawMultiCoBoAsAdToSignalProcess::ProcessEvent(TRestEvent* evInp
 void TRestRawMultiCoBoAsAdToSignalProcess::EndProcess() {
     for (int i = 0; i < fileerrors.size(); i++) {
         if (fileerrors[i] > 0) {
-            warning << "Found " << fileerrors[i] << " error frame headers in file " << i << endl;
-            warning << "\"" << fInputFileNames[i] << "\"" << endl;
+            RESTWarning << "Found " << fileerrors[i] << " error frame headers in file " << i << RESTendl;
+            RESTWarning << "\"" << fInputFileNames[i] << "\"" << RESTendl;
         }
     }
 
@@ -252,7 +252,7 @@ void TRestRawMultiCoBoAsAdToSignalProcess::EndProcess() {
 
 // true: finish filling
 // false: error when filling
-bool TRestRawMultiCoBoAsAdToSignalProcess::fillbuffer() {
+bool TRestRawMultiCoBoAsAdToSignalProcess::FillBuffer() {
     // if the file is opened but not read, read header frame
     for (int i = 0; i < fInputFiles.size(); i++) {
         if (fInputFiles[i] && ftell(fInputFiles[i]) == 0) {
@@ -298,11 +298,11 @@ bool TRestRawMultiCoBoAsAdToSignalProcess::fillbuffer() {
         // b. read the next frame header
         // c. if eventid is the same as current, return to a, otherwise break.
         while (fHeaderFrame[i].eventIdx == fCurrentEvent) {
-            if (GetVerboseLevel() >= REST_Debug) {
+            if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Debug) {
                 cout << "TRestRawMultiCoBoAsAdToSignalProcess: retrieving frame header in "
                         "file "
                      << i << " (" << fInputFileNames[i] << ")" << endl;
-                if (GetVerboseLevel() >= REST_Extreme) fHeaderFrame[i].Show();
+                if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Extreme) fHeaderFrame[i].Show();
             }
 
             // reading data according to the header
@@ -336,14 +336,14 @@ bool TRestRawMultiCoBoAsAdToSignalProcess::fillbuffer() {
             }
             totalBytesReaded += 256;
             if (!ReadFrameHeader(fHeaderFrame[i])) {
-                warning << "Event " << fCurrentEvent << " : error when reading next frame header" << endl;
-                warning << "in file " << i << " \"" << fInputFileNames[i] << "\"" << endl;
-                if (fVerboseLevel > REST_Info) fHeaderFrame[i].Show();
-                warning << "trying to skip this event and find next header..." << endl;
+                RESTWarning << "Event " << fCurrentEvent << " : error when reading next frame header" << RESTendl;
+                RESTWarning << "in file " << i << " \"" << fInputFileNames[i] << "\"" << RESTendl;
+                if (fVerboseLevel > TRestStringOutput::REST_Verbose_Level::REST_Info) fHeaderFrame[i].Show();
+                RESTWarning << "trying to skip this event and find next header..." << RESTendl;
                 fileerrors[i] += 1;
-                REST_Verbose_Level tmp = fVerboseLevel;
+                TRestStringOutput::REST_Verbose_Level tmp = fVerboseLevel;
                 bool found = false;
-                fVerboseLevel = REST_Silent;
+                fVerboseLevel = TRestStringOutput::REST_Verbose_Level::REST_Silent;
                 for (int k = 0; k < 1088; k++)  // fullreadoutsize(278528)/headersize(256)=1088
                 {
                     if (fread(fHeaderFrame[i].frameHeader, 256, 1, fInputFiles[i]) != 1 ||
@@ -353,9 +353,9 @@ bool TRestRawMultiCoBoAsAdToSignalProcess::fillbuffer() {
                     totalBytesReaded += 256;
                     if (ReadFrameHeader(fHeaderFrame[i])) {
                         fVerboseLevel = tmp;
-                        warning << "Successfully found next header (EventId : " << fHeaderFrame[i].eventIdx
-                                << ")" << endl;
-                        if (fVerboseLevel > REST_Info) fHeaderFrame[i].Show();
+                        RESTWarning << "Successfully found next header (EventId : " << fHeaderFrame[i].eventIdx
+                                << ")" << RESTendl;
+                        if (fVerboseLevel > TRestStringOutput::REST_Verbose_Level::REST_Info) fHeaderFrame[i].Show();
                         cout << endl;
                         // GetChar();
                         found = true;
@@ -413,49 +413,49 @@ bool TRestRawMultiCoBoAsAdToSignalProcess::ReadFrameHeader(CoBoHeaderFrame& HdrF
 
     if (HdrFrame.frameType == 1) {
         if (HdrFrame.itemSize != 4) {
-            warning << "unsupported item size!" << endl;
+            RESTWarning << "unsupported item size!" << RESTendl;
             return false;
         }
 
     } else if (HdrFrame.frameType == 2) {
         if (HdrFrame.itemSize != 2) {
-            warning << "unsupported item size!" << endl;
+            RESTWarning << "unsupported item size!" << RESTendl;
             return false;
         }
         if (HdrFrame.nItems != 139264) {
-            warning << "unsupported nItems!" << endl;
+            RESTWarning << "unsupported nItems!" << RESTendl;
             return false;
         }
     } else {
-        warning << "unknown frame type" << endl;
+        RESTWarning << "unknown frame type" << RESTendl;
         return false;
     }
 
     // warning<<"revision: "<<revision<<endl;
     if (HdrFrame.revision != 5) {
-        warning << "unsupported revision!" << endl;
+        RESTWarning << "unsupported revision!" << RESTendl;
         return false;
     }
 
     // warning<<"frameHeaderSize: "<<frameHeaderSize<<endl;
     if (HdrFrame.headerSize != 1) {
-        warning << "unsupported frameHeader size!" << endl;
+        RESTWarning << "unsupported frameHeader size!" << RESTendl;
         return false;
     }
 
     // warning<<"readOffset: "<<readOffset<<endl;
     if (HdrFrame.readOffset != 0) {
-        warning << "unsupported readOffset!" << endl;
+        RESTWarning << "unsupported readOffset!" << RESTendl;
         return false;
     }
 
     if (HdrFrame.status) {
-        warning << "bad frame!" << endl;
+        RESTWarning << "bad frame!" << RESTendl;
         return false;
     }
 
     if (HdrFrame.nItems * HdrFrame.itemSize + 256 != HdrFrame.frameSize) {
-        warning << "Event " << fCurrentEvent << " : item number and frame size unmatch!" << endl;
+        RESTWarning << "Event " << fCurrentEvent << " : item number and frame size unmatch!" << RESTendl;
 
         // sometimes there is a itemnumber-framesize unmatch problem
         // nItems*itemSize(=4)+256=frameSize

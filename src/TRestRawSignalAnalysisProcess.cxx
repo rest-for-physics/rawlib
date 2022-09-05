@@ -278,8 +278,8 @@ void TRestRawSignalAnalysisProcess::InitProcess() {
 ///////////////////////////////////////////////
 /// \brief The main processing event function
 ///
-TRestEvent* TRestRawSignalAnalysisProcess::ProcessEvent(TRestEvent* evInput) {
-    fSignalEvent = (TRestRawSignalEvent*)evInput;
+TRestEvent* TRestRawSignalAnalysisProcess::ProcessEvent(TRestEvent* inputEvent) {
+    fSignalEvent = (TRestRawSignalEvent*)inputEvent;
 
     // we save some complex typed analysis result
     map<int, Double_t> baseline;
@@ -331,7 +331,7 @@ TRestEvent* TRestRawSignalAnalysisProcess::ProcessEvent(TRestEvent* evInput) {
         // if (sgnl->GetPointsOverThreshold().size() < 2) continue;
         if (sgnl->GetPointsOverThreshold().size() >= 2) nGoodSignals++;
 
-        // Now TRestRawSignal returns directly baseline substracted values
+        // Now TRestRawSignal returns directly baseline subtracted values
         baseline[sgnl->GetID()] = sgnl->GetBaseLine();
         baselinesigma[sgnl->GetID()] = sgnl->GetBaseLineSigma();
         ampsgn_intmethod[sgnl->GetID()] = sgnl->GetThresholdIntegral();
@@ -478,7 +478,7 @@ TRestEvent* TRestRawSignalAnalysisProcess::ProcessEvent(TRestEvent* evInput) {
     SetObservableValue("MaxPeakTimeDelay", peakTimeDelay);
     SetObservableValue("AveragePeakTime", peakTimeAverage);
 
-    if (GetVerboseLevel() >= REST_Debug) {
+    if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Debug) {
         for (auto i : fObservablesDefined) {
             fAnalysisTree->PrintObservable(i.second);
         }

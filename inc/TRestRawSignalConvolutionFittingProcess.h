@@ -43,9 +43,9 @@ class TRestRawSignalConvolutionFittingProcess : public TRestEventProcess {
   Double_t fSignalThreshold;
   Int_t fNPointsOverThreshold; */
 
-    void InitFromConfigFile();
+    void InitFromConfigFile() override;
 
-    void Initialize();
+    void Initialize() override;
 
     void LoadDefaultConfig();
 
@@ -53,16 +53,16 @@ class TRestRawSignalConvolutionFittingProcess : public TRestEventProcess {
     // add here the members of your event process
 
    public:
-    any GetInputEvent() { return fRawSignalEvent; }
-    any GetOutputEvent() { return fRawSignalEvent; }
+    any GetInputEvent() const override { return fRawSignalEvent; }
+    any GetOutputEvent() const override { return fRawSignalEvent; }
 
-    void InitProcess();
-    TRestEvent* ProcessEvent(TRestEvent* eventInput);
-    void EndProcess();
+    void InitProcess() override;
+    TRestEvent* ProcessEvent(TRestEvent* inputEvent) override;
+    void EndProcess() override;
 
-    void LoadConfig(std::string cfgFilename, std::string name = "");
+    void LoadConfig(const std::string& configFilename, const std::string& name = "");
 
-    void PrintMetadata() {
+    void PrintMetadata() override {
         BeginPrintProcess();
 
         /*
@@ -70,24 +70,22 @@ class TRestRawSignalConvolutionFittingProcess : public TRestEventProcess {
     fBaseLineRange.Y() << " ) "
          << endl;
     metadata << "Integral range : ( " << fIntegralRange.X() << " , " <<
-    fIntegralRange.Y() << " ) "
-         << endl;
+    fIntegralRange.Y() << " ) " << endl;
     metadata << "Point Threshold : " << fPointThreshold << " sigmas" << endl;
     metadata << "Signal threshold : " << fSignalThreshold << " sigmas" << endl;
-    metadata << "Number of points over threshold : " << fNPointsOverThreshold <<
-    endl;
+    metadata << "Number of points over threshold : " << fNPointsOverThreshold << endl;
     metadata << " " << endl;
         */
 
         EndPrintProcess();
     }
 
-    TString GetProcessName() { return (TString) "rawSignalConvolutionFitting"; }
+    const char* GetProcessName() const override { return "rawSignalConvolutionFitting"; }
 
     TRestRawSignalConvolutionFittingProcess();  // Constructor
-    TRestRawSignalConvolutionFittingProcess(char* cfgFileName);
+    TRestRawSignalConvolutionFittingProcess(const char* configFilename);
     ~TRestRawSignalConvolutionFittingProcess();  // Destructor
 
-    ClassDef(TRestRawSignalConvolutionFittingProcess, 1);
+    ClassDefOverride(TRestRawSignalConvolutionFittingProcess, 1);
 };
 #endif

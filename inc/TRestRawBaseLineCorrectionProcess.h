@@ -20,50 +20,59 @@
  * For the list of contributors see $REST_PATH/CREDITS.                  *
  *************************************************************************/
 
-#ifndef RestCore_TRestRawFindResponseSignalProcess
-#define RestCore_TRestRawFindResponseSignalProcess
-
-#include <TRestRawSignalEvent.h>
+#ifndef RESTProc_TRestRawBaseLineCorrectionProcess
+#define RESTProc_TRestRawBaseLineCorrectionProcess
 
 #include "TRestEventProcess.h"
+#include "TRestRawSignalEvent.h"
 
-//! A process to find a representative signal to generate a response signal
-class TRestRawFindResponseSignalProcess : public TRestEventProcess {
+class TRestRawBaseLineCorrectionProcess : public TRestEventProcess {
    private:
-    TRestRawSignalEvent* fInputSignalEvent;   //!
-    TRestRawSignalEvent* fOutputSignalEvent;  //!
+    // We define specific input/output event data holders
+    TRestRawSignalEvent* fInputEvent;   //!
+    TRestRawSignalEvent* fOutputEvent;  //!
 
     void Initialize() override;
 
-    void LoadDefaultConfig();
+    /// It defines the signals id range where analysis is applied
+    TVector2 fSignalsRange = TVector2(-1, -1);
 
-   protected:
-    // add here the members of your event process
+    /// Time window width in bins for the moving average filter for baseline correction
+    Int_t fSmoothingWindow = 75;
+
+    /// Just a flag to quickly determine if we have to apply the range filter
+    Bool_t fRangeEnabled = false;  //!
 
    public:
-    any GetInputEvent() const override { return fInputSignalEvent; }
-    any GetOutputEvent() const override { return fOutputSignalEvent; }
+    any GetInputEvent() const override { return fInputEvent; }
+    any GetOutputEvent() const override { return fOutputEvent; }
 
     void InitProcess() override;
-    TRestEvent* ProcessEvent(TRestEvent* inputEvent) override;
-    void EndProcess() override;
 
-    void LoadConfig(const std::string& configFilename, const std::string& name = "");
+    TRestEvent* ProcessEvent(TRestEvent* eventInput) override;
+
+    void EndProcess() override;
 
     void PrintMetadata() override {
         BeginPrintProcess();
 
+        RESTMetadata << "Smoothing window size: " << fSmoothingWindow << RESTendl;
+        RESTMetadata << "Baseline correction applied to signals with IDs in range (" << fSignalsRange.X() << "," << fSignalsRange.Y() << ")" << RESTendl;
+
         EndPrintProcess();
     }
 
-    TRestMetadata* GetProcessMetadata() const { return nullptr; }
+    /// Returns a new instance of this class
+    TRestEventProcess* Maker() { return new TRestRawBaseLineCorrectionProcess; }
 
-    const char* GetProcessName() const override { return "findResponseSignal"; }
+    /// Returns the name of this process
+    const char* GetProcessName() const override { return "baseLineCorrection"; }
 
-    TRestRawFindResponseSignalProcess();
-    TRestRawFindResponseSignalProcess(const char* configFilename);
-    ~TRestRawFindResponseSignalProcess();
+    TRestRawBaseLineCorrectionProcess();
+    ~TRestRawBaseLineCorrectionProcess();
 
-    ClassDefOverride(TRestRawFindResponseSignalProcess, 1);
+    // ROOT class definition helper. Increase the number in it every time
+    // you add/rename/remove the process parameters
+    ClassDefOverride(TRestRawBaseLineCorrectionProcess, 1);
 };
 #endif

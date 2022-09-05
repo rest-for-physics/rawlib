@@ -20,59 +20,67 @@
  * For the list of contributors see $REST_PATH/CREDITS.                  *
  *************************************************************************/
 
-#ifndef RestCore_TRestRawSignalAddNoiseProcess
-#define RestCore_TRestRawSignalAddNoiseProcess
+#ifndef RestCore_TRestRawSignalRangeReductionProcess
+#define RestCore_TRestRawSignalRangeReductionProcess
 
 #include <TRestEventProcess.h>
 
 #include "TRestRawSignalEvent.h"
 
-//! A process to add/emulate electronic noise into a TRestRawSignalEvent
-class TRestRawSignalAddNoiseProcess : public TRestEventProcess {
+//! A process to reduce the range of values of the signals to emulate a realistic ADC.
+//! Using Short_t (default) is equivalent to using a 16 bit ADC, we can use this process to go from a 16 bit
+//! signal to a 12 bit signal (between 0 and 4095) for example.
+class TRestRawSignalRangeReductionProcess : public TRestEventProcess {
    private:
-    TRestRawSignalEvent* fInputSignalEvent;
-    TRestRawSignalEvent* fOutputSignalEvent;
+    TRestRawSignalEvent* fInputRawSignalEvent;
+    TRestRawSignalEvent* fOutputRawSignalEvent;
 
-    void Initialize() override;
-
+    void InitFromConfigFile() override;
     void LoadDefaultConfig();
 
-    Double_t fNoiseLevel = 10.0;
+    UShort_t fResolutionInBits = 12;  // from 1 to 16 bits
+    TVector2 fDigitizationInputRange =
+        TVector2(std::numeric_limits<Short_t>::min(), std::numeric_limits<Short_t>::max());
 
-   protected:
-    // add here the members of your event process
+    TVector2 fDigitizationOutputRange;  //!
 
    public:
-    inline Double_t GetNoiseLevel() const { return fNoiseLevel; }
-    inline void SetNoiseLevel(Double_t noiseLevel) { fNoiseLevel = noiseLevel; }
+    void Initialize() override;
 
-    any GetInputEvent() const override { return fInputSignalEvent; }
-    any GetOutputEvent() const override { return fOutputSignalEvent; }
+    inline Double_t GetResolutionInNumberOfBits() const { return fResolutionInBits; }
+    void SetResolutionInNumberOfBits(UShort_t nBits);
+
+    inline TVector2 GetDigitizationInputRange() const { return fDigitizationInputRange; }
+    void SetDigitizationInputRange(const TVector2& range);
+
+    any GetInputEvent() const override { return fInputRawSignalEvent; }
+    any GetOutputEvent() const override { return fOutputRawSignalEvent; }
 
     void InitProcess() override;
     TRestEvent* ProcessEvent(TRestEvent* inputEvent) override;
-    void EndProcess() override;
 
     void LoadConfig(const std::string& configFilename, const std::string& name = "");
 
     inline void PrintMetadata() override {
         BeginPrintProcess();
 
-        RESTMetadata << "Noise Level : " << fNoiseLevel << RESTendl;
+        RESTMetadata << "Resolution in bits: " << fResolutionInBits << RESTendl;
+        RESTMetadata << "Digitization range: (" << fDigitizationInputRange.X() << ", "
+                     << fDigitizationInputRange.Y() << ")" << RESTendl;
 
         EndPrintProcess();
     }
 
     TRestMetadata* GetProcessMetadata() const { return nullptr; }
 
-    const char* GetProcessName() const override { return "rawSignalAddNoise"; }
+    const char* GetProcessName() const override { return "rawSignalRangeReductionProcess"; }
 
     // Constructor
-    TRestRawSignalAddNoiseProcess();
-    TRestRawSignalAddNoiseProcess(const char* configFilename);
+    TRestRawSignalRangeReductionProcess();
+    TRestRawSignalRangeReductionProcess(const char* configFilename);
     // Destructor
-    ~TRestRawSignalAddNoiseProcess();
+    ~TRestRawSignalRangeReductionProcess();
 
-    ClassDefOverride(TRestRawSignalAddNoiseProcess, 1);
+    ClassDefOverride(TRestRawSignalRangeReductionProcess, 1);
 };
-#endif
+#endif  // RestCore_TRestRawSignalRangeReductionProcess

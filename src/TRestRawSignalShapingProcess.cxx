@@ -104,26 +104,17 @@ TRestRawSignalShapingProcess::TRestRawSignalShapingProcess() { Initialize(); }
 /// The default behaviour is that the config file must be specified with
 /// full path, absolute or relative.
 ///
-/// \param cfgFileName A const char* giving the path to an RML file.
+/// \param configFilename A const char* giving the path to an RML file.
 ///
-TRestRawSignalShapingProcess::TRestRawSignalShapingProcess(char* cfgFileName) {
+TRestRawSignalShapingProcess::TRestRawSignalShapingProcess(const char* configFilename) {
     Initialize();
-
-    if (LoadConfigFromFile(cfgFileName) == -1) LoadDefaultConfig();
+    LoadConfigFromFile(configFilename);
 }
 
 ///////////////////////////////////////////////
 /// \brief Default destructor
 ///
 TRestRawSignalShapingProcess::~TRestRawSignalShapingProcess() { delete fOutputSignalEvent; }
-
-///////////////////////////////////////////////
-/// \brief Function to load the default config in absence of RML input
-///
-void TRestRawSignalShapingProcess::LoadDefaultConfig() {
-    SetName("rawSignalShapingProcess-Default");
-    SetTitle("Default config");
-}
 
 ///////////////////////////////////////////////
 /// \brief Function to initialize input/output event members and define the
@@ -145,12 +136,12 @@ void TRestRawSignalShapingProcess::Initialize() {
 /// the path to the config file must be specified using full path, absolute or
 /// relative.
 ///
-/// \param cfgFileName A const char* giving the path to an RML file.
+/// \param configFilename A const char* giving the path to an RML file.
 /// \param name The name of the specific metadata. It will be used to find the
-/// correspondig TRestGeant4AnalysisProcess section inside the RML.
+/// corresponding TRestGeant4AnalysisProcess section inside the RML.
 ///
-void TRestRawSignalShapingProcess::LoadConfig(string cfgFilename, string name) {
-    if (LoadConfigFromFile(cfgFilename, name) == -1) LoadDefaultConfig();
+void TRestRawSignalShapingProcess::LoadConfig(const string& configFilename, const string& name) {
+    LoadConfigFromFile(configFilename, name);
 }
 
 ///////////////////////////////////////////////
@@ -163,7 +154,7 @@ void TRestRawSignalShapingProcess::InitProcess() {
      * NOT IMPLEMENTED. TODO To use a generic response from a
      * predefined TRestDetectorSignal
      *
-     * For the moment we do only a gausian shaping"
+     * For the moment we do only a gaussian shaping"
      * /
 
     responseSignal = new TRestRawSignal();
@@ -198,10 +189,12 @@ void TRestRawSignalShapingProcess::InitProcess() {
 ///////////////////////////////////////////////
 /// \brief The main processing event function
 ///
-TRestEvent* TRestRawSignalShapingProcess::ProcessEvent(TRestEvent* evInput) {
-    fInputSignalEvent = (TRestRawSignalEvent*)evInput;
+TRestEvent* TRestRawSignalShapingProcess::ProcessEvent(TRestEvent* inputEvent) {
+    fInputSignalEvent = (TRestRawSignalEvent*)inputEvent;
 
-    if (fInputSignalEvent->GetNumberOfSignals() <= 0) return nullptr;
+    if (fInputSignalEvent->GetNumberOfSignals() <= 0) {
+        return nullptr;
+    }
 
     std::vector<double> response;
     Int_t Nr = 0;
@@ -247,7 +240,7 @@ TRestEvent* TRestRawSignalShapingProcess::ProcessEvent(TRestEvent* evInput) {
             response[i] = TMath::Exp(-3. * coeff) * coeff * coeff * coeff * sin(coeff);
         }
     } else {
-        if (GetVerboseLevel() >= REST_Warning)
+        if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Warning)
             cout << "REST WARNING. Shaping type : " << fShapingType << " is not defined!!" << endl;
         return nullptr;
     }
@@ -276,7 +269,9 @@ TRestEvent* TRestRawSignalShapingProcess::ProcessEvent(TRestEvent* evInput) {
             }
         }
 
-        for (int i = 0; i < nBins; i++) shapingSignal.AddPoint((Short_t)out[i]);
+        for (int i = 0; i < nBins; i++) {
+            shapingSignal.AddPoint((Short_t)out[i]);
+        }
         shapingSignal.SetSignalID(inSignal.GetSignalID());
 
         fOutputSignalEvent->AddSignal(shapingSignal);
