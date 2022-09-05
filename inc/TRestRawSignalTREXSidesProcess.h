@@ -52,13 +52,13 @@ class TRestRawSignalTREXSidesProcess : public TRestEventProcess {
     void PrintMetadata() {
         BeginPrintProcess();
 
-        metadata << "Half ID range : " << fHalfIdRange  << endl;
+         RESTMetadata << "Half ID range : " << fHalfIdRange  << endl;
         
 
         EndPrintProcess();
     }
 
-    TString GetProcessName() { return (TString) "RawSignalTREXSides"; }
+    const char* GetProcessName() const override { return "RawSignalTREXSides"; }
 
     TRestRawSignalTREXSidesProcess();   // Constructor
     ~TRestRawSignalTREXSidesProcess();  // Destructor
