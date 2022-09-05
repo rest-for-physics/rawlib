@@ -21,6 +21,24 @@
  *************************************************************************/
 //////////////////////////////////////////////////////////////////////////
 ///
+/// Process to identify events from North and South side of TREX-DM experiment.
+/// Two FEC-Feminos per side, with 4 AGET chips each board.
+/// AGET ID assigned following the pattern: 72*8*2, 72 IDs per chip, 8 chips per side, 
+/// 2 sides.
+/// With this configuration, AGET IDs go form 0 to 1151.
+/// South side: 0 to 575
+/// North side: 576 to 1151 
+/// 
+/// Metadata parameters that can be defined in the rml: 
+/// * **halfIdRange**: First AGET ID for second detector (North).  
+///
+///  ### Observables
+///
+/// * **DetectorSide**: Different value for North or South or Both sides events. 
+///     1: South side
+///     -1: North side
+///     2: Both sides
+///     0: Empty event
 ///_______________________________________________________________________________
 ///
 /// RESTsoft - Software for Rare Event Searches with TPCs

@@ -37,19 +37,19 @@ class TRestRawSignalTREXSidesProcess : public TRestEventProcess {
     /// From 0 to 575 south side, from 576 to 1151 north side.
     Int_t fHalfIdRange = 576;  
 
-    void Initialize();
+    void Initialize() override;
 
    protected:
     // add here the members of your event process
 
    public:
-    any GetInputEvent() { return fSignalEvent; }
-    any GetOutputEvent() { return fSignalEvent; }
+    any GetInputEvent() const override { return fSignalEvent; }
+    any GetOutputEvent() const override { return fSignalEvent; }
 
-    void InitProcess();
-    TRestEvent* ProcessEvent(TRestEvent* eventInput);
+    void InitProcess() override;
+    TRestEvent* ProcessEvent(TRestEvent* inputEvent) override;
 
-    void PrintMetadata() {
+    void PrintMetadata() override {
         BeginPrintProcess();
 
          RESTMetadata << "Half ID range : " << fHalfIdRange  << RESTendl;
@@ -63,6 +63,6 @@ class TRestRawSignalTREXSidesProcess : public TRestEventProcess {
     TRestRawSignalTREXSidesProcess();   // Constructor
     ~TRestRawSignalTREXSidesProcess();  // Destructor
 
-    ClassDef(TRestRawSignalTREXSidesProcess, 1);
+    ClassDefOverride(TRestRawSignalTREXSidesProcess, 1);
 };
 #endif
