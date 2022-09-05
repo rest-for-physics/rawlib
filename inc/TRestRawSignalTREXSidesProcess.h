@@ -35,7 +35,8 @@ class TRestRawSignalTREXSidesProcess : public TRestEventProcess {
     
     /// AGET IDs in TREX-DM from 0 to 1151, half range is 576 (first ID from second detector)
     /// From 0 to 575 south side, from 576 to 1151 north side.
-    Int_t fHalfIdRange = 576;  
+    TVector2 fSouthIDs = TVector2(0, 575);
+    TVector2 fNorthIDs = TVector2(576, 1151); 
 
     void Initialize() override;
 
@@ -52,7 +53,8 @@ class TRestRawSignalTREXSidesProcess : public TRestEventProcess {
     void PrintMetadata() override {
         BeginPrintProcess();
 
-         RESTMetadata << "Half ID range : " << fHalfIdRange  << RESTendl;
+         RESTMetadata << "South IDs : ( " << fSouthIDs.X() << ", " << fSouthIDs.Y() << " )" << RESTendl;
+         RESTMetadata << "North IDs : ( " << fNorthIDs.X() << ", " << fNorthIDs.Y() << " )" << RESTendl;
         
 
         EndPrintProcess();
@@ -63,6 +65,6 @@ class TRestRawSignalTREXSidesProcess : public TRestEventProcess {
     TRestRawSignalTREXSidesProcess();   // Constructor
     ~TRestRawSignalTREXSidesProcess();  // Destructor
 
-    ClassDefOverride(TRestRawSignalTREXSidesProcess, 1);
+    ClassDefOverride(TRestRawSignalTREXSidesProcess, 2);
 };
 #endif

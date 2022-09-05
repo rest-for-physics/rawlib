@@ -30,7 +30,17 @@
 /// North side: 576 to 1151 
 /// 
 /// Metadata parameters that can be defined in the rml: 
-/// * **halfIdRange**: First AGET ID for second detector (North).  
+/// * **southIDs**: Range of AGET IDs for South detector. 
+/// * **northIDs**: Range of AGET IDs for North detector. 
+///
+/// Example in rml file: 
+/// \code
+/// <addProcess type="TRestRawSignalTREXSidesProcess" name="TREXsides" value="ON" 
+///   southIDs="(0,575)"
+///   northIDs="(576,1151)"
+///   observable="all" >
+/// </addProcess>
+/// \endcode
 ///
 ///  ### Observables
 ///
@@ -100,8 +110,8 @@ TRestEvent* TRestRawSignalTREXSidesProcess::ProcessEvent(TRestEvent* evInput) {
     for( int j=0; j<fSignalEvent->GetNumberOfSignals(); j++ ){ //fRawSignalEvent->GetNumberOfSignals()
         TRestRawSignal* singleSignal = fSignalEvent->GetSignal(j);
         
-        if(singleSignal->GetID()<fHalfIdRange){RESTDebug << "Signal " << j << " in plane SOUTH" << RESTendl; south = 1;}
-        if(singleSignal->GetID()>=fHalfIdRange){RESTDebug << "Signal " << j << " in plane NORTH" << RESTendl; north = 1;}
+        if(singleSignal->GetID()>=fSouthIDs.X() && singleSignal->GetID()<=fSouthIDs.Y()){RESTDebug << "Signal " << j << " in plane SOUTH" << RESTendl; south = 1;}
+        if(singleSignal->GetID()>=fNorthIDs.X() && singleSignal->GetID()<=fNorthIDs.Y()){RESTDebug << "Signal " << j << " in plane NORTH" << RESTendl; north = 1;}
     }
     
     if(south>0&&north==0){RESTDebug << "SOUTH event" << RESTendl; SetObservableValue("DetectorSide", south-north);} // 1
