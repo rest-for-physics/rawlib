@@ -60,7 +60,7 @@
 ///                 Created from TRestRawSignalAnalysisProcess
 ///
 /// \class      TRestRawSignalTREXSidesProcess
-/// \author     David D�ez Ib��ez
+/// \author     David Díez Ibáñez
 ///
 /// <hr>
 ///
