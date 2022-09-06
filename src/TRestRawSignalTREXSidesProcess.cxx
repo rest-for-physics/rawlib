@@ -79,7 +79,7 @@ TRestRawSignalTREXSidesProcess::TRestRawSignalTREXSidesProcess() { Initialize();
 ///////////////////////////////////////////////
 /// \brief Default destructor
 ///
-TRestRawSignalTREXSidesProcess::~TRestRawSignalTREXSidesProcess() {}
+TRestRawSignalTREXSidesProcess::~TRestRawSignalTREXSidesProcess() = default;
 
 ///////////////////////////////////////////////
 /// \brief Function to initialize input/output event members and define the
@@ -100,8 +100,8 @@ void TRestRawSignalTREXSidesProcess::InitProcess() {}
 ///////////////////////////////////////////////
 /// \brief The main processing event function
 ///
-TRestEvent* TRestRawSignalTREXSidesProcess::ProcessEvent(TRestEvent* evInput) {
-    fSignalEvent = (TRestRawSignalEvent*)evInput;
+TRestEvent* TRestRawSignalTREXSidesProcess::ProcessEvent(TRestEvent* inputEvent) {
+    fSignalEvent = (TRestRawSignalEvent*)inputEvent;
 
     int south = 0, north = 0;
 
