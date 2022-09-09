@@ -269,7 +269,9 @@ TRestEvent* TRestRawSignalShapingProcess::ProcessEvent(TRestEvent* inputEvent) {
             }
         }
 
-        for (int i = 0; i < nBins; i++) shapingSignal.AddPoint((Short_t)out[i]);
+        for (int i = 0; i < nBins; i++) {
+            shapingSignal.AddPoint((Short_t)out[i]);
+        }
         shapingSignal.SetSignalID(inSignal.GetSignalID());
 
         fOutputSignalEvent->AddSignal(shapingSignal);
