@@ -23,19 +23,19 @@
 ///
 /// Process to identify events from North and South side of TREX-DM experiment.
 /// Two FEC-Feminos per side, with 4 AGET chips each board.
-/// AGET ID assigned following the pattern: 72*8*2, 72 IDs per chip, 8 chips per side, 
+/// AGET ID assigned following the pattern: 72*8*2, 72 IDs per chip, 8 chips per side,
 /// 2 sides.
 /// With this configuration, AGET IDs go form 0 to 1151.
 /// South side: 0 to 575
-/// North side: 576 to 1151 
-/// 
-/// Metadata parameters that can be defined in the rml: 
-/// * **southIDs**: Range of AGET IDs for South detector. 
-/// * **northIDs**: Range of AGET IDs for North detector. 
+/// North side: 576 to 1151
 ///
-/// Example in rml file: 
+/// Metadata parameters that can be defined in the rml:
+/// * **southIDs**: Range of AGET IDs for South detector.
+/// * **northIDs**: Range of AGET IDs for North detector.
+///
+/// Example in rml file:
 /// \code
-/// <addProcess type="TRestRawSignalTREXSidesProcess" name="TREXsides" value="ON" 
+/// <addProcess type="TRestRawSignalTREXSidesProcess" name="TREXsides" value="ON"
 ///   southIDs="(0,575)"
 ///   northIDs="(576,1151)"
 ///   observable="all" >
@@ -44,7 +44,7 @@
 ///
 ///  ### Observables
 ///
-/// * **DetectorSide**: Different value for North or South or Both sides events. 
+/// * **DetectorSide**: Different value for North or South or Both sides events.
 ///     1: South side
 ///     -1: North side
 ///     2: Both sides
@@ -55,12 +55,12 @@
 ///
 /// History of developments:
 ///
-/// 2022-September: First implementation of raw signal TREX-DM detector side 
+/// 2022-September: First implementation of raw signal TREX-DM detector side
 ///                 determination process.
 ///                 Created from TRestRawSignalAnalysisProcess
 ///
 /// \class      TRestRawSignalTREXSidesProcess
-/// \author     David DÌez Ib·Òez
+/// \author     David D√≠ez Ib√°√±ez
 ///
 /// <hr>
 ///
@@ -79,7 +79,7 @@ TRestRawSignalTREXSidesProcess::TRestRawSignalTREXSidesProcess() { Initialize();
 ///////////////////////////////////////////////
 /// \brief Default destructor
 ///
-TRestRawSignalTREXSidesProcess::~TRestRawSignalTREXSidesProcess() {}
+TRestRawSignalTREXSidesProcess::~TRestRawSignalTREXSidesProcess() = default;
 
 ///////////////////////////////////////////////
 /// \brief Function to initialize input/output event members and define the
@@ -95,32 +95,50 @@ void TRestRawSignalTREXSidesProcess::Initialize() {
 ///////////////////////////////////////////////
 /// \brief Process initialization.
 ///
-void TRestRawSignalTREXSidesProcess::InitProcess() {
-    
-}
+void TRestRawSignalTREXSidesProcess::InitProcess() {}
 
 ///////////////////////////////////////////////
 /// \brief The main processing event function
 ///
-TRestEvent* TRestRawSignalTREXSidesProcess::ProcessEvent(TRestEvent* evInput) {
-    fSignalEvent = (TRestRawSignalEvent*)evInput;
-    
+TRestEvent* TRestRawSignalTREXSidesProcess::ProcessEvent(TRestEvent* inputEvent) {
+    fSignalEvent = (TRestRawSignalEvent*)inputEvent;
+
     int south = 0, north = 0;
-    
-    for( int j=0; j<fSignalEvent->GetNumberOfSignals(); j++ ){ //fRawSignalEvent->GetNumberOfSignals()
+
+    for (int j = 0; j < fSignalEvent->GetNumberOfSignals(); j++) {  // fRawSignalEvent->GetNumberOfSignals()
         TRestRawSignal* singleSignal = fSignalEvent->GetSignal(j);
-        
-        if(singleSignal->GetID()>=fSouthIDs.X() && singleSignal->GetID()<=fSouthIDs.Y()){RESTDebug << "Signal " << j << " in plane SOUTH" << RESTendl; south = 1;}
-        if(singleSignal->GetID()>=fNorthIDs.X() && singleSignal->GetID()<=fNorthIDs.Y()){RESTDebug << "Signal " << j << " in plane NORTH" << RESTendl; north = 1;}
+
+        if (singleSignal->GetID() >= fSouthIDs.X() && singleSignal->GetID() <= fSouthIDs.Y()) {
+            RESTDebug << "Signal " << j << " in plane SOUTH" << RESTendl;
+            south = 1;
+        }
+        if (singleSignal->GetID() >= fNorthIDs.X() && singleSignal->GetID() <= fNorthIDs.Y()) {
+            RESTDebug << "Signal " << j << " in plane NORTH" << RESTendl;
+            north = 1;
+        }
     }
-    
-    if(south>0&&north==0){RESTDebug << "SOUTH event" << RESTendl; SetObservableValue("DetectorSide", south-north);} // 1
-    if(south==0&&north>0){RESTDebug << "NORTH event" << RESTendl; SetObservableValue("DetectorSide", south-north);} // -1
-    if(south>0&&north>0){RESTDebug << "BOTH sides event" << RESTendl; SetObservableValue("DetectorSide", south+north);} // 2
-    if(south==0&&north==0){RESTDebug << "Empty event" << RESTendl; SetObservableValue("DetectorSide", south-north);} // 0
-    
+
+    if (south > 0 && north == 0) {
+        RESTDebug << "SOUTH event" << RESTendl;
+        SetObservableValue("DetectorSide", south - north);
+    }  // 1
+    if (south == 0 && north > 0) {
+        RESTDebug << "NORTH event" << RESTendl;
+        SetObservableValue("DetectorSide", south - north);
+    }  // -1
+    if (south > 0 && north > 0) {
+        RESTDebug << "BOTH sides event" << RESTendl;
+        SetObservableValue("DetectorSide", south + north);
+    }  // 2
+    if (south == 0 && north == 0) {
+        RESTDebug << "Empty event" << RESTendl;
+        SetObservableValue("DetectorSide", south - north);
+    }  // 0
+
     // If cut condition matches the event will be not registered.
-    if (ApplyCut()) return nullptr;
+    if (ApplyCut()) {
+        return nullptr;
+    }
 
     return fSignalEvent;
 }

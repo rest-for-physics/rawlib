@@ -23,20 +23,20 @@
 #ifndef RestCore_TRestRawSignalTREXSidesProcess
 #define RestCore_TRestRawSignalTREXSidesProcess
 
-#include <TRestRawSignalEvent.h>
+#include <TRestEventProcess.h>
 
-#include "TRestEventProcess.h"
+#include "TRestRawSignalEvent.h"
 
 //! An analysis process to extract valuable information from a TRestRawSignalEvent.
 class TRestRawSignalTREXSidesProcess : public TRestEventProcess {
    private:
     /// A pointer to the specific TRestRawSignalEvent input
-    TRestRawSignalEvent* fSignalEvent;  //!
-    
+    TRestRawSignalEvent* fSignalEvent = nullptr;  //!
+
     /// AGET IDs in TREX-DM from 0 to 1151, half range is 576 (first ID from second detector)
     /// From 0 to 575 south side, from 576 to 1151 north side.
     TVector2 fSouthIDs = TVector2(0, 575);
-    TVector2 fNorthIDs = TVector2(576, 1151); 
+    TVector2 fNorthIDs = TVector2(576, 1151);
 
     void Initialize() override;
 
@@ -53,9 +53,8 @@ class TRestRawSignalTREXSidesProcess : public TRestEventProcess {
     void PrintMetadata() override {
         BeginPrintProcess();
 
-         RESTMetadata << "South IDs : ( " << fSouthIDs.X() << ", " << fSouthIDs.Y() << " )" << RESTendl;
-         RESTMetadata << "North IDs : ( " << fNorthIDs.X() << ", " << fNorthIDs.Y() << " )" << RESTendl;
-        
+        RESTMetadata << "South IDs : ( " << fSouthIDs.X() << ", " << fSouthIDs.Y() << " )" << RESTendl;
+        RESTMetadata << "North IDs : ( " << fNorthIDs.X() << ", " << fNorthIDs.Y() << " )" << RESTendl;
 
         EndPrintProcess();
     }
@@ -65,6 +64,7 @@ class TRestRawSignalTREXSidesProcess : public TRestEventProcess {
     TRestRawSignalTREXSidesProcess();   // Constructor
     ~TRestRawSignalTREXSidesProcess();  // Destructor
 
-    ClassDefOverride(TRestRawSignalTREXSidesProcess, 2);
+    ClassDefOverride(TRestRawSignalTREXSidesProcess, 1);
 };
+
 #endif
