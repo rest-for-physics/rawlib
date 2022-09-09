@@ -61,7 +61,7 @@
 ///                 Created from TRestRawSignalAnalysisProcess
 ///
 /// \class      TRestRawSignalDaqIdTaggingProcess
-/// \author     David DÌez Ib·Òez
+/// \author     David D√≠ez Ib√°√±ez
 ///
 /// <hr>
 ///
