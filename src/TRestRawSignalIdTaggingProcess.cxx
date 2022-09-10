@@ -21,18 +21,29 @@
  *************************************************************************/
 //////////////////////////////////////////////////////////////////////////
 ///
-/// Process to identify events from different Daq Id Ranges.
-/// For example in cases where several detectors are read with same daq.
-/// This is happens in TREX-DM: South detector 0 to 575 IDs
-/// North detector 576 to 1151 IDs.
+/// Process to identify events from different DAQ id ranges.
+/// For example, it might be used to identify different detectors, modules or
+/// regions of the detectors that are read with a common acquisition setup.
 ///
-/// Metadata parameters that can be defined in the rml:
+/// This process was motivated by the TREX-DM experiment, where we have a
+/// readout with two independent readout planes. This process will allow to
+/// identify events happening at any of those two planes in an early data
+/// processing stage, where we do not have yet access to the
+/// TRestDetectorReadout description.
+///
+/// In the particular case of TREX-DM, we define two readout planes as a
+/// function of the daq id range as follows:
+///  - South detector 0 to 575 IDs
+///  - North detector 576 to 1151 IDs.
+///
+/// This process allows to define a `tag` associated to given id range. Each
+/// tag contains the user given `name` and the associated range of ids.
+///
+/// Metadata parameters that can be defined inside the `<tag` definition:
 /// * **name**: Name for the range.
 /// * **ids**: Range of daq IDs.
 ///
-/// Each range must be defined under the "tag" section.
 /// Any number of daq ID ranges can be defined (e.g. as many "tag" sections as needed).
-/// Numbers are assigned for each range, from 1 upwards.
 ///
 /// Example in rml file:
 /// \code
@@ -42,15 +53,34 @@
 /// </addProcess>
 /// \endcode
 ///
+/// Each tag is associated with an integer number, from 1 upwards, in the order found
+/// inside the `tag` list. First tag being associated to 1, second tag to 2, etc. This
+/// will be used to construct an observable helping to identify the tags it belongs to.
+///
 ///  ### Observables
 ///
-/// * **DaqIdRanges**: Each digit corresponds a daq ID range activated in the event,
+/// * **tagId**: Each digit corresponds to a daq ID range activated in the event,
 /// ordered with increasing order.
 /// As an example, in previous rml there are 3 possible values for this observable:
-///     * 1: South daq ID range.
-///     * 2: North daq ID range.
-///     * 12: South and North daq ID ranges.
+///     * 1: Channels were found inside the `South` taq id range definition.
+///     * 2: Channels were found inside the `North` taq id range definition.
+///     * 12: Channels were found on both, `North` and `South` definitions.
 ///
+/// ### Cuts
+///
+/// This process implements TRestEventProcess::ApplyCut, therefore, we might apply
+/// a selection of events to get only those events that belong to a given definition.
+///
+/// To keep only "South" events for further data processing we would do:
+/// \code
+/// <cut name="tagId" value="(1,1)" />
+/// \endcode
+///
+/// To keep only those events producing events on both detectors we could do:
+/// \code
+/// <cut name="tagId" value="(10,20)" />
+/// \endcode
+//
 ///_______________________________________________________________________________
 ///
 /// RESTsoft - Software for Rare Event Searches with TPCs
@@ -141,7 +171,7 @@ TRestEvent* TRestRawSignalIdTaggingProcess::ProcessEvent(TRestEvent* evInput) {
     for (auto d : tagCode) {
         result = result * 10 + d;
     }
-    SetObservableValue("DaqIdRanges", result);
+    SetObservableValue("tagId", result);
 
     // If cut condition matches the event will be not registered.
     if (ApplyCut()) return nullptr;
