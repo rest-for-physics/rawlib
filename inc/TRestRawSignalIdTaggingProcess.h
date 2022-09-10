@@ -27,13 +27,16 @@
 
 #include "TRestEventProcess.h"
 
-//! An analysis process to extract valuable information from a TRestRawSignalEvent.
+//! An analysis process helping to assign tags to user defined ranges of signal ids.
 class TRestRawSignalIdTaggingProcess : public TRestEventProcess {
    private:
     /// A pointer to the specific TRestRawSignalEvent input
     TRestRawSignalEvent* fSignalEvent;  //!
 
+    /// A list containing the tag names for each signal ids range
     std::vector<std::string> fTagNames;
+
+    /// A list containing the id range for each tag
     std::vector<TVector2> fIdRanges;
 
     void Initialize() override;
