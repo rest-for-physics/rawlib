@@ -20,20 +20,19 @@
  * For the list of contributors see $REST_PATH/CREDITS.                  *
  *************************************************************************/
 
-#ifndef RestCore_TRestRawSignalDaqIdTaggingProcess
-#define RestCore_TRestRawSignalDaqIdTaggingProcess
+#ifndef RestCore_TRestRawSignalIdTaggingProcess
+#define RestCore_TRestRawSignalIdTaggingProcess
 
 #include <TRestRawSignalEvent.h>
 
 #include "TRestEventProcess.h"
 
 //! An analysis process to extract valuable information from a TRestRawSignalEvent.
-class TRestRawSignalDaqIdTaggingProcess : public TRestEventProcess {
+class TRestRawSignalIdTaggingProcess : public TRestEventProcess {
    private:
     /// A pointer to the specific TRestRawSignalEvent input
     TRestRawSignalEvent* fSignalEvent;  //!
-    
-    
+
     std::vector<std::string> fTagNames;
     std::vector<TVector2> fIdRanges;
 
@@ -52,19 +51,20 @@ class TRestRawSignalDaqIdTaggingProcess : public TRestEventProcess {
 
     void PrintMetadata() override {
         BeginPrintProcess();
-        
+
         RESTMetadata << "Tag code: " << RESTendl;
-        for(int n=0; n<fIdRanges.size(); n++){
-            RESTMetadata << n+1 << " - " << fTagNames[n] << ": ( " << fIdRanges[n].X() << ", " << fIdRanges[n].Y() << " )" << RESTendl;
+        for (int n = 0; n < fIdRanges.size(); n++) {
+            RESTMetadata << n + 1 << " - " << fTagNames[n] << ": ( " << fIdRanges[n].X() << ", "
+                         << fIdRanges[n].Y() << " )" << RESTendl;
         }
         EndPrintProcess();
     }
 
-    const char* GetProcessName() const override { return "RawSignalDaqIdTagging"; }
+    const char* GetProcessName() const override { return "RawSignalIdTagging"; }
 
-    TRestRawSignalDaqIdTaggingProcess();   // Constructor
-    ~TRestRawSignalDaqIdTaggingProcess();  // Destructor
+    TRestRawSignalIdTaggingProcess();   // Constructor
+    ~TRestRawSignalIdTaggingProcess();  // Destructor
 
-    ClassDefOverride(TRestRawSignalDaqIdTaggingProcess, 3);
+    ClassDefOverride(TRestRawSignalIdTaggingProcess, 3);
 };
 #endif

@@ -25,18 +25,18 @@
 /// For example in cases where several detectors are read with same daq.
 /// This is happens in TREX-DM: South detector 0 to 575 IDs
 /// North detector 576 to 1151 IDs.
-/// 
-/// Metadata parameters that can be defined in the rml: 
-/// * **name**: Name for the range. 
-/// * **ids**: Range of daq IDs. 
 ///
-/// Each range must be defined under the "tag" section. 
+/// Metadata parameters that can be defined in the rml:
+/// * **name**: Name for the range.
+/// * **ids**: Range of daq IDs.
+///
+/// Each range must be defined under the "tag" section.
 /// Any number of daq ID ranges can be defined (e.g. as many "tag" sections as needed).
 /// Numbers are assigned for each range, from 1 upwards.
 ///
-/// Example in rml file: 
+/// Example in rml file:
 /// \code
-/// <addProcess type="TRestRawSignalDaqIdTaggingProcess" name="TREXsides" value="ON" observable="all" >
+/// <addProcess type="TRestRawSignalIdTaggingProcess" name="TREXsides" value="ON" observable="all" >
 ///     <tag name="South" ids="(0,575)"/>
 ///     <tag name="North" ids="(576,1151)"/>
 /// </addProcess>
@@ -57,36 +57,36 @@
 ///
 /// History of developments:
 ///
-/// 2022-September: First implementation of TRestRawSignalDaqIdTaggingProcess
+/// 2022-September: First implementation of TRestRawSignalIdTaggingProcess
 ///                 Created from TRestRawSignalAnalysisProcess
 ///
-/// \class      TRestRawSignalDaqIdTaggingProcess
+/// \class      TRestRawSignalIdTaggingProcess
 /// \author     David Díez Ibáñez
 ///
 /// <hr>
 ///
 
-#include "TRestRawSignalDaqIdTaggingProcess.h"
+#include "TRestRawSignalIdTaggingProcess.h"
 
 using namespace std;
 
-ClassImp(TRestRawSignalDaqIdTaggingProcess);
+ClassImp(TRestRawSignalIdTaggingProcess);
 
 ///////////////////////////////////////////////
 /// \brief Default constructor
 ///
-TRestRawSignalDaqIdTaggingProcess::TRestRawSignalDaqIdTaggingProcess() { Initialize(); }
+TRestRawSignalIdTaggingProcess::TRestRawSignalIdTaggingProcess() { Initialize(); }
 
 ///////////////////////////////////////////////
 /// \brief Default destructor
 ///
-TRestRawSignalDaqIdTaggingProcess::~TRestRawSignalDaqIdTaggingProcess() {}
+TRestRawSignalIdTaggingProcess::~TRestRawSignalIdTaggingProcess() {}
 
 ///////////////////////////////////////////////
 /// \brief Function to initialize input/output event members and define the
 /// section name
 ///
-void TRestRawSignalDaqIdTaggingProcess::Initialize() {
+void TRestRawSignalIdTaggingProcess::Initialize() {
     SetSectionName(this->ClassName());
     SetLibraryVersion(LIBRARY_VERSION);
 
@@ -96,56 +96,55 @@ void TRestRawSignalDaqIdTaggingProcess::Initialize() {
 ///////////////////////////////////////////////
 /// \brief Process initialization.
 ///
-void TRestRawSignalDaqIdTaggingProcess::InitProcess() {
-    
-}
+void TRestRawSignalIdTaggingProcess::InitProcess() {}
 
 ///////////////////////////////////////////////
 /// \brief Process initialization.
 ///
-void TRestRawSignalDaqIdTaggingProcess::InitFromConfigFile() {
+void TRestRawSignalIdTaggingProcess::InitFromConfigFile() {
     // This line is to exploit the retrieval of parameter as it is done at any process
     TRestEventProcess::InitFromConfigFile();
 
     // This is the additional code required by the process to read tags
     TiXmlElement* tagDefinition = GetElement("tag");
     while (tagDefinition) {
-        fTagNames.push_back( GetFieldValue("name", tagDefinition) );
-        fIdRanges.push_back( Get2DVectorParameterWithUnits("ids", tagDefinition) );
+        fTagNames.push_back(GetFieldValue("name", tagDefinition));
+        fIdRanges.push_back(Get2DVectorParameterWithUnits("ids", tagDefinition));
 
         tagDefinition = GetNextElement(tagDefinition);
     }
-        
-    PrintMetadata();
 
+    PrintMetadata();
 }
 
 ///////////////////////////////////////////////
 /// \brief The main processing event function
 ///
-TRestEvent* TRestRawSignalDaqIdTaggingProcess::ProcessEvent(TRestEvent* evInput) {
+TRestEvent* TRestRawSignalIdTaggingProcess::ProcessEvent(TRestEvent* evInput) {
     fSignalEvent = (TRestRawSignalEvent*)evInput;
-    
+
     std::vector<int> tagCode;
-    
-    for( int j=0; j<fSignalEvent->GetNumberOfSignals(); j++ ){ 
+
+    for (int j = 0; j < fSignalEvent->GetNumberOfSignals(); j++) {
         TRestRawSignal* singleSignal = fSignalEvent->GetSignal(j);
-        
-        for(int n=0; n<fIdRanges.size(); n++){
-            if(singleSignal->GetID()>=fIdRanges[n].X() && singleSignal->GetID()<=fIdRanges[n].Y()){
-                //If it is not already in the vector, adds it. n+1 to avoid 0.
-                if(std::find(tagCode.begin(), tagCode.end(), n+1) == tagCode.end()){ tagCode.push_back(n+1); } 
+
+        for (int n = 0; n < fIdRanges.size(); n++) {
+            if (singleSignal->GetID() >= fIdRanges[n].X() && singleSignal->GetID() <= fIdRanges[n].Y()) {
+                // If it is not already in the vector, adds it. n+1 to avoid 0.
+                if (std::find(tagCode.begin(), tagCode.end(), n + 1) == tagCode.end()) {
+                    tagCode.push_back(n + 1);
+                }
             }
         }
     }
-    std::sort(tagCode.begin(), tagCode.end()); 
-    
+    std::sort(tagCode.begin(), tagCode.end());
+
     int result = 0;
-    for(auto d : tagCode){
+    for (auto d : tagCode) {
         result = result * 10 + d;
     }
     SetObservableValue("DaqIdRanges", result);
-    
+
     // If cut condition matches the event will be not registered.
     if (ApplyCut()) return nullptr;
 
