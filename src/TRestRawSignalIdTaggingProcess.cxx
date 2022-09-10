@@ -113,8 +113,6 @@ void TRestRawSignalIdTaggingProcess::InitFromConfigFile() {
 
         tagDefinition = GetNextElement(tagDefinition);
     }
-
-    PrintMetadata();
 }
 
 ///////////////////////////////////////////////
