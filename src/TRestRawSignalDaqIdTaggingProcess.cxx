@@ -117,6 +117,7 @@ void TRestRawSignalDaqIdTaggingProcess::InitFromConfigFile() {
     }
         
     PrintMetadata();
+
 }
 
 ///////////////////////////////////////////////
