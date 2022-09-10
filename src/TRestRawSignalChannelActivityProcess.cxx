@@ -108,32 +108,9 @@ ClassImp(TRestRawSignalChannelActivityProcess);
 TRestRawSignalChannelActivityProcess::TRestRawSignalChannelActivityProcess() { Initialize(); }
 
 ///////////////////////////////////////////////
-/// \brief Constructor loading data from a config file
-///
-/// If no configuration path is defined using TRestMetadata::SetConfigFilePath
-/// the path to the config file must be specified using full path, absolute or
-/// relative.
-///
-/// The default behaviour is that the config file must be specified with
-/// full path, absolute or relative.
-///
-/// \param configFilename A const char* giving the path to an RML file.
-///
-TRestRawSignalChannelActivityProcess::TRestRawSignalChannelActivityProcess(const char* configFilename) {
-    Initialize();
-
-    if (LoadConfigFromFile(configFilename)) LoadDefaultConfig();
-}
-
-///////////////////////////////////////////////
 /// \brief Default destructor
 ///
 TRestRawSignalChannelActivityProcess::~TRestRawSignalChannelActivityProcess() {}
-
-///////////////////////////////////////////////
-/// \brief Function to load the default config in absence of RML input
-///
-void TRestRawSignalChannelActivityProcess::LoadDefaultConfig() { SetTitle("Default config"); }
 
 ///////////////////////////////////////////////
 /// \brief Function to initialize input/output event members and define the
@@ -144,22 +121,6 @@ void TRestRawSignalChannelActivityProcess::Initialize() {
     SetLibraryVersion(LIBRARY_VERSION);
 
     fSignalEvent = nullptr;
-}
-
-///////////////////////////////////////////////
-/// \brief Function to load the configuration from an external configuration
-/// file.
-///
-/// If no configuration path is defined in TRestMetadata::SetConfigFilePath
-/// the path to the config file must be specified using full path, absolute or
-/// relative.
-///
-/// \param configFilename A const char* giving the path to an RML file.
-/// \param name The name of the specific metadata. It will be used to find the
-/// corresponding TRestGeant4AnalysisProcess section inside the RML.
-///
-void TRestRawSignalChannelActivityProcess::LoadConfig(const string& configFilename, const string& name) {
-    if (LoadConfigFromFile(configFilename, name)) LoadDefaultConfig();
 }
 
 ///////////////////////////////////////////////
@@ -175,13 +136,16 @@ void TRestRawSignalChannelActivityProcess::InitProcess() {
 #ifdef REST_DetectorLib
     fReadout = GetMetadata<TRestDetectorReadout>();
 
-    RESTDebug << "TRestRawSignalChannelActivityProcess::InitProcess. Readout pointer : " << fReadout << RESTendl;
-    if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Info && fReadout) fReadout->PrintMetadata();
+    RESTDebug << "TRestRawSignalChannelActivityProcess::InitProcess. Readout pointer : " << fReadout
+              << RESTendl;
+    if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Info && fReadout)
+        fReadout->PrintMetadata();
 #endif
 
     if (!fReadOnly) {
         fDaqChannelsHisto = new TH1D("daqChannelActivityRaw", "daqChannelActivityRaw", fDaqChannels,
                                      fDaqStartChannel, fDaqEndChannel);
+
 #ifdef REST_DetectorLib
         if (fReadout) {
             fReadoutChannelsHisto = new TH1D("rChannelActivityRaw", "readoutChannelActivity",
@@ -263,7 +227,8 @@ TRestEvent* TRestRawSignalChannelActivityProcess::ProcessEvent(TRestEvent* input
         }
     }
 
-    if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Debug) fAnalysisTree->PrintObservables();
+    if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Debug)
+        fAnalysisTree->PrintObservables();
 
     return fSignalEvent;
 }

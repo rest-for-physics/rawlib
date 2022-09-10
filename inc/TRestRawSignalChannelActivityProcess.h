@@ -36,19 +36,6 @@
 //! A pure analysis process to generate histograms with detector channels
 //! activity
 class TRestRawSignalChannelActivityProcess : public TRestEventProcess {
-   private:
-    /// A pointer to the specific TRestRawSignalEvent input
-    TRestRawSignalEvent* fSignalEvent;  //!
-
-#ifdef REST_DetectorLib
-    /// A pointer to the readout metadata information accessible to TRestRun
-    TRestDetectorReadout* fReadout;  //!
-#endif
-
-    void Initialize() override;
-
-    void LoadDefaultConfig();
-
    protected:
     /// The value of the lower signal threshold to add it to the histogram
     Double_t fLowThreshold = 25;
@@ -75,34 +62,45 @@ class TRestRawSignalChannelActivityProcess : public TRestEventProcess {
     Int_t fReadoutEndChannel = 128;
 
     /// The daq channels histogram
-    TH1D* fDaqChannelsHisto;  //!
+    TH1D* fDaqChannelsHisto = nullptr;  //!
 
     /// The readout channels histogram
-    TH1D* fReadoutChannelsHisto;  //!
+    TH1D* fReadoutChannelsHisto = nullptr;  //!
 
     /// The readout channels histogram built with 1-signal events (low threshold)
-    TH1D* fReadoutChannelsHisto_OneSignal;  //!
+    TH1D* fReadoutChannelsHisto_OneSignal = nullptr;  //!
 
     /// The readout channels histogram built with 1-signal events (high threshold)
-    TH1D* fReadoutChannelsHisto_OneSignal_High;  //!
+    TH1D* fReadoutChannelsHisto_OneSignal_High = nullptr;  //!
 
     /// The readout channels histogram built with 2-signal events (low threshold)
-    TH1D* fReadoutChannelsHisto_TwoSignals;  //!
+    TH1D* fReadoutChannelsHisto_TwoSignals = nullptr;  //!
 
     /// The readout channels histogram built with 2-signal events (high threshold)
-    TH1D* fReadoutChannelsHisto_TwoSignals_High;  //!
+    TH1D* fReadoutChannelsHisto_TwoSignals_High = nullptr;  //!
 
     /// The readout channels histogram built with 3-signal events (low threshold)
-    TH1D* fReadoutChannelsHisto_ThreeSignals;  //!
+    TH1D* fReadoutChannelsHisto_ThreeSignals = nullptr;  //!
 
     /// The readout channels histogram built with 3-signal events (high threshold)
-    TH1D* fReadoutChannelsHisto_ThreeSignals_High;  //!
+    TH1D* fReadoutChannelsHisto_ThreeSignals_High = nullptr;  //!
 
     /// The readout channels histogram built more than 3-signal events (low threshold)
-    TH1D* fReadoutChannelsHisto_MultiSignals;  //!
+    TH1D* fReadoutChannelsHisto_MultiSignals = nullptr;  //!
 
     /// The readout channels histogram built more than 3-signal events (high threshold)
-    TH1D* fReadoutChannelsHisto_MultiSignals_High;  //!
+    TH1D* fReadoutChannelsHisto_MultiSignals_High = nullptr;  //!
+
+   private:
+    /// A pointer to the specific TRestRawSignalEvent input
+    TRestRawSignalEvent* fSignalEvent = nullptr;  //!
+
+#ifdef REST_DetectorLib
+    /// A pointer to the readout metadata information accessible to TRestRun
+    TRestDetectorReadout* fReadout = nullptr;  //!
+#endif
+
+    void Initialize() override;
 
    public:
     any GetInputEvent() const override { return fSignalEvent; }
@@ -111,8 +109,6 @@ class TRestRawSignalChannelActivityProcess : public TRestEventProcess {
     void InitProcess() override;
     TRestEvent* ProcessEvent(TRestEvent* inputEvent) override;
     void EndProcess() override;
-
-    void LoadConfig(const std::string& configFilename, const std::string& name = "");
 
     /// It prints out the process parameters stored in the metadata structure
     void PrintMetadata() override {
@@ -139,10 +135,7 @@ class TRestRawSignalChannelActivityProcess : public TRestEventProcess {
     /// Returns the name of this process
     const char* GetProcessName() const override { return "rawSignalChannelActivity"; }
 
-    // Constructor
     TRestRawSignalChannelActivityProcess();
-    TRestRawSignalChannelActivityProcess(const char* configFilename);
-    // Destructor
     ~TRestRawSignalChannelActivityProcess();
 
     ClassDefOverride(TRestRawSignalChannelActivityProcess, 3);
