@@ -77,8 +77,8 @@ class TRestRawSignalIdTaggingProcess : public TRestEventProcess {
             RESTMetadata << n + 1 << " - " << fTagNames[n] << ": ( " << fIdRanges[n].X() << ", "
                          << fIdRanges[n].Y() << " )" << RESTendl;
         }
-        
-        RESTMetadata << "Only good signals: " << fGoodSignalsOnly << RESTendl;
+        RESTMetadata << " " << RESTendl;
+        RESTMetadata << "Only good signals: " << std::boolalpha << fGoodSignalsOnly << RESTendl;
         
         if(fGoodSignalsOnly==true){
             RESTMetadata << "Baseline range : ( " << fBaseLineRange.X() << " , " << fBaseLineRange.Y() << " ) "
