@@ -77,6 +77,16 @@ class TRestRawSignalIdTaggingProcess : public TRestEventProcess {
             RESTMetadata << n + 1 << " - " << fTagNames[n] << ": ( " << fIdRanges[n].X() << ", "
                          << fIdRanges[n].Y() << " )" << RESTendl;
         }
+        
+        RESTMetadata << "Only good signals: " << fGoodSignalsOnly << RESTendl;
+        
+        if(fGoodSignalsOnly==true){
+            RESTMetadata << "Baseline range : ( " << fBaseLineRange.X() << " , " << fBaseLineRange.Y() << " ) "
+                     << RESTendl;
+            RESTMetadata << "Point Threshold : " << fPointThreshold << " sigmas" << RESTendl;
+            RESTMetadata << "Signal threshold : " << fSignalThreshold << " sigmas" << RESTendl;
+            RESTMetadata << "Number of points over threshold : " << fPointsOverThreshold << RESTendl;
+        }
         EndPrintProcess();
     }
 
