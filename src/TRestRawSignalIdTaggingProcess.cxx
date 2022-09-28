@@ -134,6 +134,8 @@ void TRestRawSignalIdTaggingProcess::InitProcess() {}
 void TRestRawSignalIdTaggingProcess::InitFromConfigFile() {
     // This line is to exploit the retrieval of parameter as it is done at any process
     TRestEventProcess::InitFromConfigFile();
+    
+    if (fPointThreshold!=-1 && fSignalThreshold!=-1 && fPointsOverThreshold!=-1 && fBaseLineRange.X()==-1 && fBaseLineRange.Y()==-1){fGoodSignalsOnly = true;}
 
     // This is the additional code required by the process to read tags
     TiXmlElement* tagDefinition = GetElement("tag");
@@ -155,15 +157,23 @@ TRestEvent* TRestRawSignalIdTaggingProcess::ProcessEvent(TRestEvent* evInput) {
 
     for (int j = 0; j < fSignalEvent->GetNumberOfSignals(); j++) {
         TRestRawSignal* singleSignal = fSignalEvent->GetSignal(j);
-
-        for (int n = 0; n < fIdRanges.size(); n++) {
-            if (singleSignal->GetID() >= fIdRanges[n].X() && singleSignal->GetID() <= fIdRanges[n].Y()) {
-                // If it is not already in the vector, adds it. n+1 to avoid 0.
-                if (std::find(tagCode.begin(), tagCode.end(), n + 1) == tagCode.end()) {
-                    tagCode.push_back(n + 1);
+        
+        if(fGoodSignalsOnly==true){
+            singleSignal->CalculateBaseLine(fBaseLineRange.X(), fBaseLineRange.Y());
+            singleSignal->InitializePointsOverThreshold(TVector2(fPointThreshold, fSignalThreshold), fPointsOverThreshold);
+        }
+        
+        if(fGoodSignalsOnly==false || singleSignal->GetPointsOverThreshold().size()>=fPointsOverThreshold) {
+            for (int n = 0; n < fIdRanges.size(); n++) {
+                if (singleSignal->GetID() >= fIdRanges[n].X() && singleSignal->GetID() <= fIdRanges[n].Y()) {
+                    // If it is not already in the vector, adds it. n+1 to avoid 0.
+                    if (std::find(tagCode.begin(), tagCode.end(), n + 1) == tagCode.end()) {
+                        tagCode.push_back(n + 1);
+                    }
                 }
             }
         }
+        
     }
     std::sort(tagCode.begin(), tagCode.end());
 
