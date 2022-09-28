@@ -38,6 +38,23 @@ class TRestRawSignalIdTaggingProcess : public TRestEventProcess {
 
     /// A list containing the id range for each tag
     std::vector<TVector2> fIdRanges;
+    
+    //// Parameters to identify good signals ////
+    
+    /// The range where the baseline range will be calculated
+    TVector2 fBaseLineRange = TVector2(-1, -1);
+    
+    /// The number of sigmas over baseline fluctuations to identify a point overthreshold
+    Double_t fPointThreshold = -1;
+
+    /// A parameter to define a minimum signal fluctuation. Measured in sigmas.
+    Double_t fSignalThreshold = -1;
+
+    /// The minimum number of points over threshold to identify a signal as such
+    Int_t fPointsOverThreshold = -1;
+    
+    /// Properly initialized GoodSignals parameters (fBaseLineRange, fPointThreshold, fSignalThreshold, fPointsOverThreshold)
+    bool fGoodSignalsOnly = false;
 
     void Initialize() override;
     void InitFromConfigFile() override;
@@ -59,6 +76,16 @@ class TRestRawSignalIdTaggingProcess : public TRestEventProcess {
         for (int n = 0; n < fIdRanges.size(); n++) {
             RESTMetadata << n + 1 << " - " << fTagNames[n] << ": ( " << fIdRanges[n].X() << ", "
                          << fIdRanges[n].Y() << " )" << RESTendl;
+        }
+        RESTMetadata << " " << RESTendl;
+        RESTMetadata << "Only good signals: " << std::boolalpha << fGoodSignalsOnly << RESTendl;
+        
+        if(fGoodSignalsOnly==true){
+            RESTMetadata << "Baseline range : ( " << fBaseLineRange.X() << " , " << fBaseLineRange.Y() << " ) "
+                     << RESTendl;
+            RESTMetadata << "Point Threshold : " << fPointThreshold << " sigmas" << RESTendl;
+            RESTMetadata << "Signal threshold : " << fSignalThreshold << " sigmas" << RESTendl;
+            RESTMetadata << "Number of points over threshold : " << fPointsOverThreshold << RESTendl;
         }
         EndPrintProcess();
     }
