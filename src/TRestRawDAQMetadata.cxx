@@ -114,7 +114,7 @@ void TRestRawDAQMetadata::InitFromConfigFile() {
     fTriggerType = GetParameter("triggerType");
     fAcquisitionType = GetParameter("acquisitionType");
     fCompressMode = StringToInteger(GetParameter("compressMode"));
-    fNEvents = StringToInteger(GetParameter("Nevents"));
+    fNEvents = StringToInteger(GetParameter("nEvents"));
     ReadIp("baseIp", fBaseIp);
     ReadIp("localIp", fLocalIp);
     ReadFEC();
