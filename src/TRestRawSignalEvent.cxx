@@ -85,10 +85,11 @@ void TRestRawSignalEvent::Initialize() {
     fSignal.clear();
     fPad = nullptr;
     gr = nullptr;
-    fMinValue = 1E10;
-    fMaxValue = -1E10;
-    fMinTime = 1E10;
-    fMaxTime = -1E10;
+
+    fMinValue = numeric_limits<Double_t>::max();
+    fMaxValue = numeric_limits<Double_t>::min();
+    fMinTime = numeric_limits<Double_t>::max();
+    fMaxTime = numeric_limits<Double_t>::min();
 }
 
 void TRestRawSignalEvent::AddSignal(TRestRawSignal& s) {
@@ -401,10 +402,7 @@ Double_t TRestRawSignalEvent::GetMaxTime() {
 TPad* TRestRawSignalEvent::DrawEvent(const TString& option) {
     const int nSignals = GetNumberOfSignals();
 
-    if (fPad) {
-        // for (auto& signal : fSignal) {
-        //   if(signal.fGraph) delete signal.fGraph;
-        // }
+    if (fPad != nullptr) {
         delete fPad;
         fPad = nullptr;
     }
@@ -414,10 +412,10 @@ TPad* TRestRawSignalEvent::DrawEvent(const TString& option) {
         return nullptr;
     }
 
-    fMinValue = 1E10;
-    fMaxValue = -1E10;
-    fMinTime = 1E10;
-    fMaxTime = -1E10;
+    fMinValue = numeric_limits<Double_t>::max();
+    fMaxValue = numeric_limits<Double_t>::min();
+    fMinTime = numeric_limits<Double_t>::max();
+    fMaxTime = numeric_limits<Double_t>::min();
 
     fPad = new TPad(GetName(), " ", 0, 0, 1, 1);
     fPad->Draw();
@@ -427,8 +425,8 @@ TPad* TRestRawSignalEvent::DrawEvent(const TString& option) {
     char title[256];
     vector<TString> optList = Vector_cast<string, TString>(TRestTools::GetOptions((string)option));
 
-    bool ThresCheck = false;
-    bool BLCheck = false;
+    bool thresholdCheck = false;
+    bool baselineCheck = false;
     bool sRangeID = false;
     bool printIDs = false;
 
@@ -449,31 +447,31 @@ TPad* TRestRawSignalEvent::DrawEvent(const TString& option) {
             signalTh = StringToDouble((string)optList_2[1]);
             nOver = StringToDouble((string)optList_2[2]);
 
-            ThresCheck = true;
+            thresholdCheck = true;
         }
 
-        // Read base line option
+        // Read baseline option
         if (str.find("baseLineRange[") != string::npos) {
-            size_t startPos2 = str.find("[");
-            size_t endPos2 = str.find("]");
+            size_t startPos2 = str.find('[');
+            size_t endPos2 = str.find(']');
             TString tmpStr2 = opt(startPos2 + 1, endPos2 - startPos2 - 1);
             vector<TString> optList_3 = Vector_cast<string, TString>(Split((string)tmpStr2, ","));
 
             baseLineRangeInit = StringToInteger((string)optList_3[0]);
             baseLineRangeEnd = StringToInteger((string)optList_3[1]);
 
-            BLCheck = true;
+            baselineCheck = true;
         }
 
         // Read signal range ID option
         if (str.find("signalRangeID[") != string::npos || str.find("ids[") != string::npos) {
-            size_t startPos3 = str.find("[");
-            size_t endPos3 = str.find("]");
+            size_t startPos3 = str.find('[');
+            size_t endPos3 = str.find(']');
             TString tmpStr3 = opt(startPos3 + 1, endPos3 - startPos3 - 1);
             vector<TString> optList_4;
-            if (str.find(",") != string::npos)
+            if (str.find(',') != string::npos)
                 optList_4 = Vector_cast<string, TString>(Split((string)tmpStr3, ","));
-            else if (str.find("-") != string::npos)
+            else if (str.find('-') != string::npos)
                 optList_4 = Vector_cast<string, TString>(Split((string)tmpStr3, "-"));
             else
                 RESTError << "TRestRawSignalEvent::DrawEvent not valid ids format!" << RESTendl;
@@ -491,50 +489,50 @@ TPad* TRestRawSignalEvent::DrawEvent(const TString& option) {
         }
     }
 
-    std::vector<int> sIDs;  // Signal IDs to print
+    std::vector<int> signalIDs;  // Signal IDs to print
 
     ///// No specific signal selection ////
     if ((optList.empty()) || !(isANumber((string)optList[0]))) {
         int sigPrinted = 0;
-
         // If threshold and baseline options are given
-        if (ThresCheck && BLCheck) {
+        if (thresholdCheck && baselineCheck) {
             RESTDebug << "Draw only good signals with: " << RESTendl;
             RESTDebug << "  Signal threshold: " << signalTh << RESTendl;
             RESTDebug << "  Point threshold: " << pointTh << RESTendl;
             RESTDebug << "  Points over threshold: " << nOver << RESTendl;
-            RESTDebug << "  Base line range: (" << baseLineRangeInit << "," << baseLineRangeEnd << ")" << RESTendl;
+            RESTDebug << "  Base line range: (" << baseLineRangeInit << "," << baseLineRangeEnd << ")"
+                      << RESTendl;
 
             for (int n = 0; n < nSignals; n++) {
                 fSignal[n].CalculateBaseLine(baseLineRangeInit, baseLineRangeEnd);
                 fSignal[n].InitializePointsOverThreshold(TVector2(pointTh, signalTh), nOver);
                 if (fSignal[n].GetPointsOverThreshold().size() >= 2) {
-                    sIDs.push_back(fSignal[n].GetID());
+                    signalIDs.push_back(fSignal[n].GetID());
                 }
             }
             // If no threshold and baseline options are given
         } else {
             for (int n = 0; n < nSignals; n++) {
-                sIDs.push_back(fSignal[n].GetID());
+                signalIDs.push_back(fSignal[n].GetID());
             }
         }
 
         // Remove SIDs which are not in range
         if (sRangeID) {
-            for (auto it = sIDs.begin(); it != sIDs.end();)
+            for (auto it = signalIDs.begin(); it != signalIDs.end();)
                 if (*it >= sRangeInit && *it <= sRangeEnd) {
                     ++it;
                 } else {
-                    it = sIDs.erase(it);
+                    it = signalIDs.erase(it);
                 }
         }
 
-        cout << "Number of drawn signals: " << sIDs.size() << endl;
+        cout << "Number of drawn signals: " << signalIDs.size() << endl;
 
-        //// Signal selection (range or sigle signal) ////
+        //// Signal selection (range or single signal) ////
     } else if (isANumber((string)optList[0])) {
         string str = (string)optList[0];
-        size_t separation = str.find("-");
+        size_t separation = str.find('-');
 
         // Signals range //
         if (separation != string::npos) {
@@ -551,13 +549,13 @@ TPad* TRestRawSignalEvent::DrawEvent(const TString& option) {
 
             sprintf(title, "Event ID %d", this->GetID());
 
-            if (ThresCheck && BLCheck) {
+            if (thresholdCheck && baselineCheck) {
                 RESTDebug << "Draw only good signals with: " << RESTendl;
                 RESTDebug << "  Signal threshold: " << signalTh << RESTendl;
                 RESTDebug << "  Point threshold: " << pointTh << RESTendl;
                 RESTDebug << "  Points over threshold: " << nOver << RESTendl;
                 RESTDebug << "  Base line range: (" << baseLineRangeInit << "," << baseLineRangeEnd << ")"
-                      << RESTendl;
+                          << RESTendl;
 
                 for (int n = 0; n < nSignals; n++) {
                     if (n < StringToInteger((string)firstSignal) || n > StringToInteger((string)lastSignal))
@@ -565,35 +563,40 @@ TPad* TRestRawSignalEvent::DrawEvent(const TString& option) {
                     fSignal[n].CalculateBaseLine(baseLineRangeInit, baseLineRangeEnd);
                     fSignal[n].InitializePointsOverThreshold(TVector2(pointTh, signalTh), nOver);
                     if (fSignal[n].GetPointsOverThreshold().size() >= 2) {
-                        sIDs.push_back(fSignal[n].GetID());
+                        signalIDs.push_back(fSignal[n].GetID());
                     }
                 }
                 cout << "Number of good signals in range (" << firstSignal << "," << lastSignal
-                     << "): " << sIDs.size() << endl;
+                     << "): " << signalIDs.size() << endl;
                 // If no threshold and baseline options are given
             } else {
                 for (int n = StringToInteger((string)firstSignal);
                      n < StringToInteger((string)lastSignal) + 1; n++) {
-                    sIDs.push_back(fSignal[n].GetID());
+                    signalIDs.push_back(fSignal[n].GetID());
                 }
             }
             // Single signal //
         } else {
-            int signalid = StringToInteger((string)optList[0]);
-            sIDs.push_back(signalid);
+            int signalID = StringToInteger((string)optList[0]);
+            signalIDs.push_back(signalID);
         }
     }
 
-    if (sIDs.empty()) {
+    if (signalIDs.empty()) {
         fPad->SetTitle("No Such Signal");
         cout << "No signals found" << endl;
         return fPad;
     }
 
-    if (printIDs)
-        for (const auto& s : sIDs) cout << s << endl;
+    if (printIDs) {
+        cout << "SignalIDS:";
+        for (const auto& s : signalIDs) {
+            cout << " " << s;
+        }
+        cout << endl;
+    }
 
-    DrawSignals(fPad, sIDs);
+    DrawSignals(fPad, signalIDs);
 
     return fPad;
 }
@@ -604,19 +607,20 @@ TPad* TRestRawSignalEvent::DrawEvent(const TString& option) {
 ///
 void TRestRawSignalEvent::DrawSignals(TPad* pad, const std::vector<Int_t>& signals) {
     int maxSID = -1;
-    int max = 0;
-    int color = 1;
+    int max = numeric_limits<Short_t>::min();
+    int graphIndex = 1;
 
     for (const auto& s : signals) {
-        TRestRawSignal* sgnl = GetSignalById(s);
-        if (!sgnl) continue;
-        TGraph* gr = sgnl->GetGraph(color);
-        const double maxV = TMath::MaxElement(gr->GetN(), gr->GetY());
-        if (maxV > max) {
-            max = maxV;
+        TRestRawSignal* signal = GetSignalById(s);
+        if (!signal) {
+            continue;
+        }
+        TGraph* graph = signal->GetGraph(graphIndex++);
+        const double maxValue = TMath::MaxElement(graph->GetN(), graph->GetY());
+        if (maxValue > max) {
+            max = maxValue;
             maxSID = s;
         }
-        color++;
     }
 
     RESTDebug << "Max SID " << maxSID << RESTendl;
@@ -626,30 +630,34 @@ void TRestRawSignalEvent::DrawSignals(TPad* pad, const std::vector<Int_t>& signa
         return;
     }
 
-    TRestRawSignal* sgn = GetSignalById(maxSID);
+    TRestRawSignal* signalMaxID = GetSignalById(maxSID);
     std::string title = "Event ID " + std::to_string(GetID());
-    if (signals.size() == 1) title += " Signal ID " + std::to_string(maxSID);
+    if (signals.size() == 1) {
+        title += " Signal ID " + std::to_string(maxSID);
+    }
 
-    sgn->fGraph->SetTitle(title.c_str());
-    sgn->fGraph->GetXaxis()->SetTitle("Time bin");
-    sgn->fGraph->GetYaxis()->SetTitleOffset(1.4);
-    sgn->fGraph->GetYaxis()->SetTitle("Amplitude [a.u.]");
+    signalMaxID->fGraph->SetTitle(title.c_str());
+    signalMaxID->fGraph->GetXaxis()->SetTitle("Time bin");
+    signalMaxID->fGraph->GetYaxis()->SetTitleOffset(1.4);
+    signalMaxID->fGraph->GetYaxis()->SetTitle("Amplitude [a.u.]");
     pad->Draw();
     pad->cd();
-    sgn->fGraph->Draw("AL");
+    signalMaxID->fGraph->Draw("AL");
 
-    for (const auto& s : signals) {
-        if (s == maxSID) continue;
-        TRestRawSignal* sgnl = GetSignalById(s);
+    for (const auto& signalID : signals) {
+        if (signalID == maxSID) {
+            continue;
+        }
+        TRestRawSignal* signal = GetSignalById(signalID);
         pad->cd();
-        sgnl->fGraph->Draw("L");
+        signal->fGraph->Draw("L");
     }
 
     pad->Update();
 }
 
 ///////////////////////////////////////////////
-/// \brief This method draws selected signal by ID, with baseline range and
+/// \brief This method draws selected signalID by ID, with baseline range and
 /// points over threshold highlighted.
 ///
 /// In order to compute points over threshold the following parameters should
@@ -668,7 +676,7 @@ void TRestRawSignalEvent::DrawSignals(TPad* pad, const std::vector<Int_t>& signa
 /// DrawEvent(100,"goodSignals[3.5,1.5,7]:baseLineRange[20,150]");
 /// \endcode
 ///
-TPad* TRestRawSignalEvent::DrawSignal(Int_t signal, TString option) {
+TPad* TRestRawSignalEvent::DrawSignal(Int_t signalID, TString option) {
     int nSignals = this->GetNumberOfSignals();
 
     if (fPad != nullptr) {
@@ -693,16 +701,16 @@ TPad* TRestRawSignalEvent::DrawSignal(Int_t signal, TString option) {
     double signalTh = 0, pointTh = 0, nOver = 0;
     int baseLineRangeInit = 0, baseLineRangeEnd = 0;
 
-    for (int j = 0; j < optList.size(); j++) {
-        string str = (string)optList[j];
+    for (auto& opt : optList) {
+        string str = (string)opt;
 
         // Read threshold option
         size_t goodSigOpt = str.find("goodSignals[");
 
         if (goodSigOpt != string::npos) {
-            size_t startPos = str.find("[");
-            size_t endPos = str.find("]");
-            TString tmpStr = optList[j](startPos + 1, endPos - startPos - 1);
+            size_t startPos = str.find('[');
+            size_t endPos = str.find(']');
+            TString tmpStr = opt(startPos + 1, endPos - startPos - 1);
             vector<TString> optList_2 = Vector_cast<string, TString>(Split((string)tmpStr, ","));
 
             pointTh = StringToDouble((string)optList_2[0]);
@@ -712,13 +720,13 @@ TPad* TRestRawSignalEvent::DrawSignal(Int_t signal, TString option) {
             ThresCheck = true;
         }
 
-        // Read base line option
+        // Read baseline option
         size_t BLOpt = str.find("baseLineRange[");
 
         if (BLOpt != string::npos) {
-            size_t startPos2 = str.find("[");
-            size_t endPos2 = str.find("]");
-            TString tmpStr2 = optList[j](startPos2 + 1, endPos2 - startPos2 - 1);
+            size_t startPos2 = str.find('[');
+            size_t endPos2 = str.find(']');
+            TString tmpStr2 = opt(startPos2 + 1, endPos2 - startPos2 - 1);
             vector<TString> optList_3 = Vector_cast<string, TString>(Split((string)tmpStr2, ","));
 
             baseLineRangeInit = StringToInteger((string)optList_3[0]);
@@ -734,13 +742,14 @@ TPad* TRestRawSignalEvent::DrawSignal(Int_t signal, TString option) {
 
     TGraph* gr = new TGraph();
 
-    TRestRawSignal* sgnl = this->GetSignalById(signal);
-    sgnl->CalculateBaseLine(baseLineRangeInit, baseLineRangeEnd);
-    sgnl->InitializePointsOverThreshold(TVector2(pointTh, signalTh), nOver);
+    TRestRawSignal* signal = this->GetSignalById(signalID);
+    signal->CalculateBaseLine(baseLineRangeInit, baseLineRangeEnd);
+    signal->InitializePointsOverThreshold(TVector2(pointTh, signalTh), nOver);
 
-    RESTInfo << "Drawing signal. Event ID : " << this->GetID() << " Signal ID : " << sgnl->GetID() << RESTendl;
+    RESTInfo << "Drawing signalID. Event ID : " << this->GetID() << " Signal ID : " << signal->GetID()
+             << RESTendl;
 
-    for (int n = 0; n < sgnl->GetNumberOfPoints(); n++) gr->SetPoint(n, n, sgnl->GetData(n));
+    for (int n = 0; n < signal->GetNumberOfPoints(); n++) gr->SetPoint(n, n, signal->GetData(n));
 
     gr->Draw("AC*");
 
@@ -750,11 +759,11 @@ TPad* TRestRawSignalEvent::DrawSignal(Int_t signal, TString option) {
     gr2->SetLineColor(2);  // Red
 
     for (int n = baseLineRangeInit; n < baseLineRangeEnd; n++)
-        gr2->SetPoint(n - baseLineRangeInit, n, sgnl->GetData(n));
+        gr2->SetPoint(n - baseLineRangeInit, n, signal->GetData(n));
 
     gr2->Draw("CP");
 
-    vector<Int_t> pOver = sgnl->GetPointsOverThreshold();
+    vector<Int_t> pOver = signal->GetPointsOverThreshold();
 
     TGraph* gr3[5];
     Int_t nGraphs = 0;
@@ -764,7 +773,7 @@ TPad* TRestRawSignalEvent::DrawSignal(Int_t signal, TString option) {
     Int_t point = 0;
     Int_t nPoints = pOver.size();
     for (int n = 0; n < nPoints; n++) {
-        gr3[nGraphs]->SetPoint(point, pOver[n], sgnl->GetData(pOver[n]));
+        gr3[nGraphs]->SetPoint(point, pOver[n], signal->GetData(pOver[n]));
         point++;
         if (n + 1 < nPoints && pOver[n + 1] - pOver[n] > 1) {
             gr3[nGraphs]->Draw("CP");

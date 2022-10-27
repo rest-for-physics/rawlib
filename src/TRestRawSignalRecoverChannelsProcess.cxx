@@ -34,7 +34,7 @@
 /// \code
 /// <TRestRawSignalRecoverChannelsProcess name="returnChannels"
 /// title="Recovering few channels" verboseLevel="debug" >
-///     <parameter name="channelIds" value="17,27,67" />
+///     <parameter name="channelIds" value="{17,27,67}" />
 /// </TRestRawSignalRecoverChannelsProcess>
 /// \endcode
 ///
@@ -187,7 +187,7 @@ TRestEvent* TRestRawSignalRecoverChannelsProcess::ProcessEvent(TRestEvent* evInp
         TRestRawSignal* recoveredSignal = new TRestRawSignal();
         recoveredSignal->SetID(fChannelIds[x]);
 
-        Short_t dataRecovered[nPoints];
+        vector<Short_t> dataRecovered(nPoints);
         for (int n = 0; n < nPoints; n++) dataRecovered[n] = 0;
 
         if (leftSgnl != nullptr) {

@@ -59,13 +59,14 @@
 ///
 #include "TRestRawSignal.h"
 
-#include <numeric>
-
-using namespace std;
-
+#include <TAxis.h>
 #include <TF1.h>
 #include <TMath.h>
 #include <TRandom3.h>
+
+#include <numeric>
+
+using namespace std;
 
 ClassImp(TRestRawSignal);
 
@@ -488,7 +489,8 @@ Double_t TRestRawSignal::GetMaxPeakValue() { return GetData(GetMaxPeakBin()); }
 /// \brief It returns the bin at which the maximum peak amplitude happens
 ///
 Int_t TRestRawSignal::GetMaxPeakBin() {
-    Double_t max = -1E10;
+    Double_t max = numeric_limits<Double_t>::min();
+
     Int_t index = 0;
 
     if (fRange.Y() == 0 || fRange.Y() > GetNumberOfPoints()) fRange.SetY(GetNumberOfPoints());
@@ -515,7 +517,7 @@ Double_t TRestRawSignal::GetMinPeakValue() { return GetData(GetMinPeakBin()); }
 /// \brief It returns the bin at which the minimum peak amplitude happens
 ///
 Int_t TRestRawSignal::GetMinPeakBin() {
-    Double_t min = 1E10;
+    Double_t min = numeric_limits<Double_t>::max();
     Int_t index = 0;
 
     if (fRange.Y() == 0 || fRange.Y() > GetNumberOfPoints()) fRange.SetY(GetNumberOfPoints());
@@ -663,7 +665,7 @@ std::vector<Float_t> TRestRawSignal::GetSignalSmoothed(Int_t averagingPoints, st
 }
 
 ///////////////////////////////////////////////
-/// \brief It smoothes the existing signal and returns it in a vector of Float_t values. This method excludes
+/// \brief It smooths the existing signal and returns it in a vector of Float_t values. This method excludes
 /// points which are far off from the BaseLine IQR (e.g. signals). In case the baseline parameters were not
 /// calculated yet, this method calls CalculateBaseLine with the "ROBUST" option on the entire signal range
 /// minus 5 bins on the edges.
@@ -911,18 +913,27 @@ void TRestRawSignal::Print() const {
 ///
 TGraph* TRestRawSignal::GetGraph(Int_t color) {
     delete fGraph;
-
     fGraph = new TGraph();
 
     fGraph->SetLineWidth(2);
     fGraph->SetLineColor(color % 8 + 1);
     fGraph->SetMarkerStyle(7);
 
-    int points = 0;
-    for (int n = 0; n < GetNumberOfPoints(); n++) {
-        fGraph->SetPoint(points, n, GetData(n));
-        points++;
+    for (int i = 0; i < GetNumberOfPoints(); i++) {
+        fGraph->SetPoint(i, i, GetData(i));
     }
+
+    fGraph->GetXaxis()->SetLimits(0, GetNumberOfPoints() - 1);
+
+    /*
+     * To draw x axis in multiples of 2
+    for (int i = 0; i < values.size(); i++) {
+        if (i % 32 != 0 && i != values.size() - 1){
+            continue;
+        }
+        fGraph->GetXaxis()->SetBinLabel(fGraph->GetXaxis()->FindBin(i), std::to_string(i).c_str());
+    }
+     */
 
     return fGraph;
 }

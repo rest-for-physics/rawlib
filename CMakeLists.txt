@@ -1,7 +1,11 @@
-set(LibraryVersion "1.6")
+set(LibraryVersion "1.7")
 add_definitions(-DLIBRARY_VERSION="${LibraryVersion}")
 
-set( deps detector )
+if (CMAKE_SYSTEM_NAME MATCHES "Windows")
+    set(excludes TRestRawMemoryBufferToSignalProcess)
+endif (CMAKE_SYSTEM_NAME MATCHES "Windows")
+
+set(deps detector)
 
 if (NOT ${RESTLIB_DETECTOR} MATCHES "ON")
     list(REMOVE_ITEM deps detector)
