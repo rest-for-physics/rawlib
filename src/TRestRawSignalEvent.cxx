@@ -589,9 +589,11 @@ TPad* TRestRawSignalEvent::DrawEvent(const TString& option) {
     }
 
     if (printIDs) {
-        cout << "SignalIDS:";
-        for (const auto& s : signalIDs) {
-            cout << " " << s;
+        cout << "SignalIDs:";
+        auto sortedSignalsIDs = signalIDs;
+        sort(sortedSignalsIDs.begin(), sortedSignalsIDs.end());
+        for (const auto& signalID : sortedSignalsIDs) {
+            cout << " " << signalID;
         }
         cout << endl;
     }
