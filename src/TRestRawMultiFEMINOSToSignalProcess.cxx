@@ -219,6 +219,12 @@ void TRestRawMultiFEMINOSToSignalProcess::InitProcess() {
     RESTDebug << "TRestRawMultiFeminos::InitProcess" << RESTendl;
     // Reading binary file header
 
+    if (!fInputFileNames.empty() && TRestTools::GetFileNameExtension(fInputFileNames[0]) != "aqs") {
+        RESTError << "The input file extension should be .aqs" << RESTendl;
+        RESTError << "Filename : " << fInputFileNames[0] << RESTendl;
+        exit(1);
+    }
+
     LoadDetectorSetupData();
 
     unsigned short sh;
@@ -266,7 +272,8 @@ void TRestRawMultiFEMINOSToSignalProcess::InitProcess() {
 }
 
 TRestEvent* TRestRawMultiFEMINOSToSignalProcess::ProcessEvent(TRestEvent* inputEvent) {
-    if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Debug) cout << "TRestRawMultiFEMINOSToSignalProcess::ProcessEvent" << endl;
+    if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Debug)
+        cout << "TRestRawMultiFEMINOSToSignalProcess::ProcessEvent" << endl;
 
     while (1) {
         unsigned short* sh;
@@ -297,10 +304,12 @@ TRestEvent* TRestRawMultiFEMINOSToSignalProcess::ProcessEvent(TRestEvent* inputE
                 totalBytesReaded += sizeof(unsigned short);
 
                 if ((*sh & PFX_0_BIT_CONTENT_MASK) == PFX_START_OF_BUILT_EVENT) {
-                    if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Debug) printf("***** Start of Built Event *****\n");
+                    if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Debug)
+                        printf("***** Start of Built Event *****\n");
                     if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Debug) GetChar();
                 } else if ((*sh & PFX_0_BIT_CONTENT_MASK) == PFX_END_OF_BUILT_EVENT) {
-                    if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Debug) printf("***** End of Built Event *****\n\n");
+                    if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Debug)
+                        printf("***** End of Built Event *****\n\n");
                     if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Debug) GetChar();
                     endOfEvent = true;
                     done = 1;
@@ -411,7 +420,8 @@ Bool_t TRestRawMultiFEMINOSToSignalProcess::ReadFrame(void* fr, int fr_sz) {
     done = 0;
     si = 0;
 
-    if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Debug) printf("ReadFrame: Frame payload: %d bytes\n", fr_sz);
+    if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Debug)
+        printf("ReadFrame: Frame payload: %d bytes\n", fr_sz);
 
     Int_t showSamples = fShowSamples;
 
@@ -456,7 +466,8 @@ Bool_t TRestRawMultiFEMINOSToSignalProcess::ReadFrame(void* fr, int fr_sz) {
         // Is it a prefix for 4-bit content?
         else if ((*p & PFX_4_BIT_CONTENT_MASK) == PFX_START_OF_EVENT) {
             r0 = GET_EVENT_TYPE(*p);
-            if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Debug) printf("ReadFrame: -- Start of Event (Type %01d) --\n", r0);
+            if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Debug)
+                printf("ReadFrame: -- Start of Event (Type %01d) --\n", r0);
             p++;
 
             // Time Stamp lower 16-bit
@@ -488,7 +499,8 @@ Bool_t TRestRawMultiFEMINOSToSignalProcess::ReadFrame(void* fr, int fr_sz) {
             p++;
 
             tmp = (((unsigned int)n1) << 16) | ((unsigned int)n0);
-            if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Info) printf("ReadFrame: Event_Count 0x%08x (%d)\n", tmp, tmp);
+            if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Info)
+                printf("ReadFrame: Event_Count 0x%08x (%d)\n", tmp, tmp);
 
             // Some times the end of the frame contains the header of the next event.
             // Then, in the attempt to read the header of next event, we must avoid
@@ -536,14 +548,17 @@ Bool_t TRestRawMultiFEMINOSToSignalProcess::ReadFrame(void* fr, int fr_sz) {
             if (sgnl.GetSignalID() >= 0 && sgnl.GetNumberOfPoints() >= fMinPoints)
                 fSignalEvent->AddSignal(sgnl);
 
-            if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Debug) printf("ReadFrame: ----- End of Frame -----\n");
+            if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Debug)
+                printf("ReadFrame: ----- End of Frame -----\n");
             p++;
             done = 1;
         } else if (*p == PFX_START_OF_BUILT_EVENT) {
-            if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Debug) printf("ReadFrame: ***** Start of Built Event *****\n");
+            if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Debug)
+                printf("ReadFrame: ***** Start of Built Event *****\n");
             p++;
         } else if (*p == PFX_END_OF_BUILT_EVENT) {
-            if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Debug) printf("ReadFrame: ***** End of Built Event *****\n\n");
+            if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Debug)
+                printf("ReadFrame: ***** End of Built Event *****\n\n");
             p++;
         } else if (*p == PFX_SOBE_SIZE) {
             // Skip header
