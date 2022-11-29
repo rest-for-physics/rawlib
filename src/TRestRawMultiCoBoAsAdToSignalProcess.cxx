@@ -139,7 +139,7 @@ void TRestRawMultiCoBoAsAdToSignalProcess::InitProcess() {
     totalBytesReaded = 0;
 }
 
-Bool_t TRestRawMultiCoBoAsAdToSignalProcess::AddInputFile(string file) {
+Bool_t TRestRawMultiCoBoAsAdToSignalProcess::AddInputFile(const string& file) {
     if (file.find(".graw") == -1) {
         return false;
     }
@@ -302,7 +302,8 @@ bool TRestRawMultiCoBoAsAdToSignalProcess::FillBuffer() {
                 cout << "TRestRawMultiCoBoAsAdToSignalProcess: retrieving frame header in "
                         "file "
                      << i << " (" << fInputFileNames[i] << ")" << endl;
-                if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Extreme) fHeaderFrame[i].Show();
+                if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Extreme)
+                    fHeaderFrame[i].Show();
             }
 
             // reading data according to the header
@@ -336,7 +337,8 @@ bool TRestRawMultiCoBoAsAdToSignalProcess::FillBuffer() {
             }
             totalBytesReaded += 256;
             if (!ReadFrameHeader(fHeaderFrame[i])) {
-                RESTWarning << "Event " << fCurrentEvent << " : error when reading next frame header" << RESTendl;
+                RESTWarning << "Event " << fCurrentEvent << " : error when reading next frame header"
+                            << RESTendl;
                 RESTWarning << "in file " << i << " \"" << fInputFileNames[i] << "\"" << RESTendl;
                 if (fVerboseLevel > TRestStringOutput::REST_Verbose_Level::REST_Info) fHeaderFrame[i].Show();
                 RESTWarning << "trying to skip this event and find next header..." << RESTendl;
@@ -353,9 +355,10 @@ bool TRestRawMultiCoBoAsAdToSignalProcess::FillBuffer() {
                     totalBytesReaded += 256;
                     if (ReadFrameHeader(fHeaderFrame[i])) {
                         fVerboseLevel = tmp;
-                        RESTWarning << "Successfully found next header (EventId : " << fHeaderFrame[i].eventIdx
-                                << ")" << RESTendl;
-                        if (fVerboseLevel > TRestStringOutput::REST_Verbose_Level::REST_Info) fHeaderFrame[i].Show();
+                        RESTWarning << "Successfully found next header (EventId : "
+                                    << fHeaderFrame[i].eventIdx << ")" << RESTendl;
+                        if (fVerboseLevel > TRestStringOutput::REST_Verbose_Level::REST_Info)
+                            fHeaderFrame[i].Show();
                         cout << endl;
                         // GetChar();
                         found = true;
