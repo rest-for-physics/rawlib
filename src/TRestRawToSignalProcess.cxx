@@ -134,15 +134,15 @@ void TRestRawToSignalProcess::LoadDefaultConfig() {
     fMinPoints = 512;
 }
 
-Bool_t TRestRawToSignalProcess::OpenInputFiles(vector<string> files) {
+Bool_t TRestRawToSignalProcess::OpenInputFiles(const vector<string>& files) {
     nFiles = 0;
     fInputFiles.clear();
     fInputFileNames.clear();
     totalBytes = 0;
     totalBytesReaded = 0;
 
-    for (int i = 0; i < files.size(); i++) {
-        AddInputFile(files[i]);
+    for (const auto& file : files) {
+        AddInputFile(file);
     }
 
     if (nFiles > 0) {
@@ -156,9 +156,9 @@ Bool_t TRestRawToSignalProcess::OpenInputFiles(vector<string> files) {
     return nFiles;
 }
 
-Bool_t TRestRawToSignalProcess::AddInputFile(string file) {
-    for (int i = 0; i < fInputFileNames.size(); i++) {
-        if (fInputFileNames[i] == file) {
+Bool_t TRestRawToSignalProcess::AddInputFile(const string& file) {
+    for (auto& fInputFileName : fInputFileNames) {
+        if (fInputFileName == file) {
             RESTError << "file: \"" << file << "\" already added!" << RESTendl;
             return false;
         }
@@ -220,8 +220,8 @@ Bool_t TRestRawToSignalProcess::GoToNextFile() {
             fclose(fInputBinFile);
             fInputBinFile = fopen(fInputFileNames[iCurFile].c_str(), "rb");
         }
-        RESTInfo << "GoToNextFile(): Going to the next raw input file number " << iCurFile << " over " << nFiles
-             << RESTendl;
+        RESTInfo << "GoToNextFile(): Going to the next raw input file number " << iCurFile << " over "
+                 << nFiles << RESTendl;
         RESTInfo << "                Reading file name:  " << fInputFileNames[iCurFile] << RESTendl;
         return true;
     } else {
