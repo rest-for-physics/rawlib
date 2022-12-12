@@ -113,6 +113,7 @@ using namespace std;
 #include <sys/shm.h>
 
 #if (defined(__GNU_LIBRARY__) && !defined(_SEM_SEMUN_UNDEFINED)) || __APPLE__
+#include <unistd.h>
 // The union is already defined in sys/sem.h
 #else
 union semun {
