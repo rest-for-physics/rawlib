@@ -111,9 +111,9 @@ void TRestRawUSTCToSignalProcess::InitProcess() {
         FixToNextFrame(fInputFiles[fCurrentFile]);
         if ((!GetNextFrame(frame)) || (!ReadFrameData(frame))) {
             RESTError << "TRestRawUSTCToSignalProcess: Failed to read the first data "
-                    "frame in file, may be wrong "
-                    "input?"
-                 << RESTendl;
+                         "frame in file, may be wrong "
+                         "input?"
+                      << RESTendl;
             exit(1);
         }
     }
@@ -123,7 +123,8 @@ void TRestRawUSTCToSignalProcess::InitProcess() {
 
     if (fCurrentEvent != 0) {
         RESTWarning << "TRestRawUSTCToSignalProcess : first event is not with id 0 !" << RESTendl;
-        RESTWarning << "The first Id is " << fCurrentEvent << ". May be input file not the first file?" << RESTendl;
+        RESTWarning << "The first Id is " << fCurrentEvent << ". May be input file not the first file?"
+                    << RESTendl;
     }
 }
 
@@ -158,7 +159,7 @@ TRestEvent* TRestRawUSTCToSignalProcess::ProcessEvent(TRestEvent* inputEvent) {
     tSt.SetSec((fTimeOffset + evtTime) / ((Long64_t)1e9));
 
     // some signal level operation
-    for (int i = 0; i < fEventBuffer[fCurrentBuffer].size(); i++) {
+    for (unsigned int i = 0; i < fEventBuffer[fCurrentBuffer].size(); i++) {
         USTCDataFrame* frame = &fEventBuffer[fCurrentBuffer][i];
         if (frame->evId == fCurrentEvent && frame->eventTime == evtTime) {
             sgnl.Initialize();
@@ -168,8 +169,8 @@ TRestEvent* TRestRawUSTCToSignalProcess::ProcessEvent(TRestEvent* inputEvent) {
             }
             fSignalEvent->AddSignal(sgnl);
 
-            RESTDebug << "AsAdId, AgetId, chnId, max value: " << frame->boardId << ", " << frame->chipId << ", "
-                  << frame->channelId << ", " << sgnl.GetMaxValue() << RESTendl;
+            RESTDebug << "AsAdId, AgetId, chnId, max value: " << frame->boardId << ", " << frame->chipId
+                      << ", " << frame->channelId << ", " << sgnl.GetMaxValue() << RESTendl;
 
         } else {
             RESTWarning << "TRestRawUSTCToSignalProcess : unmatched signal frame!" << RESTendl;
@@ -201,7 +202,7 @@ TRestEvent* TRestRawUSTCToSignalProcess::ProcessEvent(TRestEvent* inputEvent) {
 }
 
 void TRestRawUSTCToSignalProcess::EndProcess() {
-    for (int i = 0; i < errorevents.size(); i++) {
+    for (unsigned int i = 0; i < errorevents.size(); i++) {
         RESTWarning << "Event " << errorevents[i] << " contains error !" << RESTendl;
     }
     if (errorevents.size() > 0 && unknownerrors > 0) {
@@ -224,7 +225,7 @@ bool TRestRawUSTCToSignalProcess::FillBuffer() {
 
     while (1)
 #else
-    while (fLastBufferedId < fCurrentEvent + (fEventBuffer.size() - 1) / 2)
+    while (fLastBufferedId < fCurrentEvent + ((int)fEventBuffer.size() - 1) / 2)
 #endif
     {
         bool errortag = false;
@@ -251,7 +252,7 @@ bool TRestRawUSTCToSignalProcess::FillBuffer() {
             breaktag = true;
         }
 #else
-        if (frame.evId >= fCurrentEvent + (fEventBuffer.size() - 1) / 2) {
+        if (frame.evId >= fCurrentEvent + ((int)fEventBuffer.size() - 1) / 2) {
             breaktag = true;
         }
 #endif  // Incoherent_Event_Generation
@@ -265,7 +266,7 @@ bool TRestRawUSTCToSignalProcess::FillBuffer() {
                 if (errorevents.size() == 0) {
                     errorevents.push_back(frame.evId);
                 } else {
-                    for (int i = 0; i < errorevents.size(); i++) {
+                    for (unsigned int i = 0; i < errorevents.size(); i++) {
                         if (errorevents[i] == frame.evId) {
                             break;
                         } else if (i == errorevents.size() - 1) {
@@ -285,14 +286,14 @@ bool TRestRawUSTCToSignalProcess::FillBuffer() {
             break;
         }
     }
-    for (int i = 0; i < errorevents.size(); i++) {
+    for (unsigned int i = 0; i < errorevents.size(); i++) {
         if (errorevents[i] == fCurrentEvent) return false;
     }
     return true;
 }
 
 bool TRestRawUSTCToSignalProcess::OpenNextFile(USTCDataFrame& frame) {
-    if (fCurrentFile < fInputFiles.size() - 1)  // try to get frame form next file
+    if (fCurrentFile < (int)fInputFiles.size() - 1)  // try to get frame form next file
     {
         fCurrentFile++;
         return GetNextFrame(frame);
@@ -523,23 +524,25 @@ bool TRestRawUSTCToSignalProcess::AddBuffer(USTCDataFrame& frame) {
         fEventBuffer[pos].push_back(frame);
     }
 #else
-    if (frame.evId >= fCurrentEvent + fEventBuffer.size()) {
+    if (frame.evId >= fCurrentEvent + (int)fEventBuffer.size()) {
         RESTWarning << "too large event id for buffering!" << RESTendl;
         RESTWarning << "this may due to the inconherence of event id. Increase the "
-                   "buffer number!"
-                << RESTendl;
-        RESTWarning << "Current Event, Burrfering event : " << fCurrentEvent << ", " << frame.evId << RESTendl;
+                       "buffer number!"
+                    << RESTendl;
+        RESTWarning << "Current Event, Burrfering event : " << fCurrentEvent << ", " << frame.evId
+                    << RESTendl;
         return false;
     }
     if (frame.evId < fCurrentEvent) {
         RESTWarning << "skipping a signal from old event!" << RESTendl;
         RESTWarning << "the cause may be that too much events are mixing. Increase the "
-                   "buffer number!"
-                << RESTendl;
-        RESTWarning << "Current Event, Burrfering event : " << fCurrentEvent << ", " << frame.evId << RESTendl;
+                       "buffer number!"
+                    << RESTendl;
+        RESTWarning << "Current Event, Burrfering event : " << fCurrentEvent << ", " << frame.evId
+                    << RESTendl;
         return false;
     }
-    int pos = frame.evId - fCurrentEvent + fCurrentBuffer;
+    size_t pos = frame.evId - fCurrentEvent + fCurrentBuffer;
     if (pos >= fEventBuffer.size()) pos -= fEventBuffer.size();
     fEventBuffer[pos].push_back(frame);
 #endif
@@ -550,7 +553,7 @@ bool TRestRawUSTCToSignalProcess::AddBuffer(USTCDataFrame& frame) {
 void TRestRawUSTCToSignalProcess::ClearBuffer() {
     fEventBuffer[fCurrentBuffer].clear();
     fCurrentBuffer += 1;
-    if (fCurrentBuffer >= fEventBuffer.size()) {
+    if (fCurrentBuffer >= (int)fEventBuffer.size()) {
         fCurrentBuffer -= fEventBuffer.size();
     }
 }
