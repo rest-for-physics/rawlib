@@ -115,7 +115,7 @@ class TRestRawMultiCoBoAsAdToSignalProcess : public TRestRawToSignalProcess {
    public:
     void InitProcess() override;
 
-    Bool_t AddInputFile(std::string file) override;
+    Bool_t AddInputFile(const std::string& file) override;
 
     void Initialize() override;
 

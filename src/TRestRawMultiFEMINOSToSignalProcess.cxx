@@ -219,6 +219,12 @@ void TRestRawMultiFEMINOSToSignalProcess::InitProcess() {
     RESTDebug << "TRestRawMultiFeminos::InitProcess" << RESTendl;
     // Reading binary file header
 
+    if (!fInputFileNames.empty() && TRestTools::GetFileNameExtension(fInputFileNames[0]) != "aqs") {
+        RESTError << "The input file extension should be .aqs" << RESTendl;
+        RESTError << "Filename : " << fInputFileNames[0] << RESTendl;
+        exit(1);
+    }
+
     LoadDetectorSetupData();
 
     unsigned short sh;
