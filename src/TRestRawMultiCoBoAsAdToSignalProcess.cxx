@@ -139,7 +139,7 @@ void TRestRawMultiCoBoAsAdToSignalProcess::InitProcess() {
     totalBytesReaded = 0;
 }
 
-Bool_t TRestRawMultiCoBoAsAdToSignalProcess::AddInputFile(string &file) {
+Bool_t TRestRawMultiCoBoAsAdToSignalProcess::AddInputFile(const string& file) {
     if (file.find(".graw") == string::npos) {
         return false;
     }

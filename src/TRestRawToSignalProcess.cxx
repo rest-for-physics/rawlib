@@ -143,7 +143,6 @@ Bool_t TRestRawToSignalProcess::OpenInputFiles(const vector<string>& files) {
 
     for (const auto& file : files) {
         AddInputFile(file);
-
     }
 
     if (nFiles > 0) {
@@ -160,7 +159,6 @@ Bool_t TRestRawToSignalProcess::OpenInputFiles(const vector<string>& files) {
 Bool_t TRestRawToSignalProcess::AddInputFile(const string& file) {
     for (auto& inputFileName : fInputFileNames) {
         if (inputFileName == file) {
-
             RESTError << "file: \"" << file << "\" already added!" << RESTendl;
             return false;
         }
