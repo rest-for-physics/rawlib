@@ -72,6 +72,7 @@ class TRestRawToSignalProcess : public TRestEventProcess {
 
     Bool_t OpenInputFiles(std::vector<std::string> files);
     virtual Bool_t AddInputFile(std::string file);
+
     Bool_t ResetEntry() override;
 
     Long64_t GetTotalBytesRead() const override { return totalBytesReaded; }
