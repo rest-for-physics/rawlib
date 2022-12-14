@@ -601,7 +601,10 @@ bool TRestRawFEUDreamToSignalProcess::ReadFeuTrailer(FeuReadOut& Feu) {
             Feu.data_to_treat = false;
 
             // Reading VEP, not used
-            fread((void*)&(Feu.current_data), sizeof(Feu.current_data), 1, fInputBinFile);
+            int z = fread((void*)&(Feu.current_data), sizeof(Feu.current_data), 1, fInputBinFile);
+            if (z == 0)
+                RESTError << "TRestRawFEUDreamToSignalProcess::ReadFeuTrailer. Error reading file"
+                          << RESTendl;
             totalBytesReaded += sizeof(Feu.current_data);
             break;
         }
