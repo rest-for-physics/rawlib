@@ -1,4 +1,4 @@
-set(LibraryVersion "1.7")
+set(LibraryVersion "1.8")
 add_definitions(-DLIBRARY_VERSION="${LibraryVersion}")
 
 if (CMAKE_SYSTEM_NAME MATCHES "Windows")
