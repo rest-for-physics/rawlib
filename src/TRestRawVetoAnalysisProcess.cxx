@@ -252,10 +252,12 @@ TRestEvent* TRestRawVetoAnalysisProcess::ProcessEvent(TRestEvent* inputEvent) {
 
                 // Save two maps with (veto panel ID, max amplitude) and (veto panel ID,
                 // peak time)
-                if (sgnl->GetPointsOverThreshold().size() >= fPointsOverThreshold) {  // signal is not noise
+                if (sgnl->GetPointsOverThreshold().size() >= (unsigned int)fPointsOverThreshold) {
+                    // signal is not noise
                     VetoMaxPeakAmplitude_map[fVetoSignalId[i]] = sgnl->GetMaxPeakValue();
                 } else {
-                    VetoMaxPeakAmplitude_map[fVetoSignalId[i]] = 0;  // signal is noise
+                    // signal is noise
+                    VetoMaxPeakAmplitude_map[fVetoSignalId[i]] = 0;
                 }
                 VetoPeakTime_map[fVetoSignalId[i]] = sgnl->GetMaxPeakBin();
                 // We remove the signal from the event
@@ -313,11 +315,12 @@ TRestEvent* TRestRawVetoAnalysisProcess::ProcessEvent(TRestEvent* inputEvent) {
                                                         fPointsOverThreshold);
                     // Save two maps with (veto panel ID, max amplitude) and (veto panel
                     // ID, peak time)
-                    if (sgnl->GetPointsOverThreshold().size() >=
-                        fPointsOverThreshold) {  // signal is not noise
+                    if (sgnl->GetPointsOverThreshold().size() >= (unsigned int)fPointsOverThreshold) {
+                        // signal is not noise
                         VetoMaxPeakAmplitude_map[groupIds[j]] = sgnl->GetMaxPeakValue();
                     } else {
-                        VetoMaxPeakAmplitude_map[groupIds[j]] = 0;  // signal is noise
+                        // signal is noise
+                        VetoMaxPeakAmplitude_map[groupIds[j]] = 0;
                     }
                     VetoPeakTime_map[groupIds[j]] = sgnl->GetMaxPeakBin();
                     // We remove the signal from the event
@@ -429,7 +432,8 @@ void TRestRawVetoAnalysisProcess::PrintMetadata() {
 
     // Print output metadata using, metadata << endl;
     for (unsigned int i = 0; i < fVetoGroupNames.size(); i++) {
-        RESTMetadata << "Veto group " << fVetoGroupNames[i] << " signal IDs: " << fVetoGroupIds[i] << RESTendl;
+        RESTMetadata << "Veto group " << fVetoGroupNames[i] << " signal IDs: " << fVetoGroupIds[i]
+                     << RESTendl;
     }
 
     if (fVetoSignalId[0] != -1) {
@@ -451,7 +455,7 @@ void TRestRawVetoAnalysisProcess::PrintMetadata() {
         RESTMetadata << "Peak time window: (" << fTimeWindow[0] << ", " << fTimeWindow[1] << ")" << RESTendl;
     }
     RESTMetadata << "Noise reduction: Points over Threshold parameters = (" << fPointThreshold << ", "
-             << fSignalThreshold << ", " << fPointsOverThreshold << ")" << RESTendl;
+                 << fSignalThreshold << ", " << fPointsOverThreshold << ")" << RESTendl;
 
     EndPrintProcess();
 }

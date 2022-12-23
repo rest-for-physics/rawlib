@@ -140,7 +140,7 @@ void TRestRawMultiCoBoAsAdToSignalProcess::InitProcess() {
 }
 
 Bool_t TRestRawMultiCoBoAsAdToSignalProcess::AddInputFile(const string& file) {
-    if (file.find(".graw") == -1) {
+    if (file.find(".graw") == string::npos) {
         return false;
     }
     if (TRestRawToSignalProcess::AddInputFile(file)) {
@@ -240,7 +240,7 @@ TRestEvent* TRestRawMultiCoBoAsAdToSignalProcess::ProcessEvent(TRestEvent* input
 }
 
 void TRestRawMultiCoBoAsAdToSignalProcess::EndProcess() {
-    for (int i = 0; i < fileerrors.size(); i++) {
+    for (unsigned int i = 0; i < fileerrors.size(); i++) {
         if (fileerrors[i] > 0) {
             RESTWarning << "Found " << fileerrors[i] << " error frame headers in file " << i << RESTendl;
             RESTWarning << "\"" << fInputFileNames[i] << "\"" << RESTendl;
@@ -254,7 +254,7 @@ void TRestRawMultiCoBoAsAdToSignalProcess::EndProcess() {
 // false: error when filling
 bool TRestRawMultiCoBoAsAdToSignalProcess::FillBuffer() {
     // if the file is opened but not read, read header frame
-    for (int i = 0; i < fInputFiles.size(); i++) {
+    for (unsigned int i = 0; i < fInputFiles.size(); i++) {
         if (fInputFiles[i] && ftell(fInputFiles[i]) == 0) {
             if (fread(fHeaderFrame[i].frameHeader, 256, 1, fInputFiles[i]) != 1 || feof(fInputFiles[i])) {
                 fclose(fInputFiles[i]);
@@ -280,14 +280,14 @@ bool TRestRawMultiCoBoAsAdToSignalProcess::FillBuffer() {
 
     // normally:
     // 1.use the smallest event id in header frames as current event id
-    int evt = fHeaderFrame[0].eventIdx;
-    for (int i = 1; i < fHeaderFrame.size(); i++) {
+    unsigned int evt = fHeaderFrame[0].eventIdx;
+    for (unsigned int i = 1; i < fHeaderFrame.size(); i++) {
         if (fHeaderFrame[i].eventIdx < evt) evt = fHeaderFrame[i].eventIdx;
     }
     fCurrentEvent = evt;
 
     // loop for each file
-    for (int i = 0; i < fHeaderFrame.size(); i++) {
+    for (unsigned int i = 0; i < fHeaderFrame.size(); i++) {
         if (fInputFiles[i] == nullptr) {
             continue;
         }
@@ -297,7 +297,7 @@ bool TRestRawMultiCoBoAsAdToSignalProcess::FillBuffer() {
         // a. read the data frame behind
         // b. read the next frame header
         // c. if eventid is the same as current, return to a, otherwise break.
-        while (fHeaderFrame[i].eventIdx == fCurrentEvent) {
+        while (fCurrentEvent >= 0 && fHeaderFrame[i].eventIdx == (unsigned int)fCurrentEvent) {
             if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Debug) {
                 cout << "TRestRawMultiCoBoAsAdToSignalProcess: retrieving frame header in "
                         "file "
@@ -494,12 +494,11 @@ bool TRestRawMultiCoBoAsAdToSignalProcess::ReadFrameHeader(CoBoHeaderFrame& HdrF
 
 bool TRestRawMultiCoBoAsAdToSignalProcess::ReadFrameDataP(FILE* f, CoBoHeaderFrame& hdr) {
     unsigned int i;
-    int j;
     unsigned int agetIdx, chanIdx, buckIdx, sample, chTmp;
 
     unsigned int asadid = hdr.asadIdx;
     unsigned int size = hdr.frameSize;
-    unsigned int items = hdr.nItems;
+    // unsigned int items = hdr.nItems;
     unsigned int eventid = hdr.eventIdx;
     Long64_t time = hdr.eventTime;
     TTimeStamp eveTimeStamp;
@@ -548,7 +547,7 @@ bool TRestRawMultiCoBoAsAdToSignalProcess::ReadFrameDataP(FILE* f, CoBoHeaderFra
 bool TRestRawMultiCoBoAsAdToSignalProcess::ReadFrameDataF(CoBoHeaderFrame& hdr) {
     int i;
     int j;
-    unsigned int agetIdx, chanIdx, chanIdx0, chanIdx1, chanIdx2, chanIdx3, buckIdx, sample, chTmp;
+    unsigned int agetIdx, chanIdx, chanIdx0, chanIdx1, chanIdx2, chanIdx3, sample, chTmp;
 
     unsigned int asadid = hdr.asadIdx;
     unsigned int eventid = hdr.eventIdx;

@@ -144,7 +144,7 @@ TRestRawSignal* TRestRawSignalEvent::GetMaxSignal() {
 
     Double_t max = fSignal[0].GetIntegral();
 
-    Int_t sId;
+    Int_t sId = 0;
     for (int i = 0; i < GetNumberOfSignals(); i++) {
         Int_t integ = fSignal[i].GetIntegral();
         if (max < integ) {
@@ -493,7 +493,6 @@ TPad* TRestRawSignalEvent::DrawEvent(const TString& option) {
 
     ///// No specific signal selection ////
     if ((optList.empty()) || !(isANumber((string)optList[0]))) {
-        int sigPrinted = 0;
         // If threshold and baseline options are given
         if (thresholdCheck && baselineCheck) {
             RESTDebug << "Draw only good signals with: " << RESTendl;
@@ -541,7 +540,7 @@ TPad* TRestRawSignalEvent::DrawEvent(const TString& option) {
             RESTDebug << "First signal: " << firstSignal << RESTendl;
             RESTDebug << "Last signal: " << lastSignal << RESTendl;
 
-            if (StringToInteger((string)lastSignal) >= fSignal.size()) {
+            if (StringToInteger((string)lastSignal) >= (int)fSignal.size()) {
                 fPad->SetTitle("No Such Signal");
                 cout << "No such last signal" << endl;
                 return fPad;
@@ -697,9 +696,6 @@ TPad* TRestRawSignalEvent::DrawSignal(Int_t signalID, TString option) {
 
     vector<TString> optList = Vector_cast<string, TString>(TRestTools::GetOptions((string)option));
 
-    bool ThresCheck = false;
-    bool BLCheck = false;
-
     double signalTh = 0, pointTh = 0, nOver = 0;
     int baseLineRangeInit = 0, baseLineRangeEnd = 0;
 
@@ -718,8 +714,6 @@ TPad* TRestRawSignalEvent::DrawSignal(Int_t signalID, TString option) {
             pointTh = StringToDouble((string)optList_2[0]);
             signalTh = StringToDouble((string)optList_2[1]);
             nOver = StringToDouble((string)optList_2[2]);
-
-            ThresCheck = true;
         }
 
         // Read baseline option
@@ -733,8 +727,6 @@ TPad* TRestRawSignalEvent::DrawSignal(Int_t signalID, TString option) {
 
             baseLineRangeInit = StringToInteger((string)optList_3[0]);
             baseLineRangeEnd = StringToInteger((string)optList_3[1]);
-
-            BLCheck = true;
         }
     }
 

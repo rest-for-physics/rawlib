@@ -250,7 +250,10 @@ void TRestRawMultiFEMINOSToSignalProcess::InitProcess() {
 
     if (!ORIGINAL_MCLIENT) {
         int tt;
-        fread(&tt, sizeof(int), 1, fInputBinFile);
+        int z = fread(&tt, sizeof(int), 1, fInputBinFile);
+        if (z == 0)
+            RESTError << "TRestRawMultiFEMINOSToSignalProcess::InitProcess. Problem reading from inputfile"
+                      << RESTendl;
         totalBytesReaded += sizeof(int);
 
         tStart = tt;
