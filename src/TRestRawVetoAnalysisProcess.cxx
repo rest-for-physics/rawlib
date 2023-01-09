@@ -429,7 +429,8 @@ void TRestRawVetoAnalysisProcess::PrintMetadata() {
 
     // Print output metadata using, metadata << endl;
     for (unsigned int i = 0; i < fVetoGroupNames.size(); i++) {
-        RESTMetadata << "Veto group " << fVetoGroupNames[i] << " signal IDs: " << fVetoGroupIds[i] << RESTendl;
+        RESTMetadata << "Veto group " << fVetoGroupNames[i] << " signal IDs: " << fVetoGroupIds[i]
+                     << RESTendl;
     }
 
     if (fVetoSignalId[0] != -1) {
@@ -451,7 +452,7 @@ void TRestRawVetoAnalysisProcess::PrintMetadata() {
         RESTMetadata << "Peak time window: (" << fTimeWindow[0] << ", " << fTimeWindow[1] << ")" << RESTendl;
     }
     RESTMetadata << "Noise reduction: Points over Threshold parameters = (" << fPointThreshold << ", "
-             << fSignalThreshold << ", " << fPointsOverThreshold << ")" << RESTendl;
+                 << fSignalThreshold << ", " << fPointsOverThreshold << ")" << RESTendl;
 
     EndPrintProcess();
 }

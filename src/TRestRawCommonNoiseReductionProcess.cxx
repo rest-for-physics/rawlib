@@ -183,7 +183,6 @@ TRestEvent* TRestRawCommonNoiseReductionProcess::ProcessEvent(TRestEvent* inputE
         baseLineMean += baseline;
     }
     Double_t Baseline = baseLineMean / fInputEvent->GetNumberOfSignals();
-
     if (fBlocks == 0) {
         Int_t N = fInputEvent->GetNumberOfSignals();
 

@@ -50,7 +50,7 @@ class TRestRawSignalRecoverChannelsProcess : public TRestEventProcess {
 
     void LoadDefaultConfig();
 
-    void GetAdjacentSignalIds(Int_t signalId, Int_t& idLeft, Int_t& idRight);
+    void GetAdjacentSignalIds(Int_t signalId, Int_t& idLeft, Int_t& idRight, Int_t& idLeft2, Int_t& idRight2);
 
    public:
     any GetInputEvent() const override { return fInputSignalEvent; }
