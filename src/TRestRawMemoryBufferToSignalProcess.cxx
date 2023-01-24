@@ -116,7 +116,6 @@ using namespace std;
 #include <unistd.h>
 #endif
 
-
 #if (defined(__GNU_LIBRARY__) && !defined(_SEM_SEMUN_UNDEFINED)) || __APPLE__
 // The union is already defined in sys/sem.h
 #else
