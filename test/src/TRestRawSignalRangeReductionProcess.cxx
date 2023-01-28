@@ -23,7 +23,7 @@ TEST(TRestRawSignalRangeReductionProcess, TestFiles) {
 
 TEST(TRestRawSignalRangeReductionProcess, Default) {
     TRestRawSignalRangeReductionProcess process;
-    EXPECT_TRUE(process.GetProcessName() == "rawSignalRangeReductionProcess");
+    EXPECT_TRUE(process.GetProcessName() == (std::string) "rawSignalRangeReductionProcess");
 
     EXPECT_TRUE(process.GetResolutionInNumberOfBits() == 12);
 

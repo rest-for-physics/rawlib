@@ -194,9 +194,9 @@ TRestEvent* TRestRawSignalChannelActivityProcess::ProcessEvent(TRestEvent* input
     }
 
     for (int s = 0; s < fSignalEvent->GetNumberOfSignals(); s++) {
-        TRestRawSignal* sgnl = fSignalEvent->GetSignal(s);
 // Adding signal to the channel activity histogram
 #ifdef REST_DetectorLib
+        TRestRawSignal* sgnl = fSignalEvent->GetSignal(s);
         if (!fReadOnly && fReadout) {
             Int_t signalID = fSignalEvent->GetSignal(s)->GetID();
 
