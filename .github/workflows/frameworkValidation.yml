@@ -7,7 +7,12 @@ on:
     branches: [ "master" ]
   release:
 
+  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 env:
   CMAKE_BUILD_TYPE: Release
@@ -20,5 +25,5 @@ defaults:
 
 jobs:
   framework-validation:
-    uses: rest-for-physics/framework/.github/workflows/validation.yml@master
+    uses: rest-for-physics/framework/.github/workflows/validation.yml@submodule-validation
   
