@@ -1,4 +1,4 @@
-name: Validation
+name: Framework Validation
 
 on:
   push:
