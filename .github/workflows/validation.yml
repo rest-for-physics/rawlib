@@ -27,8 +27,7 @@ jobs:
           branch: ${{ env.BRANCH_NAME }}
           repository: rest-for-physics/rawlib
           path: ${{ env.RAW_LIB_PATH }}
-      - run: cd ${{ env.RAW_LIB_PATH }}
-      - run: python3 pipeline/validateLibrary.py .
+      - run: ${{ env.RAW_LIB_PATH }}/python3 pipeline/validateLibrary.py .
 
   build-rawlib:
     name: Build only rawlib
