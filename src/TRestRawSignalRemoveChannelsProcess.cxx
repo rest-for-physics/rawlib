@@ -153,7 +153,8 @@ TRestEvent* TRestRawSignalRemoveChannelsProcess::ProcessEvent(TRestEvent* inputE
 
         if (!removeChannel) fOutputSignalEvent->AddSignal(*sgnl);
 
-        if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Extreme) cout << "Channel ID : " << sgnl->GetID() << endl;
+        if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Extreme)
+            cout << "Channel ID : " << sgnl->GetID() << endl;
 
         if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Debug && removeChannel)
             cout << "Removing channel id : " << sgnl->GetID() << endl;
