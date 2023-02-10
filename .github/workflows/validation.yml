@@ -7,6 +7,7 @@ on:
 env:
   CMAKE_BUILD_TYPE: Release
   REST_PATH: /rest/rawlib/install
+  RAW_LIB_PATH: /rest/rawlib/path
   BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
 
 defaults:
@@ -21,7 +22,12 @@ jobs:
     container:
       image: ghcr.io/lobis/root-geant4-garfield:rest-for-physics
     steps:
-      - uses: actions/checkout@v3
+      - uses: rest-for-physics/framework/.github/actions/checkout@submodule-validation
+        with:
+          branch: ${{ env.BRANCH_NAME }}
+          repository: rest-for-physics/rawlib
+          path: ${{ env.RAW_LIB_PATH }}
+      - run: cd ${{ env.RAW_LIB_PATH }}
       - run: python3 pipeline/validateLibrary.py .
 
   build-rawlib:
@@ -50,7 +56,11 @@ jobs:
       image: ghcr.io/lobis/root-geant4-garfield:rest-for-physics
     needs: [ build-rawlib ]
     steps:
-      - uses: actions/checkout@v3
+      - uses: rest-for-physics/framework/.github/actions/checkout@submodule-validation
+        with:
+          branch: ${{ env.BRANCH_NAME }}
+          repository: rest-for-physics/rawlib
+          path: ${{ env.RAW_LIB_PATH }}
       - name: Restore cache
         uses: actions/cache@v3
         id: rawlib-install-cache
@@ -60,38 +70,38 @@ jobs:
       - name: Add signal noise
         run: |
           source ${{ env.REST_PATH }}/thisREST.sh
-          cd pipeline/processes/noise
+          cd ${{ env.RAW_LIB_PATH }}/pipeline/processes/noise
           python addNoise.py
       - name: Common Noise
         run: |
           source ${{ env.REST_PATH }}/thisREST.sh
-          cd pipeline/processes/commonNoise
+          cd ${{ env.RAW_LIB_PATH }}/pipeline/processes/commonNoise
           restRoot -b -q commonNoise.C
       - name: Veto Analysis
         run: |
           source ${{ env.REST_PATH }}/thisREST.sh
-          cd pipeline/processes/veto
+          cd ${{ env.RAW_LIB_PATH }}/pipeline/processes/veto
           restManager --c veto.rml --f ../../data/R01208_Ar2Iso_Background14h_14Vetos_IccubFEC-000.aqs
           python vetoValidation.py
       - name: Signal Shaping
         run: |
           source ${{ env.REST_PATH }}/thisREST.sh
-          cd pipeline/processes/shaping
+          cd ${{ env.RAW_LIB_PATH }}/pipeline/processes/shaping
           restRoot -b -q shaping.C
       - name: Fitting Process
         run: |
           source ${{ env.REST_PATH }}/thisREST.sh
-          cd pipeline/processes/fit
+          cd ${{ env.RAW_LIB_PATH }}/pipeline/processes/fit
           restRoot -b -q fit.C
       - name: General Fit Process
         run: |
           source ${{ env.REST_PATH }}/thisREST.sh
-          cd pipeline/processes/fit
+          cd ${{ env.RAW_LIB_PATH }}/pipeline/processes/fit
           restRoot -b -q GeneralFit.C
       - name: Analysis Process
         run: |
           source ${{ env.REST_PATH }}/thisREST.sh
-          cd pipeline/processes/analysis
+          cd ${{ env.RAW_LIB_PATH }}/pipeline/processes/analysis
           restManager --c veto.rml --f ../../data/R01208_Ar2Iso_Background14h_14Vetos_IccubFEC-000.aqs
           restRoot -b -q validate.C
 
@@ -102,7 +112,11 @@ jobs:
       image: ghcr.io/lobis/root-geant4-garfield:rest-for-physics
     needs: [ build-rawlib ]
     steps:
-      - uses: actions/checkout@v3
+      - uses: rest-for-physics/framework/.github/actions/checkout@submodule-validation
+        with:
+          branch: ${{ env.BRANCH_NAME }}
+          repository: rest-for-physics/rawlib
+          path: ${{ env.RAW_LIB_PATH }}
       - name: Restore cache
         uses: actions/cache@v3
         id: rawlib-install-cache
@@ -112,6 +126,6 @@ jobs:
       - name: Dream data
         run: |
           source ${{ env.REST_PATH }}/thisREST.sh
-          cd pipeline/external/dream
+          cd ${{ env.RAW_LIB_PATH }}/pipeline/external/dream
           restManager --c dream.rml --f dummyDreamData.fdf
           restRoot -b -q dream.C
