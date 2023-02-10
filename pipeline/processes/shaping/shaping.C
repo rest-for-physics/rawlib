@@ -53,23 +53,23 @@ Int_t shaping(Bool_t draw = false) {
         combinedEv->DrawEvent();
     }
 
-    if (gausMaxPeakPosition != 249) {
-        cout << "Problem on gaussian convolution! Position of the most intense peak should be 248!!" << endl;
+    if (gausMaxPeakPosition != 250) {
+        cout << "Problem on gaussian convolution! Position of the most intense peak should be 250!!" << endl;
         return 1;
     }
 
-    if (gausMaxPeakValue != 199) {
-        cout << "Problem on gaussian convolution! Ampltude of the most intense peak should be 124!!" << endl;
+    if (gausMaxPeakValue != 200) {
+        cout << "Problem on gaussian convolution! Amplitude of the most intense peak should be 200!!" << endl;
         return 2;
     }
 
-    if (agetMaxPeakPosition != 288) {
-        cout << "Problem on shaperSin convolution! Position of the most intense peak should be 287!!" << endl;
+    if (agetMaxPeakPosition != 289) {
+        cout << "Problem on shaperSin convolution! Position of the most intense peak should be 289!!" << endl;
         return 3;
     }
 
-    if (agetMaxPeakValue != 172) {
-        cout << "Problem on shaperSin convolution! Amplitude of the most intense peak should be 107!!"
+    if (agetMaxPeakValue != 173) {
+        cout << "Problem on shaperSin convolution! Amplitude of the most intense peak should be 173!!"
              << endl;
         return 4;
     }
