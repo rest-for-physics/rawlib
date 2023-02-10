@@ -138,7 +138,8 @@ TRestEvent* TRestRawSignalGeneralFitProcess::ProcessEvent(TRestEvent* inputEvent
     // no need for verbose copy now
     fRawSignalEvent = (TRestRawSignalEvent*)inputEvent;
 
-    RESTDebug << "TRestRawSignalGeneralFitProcess::ProcessEvent. Event ID : " << fRawSignalEvent->GetID() << RESTendl;
+    RESTDebug << "TRestRawSignalGeneralFitProcess::ProcessEvent. Event ID : " << fRawSignalEvent->GetID()
+              << RESTendl;
 
     Double_t SigmaMean = 0;
     vector<Double_t> Sigma(fRawSignalEvent->GetNumberOfSignals());
@@ -272,7 +273,7 @@ TRestEvent* TRestRawSignalGeneralFitProcess::ProcessEvent(TRestEvent* inputEvent
         RESTDebug << "Standard deviation of signal number " << k << ": " << Sigma[k] << RESTendl;
         RESTDebug << "Chi square of fit signal number " << k << ": " << ChiSquare[k] << RESTendl;
         RESTDebug << "Sandard deviation divided by amplitude of signal number " << k << ": "
-              << RatioSigmaMaxPeak[k] << RESTendl;
+                  << RatioSigmaMaxPeak[k] << RESTendl;
     }
 
     /// We define (or re-define) the baseline range and calculation range of our

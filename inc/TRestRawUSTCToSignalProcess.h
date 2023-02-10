@@ -27,9 +27,9 @@
 
 #include "TRestRawToSignalProcess.h"
 
-//#define V3_Readout_Format_Long
+// #define V3_Readout_Format_Long
 #define V4_Readout_Format
-//#define Incoherent_Event_Generation
+// #define Incoherent_Event_Generation
 
 #ifdef V3_Readout_Format_Long
 #define DATA_SIZE 1048
