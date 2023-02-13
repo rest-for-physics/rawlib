@@ -30,13 +30,17 @@
 ///       <parameter name="smoothingWindow" value="75" />
 ///   </addProcess>
 /// \endcode
-/// \htmlonly <style>div.image img[src="doc_TRestRawBaseLineCorrectionProcess1.png"]{width:750px;}</style>\endhtmlonly
+/// \htmlonly <style>div.image
+/// img[src="doc_TRestRawBaseLineCorrectionProcess1.png"]{width:750px;}</style>\endhtmlonly
 ///
-/// ![A raw signal with and without TRestBaseLineCorrectionProcess with smoothing window size 75](doc_TRestRawBaseLineCorrectionProcess1.png)
+/// ![A raw signal with and without TRestBaseLineCorrectionProcess with smoothing window size
+/// 75](doc_TRestRawBaseLineCorrectionProcess1.png)
 ///
-/// \htmlonly <style>div.image img[src="doc_TRestRawBaseLineCorrectionProcess2.png"]{width:750px;}</style>\endhtmlonly
+/// \htmlonly <style>div.image
+/// img[src="doc_TRestRawBaseLineCorrectionProcess2.png"]{width:750px;}</style>\endhtmlonly
 ///
-/// ![A raw signal with and without TRestBaseLineCorrectionProcess with smoothing window size 75](doc_TRestRawBaseLineCorrectionProcess2.png) <hr>
+/// ![A raw signal with and without TRestBaseLineCorrectionProcess with smoothing window size
+/// 75](doc_TRestRawBaseLineCorrectionProcess2.png) <hr>
 ///
 /// \warning **⚠ REST is under continous development.** This documentation
 /// is offered to you by the REST community. Your HELP is needed to keep this code
