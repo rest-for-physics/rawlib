@@ -29,22 +29,34 @@ jobs:
           path: ${{ env.RAW_LIB_PATH }}
       - run: python3 ${{ env.RAW_LIB_PATH }}/pipeline/validateLibrary.py .
 
+  precommit-config:
+    name: Validate pre-commit config
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/lobis/root-geant4-garfield:rest-for-physics
+    steps:
+      - name: Checkout rawlib
+        uses: rest-for-physics/framework/.github/actions/checkout@submodule-validation
+        with:
+          branch: ${{ env.BRANCH_NAME }}
+          repository: rest-for-physics/rawlib
+          path: ${{ env.RAW_LIB_PATH }}
+      - name: Verify pre-commit config files match
+        run: |
+          cd ${{ env.RAW_LIB_PATH }}
+          curl https://raw.githubusercontent.com/rest-for-physics/framework/master/scripts/validatePreCommitConfig.py | python
+
   build-rawlib:
     name: Build only rawlib
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/lobis/root-geant4-garfield:rest-for-physics
     steps:
-      - uses: actions/checkout@v3
       - name: Build and install
         uses: rest-for-physics/framework/.github/actions/build@master
         with:
           cmake-flags: "-DCMAKE_INSTALL_PREFIX=${{ env.REST_PATH }} -DCMAKE_BUILD_TYPE=${{ env.CMAKE_BUILD_TYPE }} -DREST_WELCOME=ON -DRESTLIB_RAW=ON"
           branch: ${{ env.BRANCH_NAME }}
-      - name: Verify pre-commit config files match
-        run: |
-          cd $GITHUB_WORKSPACE
-          curl https://raw.githubusercontent.com/rest-for-physics/framework/master/scripts/validatePreCommitConfig.py | python
       - name: Cache framework installation
         id: rawlib-install-cache
         uses: actions/cache@v3
