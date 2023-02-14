@@ -22,7 +22,7 @@ jobs:
     container:
       image: ghcr.io/lobis/root-geant4-garfield:rest-for-physics
     steps:
-      - uses: rest-for-physics/framework/.github/actions/checkout@submodule-validation
+      - uses: rest-for-physics/framework/.github/actions/checkout@master
         with:
           branch: ${{ env.BRANCH_NAME }}
           repository: rest-for-physics/rawlib
@@ -36,7 +36,7 @@ jobs:
       image: ghcr.io/lobis/root-geant4-garfield:rest-for-physics
     steps:
       - name: Checkout rawlib
-        uses: rest-for-physics/framework/.github/actions/checkout@submodule-validation
+        uses: rest-for-physics/framework/.github/actions/checkout@master
         with:
           branch: ${{ env.BRANCH_NAME }}
           repository: rest-for-physics/rawlib
@@ -71,7 +71,7 @@ jobs:
       image: ghcr.io/lobis/root-geant4-garfield:rest-for-physics
     needs: [ build-rawlib ]
     steps:
-      - uses: rest-for-physics/framework/.github/actions/checkout@submodule-validation
+      - uses: rest-for-physics/framework/.github/actions/checkout@master
         with:
           branch: ${{ env.BRANCH_NAME }}
           repository: rest-for-physics/rawlib
@@ -127,7 +127,7 @@ jobs:
       image: ghcr.io/lobis/root-geant4-garfield:rest-for-physics
     needs: [ build-rawlib ]
     steps:
-      - uses: rest-for-physics/framework/.github/actions/checkout@submodule-validation
+      - uses: rest-for-physics/framework/.github/actions/checkout@master
         with:
           branch: ${{ env.BRANCH_NAME }}
           repository: rest-for-physics/rawlib
