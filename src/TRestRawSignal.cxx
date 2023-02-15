@@ -59,14 +59,14 @@
 ///
 #include "TRestRawSignal.h"
 
-#include "TRestSignalAnalysis.h"
-
 #include <TAxis.h>
 #include <TF1.h>
 #include <TMath.h>
 #include <TRandom3.h>
 
 #include <numeric>
+
+#include "TRestSignalAnalysis.h"
 
 using namespace std;
 
