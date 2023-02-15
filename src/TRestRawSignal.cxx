@@ -575,6 +575,26 @@ std::vector<Float_t> TRestRawSignal::GetSignalSmoothed(Int_t averagingPoints, st
 }
 
 ///////////////////////////////////////////////
+/// \brief It applies the moving average filter (GetSignalSmoothed) to the signal, which is then subtracted
+/// from the raw data, resulting in a corrected baseline. The returned signal is placed at the signal pointer
+/// given by the argument.
+///
+/// \param smoothedSignal The pointer to the TRestRawSignal which will contain the corrected signal
+///
+/// \param averagingPoints It defines the number of neighbour consecutive
+/// points used to average the signal
+///
+void TRestRawSignal::GetBaseLineCorrected(TRestRawSignal* smoothedSignal, Int_t averagingPoints) {
+    smoothedSignal->Initialize();
+
+    auto averagedSignal = GetSignalSmoothed(averagingPoints, "EXCLUDE OUTLIERS");
+
+    for (int i = 0; i < GetNumberOfPoints(); i++) {
+        smoothedSignal->AddPoint(GetRawData(i) - averagedSignal[i]);
+    }
+}
+
+///////////////////////////////////////////////
 /// \brief It smooths the existing signal and returns it in a vector of Float_t values. This method excludes
 /// points which are far off from the BaseLine IQR (e.g. signals). In case the baseline parameters were not
 /// calculated yet, this method calls CalculateBaseLine with the "ROBUST" option on the entire signal range
