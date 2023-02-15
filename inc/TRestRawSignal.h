@@ -36,10 +36,6 @@ class TRestRawSignal : public TObject {
    private:
     void CalculateThresholdIntegral();
 
-    void CalculateBaseLineSigmaSD(Int_t startBin, Int_t endBin);
-
-    void CalculateBaseLineSigmaIQR(Int_t startBin, Int_t endBin);
-
     std::vector<Float_t> GetSignalSmoothed_ExcludeOutliers(Int_t averagingPoints);
 
    protected:
@@ -110,6 +106,8 @@ class TRestRawSignal : public TObject {
 
     /// Returns the range defined by user
     inline TVector2 GetRange() const { return fRange; }
+
+    inline std::vector<Short_t> GetSignalData() const { return fSignalData; }
 
     /// Returns false if the baseline and its baseline fluctuation was not initialized.
     inline Bool_t isBaseLineInitialized() {
@@ -186,8 +184,6 @@ class TRestRawSignal : public TObject {
     Bool_t IsADCSaturation(int Nflat = 3);
 
     void GetDifferentialSignal(TRestRawSignal* diffSignal, Int_t smearPoints);
-
-    void GetSignalSmoothed(TRestRawSignal* smoothedSignal, Int_t averagingPoints);
 
     std::vector<Float_t> GetSignalSmoothed(Int_t averagingPoints, std::string option = "");
 
