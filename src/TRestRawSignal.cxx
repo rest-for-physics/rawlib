@@ -565,7 +565,8 @@ std::vector<Float_t> TRestRawSignal::GetSignalSmoothed(Int_t averagingPoints, st
     if (option == "") {
         return TRestSignalAnalysis::GetSignalSmoothed(fSignalData, averagingPoints);
     } else if (ToUpper(option) == "EXCLUDE OUTLIERS") {
-        return TRestSignalAnalysis::GetSignalSmoothed_ExcludeOutliers(fSignalData, averagingPoints);
+        return TRestSignalAnalysis::GetSignalSmoothed_ExcludeOutliers(fSignalData, averagingPoints, fBaseLine,
+                                                                      fBaseLineSigma);
     } else {
         std::cout << "TRestRawSignal::GetSignalSmoothed. Error! No such option!" << std::endl;
         std::vector<Float_t> result;
@@ -639,11 +640,11 @@ void TRestRawSignal::CalculateBaseLineMedian(Int_t startBin, Int_t endBin) {
 ///
 void TRestRawSignal::CalculateBaseLine(Int_t startBin, Int_t endBin, const std::string& option) {
     if (ToUpper(option) == "ROBUST") {
-        TRestSignalAnalysis::CalculateBaselineAndSigmaSD(fSignalData, startBin, endBin, fBaseLine,
-                                                         fBaseLineSigma);
-    } else {
         TRestSignalAnalysis::CalculateBaselineAndSigmaIQR(fSignalData, startBin, endBin, fBaseLine,
                                                           fBaseLineSigma);
+    } else {
+        TRestSignalAnalysis::CalculateBaselineAndSigmaSD(fSignalData, startBin, endBin, fBaseLine,
+                                                         fBaseLineSigma);
     }
 }
 
