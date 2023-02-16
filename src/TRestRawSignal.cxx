@@ -240,9 +240,9 @@ void TRestRawSignal::CalculateThresholdIntegral() {
 
     fThresholdIntegral = 0;
 
-    for (unsigned int n = 0; n < fPointsOverThreshold.size(); n++) {
-        if (fPointsOverThreshold[n] >= fRange.X() && fPointsOverThreshold[n] < fRange.Y()) {
-            fThresholdIntegral += GetData(fPointsOverThreshold[n]);
+    for (const auto& [bin, value] : fPointsOverThreshold) {
+        if (bin >= fRange.X() && bin < fRange.Y()) {
+            fThresholdIntegral += value;
         }
     }
 }
@@ -303,12 +303,11 @@ Double_t TRestRawSignal::GetSlopeIntegral() {
              << endl;
 
     Double_t sum = 0;
-    for (unsigned int n = 0; n < fPointsOverThreshold.size(); n++) {
-        if (n + 1 >= fPointsOverThreshold.size()) return sum;
-
-        sum += GetData(fPointsOverThreshold[n]);
-
-        if (GetData(fPointsOverThreshold[n + 1]) - GetData(fPointsOverThreshold[n]) < 0) break;
+    Double_t pVal = 0;
+    for (const auto& [index, val] : fPointsOverThreshold) {
+        if (val - pVal < 0) break;
+        sum += val;
+        pVal = val;
     }
     return sum;
 }
@@ -330,13 +329,18 @@ Double_t TRestRawSignal::GetRiseSlope() {
         return 0;
     }
 
-    Int_t maxBin = GetMaxPeakBin() - 1;
+    auto max = std::max_element(std::begin(fPointsOverThreshold), std::end(fPointsOverThreshold),
+                                [](const auto& p1, const auto& p2) { return p1.second < p2.second; });
 
-    Double_t hP = GetData(maxBin);
+    Int_t maxBin = max->first;
 
-    Double_t lP = GetData(fPointsOverThreshold[0]);
+    Int_t startBin = fPointsOverThreshold.front().first;
 
-    return (hP - lP) / (maxBin - fPointsOverThreshold[0]);
+    Double_t hP = max->second;
+
+    Double_t lP = fPointsOverThreshold.front().second;
+
+    return (hP - lP) / (maxBin - startBin - 1);
 }
 
 ///////////////////////////////////////////////
@@ -354,7 +358,14 @@ Int_t TRestRawSignal::GetRiseTime() {
         return 0;
     }
 
-    return GetMaxPeakBin() - fPointsOverThreshold[0];
+    auto max = std::max_element(std::begin(fPointsOverThreshold), std::end(fPointsOverThreshold),
+                                [](const auto& p1, const auto& p2) { return p1.second < p2.second; });
+
+    Int_t maxBin = max->first;
+
+    Int_t startBin = fPointsOverThreshold.front().first;
+
+    return maxBin - startBin;
 }
 
 ///////////////////////////////////////////////

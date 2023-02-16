@@ -52,7 +52,7 @@ class TRestRawSignal : public TObject {
     TGraph* fGraph;  //!
 
     /// A std::vector containing the index of points that are identified over threshold.
-    std::vector<Int_t> fPointsOverThreshold;  //!
+    std::vector<std::pair<Float_t, Float_t> > fPointsOverThreshold;  //!
 
     /// It stores the integral value obtained from the points identified over threshold.
     Double_t fThresholdIntegral = -1;  //!
@@ -76,13 +76,15 @@ class TRestRawSignal : public TObject {
     inline Int_t GetSignalID() const { return fSignalID; }
 
     /// Returns the value of signal ID
-    inline Int_t GetID() const { return fSignalID; }
+    inline Int_t GetID() const { return GetSignalID(); }
 
     /// Returns the actual number of points, or size of the signal
     inline Int_t GetNumberOfPoints() const { return fSignalData.size(); }
 
     /// Returns a std::vector containing the indexes of data points over threshold
-    inline std::vector<Int_t> GetPointsOverThreshold() const { return fPointsOverThreshold; }
+    inline std::vector<std::pair<Float_t, Float_t> > GetPointsOverThreshold() const {
+        return fPointsOverThreshold;
+    }
 
     /// Returns the maximum value found in the data points. It includes baseline correction
     inline Double_t GetMaxValue() { return GetMaxPeakValue(); }
