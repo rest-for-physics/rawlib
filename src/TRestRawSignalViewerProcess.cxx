@@ -165,8 +165,8 @@ TRestEvent* TRestRawSignalViewerProcess::ProcessEvent(TRestEvent* inputEvent) {
         RESTcout.setborder("");
         RESTcout.setorientation(TRestStringOutput::REST_Display_Orientation::kLeft);
         RESTcout << "Press Enter to continue\nPress Esc to stop viewing\nPress n/p to "
-                "switch signals"
-             << RESTendl;
+                    "switch signals"
+                 << RESTendl;
 
         while (1) {
             int a = GetChar("");
@@ -239,7 +239,7 @@ TPad* TRestRawSignalViewerProcess::DrawSignal(Int_t signal) {
     TRestRawSignal* sgnl = fSignalEvent->GetSignal(signal);
 
     RESTInfo << "Drawing signal. Event ID : " << fSignalEvent->GetID() << " Signal ID : " << sgnl->GetID()
-         << RESTendl;
+             << RESTendl;
 
     for (int n = 0; n < sgnl->GetNumberOfPoints(); n++) gr->SetPoint(n, n, sgnl->GetData(n));
 
