@@ -30,6 +30,7 @@
 /// The following example will apply the recovery algorithm for the
 /// channels with signal ids 17,19,27 and 67. The signal ids must exist
 /// in the readout defined through the TRestDetectorReadout structure.
+/// Also, the dead channels musn't be together.
 ///
 /// \code
 /// <TRestRawSignalRecoverChannelsProcess name="returnChannels"
@@ -42,6 +43,8 @@
 /// simple. The charge of the dead channel is directly calculated by
 /// using the charge of the adjacent readout channels,
 /// \f$s_i = 0.5 \times (s_{i-1} + s_{i+1})\f$
+/// Then the added charge is removed from these neightbours proportionally
+/// to their contribution. This way, the energy is conserved.
 ///
 /// This process will access the information of the decoding stored in
 /// the TRestDetectorReadout definition to assure that the righ signal ids,
@@ -59,9 +62,11 @@
 ///
 /// 2017-November: First implementation of TRestRawSignalRecoverChannelsProcess.
 ///             Javier Galan
+/// 2023-Febrery: Update of the process so it recovers proper rawSignals in CAST analysis.
+/// 		Ana Quintana
 ///
 /// \class      TRestRawSignalRecoverChannelsProcess
-/// \author     Javier Galan
+/// \author     Javier Galan, Ana Quintana
 ///
 /// <hr>
 ///
