@@ -184,8 +184,8 @@ TRestEvent* TRestRawSignalRecoverChannelsProcess::ProcessEvent(TRestEvent* evInp
 
         TRestRawSignal* leftSgnl = fInputSignalEvent->GetSignalById(idL);
         TRestRawSignal* rightSgnl = fInputSignalEvent->GetSignalById(idR);
-        TRestRawSignal* leftSgnl2 = fInputSignalEvent->GetSignalById(idL2);
-        TRestRawSignal* rightSgnl2 = fInputSignalEvent->GetSignalById(idR2);
+        // TRestRawSignal* leftSgnl2 = fInputSignalEvent->GetSignalById(idL2);
+        // TRestRawSignal* rightSgnl2 = fInputSignalEvent->GetSignalById(idR2);
 
         TRandom3* r = new TRandom3();
         r->SetSeed(0);
@@ -229,7 +229,7 @@ TRestEvent* TRestRawSignalRecoverChannelsProcess::ProcessEvent(TRestEvent* evInp
         if (a == 0 && b == 0) {  // if the neigbours are alive
             if (leftSgnl != nullptr) {
                 for (int n = 0; n < nPoints; n++) {
-                    dataRecovered[n] = leftSgnl->GetRawData(n);
+                    dataRecovered[n] = leftSgnl->GetData(n);
                     dataLeft[n] = leftSgnl->GetRawData(n);
                     dataLeftClean[n] = leftSgnl->GetData(n);
                 }
@@ -237,7 +237,7 @@ TRestEvent* TRestRawSignalRecoverChannelsProcess::ProcessEvent(TRestEvent* evInp
 
             if (rightSgnl != nullptr) {
                 for (int n = 0; n < nPoints; n++) {
-                    dataRecovered[n] += rightSgnl->GetRawData(n);
+                    dataRecovered[n] += rightSgnl->GetData(n);
                     dataRight[n] = rightSgnl->GetRawData(n);
                     dataRightClean[n] = rightSgnl->GetData(n);
                 }
@@ -253,13 +253,18 @@ TRestEvent* TRestRawSignalRecoverChannelsProcess::ProcessEvent(TRestEvent* evInp
         }*/ //This part would be for the case where two dead channels are together, then the recovered channel will be the average between the second-neighbours
 
         vector<Short_t> offSet(nPoints);
-        for (int n = 0; n < nPoints; n++)
-            offSet[n] = dataRight[n] - dataRightClean[n];  // In IAXO-D0 both values are the same
+        if (rightSgnl != nullptr) {
+            for (int n = 0; n < nPoints; n++)
+                offSet[n] = dataRight[n] - dataRightClean[n];  // In IAXO-D0 both values are the same
+        } else
+            for (int n = 0; n < nPoints; n++)
+                offSet[n] = dataLeft[n] -
+                            dataLeftClean[n];  // Here we set the artifitial baseline of the recovered channel
 
         if (a == 0 && b == 0) {
-            for (int n = 0; n < nPoints; n++) recoveredSignal->AddPoint(dataRecovered[n] / 2.);
+            for (int n = 0; n < nPoints; n++) recoveredSignal->AddPoint(offSet[n] + dataRecovered[n] / 2.);
         } else {
-            for (int n = 0; n < nPoints; n++) recoveredSignal->AddPoint(dataRecovered[n] / 2.);
+            for (int n = 0; n < nPoints; n++) recoveredSignal->AddPoint(offSet[n] + dataRecovered[n] / 2.);
         }
 
         fOutputSignalEvent->AddSignal(*recoveredSignal);
@@ -272,19 +277,18 @@ TRestEvent* TRestRawSignalRecoverChannelsProcess::ProcessEvent(TRestEvent* evInp
         if (fOutputSignalEvent->GetSignalIndex(idL) > 0) fOutputSignalEvent->RemoveSignalWithId(idL);
 
         double_t prop = 0.;
-        Short_t aux;
 
         // Subtraction of the added signal from the neighbours, proportional to the signal in each one (to
         // conserve the total energy of the event)
         if (rightSgnl != nullptr && leftSgnl != nullptr) {
             for (int n = 0; n < nPoints; n++) {
-                prop = (dataRight[n] / (2. * dataRecovered[n]));
+                prop = (dataRightClean[n] / (1. * dataRecovered[n]));
                 // needs checking! All the data in IAXO has the baseline include, so at this moment it can be
                 // removed manually adding -260. In Cast, not.
-                newSignalR->AddPoint(dataRight[n] - (Short_t)((prop) * (dataRecovered[n] / 2.)));
+                newSignalR->AddPoint(dataRight[n] - (Short_t)((prop) * ((dataRecovered[n]) / 2.)));
                 // newSignalR->AddPoint(dataRight[n]-(Short_t)((prop)*(dataRecovered[n]/2. - 260))); //for
                 // IAXO-D0
-                newSignalL->AddPoint(dataLeft[n] - (Short_t)((1 - prop) * (dataRecovered[n] / 2.)));
+                newSignalL->AddPoint(dataLeft[n] - (Short_t)((1 - prop) * ((dataRecovered[n]) / 2.)));
                 // newSignalL->AddPoint(dataLeft[n]-(Short_t)((1-prop)*(dataRecovered[n]/2. - 260))); //for
                 // IAXO-D0
             }
