@@ -66,6 +66,7 @@
 /// <hr>
 ///
 #include "TRestRawSignalRecoverChannelsProcess.h"
+
 #include <TRandom3.h>
 
 using namespace std;
