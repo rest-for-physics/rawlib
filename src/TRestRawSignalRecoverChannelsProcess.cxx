@@ -66,7 +66,8 @@
 /// 		Ana Quintana
 ///
 /// \class      TRestRawSignalRecoverChannelsProcess
-/// \author     Javier Galan, Ana Quintana
+/// \author     Javier Galan 
+/// \author     Ana Quintana
 ///
 /// <hr>
 ///
