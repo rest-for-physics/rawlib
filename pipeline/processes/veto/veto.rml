@@ -1,67 +1,49 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
-
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <TRestManager>
-
-<globals>
-	<parameter name="mainDataPath" value="." />
-   
-</globals>
-
-
-<TRestRun name="VetoTest9Units" title="IAXO D0 Muon Veto Test" verboseLevel="silent">
-	<parameter name="experimentName" value="IAXOD0"/>
-	<parameter name="runNumber" value="preserve"/>
-	<parameter name="runTag" value="preserve"/>
-	<parameter name="runType" value="VetoValidation"/>
-	<parameter name="runDescription" value=""/>
-	<parameter name="user" value="${USER}"/>
-	<parameter name="verboseLevel" value="0"/>
-	<parameter name="overwrite" value="off" />
-	
-	<parameter name="inputFormat" value="R[fRunNumber]_[fRunTag]-[fParentRunNumber].aqs"/>
-	<parameter name="outputFileName" value="R[fRunNumber]_output.root" />
-
-	<parameter name="readOnly" value="false" />
-
-</TRestRun>
-
-	<TRestProcessRunner name="RawSignals" title="Raw processing and analysis" verboseLevel="info">
-
-		<parameter name="firstEntry" value="0" />
-		<parameter name="lastEntry" value="0" />
-		<parameter name="eventsToProcess" value="50" />
-
-		<addProcess type="TRestRawMultiFEMINOSToSignalProcess" name="virtualDAQ" value="ON" verboseLevel="silent">
-			<parameter name="pedScript" value="ped"/>
-			<parameter name="runScript" value="run"/>
-			<parameter name="electronics" value="TCMFeminos"/>
-			<parameter name="fileFormat" value="SJTU" />
-		</addProcess>
-
-		<addProcess type="TRestRawVetoAnalysisProcess" name="veto" value="ON">
-			<parameter name="baseLineRange" value="(10,100)"/>
-			<parameter name="range" value="(10,500)"/>
-			<parameter name="observable" value="all"/>
-
-			<vetoGroup name="top" signalIDs="4688,4705,4728,4744"/>
-			<vetoGroup name="bottom" signalIDs="4647,4620,4637,4668"/>
-			<vetoGroup name="back" signalIDs="4676,4612,4672"/>
-			<vetoGroup name="right" signalIDs="4849,4620,4637,4668"/>
-		</addProcess>
-
-	</TRestProcessRunner>
-
-	<addTask type="processEvents" value="ON" />
-
-	<TRestRawVetoAnalysisProcess name="veto" value="ON">
-		<parameter name="baseLineRange" value="(10,100)"/>
-		<parameter name="range" value="(10,500)"/>
-		<parameter name="observable" value="all"/>
-
-		<vetoGroup name="top" signalIDs="4688,4705,4728,4744"/>
-		<vetoGroup name="bottom" signalIDs="4647,4620,4637,4668"/>
-		<vetoGroup name="back" signalIDs="4676,4612,4672"/>
-		<vetoGroup name="right" signalIDs="4849,4620,4637,4668"/>
-	</TRestRawVetoAnalysisProcess>
-	
+    <globals>
+        <parameter name="mainDataPath" value="."/>
+    </globals>
+    <TRestRun name="VetoTest9Units" title="IAXO D0 Muon Veto Test" verboseLevel="silent">
+        <parameter name="experimentName" value="IAXOD0"/>
+        <parameter name="runNumber" value="preserve"/>
+        <parameter name="runTag" value="preserve"/>
+        <parameter name="runType" value="VetoValidation"/>
+        <parameter name="runDescription" value=""/>
+        <parameter name="user" value="${USER}"/>
+        <parameter name="verboseLevel" value="0"/>
+        <parameter name="overwrite" value="off"/>
+        <parameter name="inputFormat" value="R[fRunNumber]_[fRunTag]-[fParentRunNumber].aqs"/>
+        <parameter name="outputFileName" value="R[fRunNumber]_output.root"/>
+        <parameter name="readOnly" value="false"/>
+    </TRestRun>
+    <TRestProcessRunner name="RawSignals" title="Raw processing and analysis" verboseLevel="info">
+        <parameter name="firstEntry" value="0"/>
+        <parameter name="lastEntry" value="0"/>
+        <parameter name="eventsToProcess" value="50"/>
+        <addProcess type="TRestRawMultiFEMINOSToSignalProcess" name="virtualDAQ" value="ON" verboseLevel="silent">
+            <parameter name="pedScript" value="ped"/>
+            <parameter name="runScript" value="run"/>
+            <parameter name="electronics" value="TCMFeminos"/>
+            <parameter name="fileFormat" value="SJTU"/>
+        </addProcess>
+        <addProcess type="TRestRawVetoAnalysisProcess" name="veto" value="ON">
+            <parameter name="baseLineRange" value="(10,100)"/>
+            <parameter name="range" value="(10,500)"/>
+            <parameter name="observable" value="all"/>
+            <vetoGroup name="top" signalIDs="4688,4705,4728,4744"/>
+            <vetoGroup name="bottom" signalIDs="4647,4620,4637,4668"/>
+            <vetoGroup name="back" signalIDs="4676,4612,4672"/>
+            <vetoGroup name="right" signalIDs="4849,4620,4637,4668"/>
+        </addProcess>
+    </TRestProcessRunner>
+    <addTask type="processEvents" value="ON"/>
+    <TRestRawVetoAnalysisProcess name="veto" value="ON">
+        <parameter name="baseLineRange" value="(10,100)"/>
+        <parameter name="range" value="(10,500)"/>
+        <parameter name="observable" value="all"/>
+        <vetoGroup name="top" signalIDs="4688,4705,4728,4744"/>
+        <vetoGroup name="bottom" signalIDs="4647,4620,4637,4668"/>
+        <vetoGroup name="back" signalIDs="4676,4612,4672"/>
+        <vetoGroup name="right" signalIDs="4849,4620,4637,4668"/>
+    </TRestRawVetoAnalysisProcess>
 </TRestManager>
