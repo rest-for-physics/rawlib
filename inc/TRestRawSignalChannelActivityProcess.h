@@ -24,11 +24,6 @@
 #define RestCore_TRestRawSignalChannelActivityProcess
 
 #include <TH1D.h>
-
-#ifdef REST_DetectorLib
-#include <TRestDetectorReadout.h>
-#endif
-
 #include <TRestRawSignalEvent.h>
 
 #include "TRestEventProcess.h"
@@ -46,59 +41,18 @@ class TRestRawSignalChannelActivityProcess : public TRestEventProcess {
     /// The number of bins at the daq channels histogram
     Int_t fDaqChannels = 300;
 
-    /// The number of bins at the readout channels histogram
-    Int_t fReadoutChannels = 128;
-
     /// The first channel at the daq channels histogram
     Int_t fDaqStartChannel = 4320;
 
     /// The last channel at the daq channels histogram
     Int_t fDaqEndChannel = 4620;
 
-    /// The first channel at the readout channels histogram
-    Int_t fReadoutStartChannel = 0;
-
-    /// The last channel at the readout channels histogram
-    Int_t fReadoutEndChannel = 128;
-
     /// The daq channels histogram
     TH1D* fDaqChannelsHisto = nullptr;  //!
-
-    /// The readout channels histogram
-    TH1D* fReadoutChannelsHisto = nullptr;  //!
-
-    /// The readout channels histogram built with 1-signal events (low threshold)
-    TH1D* fReadoutChannelsHisto_OneSignal = nullptr;  //!
-
-    /// The readout channels histogram built with 1-signal events (high threshold)
-    TH1D* fReadoutChannelsHisto_OneSignal_High = nullptr;  //!
-
-    /// The readout channels histogram built with 2-signal events (low threshold)
-    TH1D* fReadoutChannelsHisto_TwoSignals = nullptr;  //!
-
-    /// The readout channels histogram built with 2-signal events (high threshold)
-    TH1D* fReadoutChannelsHisto_TwoSignals_High = nullptr;  //!
-
-    /// The readout channels histogram built with 3-signal events (low threshold)
-    TH1D* fReadoutChannelsHisto_ThreeSignals = nullptr;  //!
-
-    /// The readout channels histogram built with 3-signal events (high threshold)
-    TH1D* fReadoutChannelsHisto_ThreeSignals_High = nullptr;  //!
-
-    /// The readout channels histogram built more than 3-signal events (low threshold)
-    TH1D* fReadoutChannelsHisto_MultiSignals = nullptr;  //!
-
-    /// The readout channels histogram built more than 3-signal events (high threshold)
-    TH1D* fReadoutChannelsHisto_MultiSignals_High = nullptr;  //!
 
    private:
     /// A pointer to the specific TRestRawSignalEvent input
     TRestRawSignalEvent* fSignalEvent = nullptr;  //!
-
-#ifdef REST_DetectorLib
-    /// A pointer to the readout metadata information accessible to TRestRun
-    TRestDetectorReadout* fReadout = nullptr;  //!
-#endif
 
     void Initialize() override;
 
@@ -121,14 +75,6 @@ class TRestRawSignalChannelActivityProcess : public TRestEventProcess {
         RESTMetadata << "Start daq channel : " << fDaqStartChannel << RESTendl;
         RESTMetadata << "End daq channel : " << fDaqEndChannel << RESTendl;
 
-#ifdef REST_DetectorLib
-        RESTMetadata << "Number of readout histogram channels : " << fReadoutChannels << RESTendl;
-        RESTMetadata << "Start readout channel : " << fReadoutStartChannel << RESTendl;
-        RESTMetadata << "End readout channel : " << fReadoutEndChannel << RESTendl;
-#else
-        RESTMetadata << "Some Detector features in this process are not available!" << RESTendl;
-#endif
-
         EndPrintProcess();
     }
 
@@ -138,6 +84,6 @@ class TRestRawSignalChannelActivityProcess : public TRestEventProcess {
     TRestRawSignalChannelActivityProcess();
     ~TRestRawSignalChannelActivityProcess();
 
-    ClassDefOverride(TRestRawSignalChannelActivityProcess, 3);
+    ClassDefOverride(TRestRawSignalChannelActivityProcess, 4);
 };
 #endif
