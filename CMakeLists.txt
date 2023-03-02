@@ -7,12 +7,12 @@ endif (CMAKE_SYSTEM_NAME MATCHES "Windows")
 
 set(deps)
 
-COMPILELIB(deps)
+compilelib(deps)
 
 file(GLOB_RECURSE MAC "${CMAKE_CURRENT_SOURCE_DIR}/macros/*")
-INSTALL(FILES ${MAC} DESTINATION ./macros/raw)
+install(FILES ${MAC} DESTINATION ./macros/raw)
 
 file(GLOB_RECURSE MAC "${CMAKE_CURRENT_SOURCE_DIR}/examples/*")
-INSTALL(FILES ${MAC} DESTINATION ./examples/raw)
+install(FILES ${MAC} DESTINATION ./examples/raw)
 
-ADD_LIBRARY_TEST()
+add_library_test()

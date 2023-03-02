@@ -73,7 +73,7 @@ class TRestRawFEUDreamToSignalProcess : public TRestRawToSignalProcess {
         bool get_zs_mode() const { return (((data)&0x400) >> 10); }
         int get_Feu_ID() const { return (((data)&0xFF)); }
         long int get_finetstp() const { return (((data)&0x0007)); }
-        //#define GET_FINETSTP(word)      (word & 0x0007)
+        // #define GET_FINETSTP(word)      (word & 0x0007)
         int get_sample_ID() const { return (((data)&0xFF8) >> 3); }
         int get_channel_ID() const { return (((data)&0x3F)); }
         int get_dream_ID() const { return (((data)&0xE00) >> 9); }     // non-zS mode

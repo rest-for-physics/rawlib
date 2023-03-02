@@ -93,7 +93,7 @@ class TRestRawVetoAnalysisProcess : public TRestEventProcess {
     /// Returns the veto IDs, if they where defined in a list
     std::vector<double> GetVetoSignalIDs() { return fVetoSignalId; }
     double GetVetoSignalIDs(Int_t index) {
-        if (index >= fVetoSignalId.size()) return -1;
+        if (index >= (int)fVetoSignalId.size()) return -1;
         return fVetoSignalId[index];
     }
 

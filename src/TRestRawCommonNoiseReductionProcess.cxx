@@ -193,8 +193,6 @@ TRestEvent* TRestRawCommonNoiseReductionProcess::ProcessEvent(TRestEvent* inputE
         }
 
         Int_t nBins = fInputEvent->GetSignal(0)->GetNumberOfPoints();
-        Int_t begin, end;
-        Double_t norm = 1.0;
         vector<Double_t> sgnlValues(N, 0.0);
 
         for (Int_t bin = 0; bin < nBins; bin++) {
@@ -205,7 +203,7 @@ TRestEvent* TRestRawCommonNoiseReductionProcess::ProcessEvent(TRestEvent* inputE
             std::sort(sgnlValues.begin(), sgnlValues.end());
 
             // Sorting the different methods
-            Int_t begin, middle, end;
+            Int_t begin = 0, middle = 0, end = 0;
             middle = (Int_t)N / 2;
             Double_t norm = 1.0;
 
@@ -261,8 +259,6 @@ TRestEvent* TRestRawCommonNoiseReductionProcess::ProcessEvent(TRestEvent* inputE
             }
 
             Int_t nBins = fInputEvent->GetSignal(0)->GetNumberOfPoints();
-            Int_t begin, end;
-            Double_t norm = 1.0;
             vector<Double_t> sgnlValues(nSign, 0.0);
 
             // debug << "nSign: " << nSign << endl;
@@ -285,7 +281,7 @@ TRestEvent* TRestRawCommonNoiseReductionProcess::ProcessEvent(TRestEvent* inputE
                 std::sort(sgnlValues.begin(), sgnlValues.end());
 
                 // Sorting the different methods
-                Int_t begin, middle, end;
+                Int_t begin = 0, middle = 0, end = 0;
                 middle = (Int_t)nSign / 2;
                 Double_t norm = 1.0;
 

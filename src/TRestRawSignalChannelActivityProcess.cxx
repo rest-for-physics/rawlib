@@ -154,8 +154,6 @@ TRestEvent* TRestRawSignalChannelActivityProcess::ProcessEvent(TRestEvent* input
     }
 
     for (int s = 0; s < fSignalEvent->GetNumberOfSignals(); s++) {
-        TRestRawSignal* sgnl = fSignalEvent->GetSignal(s);
-
         // Adding signal to the channel activity histogram
         if (!fReadOnly) {
             Int_t daqChannel = fSignalEvent->GetSignal(s)->GetID();
