@@ -24,7 +24,6 @@
 #define RestCore_TRestRawSignalChannelActivityProcess
 
 #include <TH1D.h>
-
 #include <TRestRawSignalEvent.h>
 
 #include "TRestEventProcess.h"
