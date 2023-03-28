@@ -5,11 +5,7 @@ if (CMAKE_SYSTEM_NAME MATCHES "Windows")
     set(excludes TRestRawMemoryBufferToSignalProcess)
 endif (CMAKE_SYSTEM_NAME MATCHES "Windows")
 
-set(deps detector)
-
-if (NOT ${RESTLIB_DETECTOR} MATCHES "ON")
-    list(REMOVE_ITEM deps detector)
-endif ()
+set(deps)
 
 compilelib(deps)
 
