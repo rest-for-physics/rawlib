@@ -236,8 +236,8 @@ void TRestRawSignal::IncreaseBinBy(Int_t bin, Double_t data) {
 ///
 void TRestRawSignal::InitializePointsOverThreshold(const TVector2& thrPar, Int_t nPointsOver,
                                                    Int_t nPointsFlat) {
-    fPointsOverThreshold = TRestSignalAnalysis::GetPointsOverThreshold(
-        fSignalData, fRange, thrPar, nPointsOver, nPointsFlat, fBaseLine, fBaseLineSigma);
+    fPointsOverThreshold = TRestSignalAnalysis::GetPointsOverThreshold(GetData(), fRange, thrPar, nPointsOver,
+                                                                       nPointsFlat, fBaseLineSigma);
 
     CalculateThresholdIntegral();
 }
