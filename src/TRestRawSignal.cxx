@@ -375,7 +375,12 @@ Double_t TRestRawSignal::GetMaxPeakValue() { return GetData(GetMaxPeakBin()); }
 ///////////////////////////////////////////////
 /// \brief It returns the bin at which the maximum peak amplitude happens
 ///
-Int_t TRestRawSignal::GetMaxPeakBin() { return TRestSignalAnalysis::GetMaxBin(fSignalData); }
+Int_t TRestRawSignal::GetMaxPeakBin() {
+    if (fRange.Y() <= 0 || fRange.Y() > GetNumberOfPoints()) fRange.SetY(GetNumberOfPoints());
+    if (fRange.X() < 0) fRange.SetX(0);
+
+    return TRestSignalAnalysis::GetMaxBin(fSignalData, fRange.X(), fRange.Y());
+}
 
 ///////////////////////////////////////////////
 /// \brief It returns the amplitude of the signal minimum, baseline will be
