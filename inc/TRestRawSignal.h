@@ -117,6 +117,8 @@ class TRestRawSignal : public TObject {
         return true;
     }
 
+    std::vector<Float_t> GetData() const;
+
     Double_t GetData(Int_t n) const;
 
     Double_t GetRawData(Int_t n) const;
@@ -190,10 +192,6 @@ class TRestRawSignal : public TObject {
     std::vector<Float_t> GetSignalSmoothed(Int_t averagingPoints, std::string option = "");
 
     void GetWhiteNoiseSignal(TRestRawSignal* noiseSignal, Double_t noiseLevel = 1.);
-
-    void CalculateBaseLineMean(Int_t startBin, Int_t endBin);
-
-    void CalculateBaseLineMedian(Int_t startBin, Int_t endBin);
 
     void CalculateBaseLine(Int_t startBin, Int_t endBin, const std::string& option = "");
 

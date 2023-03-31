@@ -65,6 +65,7 @@
 #include <TRandom3.h>
 
 #include <numeric>
+#include <random>
 
 #include "TRestSignalAnalysis.h"
 
@@ -171,6 +172,18 @@ Short_t TRestRawSignal::operator[](Int_t n) {
 Double_t TRestRawSignal::GetData(Int_t n) const { return (Double_t)fSignalData[n] - fBaseLine; }
 
 ///////////////////////////////////////////////
+/// \brief It returns a vector of the data with the
+/// baseline substracted
+///
+std::vector<Float_t> TRestRawSignal::GetData() const {
+    std::vector<Float_t> signalData(GetNumberOfPoints());
+
+    for (int i = 0; i < GetNumberOfPoints(); i++) signalData[i] = GetData(i);
+
+    return signalData;
+}
+
+///////////////////////////////////////////////
 /// \brief It returns the original data value of point *n* without baseline
 /// correction.
 ///
@@ -256,9 +269,7 @@ Double_t TRestRawSignal::GetIntegral() {
     if (fRange.X() < 0) fRange.SetX(0);
     if (fRange.Y() <= 0 || fRange.Y() > GetNumberOfPoints()) fRange.SetY(GetNumberOfPoints());
 
-    Double_t sum = 0;
-    for (int i = fRange.X(); i < fRange.Y(); i++) sum += GetData(i);
-    return sum;
+    return TRestSignalAnalysis::GetIntegral(GetData(), fRange.X(), fRange.Y());
 }
 
 ///////////////////////////////////////////////
@@ -266,12 +277,7 @@ Double_t TRestRawSignal::GetIntegral() {
 /// by (startBin,endBin).
 ///
 Double_t TRestRawSignal::GetIntegralInRange(Int_t startBin, Int_t endBin) {
-    if (startBin < 0) startBin = 0;
-    if (endBin <= 0 || endBin > GetNumberOfPoints()) endBin = GetNumberOfPoints();
-
-    Double_t sum = 0;
-    for (int i = startBin; i < endBin; i++) sum += GetRawData(i);
-    return sum;
+    return TRestSignalAnalysis::GetIntegral(fSignalData, startBin, endBin);
 }
 
 ///////////////////////////////////////////////
@@ -297,19 +303,13 @@ Double_t TRestRawSignal::GetThresholdIntegral() {
 /// signal. InitializePointsOverThreshold should have been called first.
 ///
 Double_t TRestRawSignal::GetSlopeIntegral() {
-    if (fThresholdIntegral == -1)
+    if (fThresholdIntegral == -1) {
         cout << "REST Warning. TRestRawSignal::GetSlopeIntegral. "
                 "InitializePointsOverThreshold should be called first."
              << endl;
-
-    Double_t sum = 0;
-    Double_t pVal = 0;
-    for (const auto& [index, val] : fPointsOverThreshold) {
-        if (val - pVal < 0) break;
-        sum += val;
-        pVal = val;
     }
-    return sum;
+
+    return TRestSignalAnalysis::GetSlopeIntegral(fPointsOverThreshold);
 }
 
 ///////////////////////////////////////////////
@@ -324,23 +324,7 @@ Double_t TRestRawSignal::GetRiseSlope() {
                 "InitializePointsOverThreshold should be called first."
              << endl;
 
-    if (fPointsOverThreshold.size() < 2) {
-        // cout << "REST Warning. TRestRawSignal::GetRiseSlope. Less than 2 points!." << endl;
-        return 0;
-    }
-
-    auto max = std::max_element(std::begin(fPointsOverThreshold), std::end(fPointsOverThreshold),
-                                [](const auto& p1, const auto& p2) { return p1.second < p2.second; });
-
-    Int_t maxBin = max->first;
-
-    Int_t startBin = fPointsOverThreshold.front().first;
-
-    Double_t hP = max->second;
-
-    Double_t lP = fPointsOverThreshold.front().second;
-
-    return (hP - lP) / (maxBin - startBin - 1);
+    return TRestSignalAnalysis::GetRiseSlope(fPointsOverThreshold);
 }
 
 ///////////////////////////////////////////////
@@ -353,19 +337,7 @@ Int_t TRestRawSignal::GetRiseTime() {
                 "InitializePointsOverThreshold should be called first."
              << endl;
 
-    if (fPointsOverThreshold.size() < 2) {
-        // cout << "REST Warning. TRestRawSignal::GetRiseTime. Less than 2 points!." << endl;
-        return 0;
-    }
-
-    auto max = std::max_element(std::begin(fPointsOverThreshold), std::end(fPointsOverThreshold),
-                                [](const auto& p1, const auto& p2) { return p1.second < p2.second; });
-
-    Int_t maxBin = max->first;
-
-    Int_t startBin = fPointsOverThreshold.front().first;
-
-    return maxBin - startBin;
+    return TRestSignalAnalysis::GetRiseTime(fPointsOverThreshold);
 }
 
 ///////////////////////////////////////////////
@@ -373,33 +345,8 @@ Int_t TRestRawSignal::GetRiseTime() {
 /// and its neightbour points.
 ///
 Double_t TRestRawSignal::GetTripleMaxIntegral() {
-    if (fRange.X() < 0) fRange.SetX(0);
-    if (fRange.Y() <= 0 || fRange.Y() > GetNumberOfPoints()) fRange.SetY(GetNumberOfPoints());
-
-    if (fThresholdIntegral == -1) {
-        cout << "REST Warning. TRestRawSignal::GetTripleMaxIntegral. "
-                "InitializePointsOverThreshold should be called first."
-             << endl;
-        return 0;
-    }
-
-    if (fPointsOverThreshold.size() < 2) {
-        // cout << "REST Warning. TRestRawSignal::GetTripleMaxIntegral. Points over
-        // "
-        //        "threshold = "
-        //     << fPointsOverThreshold.size() << endl;
-        return 0;
-    }
-
-    Int_t cBin = GetMaxPeakBin();
-
-    if (cBin + 1 >= GetNumberOfPoints()) return 0;
-
-    Double_t a1 = GetData(cBin);
-    Double_t a2 = GetData(cBin - 1);
-    Double_t a3 = GetData(cBin + 1);
-
-    return a1 + a2 + a3;
+    auto gr = GetGraph();
+    return TRestSignalAnalysis::GetTripleMaxIntegral(gr);
 }
 
 ///////////////////////////////////////////////
@@ -409,36 +356,14 @@ Double_t TRestRawSignal::GetTripleMaxIntegral() {
 Double_t TRestRawSignal::GetAverageInRange(Int_t startBin, Int_t endBin) {
     if (startBin < 0) startBin = 0;
     if (endBin <= 0 || endBin > GetNumberOfPoints()) endBin = GetNumberOfPoints();
-
-    Double_t sum = 0;
-    for (int i = startBin; i <= endBin; i++) sum += this->GetData(i);
-
-    return sum / (endBin - startBin + 1);
+    return TRestSignalAnalysis::GetAverage(GetData(), startBin, endBin);
 }
 
 ///////////////////////////////////////////////
 /// \brief It returns the temporal width of the peak with maximum amplitude
 /// inside the signal
 ///
-Int_t TRestRawSignal::GetMaxPeakWidth() {
-    Int_t mIndex = this->GetMaxPeakBin();
-    Double_t maxValue = this->GetData(mIndex);
-
-    Double_t value = maxValue;
-    Int_t rightIndex = mIndex;
-    while (value > maxValue / 2) {
-        value = this->GetData(rightIndex);
-        rightIndex++;
-    }
-    Int_t leftIndex = mIndex;
-    value = maxValue;
-    while (value > maxValue / 2) {
-        value = this->GetData(leftIndex);
-        leftIndex--;
-    }
-
-    return rightIndex - leftIndex;
-}
+Int_t TRestRawSignal::GetMaxPeakWidth() { return TRestSignalAnalysis::GetMaxPeakWidth(GetData()); }
 
 ///////////////////////////////////////////////
 /// \brief It returns the amplitude of the signal maximum, baseline will be
@@ -450,23 +375,7 @@ Double_t TRestRawSignal::GetMaxPeakValue() { return GetData(GetMaxPeakBin()); }
 ///////////////////////////////////////////////
 /// \brief It returns the bin at which the maximum peak amplitude happens
 ///
-Int_t TRestRawSignal::GetMaxPeakBin() {
-    Double_t max = numeric_limits<Double_t>::min();
-
-    Int_t index = 0;
-
-    if (fRange.Y() == 0 || fRange.Y() > GetNumberOfPoints()) fRange.SetY(GetNumberOfPoints());
-    if (fRange.X() < 0) fRange.SetX(0);
-
-    for (int i = fRange.X(); i < fRange.Y(); i++) {
-        if (this->GetData(i) > max) {
-            max = GetData(i);
-            index = i;
-        }
-    }
-
-    return index;
-}
+Int_t TRestRawSignal::GetMaxPeakBin() { return TRestSignalAnalysis::GetMaxBin(fSignalData); }
 
 ///////////////////////////////////////////////
 /// \brief It returns the amplitude of the signal minimum, baseline will be
@@ -478,22 +387,7 @@ Double_t TRestRawSignal::GetMinPeakValue() { return GetData(GetMinPeakBin()); }
 ///////////////////////////////////////////////
 /// \brief It returns the bin at which the minimum peak amplitude happens
 ///
-Int_t TRestRawSignal::GetMinPeakBin() {
-    Double_t min = numeric_limits<Double_t>::max();
-    Int_t index = 0;
-
-    if (fRange.Y() == 0 || fRange.Y() > GetNumberOfPoints()) fRange.SetY(GetNumberOfPoints());
-    if (fRange.X() < 0) fRange.SetX(0);
-
-    for (int i = fRange.X(); i < fRange.Y(); i++) {
-        if (this->GetData(i) < min) {
-            min = GetData(i);
-            index = i;
-        }
-    }
-
-    return index;
-}
+Int_t TRestRawSignal::GetMinPeakBin() { return TRestSignalAnalysis::GetMinBin(fSignalData); }
 
 ///////////////////////////////////////////////
 /// \brief It returns whether the signal has ADC saturation
@@ -552,15 +446,14 @@ void TRestRawSignal::GetDifferentialSignal(TRestRawSignal* diffSignal, Int_t sme
 /// as its standard deviation.
 ///
 void TRestRawSignal::GetWhiteNoiseSignal(TRestRawSignal* noiseSignal, Double_t noiseLevel) {
-    double* dd = new double();
-    uintptr_t seed = (uintptr_t)dd + (uintptr_t)this;
-    delete dd;
-    TRandom3* fRandom = new TRandom3(seed);
+    std::mt19937::result_type seed = std::random_device()();
+    std::mt19937 gen(seed);
+
+    TRandom3 fRandom(seed);
 
     for (int i = 0; i < GetNumberOfPoints(); i++) {
-        noiseSignal->AddPoint(this->GetData(i) + (Short_t)fRandom->Gaus(0, noiseLevel));
+        noiseSignal->AddPoint(this->GetData(i) + (Short_t)fRandom.Gaus(0, noiseLevel));
     }
-    delete fRandom;
 }
 
 ///////////////////////////////////////////////
@@ -617,46 +510,6 @@ void TRestRawSignal::GetBaseLineCorrected(TRestRawSignal* smoothedSignal, Int_t 
 std::vector<Float_t> TRestRawSignal::GetSignalSmoothed_ExcludeOutliers(Int_t averagingPoints) {
     return TRestSignalAnalysis::GetSignalSmoothed_ExcludeOutliers(fSignalData, averagingPoints, fBaseLine,
                                                                   fBaseLineSigma);
-}
-
-///////////////////////////////////////////////
-/// \brief This method is called by CalculateBaseLine and is used to determine the value of the baseline as
-/// average (arithmetic mean) of the data points found
-/// in the range defined between startBin and endBin.
-///
-void TRestRawSignal::CalculateBaseLineMean(Int_t startBin, Int_t endBin) {
-    if (endBin - startBin <= 0) {
-        fBaseLine = 0.;
-    } else if (endBin > (int)fSignalData.size()) {
-        cout << "TRestRawSignal::CalculateBaseLine. Error! Baseline range exceeds the rawdata depth!!"
-             << endl;
-        endBin = fSignalData.size();
-    } else {
-        Double_t baseLine = 0;
-        for (int i = startBin; i < endBin; i++) baseLine += fSignalData[i];
-        fBaseLine = baseLine / (endBin - startBin);
-    }
-}
-
-///////////////////////////////////////////////
-/// \brief This method is called by CalculateBaseLine with the "ROBUST"-option and is used to determine the
-/// value of the baseline as the median of the data points found in the range defined between startBin and
-/// endBin.
-///
-void TRestRawSignal::CalculateBaseLineMedian(Int_t startBin, Int_t endBin) {
-    if (endBin - startBin <= 0) {
-        fBaseLine = 0.;
-    } else if (endBin > (int)fSignalData.size()) {
-        cout << "TRestRawSignal::CalculateBaseLine. Error! Baseline range exceeds the rawdata depth!!"
-             << endl;
-        endBin = fSignalData.size();
-    } else {
-        vector<Short_t>::const_iterator first = fSignalData.begin() + startBin;
-        vector<Short_t>::const_iterator last = fSignalData.begin() + endBin;
-        vector<Short_t> v(first, last);
-        const Short_t* signalInRange = &v[0];
-        fBaseLine = TMath::Median(endBin - startBin, signalInRange);
-    }
 }
 
 ///////////////////////////////////////////////
