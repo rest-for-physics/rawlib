@@ -133,49 +133,9 @@ void TRestRawSignalChannelActivityProcess::Initialize() {
 /// is found in the processing chain.
 ///
 void TRestRawSignalChannelActivityProcess::InitProcess() {
-#ifdef REST_DetectorLib
-    fReadout = GetMetadata<TRestDetectorReadout>();
-
-    RESTDebug << "TRestRawSignalChannelActivityProcess::InitProcess. Readout pointer : " << fReadout
-              << RESTendl;
-    if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Info && fReadout)
-        fReadout->PrintMetadata();
-#endif
-
     if (!fReadOnly) {
         fDaqChannelsHisto = new TH1D("daqChannelActivityRaw", "daqChannelActivityRaw", fDaqChannels,
                                      fDaqStartChannel, fDaqEndChannel);
-
-#ifdef REST_DetectorLib
-        if (fReadout) {
-            fReadoutChannelsHisto = new TH1D("rChannelActivityRaw", "readoutChannelActivity",
-                                             fReadoutChannels, fReadoutStartChannel, fReadoutEndChannel);
-            fReadoutChannelsHisto_OneSignal =
-                new TH1D("rChannelActivityRaw_1", "readoutChannelActivity", fReadoutChannels,
-                         fReadoutStartChannel, fReadoutEndChannel);
-            fReadoutChannelsHisto_OneSignal_High =
-                new TH1D("rChannelActivityRaw_1H", "readoutChannelActivity", fReadoutChannels,
-                         fReadoutStartChannel, fReadoutEndChannel);
-            fReadoutChannelsHisto_TwoSignals =
-                new TH1D("rChannelActivityRaw_2", "readoutChannelActivity", fReadoutChannels,
-                         fReadoutStartChannel, fReadoutEndChannel);
-            fReadoutChannelsHisto_TwoSignals_High =
-                new TH1D("rChannelActivityRaw_2H", "readoutChannelActivity", fReadoutChannels,
-                         fReadoutStartChannel, fReadoutEndChannel);
-            fReadoutChannelsHisto_ThreeSignals =
-                new TH1D("rChannelActivityRaw_3", "readoutChannelActivity", fReadoutChannels,
-                         fReadoutStartChannel, fReadoutEndChannel);
-            fReadoutChannelsHisto_ThreeSignals_High =
-                new TH1D("rChannelActivityRaw_3H", "readoutChannelActivity", fReadoutChannels,
-                         fReadoutStartChannel, fReadoutEndChannel);
-            fReadoutChannelsHisto_MultiSignals =
-                new TH1D("rChannelActivityRaw_M", "readoutChannelActivity", fReadoutChannels,
-                         fReadoutStartChannel, fReadoutEndChannel);
-            fReadoutChannelsHisto_MultiSignals_High =
-                new TH1D("rChannelActivityRaw_MH", "readoutChannelActivity", fReadoutChannels,
-                         fReadoutStartChannel, fReadoutEndChannel);
-        }
-#endif
     }
 }
 
@@ -194,33 +154,7 @@ TRestEvent* TRestRawSignalChannelActivityProcess::ProcessEvent(TRestEvent* input
     }
 
     for (int s = 0; s < fSignalEvent->GetNumberOfSignals(); s++) {
-// Adding signal to the channel activity histogram
-#ifdef REST_DetectorLib
-        TRestRawSignal* sgnl = fSignalEvent->GetSignal(s);
-        if (!fReadOnly && fReadout) {
-            Int_t signalID = fSignalEvent->GetSignal(s)->GetID();
-
-            Int_t p, m, readoutChannel;
-            fReadout->GetPlaneModuleChannel(signalID, p, m, readoutChannel);
-
-            fReadoutChannelsHisto->Fill(readoutChannel);
-
-            if (sgnl->GetMaxValue() > fLowThreshold) {
-                if (Nlow == 1) fReadoutChannelsHisto_OneSignal->Fill(readoutChannel);
-                if (Nlow == 2) fReadoutChannelsHisto_TwoSignals->Fill(readoutChannel);
-                if (Nlow == 3) fReadoutChannelsHisto_ThreeSignals->Fill(readoutChannel);
-                if (Nlow > 3 && Nlow < 10) fReadoutChannelsHisto_MultiSignals->Fill(readoutChannel);
-            }
-
-            if (sgnl->GetMaxValue() > fHighThreshold) {
-                if (Nhigh == 1) fReadoutChannelsHisto_OneSignal_High->Fill(readoutChannel);
-                if (Nhigh == 2) fReadoutChannelsHisto_TwoSignals_High->Fill(readoutChannel);
-                if (Nhigh == 3) fReadoutChannelsHisto_ThreeSignals_High->Fill(readoutChannel);
-                if (Nhigh > 3 && Nhigh < 10) fReadoutChannelsHisto_MultiSignals_High->Fill(readoutChannel);
-            }
-        }
-#endif
-
+        // Adding signal to the channel activity histogram
         if (!fReadOnly) {
             Int_t daqChannel = fSignalEvent->GetSignal(s)->GetID();
             fDaqChannelsHisto->Fill(daqChannel);
@@ -241,20 +175,5 @@ TRestEvent* TRestRawSignalChannelActivityProcess::ProcessEvent(TRestEvent* input
 void TRestRawSignalChannelActivityProcess::EndProcess() {
     if (!fReadOnly) {
         fDaqChannelsHisto->Write();
-#ifdef REST_DetectorLib
-        if (fReadout) {
-            fReadoutChannelsHisto->Write();
-
-            fReadoutChannelsHisto_OneSignal->Write();
-            fReadoutChannelsHisto_TwoSignals->Write();
-            fReadoutChannelsHisto_ThreeSignals->Write();
-            fReadoutChannelsHisto_MultiSignals->Write();
-
-            fReadoutChannelsHisto_OneSignal_High->Write();
-            fReadoutChannelsHisto_TwoSignals_High->Write();
-            fReadoutChannelsHisto_ThreeSignals_High->Write();
-            fReadoutChannelsHisto_MultiSignals_High->Write();
-        }
-#endif
     }
 }
