@@ -764,13 +764,12 @@ TPad* TRestRawSignalEvent::DrawSignal(Int_t signalID, TString option) {
     gr3->SetLineWidth(2);
     gr3->SetLineColor(3);
     Int_t point = 0;
-    Int_t nPoints = pOver.size();
     for (const auto& [index, data] : pOver) {
         gr3->SetPoint(point, index, data);
         point++;
     }
 
-    if (nPoints > 0) gr3->Draw("CP");
+    if (!pOver.empty()) gr3->Draw("CP");
 
     return fPad;
 }
