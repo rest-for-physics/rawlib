@@ -67,7 +67,7 @@
 #include <numeric>
 #include <random>
 
-#include "TRestSignalAnalysis.h"
+#include "TRestPulseShapeAnalysis.h"
 
 using namespace std;
 
@@ -236,8 +236,8 @@ void TRestRawSignal::IncreaseBinBy(Int_t bin, Double_t data) {
 ///
 void TRestRawSignal::InitializePointsOverThreshold(const TVector2& thrPar, Int_t nPointsOver,
                                                    Int_t nPointsFlat) {
-    fPointsOverThreshold = TRestSignalAnalysis::GetPointsOverThreshold(GetData(), fRange, thrPar, nPointsOver,
-                                                                       nPointsFlat, fBaseLineSigma);
+    fPointsOverThreshold = TRestPulseShapeAnalysis::GetPointsOverThreshold(
+        GetData(), fRange, thrPar, nPointsOver, nPointsFlat, fBaseLineSigma);
 
     CalculateThresholdIntegral();
 }
@@ -269,7 +269,7 @@ Double_t TRestRawSignal::GetIntegral() {
     if (fRange.X() < 0) fRange.SetX(0);
     if (fRange.Y() <= 0 || fRange.Y() > GetNumberOfPoints()) fRange.SetY(GetNumberOfPoints());
 
-    return TRestSignalAnalysis::GetIntegral(GetData(), fRange.X(), fRange.Y());
+    return TRestPulseShapeAnalysis::GetIntegral(GetData(), fRange.X(), fRange.Y());
 }
 
 ///////////////////////////////////////////////
@@ -277,7 +277,7 @@ Double_t TRestRawSignal::GetIntegral() {
 /// by (startBin,endBin).
 ///
 Double_t TRestRawSignal::GetIntegralInRange(Int_t startBin, Int_t endBin) {
-    return TRestSignalAnalysis::GetIntegral(fSignalData, startBin, endBin);
+    return TRestPulseShapeAnalysis::GetIntegral(fSignalData, startBin, endBin);
 }
 
 ///////////////////////////////////////////////
@@ -309,7 +309,7 @@ Double_t TRestRawSignal::GetSlopeIntegral() {
              << endl;
     }
 
-    return TRestSignalAnalysis::GetSlopeIntegral(fPointsOverThreshold);
+    return TRestPulseShapeAnalysis::GetSlopeIntegral(fPointsOverThreshold);
 }
 
 ///////////////////////////////////////////////
@@ -324,7 +324,7 @@ Double_t TRestRawSignal::GetRiseSlope() {
                 "InitializePointsOverThreshold should be called first."
              << endl;
 
-    return TRestSignalAnalysis::GetRiseSlope(fPointsOverThreshold);
+    return TRestPulseShapeAnalysis::GetRiseSlope(fPointsOverThreshold);
 }
 
 ///////////////////////////////////////////////
@@ -337,7 +337,7 @@ Int_t TRestRawSignal::GetRiseTime() {
                 "InitializePointsOverThreshold should be called first."
              << endl;
 
-    return TRestSignalAnalysis::GetRiseTime(fPointsOverThreshold);
+    return TRestPulseShapeAnalysis::GetRiseTime(fPointsOverThreshold);
 }
 
 ///////////////////////////////////////////////
@@ -346,7 +346,7 @@ Int_t TRestRawSignal::GetRiseTime() {
 ///
 Double_t TRestRawSignal::GetTripleMaxIntegral() {
     auto gr = GetGraph();
-    return TRestSignalAnalysis::GetTripleMaxIntegral(gr);
+    return TRestPulseShapeAnalysis::GetTripleMaxIntegral(gr);
 }
 
 ///////////////////////////////////////////////
@@ -356,14 +356,14 @@ Double_t TRestRawSignal::GetTripleMaxIntegral() {
 Double_t TRestRawSignal::GetAverageInRange(Int_t startBin, Int_t endBin) {
     if (startBin < 0) startBin = 0;
     if (endBin <= 0 || endBin > GetNumberOfPoints()) endBin = GetNumberOfPoints();
-    return TRestSignalAnalysis::GetAverage(GetData(), startBin, endBin);
+    return TRestPulseShapeAnalysis::GetAverage(GetData(), startBin, endBin);
 }
 
 ///////////////////////////////////////////////
 /// \brief It returns the temporal width of the peak with maximum amplitude
 /// inside the signal
 ///
-Int_t TRestRawSignal::GetMaxPeakWidth() { return TRestSignalAnalysis::GetMaxPeakWidth(GetData()); }
+Int_t TRestRawSignal::GetMaxPeakWidth() { return TRestPulseShapeAnalysis::GetMaxPeakWidth(GetData()); }
 
 ///////////////////////////////////////////////
 /// \brief It returns the amplitude of the signal maximum, baseline will be
@@ -379,7 +379,7 @@ Int_t TRestRawSignal::GetMaxPeakBin() {
     if (fRange.Y() <= 0 || fRange.Y() > GetNumberOfPoints()) fRange.SetY(GetNumberOfPoints());
     if (fRange.X() < 0) fRange.SetX(0);
 
-    return TRestSignalAnalysis::GetMaxBin(fSignalData, fRange.X(), fRange.Y());
+    return TRestPulseShapeAnalysis::GetMaxBin(fSignalData, fRange.X(), fRange.Y());
 }
 
 ///////////////////////////////////////////////
@@ -392,7 +392,7 @@ Double_t TRestRawSignal::GetMinPeakValue() { return GetData(GetMinPeakBin()); }
 ///////////////////////////////////////////////
 /// \brief It returns the bin at which the minimum peak amplitude happens
 ///
-Int_t TRestRawSignal::GetMinPeakBin() { return TRestSignalAnalysis::GetMinBin(fSignalData); }
+Int_t TRestRawSignal::GetMinPeakBin() { return TRestPulseShapeAnalysis::GetMinBin(fSignalData); }
 
 ///////////////////////////////////////////////
 /// \brief It returns whether the signal has ADC saturation
@@ -472,10 +472,10 @@ void TRestRawSignal::GetWhiteNoiseSignal(TRestRawSignal* noiseSignal, Double_t n
 ///
 std::vector<Float_t> TRestRawSignal::GetSignalSmoothed(Int_t averagingPoints, std::string option) {
     if (option == "") {
-        return TRestSignalAnalysis::GetSignalSmoothed(fSignalData, averagingPoints);
+        return TRestPulseShapeAnalysis::GetSignalSmoothed(fSignalData, averagingPoints);
     } else if (ToUpper(option) == "EXCLUDE OUTLIERS") {
-        return TRestSignalAnalysis::GetSignalSmoothed_ExcludeOutliers(fSignalData, averagingPoints, fBaseLine,
-                                                                      fBaseLineSigma);
+        return TRestPulseShapeAnalysis::GetSignalSmoothed_ExcludeOutliers(fSignalData, averagingPoints,
+                                                                          fBaseLine, fBaseLineSigma);
     } else {
         std::cout << "TRestRawSignal::GetSignalSmoothed. Error! No such option!" << std::endl;
         std::vector<Float_t> result;
@@ -513,8 +513,8 @@ void TRestRawSignal::GetBaseLineCorrected(TRestRawSignal* smoothedSignal, Int_t 
 /// points used to average the signal
 ///
 std::vector<Float_t> TRestRawSignal::GetSignalSmoothed_ExcludeOutliers(Int_t averagingPoints) {
-    return TRestSignalAnalysis::GetSignalSmoothed_ExcludeOutliers(fSignalData, averagingPoints, fBaseLine,
-                                                                  fBaseLineSigma);
+    return TRestPulseShapeAnalysis::GetSignalSmoothed_ExcludeOutliers(fSignalData, averagingPoints, fBaseLine,
+                                                                      fBaseLineSigma);
 }
 
 ///////////////////////////////////////////////
@@ -529,11 +529,11 @@ std::vector<Float_t> TRestRawSignal::GetSignalSmoothed_ExcludeOutliers(Int_t ave
 ///
 void TRestRawSignal::CalculateBaseLine(Int_t startBin, Int_t endBin, const std::string& option) {
     if (ToUpper(option) == "ROBUST") {
-        TRestSignalAnalysis::CalculateBaselineAndSigmaIQR(fSignalData, startBin, endBin, fBaseLine,
-                                                          fBaseLineSigma);
+        TRestPulseShapeAnalysis::CalculateBaselineAndSigmaIQR(fSignalData, startBin, endBin, fBaseLine,
+                                                              fBaseLineSigma);
     } else {
-        TRestSignalAnalysis::CalculateBaselineAndSigmaSD(fSignalData, startBin, endBin, fBaseLine,
-                                                         fBaseLineSigma);
+        TRestPulseShapeAnalysis::CalculateBaselineAndSigmaSD(fSignalData, startBin, endBin, fBaseLine,
+                                                             fBaseLineSigma);
     }
 }
 
