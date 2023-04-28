@@ -21,18 +21,7 @@ jobs:
   framework-PR:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout submodule
-      uses: actions/checkout@v3
-      with:
-        repository: rest-for-physics/framework
-        path: framework
-        ref: master
-    - name: Checkout branch
-      run: |
-        cd framework
-        ./scripts/checkoutRemoteBranch.sh ${{ inputs.branch }}
-    - name: Automatic PR on framework at submodule PR
-      uses: ./framework/.github/actions/submodulePR
+    - uses: rest-for-physics/framework/.github/actions/submodulePR@submodule-PR
       with:
         branch: ${{ env.BRANCH_NAME }}
         submodule: source/libraries/raw
