@@ -1,0 +1,8 @@
+on:
+  pull_request:
+    types: [ "opened", "reopened", "created", "closed", "synchronize", "labeled", "unlabeled"]
+jobs:
+  label-check:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: rest-for-physics/framework/.github/actions/framework-pr-label@submodule-PR
