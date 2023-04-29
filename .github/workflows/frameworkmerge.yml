@@ -1,4 +1,4 @@
-name: "Framework-pr label check"
+name: "Merge PR from framework is required"
 
 on:
   pull_request:
