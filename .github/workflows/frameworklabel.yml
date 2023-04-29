@@ -5,6 +5,13 @@ jobs:
   label-check:
     runs-on: ubuntu-latest
     steps:
-    - uses: rest-for-physics/framework/.github/actions/pr-label@submodule-PR
-      with:
-        label: framework-pr
+    - id: label-check
+      uses: rest-for-physics/framework/.github/actions/pr-label@submodule-PR
+        with:
+          label: framework-pr
+    - name: Check label
+      if: steps.label-check.outputs.label-is-present == 'true'
+      run: |
+        echo "framework-pr label is present and this PR can only be merged from framework"
+        exit 1
+      shell: bash
