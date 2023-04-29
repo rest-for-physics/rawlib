@@ -26,3 +26,4 @@ jobs:
         branch: ${{ env.BRANCH_NAME }}
         submodule: source/libraries/raw
         token: ${{ secrets.REST_TOKEN }}
+        label: rawlib-pr
