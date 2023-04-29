@@ -1,6 +1,8 @@
 on:
   pull_request:
     types: [ "opened", "reopened", "created", "closed", "synchronize", "labeled", "unlabeled"]
+# Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
 jobs:
   label-check:
     runs-on: ubuntu-latest
