@@ -1,3 +1,5 @@
+name: "Framework-pr label check"
+
 on:
   pull_request:
     types: [ "opened", "reopened", "created", "closed", "synchronize", "labeled", "unlabeled"]
