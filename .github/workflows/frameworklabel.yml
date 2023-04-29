@@ -7,8 +7,8 @@ jobs:
     steps:
     - id: label-check
       uses: rest-for-physics/framework/.github/actions/pr-label@submodule-PR
-        with:
-          label: framework-pr
+      with:
+        label: framework-pr
     - name: Check label
       if: steps.label-check.outputs.label-is-present == 'true'
       run: |
