@@ -20,7 +20,7 @@ jobs:
     name: Validate library
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/lobis/root-geant4-garfield:rest-for-physics
+      image: ghcr.io/rest-for-physics/root:latest
     steps:
       - uses: rest-for-physics/framework/.github/actions/checkout@master
         with:
@@ -33,7 +33,7 @@ jobs:
     name: Validate pre-commit config
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/lobis/root-geant4-garfield:rest-for-physics
+      image: ghcr.io/rest-for-physics/root:latest
     steps:
       - name: Checkout rawlib
         uses: rest-for-physics/framework/.github/actions/checkout@master
@@ -50,7 +50,7 @@ jobs:
     name: Build only rawlib
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/lobis/root-geant4-garfield:rest-for-physics
+      image: ghcr.io/rest-for-physics/root:latest
     steps:
       - name: Build and install
         uses: rest-for-physics/framework/.github/actions/build@master
@@ -68,7 +68,7 @@ jobs:
     name: Check processes
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/lobis/root-geant4-garfield:rest-for-physics
+      image: ghcr.io/rest-for-physics/root:latest
     needs: [ build-rawlib ]
     steps:
       - uses: rest-for-physics/framework/.github/actions/checkout@master
@@ -124,7 +124,7 @@ jobs:
     name: Process Dream data
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/lobis/root-geant4-garfield:rest-for-physics
+      image: ghcr.io/rest-for-physics/root:latest
     needs: [ build-rawlib ]
     steps:
       - uses: rest-for-physics/framework/.github/actions/checkout@master
