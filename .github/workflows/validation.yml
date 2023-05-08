@@ -61,7 +61,7 @@ jobs:
         id: rawlib-install-cache
         uses: actions/cache@v3
         with:
-          key: ${{ env.BRANCH_NAME }}-${{ github.sha }}
+          key: ${{ env.BRANCH_NAME }}-raw-${{ github.sha }}
           path: ${{ env.REST_PATH }}
 
   Process:
@@ -80,7 +80,7 @@ jobs:
         uses: actions/cache@v3
         id: rawlib-install-cache
         with:
-          key: ${{ env.BRANCH_NAME }}-${{ github.sha }}
+          key: ${{ env.BRANCH_NAME }}-raw-${{ github.sha }}
           path: ${{ env.REST_PATH }}
       - name: Add signal noise
         run: |
@@ -136,7 +136,7 @@ jobs:
         uses: actions/cache@v3
         id: rawlib-install-cache
         with:
-          key: ${{ env.BRANCH_NAME }}-${{ github.sha }}
+          key: ${{ env.BRANCH_NAME }}-raw-${{ github.sha }}
           path: ${{ env.REST_PATH }}
       - name: Dream data
         run: |
