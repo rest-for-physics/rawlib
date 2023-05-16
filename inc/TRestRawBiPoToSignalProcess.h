@@ -83,6 +83,10 @@ struct MatacqBoard {
     int32_t Time_Tag_On;
 
     int32_t Sampling_GHz;
+
+    int32_t ch_shifts[MATACQ_N_CH];
+
+    int32_t nChannels;
 };
 
 /// A structure to store the BiPo settings
@@ -116,10 +120,17 @@ class TRestRawBiPoToSignalProcess : public TRestRawToSignalProcess {
     /// A vector of BiPo settings
     std::vector<BiPoSettings> fBiPoSettings;  //<
 
+    /// A temporary counter
+    Int_t fEventCounter = 0;  //!
+
     void ReadHeader();
+    void ReadFooter();
     void ReadBoard();
     void ReadBiPoSetup();
-    Double_t ReadBiPoEventData(uint16_t* mdata);
+    Int_t ReadBiPoEventData(uint16_t* mdata);
+
+    UInt_t GetBoardIndex(Int_t address);
+    Int_t GetBin(Int_t boardIndex, Int_t channel, Int_t bin);
 
    public:
     const Double_t GetRunStartTime() { return fRunStartTime; }
