@@ -30,28 +30,30 @@
 //! A process to add/emulate electronic noise into a TRestRawSignalEvent
 class TRestRawSignalAddNoiseProcess : public TRestEventProcess {
    private:
+    /// A pointer to the input signal event
     TRestRawSignalEvent* fInputSignalEvent;
+
+    /// A pointer to the output signal event
     TRestRawSignalEvent* fOutputSignalEvent;
 
     void Initialize() override;
 
     void LoadDefaultConfig();
 
+    /// The noise level to be added to the signal. It is 1-gaussian sigma
     Double_t fNoiseLevel = 10.0;
 
-   protected:
-    // add here the members of your event process
-
    public:
+    /// It returns the noise level defined in the process (ADC units)
     inline Double_t GetNoiseLevel() const { return fNoiseLevel; }
+
+    /// It sets the noise level of the process (ADC units)
     inline void SetNoiseLevel(Double_t noiseLevel) { fNoiseLevel = noiseLevel; }
 
     any GetInputEvent() const override { return fInputSignalEvent; }
     any GetOutputEvent() const override { return fOutputSignalEvent; }
 
-    void InitProcess() override;
     TRestEvent* ProcessEvent(TRestEvent* inputEvent) override;
-    void EndProcess() override;
 
     void LoadConfig(const std::string& configFilename, const std::string& name = "");
 
@@ -65,12 +67,11 @@ class TRestRawSignalAddNoiseProcess : public TRestEventProcess {
 
     TRestMetadata* GetProcessMetadata() const { return nullptr; }
 
+    /// Returns a given process name
     const char* GetProcessName() const override { return "rawSignalAddNoise"; }
 
-    // Constructor
     TRestRawSignalAddNoiseProcess();
     TRestRawSignalAddNoiseProcess(const char* configFilename);
-    // Destructor
     ~TRestRawSignalAddNoiseProcess();
 
     ClassDefOverride(TRestRawSignalAddNoiseProcess, 1);
