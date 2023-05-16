@@ -23,30 +23,8 @@
 #ifndef RestCore_TRestBiPoToSignalProcess
 #define RestCore_TRestBiPoToSignalProcess
 
-#include <TError.h>
-#include <TF1.h>
-#include <TH1D.h>
-#include <TH2D.h>
-#include <TMath.h>
-#include <TROOT.h>
-#include <TSystem.h>
-#include <TTree.h>
-#include <signal.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
-
-#include <iostream>
-#include <list>
-#include <map>
-#include <string>
-#include <vector>
-
 #include "TRestRawSignalEvent.h"
 #include "TRestRawToSignalProcess.h"
-#include "math.h"
 
 static const size_t CTAG_SZ = 4;
 
@@ -108,9 +86,6 @@ struct BiPoSettings {
 //! An process to read binary data from BiPo electronics
 class TRestRawBiPoToSignalProcess : public TRestRawToSignalProcess {
    protected:
-    /// The run start time obtained from the file header
-    Double_t fRunStartTime = 0;  ///<
-
     /// The number of Matacq boards present on the setup
     Int_t fNBoards = 0;  ///<
 
@@ -120,7 +95,7 @@ class TRestRawBiPoToSignalProcess : public TRestRawToSignalProcess {
     /// A vector of BiPo settings
     std::vector<BiPoSettings> fBiPoSettings;  //<
 
-    /// A temporary counter
+    /// A temporary counter used to define the event id
     Int_t fEventCounter = 0;  //!
 
     void ReadHeader();
@@ -133,16 +108,17 @@ class TRestRawBiPoToSignalProcess : public TRestRawToSignalProcess {
     Int_t GetBin(Int_t boardIndex, Int_t channel, Int_t bin);
 
    public:
-    const Double_t GetRunStartTime() { return fRunStartTime; }
-
     void InitProcess() override;
     void Initialize() override;
     TRestEvent* ProcessEvent(TRestEvent* inputEvent) override;
     const char* GetProcessName() const override { return "BiPoToSignal"; }
 
+    void PrintMetadata() override;
+
+    MatacqBoard GetMatacqBoard(Int_t n) { return fMatacqBoard[n]; }
+
     // Constructor
     TRestRawBiPoToSignalProcess();
-    TRestRawBiPoToSignalProcess(const char* configFilename);
 
     // Destructor
     ~TRestRawBiPoToSignalProcess();

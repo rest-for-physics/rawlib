@@ -63,23 +63,29 @@ using namespace std;
 
 ClassImp(TRestRawBiPoToSignalProcess);
 
+///////////////////////////////////////////////
+/// \brief Default constructor
+///
 TRestRawBiPoToSignalProcess::TRestRawBiPoToSignalProcess() { Initialize(); }
 
-TRestRawBiPoToSignalProcess::TRestRawBiPoToSignalProcess(const char* configFilename)
-    : TRestRawToSignalProcess(configFilename) {
-    Initialize();
-}
+///////////////////////////////////////////////
+/// \brief Default destructor
+///
+TRestRawBiPoToSignalProcess::~TRestRawBiPoToSignalProcess() {}
 
-TRestRawBiPoToSignalProcess::~TRestRawBiPoToSignalProcess() {
-    // TRestRawBiPoToSignalProcess destructor
-}
-
+///////////////////////////////////////////////
+/// \brief Function to initialize input/output event members and define the section name
+///
 void TRestRawBiPoToSignalProcess::Initialize() {
     TRestRawToSignalProcess::Initialize();
 
     SetLibraryVersion(LIBRARY_VERSION);
 }
 
+///////////////////////////////////////////////
+/// \brief Process initialization. Data members that require initialization just before start processing
+/// should be initialized here.
+///
 void TRestRawBiPoToSignalProcess::InitProcess() {
     TRestRawToSignalProcess::InitProcess();
 
@@ -106,6 +112,9 @@ void TRestRawBiPoToSignalProcess::InitProcess() {
     if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Debug) GetChar();
 }
 
+///////////////////////////////////////////////
+/// \brief The main processing event function
+///
 TRestEvent* TRestRawBiPoToSignalProcess::ProcessEvent(TRestEvent* inputEvent) {
     RESTDebug << "-------Start of TRestRawBiPoToSignalProcess::ProcessEvent------------" << RESTendl;
     fEventCounter++;
@@ -229,8 +238,6 @@ void TRestRawBiPoToSignalProcess::ReadHeader() {
     runStartTime += 1.e-6 * (Double_t)tmp;
 
     fRunInfo->SetStartTimeStamp(runStartTime);
-
-    RESTDebug << "Run start time: " << fRunStartTime << RESTendl;
 
     uint32_t nBoards;
     if (fread(&nBoards, sizeof(uint32_t), 1, fInputBinFile) != 1) {
@@ -515,4 +522,52 @@ UInt_t TRestRawBiPoToSignalProcess::GetBoardIndex(Int_t address) {
 Int_t TRestRawBiPoToSignalProcess::GetBin(Int_t boardIndex, Int_t channel, Int_t bin) {
     MatacqBoard board = fMatacqBoard[boardIndex];
     return board.ch_shifts[channel] + board.nChannels * bin;
+}
+
+///////////////////////////////////////////////
+/// \brief Prints out the Matacq boards configuration and BiPo setup
+///
+void TRestRawBiPoToSignalProcess::PrintMetadata() {
+    TRestMetadata::PrintMetadata();
+
+    RESTMetadata << "Number of Matacq boards : " << fNBoards << RESTendl;
+    RESTMetadata << " " << RESTendl;
+
+    std::cout << "Size : " << fMatacqBoard.size() << std::endl;
+    for (int n = 0; n < fNBoards; n++) {
+        RESTMetadata << "Board address: " << fMatacqBoard[n].address << RESTendl;
+        RESTMetadata << "----" << RESTendl;
+        RESTMetadata << " - Enabled channels: " << fMatacqBoard[n].en_ch[0] << " - "
+                     << fMatacqBoard[n].en_ch[1] << " - " << fMatacqBoard[n].en_ch[2] << " - "
+                     << fMatacqBoard[n].en_ch[3] << RESTendl;
+        RESTMetadata << " - Trigger channels: " << fMatacqBoard[n].trg_ch[0] << " - "
+                     << fMatacqBoard[n].trg_ch[1] << " - " << fMatacqBoard[n].trg_ch[2] << " - "
+                     << fMatacqBoard[n].trg_ch[3] << RESTendl;
+        RESTMetadata << " - Trigger type: " << fMatacqBoard[n].Trig_Type << RESTendl;
+        RESTMetadata << " - Threshold: " << fMatacqBoard[n].Threshold << RESTendl;
+        RESTMetadata << " - Nb_Acq: " << fMatacqBoard[n].Nb_Acq << RESTendl;
+        RESTMetadata << " - Posttrig: " << fMatacqBoard[n].Posttrig << RESTendl;
+        RESTMetadata << " - Time_Tag_On: " << fMatacqBoard[n].Time_Tag_On << RESTendl;
+        RESTMetadata << " - Sampling_GHz: " << fMatacqBoard[n].Sampling_GHz << RESTendl;
+    }
+
+    RESTMetadata << "+++++++++++++++++++++++++++++++++++++++++++++++++" << RESTendl;
+
+    /*
+/// A structure to store the BiPo settings
+struct BiPoSettings {
+    int32_t trigger_address;
+
+    int32_t Win1_Posttrig;
+    int32_t Timeout_200KHz;
+
+    int32_t Trig_Chan[MATACQ_N_CH];
+    int32_t Level1_mV[MATACQ_N_CH];
+    int32_t Level2_mV[MATACQ_N_CH];
+
+    int32_t t1_window;
+    int32_t t2_window;
+    int32_t t1_t2_timeout;
+};
+*/
 }
