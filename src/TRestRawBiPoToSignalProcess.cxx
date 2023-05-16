@@ -153,7 +153,15 @@ TRestEvent* TRestRawBiPoToSignalProcess::ProcessEvent(TRestEvent* inputEvent) {
             Int_t nBins = fBiPoSettings[bIndex].t1_window + fBiPoSettings[bIndex].t2_window;
 
             for (int b = 0; b < nBins; b++) {
-                Short_t v = -data[GetBin(bIndex, nch, b)];  // Inversing polarity
+                Short_t sdata = data[GetBin(bIndex, nch, b)];
+                Short_t v = MATACQ_ZERO - sdata;  // Inversing polarity
+                if (sdata == MATACQ_OVERFLOW) {
+                    v = 0;
+                }
+                if (sdata == MATACQ_UNDERFLOW) {
+                    v = TMath::Power(2, 12);
+                }
+
                 if (sgnl.GetSignalID() >= 0) sgnl.AddPoint(v);
             }
 
@@ -493,8 +501,6 @@ Int_t TRestRawBiPoToSignalProcess::ReadBiPoEventData(uint16_t* mdata) {
         exit(1);
     }
     totalBytesReaded += data_size * sizeof(uint16_t);
-
-    for (int n = 0; n < data_size; n++) mdata[n] -= MATACQ_ZERO;
 
     return boardAddress;
 }
