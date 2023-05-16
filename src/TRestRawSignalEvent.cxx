@@ -643,6 +643,7 @@ void TRestRawSignalEvent::DrawSignals(TPad* pad, const std::vector<Int_t>& signa
     signalMaxID->fGraph->GetYaxis()->SetTitle("Amplitude [a.u.]");
     pad->Draw();
     pad->cd();
+    signalMaxID->fGraph->SetLineColor(kBlack);
     signalMaxID->fGraph->Draw("AL");
 
     for (const auto& signalID : signals) {
