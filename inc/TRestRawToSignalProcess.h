@@ -66,7 +66,7 @@ class TRestRawToSignalProcess : public TRestEventProcess {
         fSubRunOrigin = fRunInfo->GetSubRunNumber();
     }
 
-    void PrintMetadata() override;
+    virtual void PrintMetadata() override;
     void Initialize() override;
     TRestMetadata* GetProcessMetadata() const { return nullptr; }
 
