@@ -13,7 +13,7 @@
 
 	<TRestProcessRunner name="RawSignals" title="Raw processing and analysis" verboseLevel="silent">
 
-		<parameter name="eventsToProcess" value="0" />
+		<parameter name="eventsToProcess" value="10" />
 
 		<addProcess type="TRestRawBiPoToSignalProcess" name="BiPo" value="ON" verboseLevel="silent">
             <parameter name="electronicsType" value="MATACQ" />
@@ -63,7 +63,7 @@
                 <observable name="AveragePeakTime" type="double" value="ON" />
 
                 <cut name="NumberOfGoodSignals" value="(1,1000)" />
-                <parameter name="cutsEnabled" value="true" />
+                <parameter name="cutsEnabled" value="false" />
 		</addProcess>
 
 
