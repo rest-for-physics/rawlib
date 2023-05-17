@@ -533,8 +533,8 @@ void TRestRawBiPoToSignalProcess::PrintMetadata() {
     RESTMetadata << "Number of Matacq boards : " << fNBoards << RESTendl;
     RESTMetadata << " " << RESTendl;
 
-    std::cout << "Size : " << fMatacqBoard.size() << std::endl;
     for (int n = 0; n < fNBoards; n++) {
+        RESTMetadata << " " << RESTendl;
         RESTMetadata << "Board address: " << fMatacqBoard[n].address << RESTendl;
         RESTMetadata << "----" << RESTendl;
         RESTMetadata << " - Enabled channels: " << fMatacqBoard[n].en_ch[0] << " - "
@@ -549,25 +549,24 @@ void TRestRawBiPoToSignalProcess::PrintMetadata() {
         RESTMetadata << " - Posttrig: " << fMatacqBoard[n].Posttrig << RESTendl;
         RESTMetadata << " - Time_Tag_On: " << fMatacqBoard[n].Time_Tag_On << RESTendl;
         RESTMetadata << " - Sampling_GHz: " << fMatacqBoard[n].Sampling_GHz << RESTendl;
+        RESTMetadata << " " << RESTendl;
+        RESTMetadata << "BiPo trigger settings. Address : " << fBiPoSettings[n].trigger_address << RESTendl;
+        RESTMetadata << "----" << RESTendl;
+        RESTMetadata << " - Win1 Posttrig: " << fBiPoSettings[n].Win1_Posttrig << RESTendl;
+        RESTMetadata << " - Timeout [200KHz]: " << fBiPoSettings[n].Timeout_200KHz << RESTendl;
+        RESTMetadata << " - Trigger channels: " << fBiPoSettings[n].Trig_Chan[0] << " - "
+                     << fBiPoSettings[n].Trig_Chan[1] << " - " << fBiPoSettings[n].Trig_Chan[2] << " - "
+                     << fBiPoSettings[n].Trig_Chan[3] << RESTendl;
+        RESTMetadata << " - Level 1 [mV]: " << fBiPoSettings[n].Level1_mV[0] << " - "
+                     << fBiPoSettings[n].Level1_mV[1] << " - " << fBiPoSettings[n].Level1_mV[2] << " - "
+                     << fBiPoSettings[n].Level1_mV[3] << RESTendl;
+        RESTMetadata << " - Level 2 [mV]: " << fBiPoSettings[n].Level2_mV[0] << " - "
+                     << fBiPoSettings[n].Level2_mV[2] << " - " << fBiPoSettings[n].Level2_mV[2] << " - "
+                     << fBiPoSettings[n].Level2_mV[3] << RESTendl;
+        RESTMetadata << " - T1 window: " << fBiPoSettings[n].t1_window << RESTendl;
+        RESTMetadata << " - T2 window: " << fBiPoSettings[n].t2_window << RESTendl;
+        RESTMetadata << " - T1-T2 timeout: " << fBiPoSettings[n].t1_t2_timeout << RESTendl;
     }
 
     RESTMetadata << "+++++++++++++++++++++++++++++++++++++++++++++++++" << RESTendl;
-
-    /*
-/// A structure to store the BiPo settings
-struct BiPoSettings {
-    int32_t trigger_address;
-
-    int32_t Win1_Posttrig;
-    int32_t Timeout_200KHz;
-
-    int32_t Trig_Chan[MATACQ_N_CH];
-    int32_t Level1_mV[MATACQ_N_CH];
-    int32_t Level2_mV[MATACQ_N_CH];
-
-    int32_t t1_window;
-    int32_t t2_window;
-    int32_t t1_t2_timeout;
-};
-*/
 }
