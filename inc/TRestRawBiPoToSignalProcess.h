@@ -51,19 +51,13 @@ struct MatacqBoard {
     int32_t trg_ch[MATACQ_N_CH];
 
     int32_t Trig_Type;
-
     int32_t Threshold;
-
     int32_t Nb_Acq;
-
     int32_t Posttrig;
-
     int32_t Time_Tag_On;
-
     int32_t Sampling_GHz;
 
     int32_t ch_shifts[MATACQ_N_CH];
-
     int32_t nChannels;
 };
 
@@ -115,7 +109,8 @@ class TRestRawBiPoToSignalProcess : public TRestRawToSignalProcess {
 
     void PrintMetadata() override;
 
-    MatacqBoard GetMatacqBoard(Int_t n) { return fMatacqBoard[n]; }
+    MatacqBoard GetMatacqBoard(Int_t n) { return n > fNBoards ? (MatacqBoard){} : fMatacqBoard[n]; }
+    BiPoSettings GetBiPoSettings(Int_t n) { return n > fNBoards ? (BiPoSettings){} : fBiPoSettings[n]; }
 
     // Constructor
     TRestRawBiPoToSignalProcess();
