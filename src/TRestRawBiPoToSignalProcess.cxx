@@ -20,67 +20,65 @@
  * For the list of contributors see $REST_PATH/CREDITS.                  *
  *************************************************************************/
 
-///////////////////////////////////////////////////////////////////////
-// The TRestRawBiPoToSignalProcess reads a binary file based on the BiPo
-// acquisition. This acquisition consists of several Matacq boards that
-// register waveforms coming from two different sources managed by the
-// BiPo trigger configuration.
-//
-// This process reads the header of the input file placing the header
-// information in two different c-structures MatacqBoard and BiPoSettings.
-//
-// For the moment the input file needs to be read uncompressed. If we got
-// compressed data, we will need to uncompress it before start the processing
-// with restManager, as follows:
-//
-// ```
-// gzip -d -c /path/to/binary/data/BiPo3Mod2_run_2600.data.gz > /tmp/BiPo3Mod2_run_2600.data
-// restManager --c /path/to/rml/BiPoToRawSignal.rml --f /tmp/BiPo3Mod2_run_2600.data
-// rm /tmp/BiPo3Mod2_run_2600.data
-// ```
-//
-// The file `BiPoToRawSignal.rml` can be found inside the `pipeline/external/BiPo`.
-//
-// Additional information might be found at the
-// [following PR](https://github.com/rest-for-physics/rawlib/pull/106).
-//
-// The produced event consists of 4-channels, each channel being divided in two
-// time windows, the first window goes from 1 to 1500 samples, and the second
-// window goes from 1501 to 2460.
-//
-//
-// \htmlonly <style>div.image img[src="BiPo.png"]{width:500px;}</style>
-// \endhtmlonly
-//
-// ![Example of acquired event](BiPo.png)
-//
-//
-// <hr>
-//
-// \warning **⚠ REST is under continous development.** This documentation
-// is offered to you by the REST community. Your HELP is needed to keep this
-// code up to date. Your feedback will be worth to support this software, please
-// report any problems/suggestions you may find will using it at [The REST Framework
-// forum](http://ezpc10.unizar.es). You are welcome to contribute fixing typos,
-// updating information or adding/proposing new contributions. See also our
-// <a href="https://github.com/rest-for-physics/framework/blob/master/CONTRIBUTING.md">Contribution
-// Guide</a>.
-//
-//
-//--------------------------------------------------------------------------
-//
-// RESTsoft - Software for Rare Event Searches with TPCs
-//
-// History of developments:
-//
-// 2023-May: First implementation (from https://gitlab.in2p3.fr/bipo/matacqana.git)
-//           Javier Galan
-//
-// \class      TRestRawBiPoToSignalProcess
-// \author     Javier Galan
-//
-// <hr>
-//
+////////////////////////////////////////////////////////////////////////
+/// The TRestRawBiPoToSignalProcess reads a binary file based on the BiPo
+/// acquisition. This acquisition consists of several Matacq boards that
+/// register waveforms coming from two different sources managed by the
+/// BiPo trigger configuration.
+///
+/// This process reads the header of the input file placing the header
+/// information in two different c-structures MatacqBoard and BiPoSettings.
+///
+/// For the moment the input file needs to be read uncompressed. If we got
+/// compressed data, we will need to uncompress it before start the processing
+/// with restManager, as follows:
+///
+/// \code
+/// gzip -d -c /path/to/binary/data/BiPo3Mod2_run_2600.data.gz > /tmp/BiPo3Mod2_run_2600.data
+/// restManager --c /path/to/rml/BiPoToRawSignal.rml --f /tmp/BiPo3Mod2_run_2600.data
+/// rm /tmp/BiPo3Mod2_run_2600.data
+/// \endcode
+///
+/// The file `BiPoToRawSignal.rml` can be found inside the `pipeline/external/BiPo`.
+///
+/// Additional information might be found at the
+/// [following PR](https://github.com/rest-for-physics/rawlib/pull/106).
+///
+/// The produced event consists of 4-channels, each channel being divided in two
+/// time windows, the first window goes from 1 to 1500 samples, and the second
+/// window goes from 1501 to 2460.
+///
+/// \htmlonly <style>div.image img[src="BiPo.png"]{width:500px;}</style>
+/// \endhtmlonly
+///
+/// ![Example of acquired event](BiPo.png)
+///
+/// <hr>
+///
+/// \warning **⚠ REST is under continous development.** This documentation
+/// is offered to you by the REST community. Your HELP is needed to keep this
+/// code up to date. Your feedback will be worth to support this software, please
+/// report any problems/suggestions you may find will using it at [The REST Framework
+/// forum](http://ezpc10.unizar.es). You are welcome to contribute fixing typos,
+/// updating information or adding/proposing new contributions. See also our
+/// <a href="https://github.com/rest-for-physics/framework/blob/master/CONTRIBUTING.md">Contribution
+/// Guide</a>.
+///
+///
+///--------------------------------------------------------------------------
+///
+/// RESTsoft - Software for Rare Event Searches with TPCs
+///
+/// History of developments:
+///
+/// 2023-May: First implementation (from https://gitlab.in2p3.fr/bipo/matacqana.git)
+///           Javier Galan
+///
+/// \class      TRestRawBiPoToSignalProcess
+/// \author     Javier Galan
+///
+/// <hr>
+///
 #include "TRestRawBiPoToSignalProcess.h"
 
 using namespace std;
