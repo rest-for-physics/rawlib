@@ -31,10 +31,10 @@
 class TRestRawSignalAddNoiseProcess : public TRestEventProcess {
    private:
     /// A pointer to the input signal event
-    TRestRawSignalEvent* fInputSignalEvent;
+    TRestRawSignalEvent* fInputSignalEvent;  //!
 
     /// A pointer to the output signal event
-    TRestRawSignalEvent* fOutputSignalEvent;
+    TRestRawSignalEvent* fOutputSignalEvent;  //!
 
     void Initialize() override;
 
@@ -50,13 +50,17 @@ class TRestRawSignalAddNoiseProcess : public TRestEventProcess {
     /// It sets the noise level of the process (ADC units)
     inline void SetNoiseLevel(Double_t noiseLevel) { fNoiseLevel = noiseLevel; }
 
+    /// Returns a pointer to the input signal event
     any GetInputEvent() const override { return fInputSignalEvent; }
+
+    /// Returns a pointer to the output signal event
     any GetOutputEvent() const override { return fOutputSignalEvent; }
 
     TRestEvent* ProcessEvent(TRestEvent* inputEvent) override;
 
     void LoadConfig(const std::string& configFilename, const std::string& name = "");
 
+    /// Prints out the metadata members of this class
     inline void PrintMetadata() override {
         BeginPrintProcess();
 
@@ -74,6 +78,6 @@ class TRestRawSignalAddNoiseProcess : public TRestEventProcess {
     TRestRawSignalAddNoiseProcess(const char* configFilename);
     ~TRestRawSignalAddNoiseProcess();
 
-    ClassDefOverride(TRestRawSignalAddNoiseProcess, 1);
+    ClassDefOverride(TRestRawSignalAddNoiseProcess, 2);
 };
 #endif
