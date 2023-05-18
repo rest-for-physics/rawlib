@@ -268,6 +268,9 @@ void TRestRawBiPoToSignalProcess::ReadHeader() {
     }
 }
 
+///////////////////////////////////////////////
+/// \brief This method reads the settings of one of the Matacq boards.
+///
 void TRestRawBiPoToSignalProcess::ReadBoard() {
     MatacqBoard board;
     int32_t tmp;
@@ -360,7 +363,7 @@ void TRestRawBiPoToSignalProcess::ReadBoard() {
 
 ///////////////////////////////////////////////
 /// \brief This method reads the header data corresponding to the
-/// BiPo settings.
+/// BiPo settings of one card.
 ///
 void TRestRawBiPoToSignalProcess::ReadBiPoSetup() {
     BiPoSettings bipo;
@@ -512,6 +515,10 @@ Int_t TRestRawBiPoToSignalProcess::ReadBiPoEventData(uint16_t* mdata) {
     return boardAddress;
 }
 
+///////////////////////////////////////////////
+/// \brief It returns the std::vector storage index using the hardware
+/// address of the Matacq board.
+///
 UInt_t TRestRawBiPoToSignalProcess::GetBoardIndex(Int_t address) {
     for (unsigned int n = 0; n < fMatacqBoard.size(); n++)
         if (fMatacqBoard[n].address == address) return n;
@@ -519,6 +526,10 @@ UInt_t TRestRawBiPoToSignalProcess::GetBoardIndex(Int_t address) {
     return -1;
 }
 
+///////////////////////////////////////////////
+/// \brief It returns the ordered channel value from the Matacq memory buffer for a given
+/// board, channel and time sample, or bin.
+///
 Int_t TRestRawBiPoToSignalProcess::GetBin(Int_t boardIndex, Int_t channel, Int_t bin) {
     MatacqBoard board = fMatacqBoard[boardIndex];
     return board.ch_shifts[channel] + board.nChannels * bin;

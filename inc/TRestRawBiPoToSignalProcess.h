@@ -105,17 +105,19 @@ class TRestRawBiPoToSignalProcess : public TRestRawToSignalProcess {
     void InitProcess() override;
     void Initialize() override;
     TRestEvent* ProcessEvent(TRestEvent* inputEvent) override;
+
+    /// Returs a given process name
     const char* GetProcessName() const override { return "BiPoToSignal"; }
 
     void PrintMetadata() override;
 
+    /// It gives access to a Matacq board confituration
     MatacqBoard GetMatacqBoard(Int_t n) { return n > fNBoards ? (MatacqBoard){} : fMatacqBoard[n]; }
+
+    /// It gives access to confituration of BiPo settings
     BiPoSettings GetBiPoSettings(Int_t n) { return n > fNBoards ? (BiPoSettings){} : fBiPoSettings[n]; }
 
-    // Constructor
     TRestRawBiPoToSignalProcess();
-
-    // Destructor
     ~TRestRawBiPoToSignalProcess();
 
     ClassDefOverride(TRestRawBiPoToSignalProcess, 1);
