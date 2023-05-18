@@ -42,44 +42,43 @@ constexpr char TAG_RUN_STOP[] = "STO";
 constexpr char TAG_ACQ[] = "ACQ";
 constexpr char TAG_ACQ_2[] = "AC2";
 
-
 //! An process to read binary data from BiPo electronics
 class TRestRawBiPoToSignalProcess : public TRestRawToSignalProcess {
    public:
-   /// A structure to store the configuration settings of Matacq board
-   struct MatacqBoard {
-     /// The base memory address of the Matacq board
-     int32_t address;
+    /// A structure to store the configuration settings of Matacq board
+    struct MatacqBoard {
+        /// The base memory address of the Matacq board
+        int32_t address;
 
-     std::array<int32_t, MATACQ_N_CH> en_ch;
-     std::array<int32_t, MATACQ_N_CH> trg_ch;
+        std::array<int32_t, MATACQ_N_CH> en_ch;
+        std::array<int32_t, MATACQ_N_CH> trg_ch;
 
-     int32_t Trig_Type;
-     int32_t Threshold;
-     int32_t Nb_Acq;
-     int32_t Posttrig;
-     int32_t Time_Tag_On;
-     int32_t Sampling_GHz;
+        int32_t Trig_Type;
+        int32_t Threshold;
+        int32_t Nb_Acq;
+        int32_t Posttrig;
+        int32_t Time_Tag_On;
+        int32_t Sampling_GHz;
 
-     std::array<int32_t, MATACQ_N_CH> ch_shifts;
-     int32_t nChannels;
-   };
+        std::array<int32_t, MATACQ_N_CH> ch_shifts;
+        int32_t nChannels;
+    };
 
-   /// A structure to store the BiPo settings
-   struct BiPoSettings {
-     int32_t trigger_address;
+    /// A structure to store the BiPo settings
+    struct BiPoSettings {
+        int32_t trigger_address;
 
-     int32_t Win1_Posttrig;
-     int32_t Timeout_200KHz;
+        int32_t Win1_Posttrig;
+        int32_t Timeout_200KHz;
 
-     std::array<int32_t, MATACQ_N_CH> Trig_Chan;
-     std::array<int32_t, MATACQ_N_CH> Level1_mV;
-     std::array<int32_t, MATACQ_N_CH> Level2_mV;
+        std::array<int32_t, MATACQ_N_CH> Trig_Chan;
+        std::array<int32_t, MATACQ_N_CH> Level1_mV;
+        std::array<int32_t, MATACQ_N_CH> Level2_mV;
 
-     int32_t t1_window;
-     int32_t t2_window;
-     int32_t t1_t2_timeout;
-   };
+        int32_t t1_window;
+        int32_t t2_window;
+        int32_t t1_t2_timeout;
+    };
 
    protected:
     /// The number of Matacq boards present on the setup
@@ -98,7 +97,7 @@ class TRestRawBiPoToSignalProcess : public TRestRawToSignalProcess {
     void ReadFooter();
     void ReadBoard();
     void ReadBiPoSetup();
-    Int_t ReadBiPoEventData(std::vector<uint16_t> &mdata);
+    Int_t ReadBiPoEventData(std::vector<uint16_t>& mdata);
 
     UInt_t GetBoardIndex(Int_t address);
     Int_t GetBin(Int_t boardIndex, Int_t channel, Int_t bin);

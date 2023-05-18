@@ -170,7 +170,7 @@ TRestEvent* TRestRawBiPoToSignalProcess::ProcessEvent(TRestEvent* inputEvent) {
     if (strcmp(buffer, TAG_ACQ) == 0 || strcmp(buffer, TAG_ACQ_2) == 0) {
         RESTDebug << "A new event comes" << RESTendl;
 
-        std::vector <uint16_t> data;
+        std::vector<uint16_t> data;
         Int_t boardAddress = ReadBiPoEventData(data);
         Int_t bIndex = GetBoardIndex(boardAddress);
 
@@ -485,7 +485,7 @@ void TRestRawBiPoToSignalProcess::ReadBiPoSetup() {
 /// the triggered board address will be returned and it will be used
 /// later on to generate a signal id.
 ///
-Int_t TRestRawBiPoToSignalProcess::ReadBiPoEventData(std::vector<uint16_t> &mdata) {
+Int_t TRestRawBiPoToSignalProcess::ReadBiPoEventData(std::vector<uint16_t>& mdata) {
     int32_t tmp;
     if (fread(&tmp, sizeof(int32_t), 1, fInputBinFile) != 1) {
         printf("Error: could not read  tmp .\n");
