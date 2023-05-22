@@ -43,7 +43,7 @@ class TRestRawSignalAnalysisProcess : public TRestEventProcess {
     TVector2 fIntegralRange = TVector2(10, 500);
 
     /// Option for calculation of baseline parameters, can be set to "ROBUST"
-    std::string fBaseLineOption = "";
+    std::string fBaseLineOption = ""; //<
 
     /// The number of sigmas over baseline fluctuations to identify a point overthreshold
     Double_t fPointThreshold = 2;
