@@ -30,9 +30,9 @@
 /// * **baseLineRange:** The bins from the rawdata samples that will be used
 /// to calculate the baseline average and fluctuation.
 ///
-///	* **baseLineOption:** An optional parameter. When set to "ROBUST", the
+/// * **baseLineOption:** An optional parameter. When set to "ROBUST", the
 /// baseline parameters will be calculated using TRestRawSignal's robust
-///  methods, instead of mean and standard deviation, the median and IQR sigma
+/// methods, instead of mean and standard deviation, the median and IQR sigma
 /// are used.
 ///
 /// * **integralRange**: The calculated observables will only consider points
