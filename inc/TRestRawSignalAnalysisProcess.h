@@ -90,6 +90,6 @@ class TRestRawSignalAnalysisProcess : public TRestEventProcess {
     TRestRawSignalAnalysisProcess();   // Constructor
     ~TRestRawSignalAnalysisProcess();  // Destructor
 
-    ClassDefOverride(TRestRawSignalAnalysisProcess, 4);
+    ClassDefOverride(TRestRawSignalAnalysisProcess, 5);
 };
 #endif
