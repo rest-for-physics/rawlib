@@ -347,8 +347,8 @@ Int_t TRestRawSignal::GetRiseTime() {
 /// and its neightbour points.
 ///
 Double_t TRestRawSignal::GetTripleMaxIntegral() {
-    auto gr = GetGraph();
-    return TRestPulseShapeAnalysis::GetTripleMaxIntegral(gr);
+    auto graph = GetGraph();
+    return TRestPulseShapeAnalysis::GetTripleMaxIntegral(graph);
 }
 
 ///////////////////////////////////////////////
