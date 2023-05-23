@@ -318,7 +318,7 @@ TRestEvent* TRestRawSignalAnalysisProcess::ProcessEvent(TRestEvent* inputEvent) 
     // This will affect the calculation of observables, but not the stored
     // TRestRawSignal data.
     fSignalEvent->SetBaseLineRange(fBaseLineRange, fBaseLineOption);
-    fSignalEvent->SetRange(fIntegralRange);
+    fSignalEvent->SetRange(fAnalysisRange);
 
     for (int s = 0; s < fSignalEvent->GetNumberOfSignals(); s++) {
         TRestRawSignal* sgnl = fSignalEvent->GetSignal(s);
