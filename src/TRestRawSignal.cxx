@@ -178,7 +178,9 @@ Double_t TRestRawSignal::GetData(Int_t n) const { return (Double_t)fSignalData[n
 std::vector<Float_t> TRestRawSignal::GetData() const {
     std::vector<Float_t> signalData(GetNumberOfPoints());
 
-    for (int i = 0; i < GetNumberOfPoints(); i++) signalData[i] = GetData(i);
+    for (int i = 0; i < GetNumberOfPoints(); i++) {
+        signalData[i] = GetData(i);
+    }
 
     return signalData;
 }
