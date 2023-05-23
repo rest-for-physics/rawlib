@@ -29,6 +29,12 @@
 /// the rawsignal analysis is performed:
 /// * **baseLineRange:** The bins from the rawdata samples that will be used
 /// to calculate the baseline average and fluctuation.
+///
+/// * **baseLineOption:** An optional parameter. When set to "ROBUST", the
+/// baseline parameters will be calculated using TRestRawSignal's robust
+/// methods, instead of mean and standard deviation, the median and IQR sigma
+/// are used.
+///
 /// * **integralRange**: The calculated observables will only consider points
 /// found inside this range.
 ///
@@ -311,7 +317,7 @@ TRestEvent* TRestRawSignalAnalysisProcess::ProcessEvent(TRestEvent* inputEvent) 
     /// raw-signals.
     // This will affect the calculation of observables, but not the stored
     // TRestRawSignal data.
-    fSignalEvent->SetBaseLineRange(fBaseLineRange);
+    fSignalEvent->SetBaseLineRange(fBaseLineRange, fBaseLineOption);
     fSignalEvent->SetRange(fIntegralRange);
 
     for (int s = 0; s < fSignalEvent->GetNumberOfSignals(); s++) {
