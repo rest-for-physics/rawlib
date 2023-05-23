@@ -48,10 +48,9 @@
 /// time windows, the first window goes from 1 to 1500 samples, and the second
 /// window goes from 1501 to 2460.
 ///
-/// \htmlonly <style>div.image img[src="BiPo.png"]{width:500px;}</style>
-/// \endhtmlonly
+/// \htmlonly <style>div.image img[src="BiPo.png"]{width:500px;}</style> \endhtmlonly
 ///
-/// ![Example of acquired event](BiPo.png)
+/// ![An example of the acquired event](BiPo.png)
 ///
 /// <hr>
 ///
