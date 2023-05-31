@@ -42,6 +42,9 @@ class TRestRawSignalAnalysisProcess : public TRestEventProcess {
     /// The range where the observables will be calculated
     TVector2 fIntegralRange = TVector2(10, 500);
 
+    /// Option for calculation of baseline parameters, can be set to "ROBUST"
+    std::string fBaseLineOption = "";  //<
+
     /// The number of sigmas over baseline fluctuations to identify a point overthreshold
     Double_t fPointThreshold = 2;
 
@@ -70,12 +73,14 @@ class TRestRawSignalAnalysisProcess : public TRestEventProcess {
         BeginPrintProcess();
 
         RESTMetadata << "Baseline range : ( " << fBaseLineRange.X() << " , " << fBaseLineRange.Y() << " ) "
-                 << RESTendl;
+                     << RESTendl;
         RESTMetadata << "Integral range : ( " << fIntegralRange.X() << " , " << fIntegralRange.Y() << " ) "
-                 << RESTendl;
+                     << RESTendl;
         RESTMetadata << "Point Threshold : " << fPointThreshold << " sigmas" << RESTendl;
         RESTMetadata << "Signal threshold : " << fSignalThreshold << " sigmas" << RESTendl;
         RESTMetadata << "Number of points over threshold : " << fPointsOverThreshold << RESTendl;
+        RESTMetadata << "Baseline calculation method: " << (fBaseLineOption.empty() ? "Standard" : "Robust")
+                     << RESTendl;
 
         EndPrintProcess();
     }
@@ -85,6 +90,6 @@ class TRestRawSignalAnalysisProcess : public TRestEventProcess {
     TRestRawSignalAnalysisProcess();   // Constructor
     ~TRestRawSignalAnalysisProcess();  // Destructor
 
-    ClassDefOverride(TRestRawSignalAnalysisProcess, 4);
+    ClassDefOverride(TRestRawSignalAnalysisProcess, 5);
 };
 #endif

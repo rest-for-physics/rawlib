@@ -23,9 +23,9 @@ TEST(TRestRawSignalShapingProcess, TestFiles) {
 
 TEST(TRestRawSignalShapingProcess, Default) {
     TRestRawSignalShapingProcess process;
-    EXPECT_TRUE(process.GetProcessName() == "rawSignalShaping");
+    EXPECT_TRUE(process.GetProcessName() == (std::string) "rawSignalShaping");
 
-    EXPECT_TRUE(process.GetShapingType() == "shaperSin");
+    EXPECT_TRUE(process.GetShapingType() == (std::string) "shaperSin");
     EXPECT_TRUE(process.GetShapingTime() == 10.0);
     EXPECT_TRUE(process.GetShapingGain() == 1.0);
 }
@@ -35,7 +35,7 @@ TEST(TRestRawSignalShapingProcess, FromRml) {
 
     process.PrintMetadata();
 
-    EXPECT_TRUE(process.GetShapingType() == "responseFile");
+    EXPECT_TRUE(process.GetShapingType() == (std::string) "responseFile");
     EXPECT_TRUE(process.GetShapingTime() == 5.0);
     EXPECT_TRUE(process.GetShapingGain() == 20.0);
 }

@@ -262,7 +262,7 @@ void TRestRawSignal::InitializePointsOverThreshold(const TVector2& thrPar, Int_t
                 }
             }
 
-            if (pulse.size() >= nPointsOver) {
+            if (pulse.size() >= (unsigned int)nPointsOver) {
                 // auto stdev = TMath::StdDev(begin(pulse), end(pulse));
                 // calculate stdev
                 double mean = std::accumulate(pulse.begin(), pulse.end(), 0.0) / pulse.size();
@@ -543,7 +543,7 @@ Bool_t TRestRawSignal::IsADCSaturation(int Nflat) {
     Short_t value = fSignalData[index];
 
     bool sat = false;
-    if (index + Nflat <= fSignalData.size()) {
+    if (index + Nflat <= (int)fSignalData.size()) {
         for (int i = index; i < index + Nflat; i++) {
             if (fSignalData[i] != value) {
                 break;
@@ -717,7 +717,7 @@ void TRestRawSignal::GetBaseLineCorrected(TRestRawSignal* smoothedSignal, Int_t 
 
     std::vector<Float_t> averagedSignal = GetSignalSmoothed(averagingPoints, "EXCLUDE OUTLIERS");
 
-    for (unsigned int i = 0; i < GetNumberOfPoints(); i++) {
+    for (int i = 0; i < GetNumberOfPoints(); i++) {
         smoothedSignal->AddPoint(GetRawData(i) - averagedSignal[i]);
     }
 }
@@ -730,7 +730,7 @@ void TRestRawSignal::GetBaseLineCorrected(TRestRawSignal* smoothedSignal, Int_t 
 void TRestRawSignal::CalculateBaseLineMean(Int_t startBin, Int_t endBin) {
     if (endBin - startBin <= 0) {
         fBaseLine = 0.;
-    } else if (endBin > fSignalData.size()) {
+    } else if (endBin > (int)fSignalData.size()) {
         cout << "TRestRawSignal::CalculateBaseLine. Error! Baseline range exceeds the rawdata depth!!"
              << endl;
         endBin = fSignalData.size();
@@ -749,7 +749,7 @@ void TRestRawSignal::CalculateBaseLineMean(Int_t startBin, Int_t endBin) {
 void TRestRawSignal::CalculateBaseLineMedian(Int_t startBin, Int_t endBin) {
     if (endBin - startBin <= 0) {
         fBaseLine = 0.;
-    } else if (endBin > fSignalData.size()) {
+    } else if (endBin > (int)fSignalData.size()) {
         cout << "TRestRawSignal::CalculateBaseLine. Error! Baseline range exceeds the rawdata depth!!"
              << endl;
         endBin = fSignalData.size();

@@ -1,34 +1,25 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
-
-<TRestManager name="TDS" title="Reading TDS rawdata" verboseLevel="info" >
-
-	<TRestRun name="TDSRun" title="Reading a TDS Scope file" verboseLevel="silent">
-		<parameter name="experimentName" value="GEMMM"/>
-		<parameter name="runNumber" value="preserve"/>
-		<parameter name="runTag" value="preserve"/>
-		<parameter name="runType" value="TDS"/>
-		<parameter name="runDescription" value=""/>
-		<parameter name="user" value="${USER}"/>
-		<parameter name="verboseLevel" value="0"/>
-		<parameter name="overwrite" value="on" />
-		<parameter name="outputFileName" value="R[fRunNumber]_[fRunType]_[fParentRunNumber].root" />
-		<parameter name="readOnly" value="false" />
-		<parameter name="inputFormat" value="GEMMM[fRunNumber].raw.[fParentRunNumber]" />
-	</TRestRun>
-
-	<TRestProcessRunner name="Processor" verboseLevel="info">
-		<parameter name="eventsToProcess" value="0" />
-		<parameter name="threadNumber" value="1"/>
-
-		<parameter name="inputAnalysisStorage" value="on"/>
-		<parameter name="inputEventStorage" value="on"/>
-		<parameter name="outputEventStorage" value="on"/>
-
-		<addProcess type="TRestRawTDSToSignalProcess" name="tdsRaw" value="ON" electronics="TDS"/>
-
-	</TRestProcessRunner>
-
-	<addTask command="Processor->RunProcess()" value="ON"/>
-
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<TRestManager name="TDS" title="Reading TDS rawdata" verboseLevel="info">
+    <TRestRun name="TDSRun" title="Reading a TDS Scope file" verboseLevel="silent">
+        <parameter name="experimentName" value="GEMMM"/>
+        <parameter name="runNumber" value="preserve"/>
+        <parameter name="runTag" value="preserve"/>
+        <parameter name="runType" value="TDS"/>
+        <parameter name="runDescription" value=""/>
+        <parameter name="user" value="${USER}"/>
+        <parameter name="verboseLevel" value="0"/>
+        <parameter name="overwrite" value="on"/>
+        <parameter name="outputFileName" value="R[fRunNumber]_[fRunType]_[fParentRunNumber].root"/>
+        <parameter name="readOnly" value="false"/>
+        <parameter name="inputFormat" value="GEMMM[fRunNumber].raw.[fParentRunNumber]"/>
+    </TRestRun>
+    <TRestProcessRunner name="Processor" verboseLevel="info">
+        <parameter name="eventsToProcess" value="0"/>
+        <parameter name="threadNumber" value="1"/>
+        <parameter name="inputAnalysisStorage" value="on"/>
+        <parameter name="inputEventStorage" value="on"/>
+        <parameter name="outputEventStorage" value="on"/>
+        <addProcess type="TRestRawTDSToSignalProcess" name="tdsRaw" value="ON" electronics="TDS"/>
+    </TRestProcessRunner>
+    <addTask command="Processor-&gt;RunProcess()" value="ON"/>
 </TRestManager>
-

@@ -122,7 +122,8 @@ void TRestRawAFTERToSignalProcess::InitProcess() {
 
     // The binary starts here
     char runUid[21], initTime[21];
-    fread(runUid, 1, 20, fInputBinFile);
+    int z = fread(runUid, 1, 20, fInputBinFile);
+    if (z == 0) RESTError << "TRestRawAFTERToSignalProcess. Problems reading input file." << RESTendl;
     runUid[20] = '\0';
     sprintf(initTime, "%s", runUid);
     printf("File UID is %s \n", initTime);
@@ -186,7 +187,10 @@ TRestEvent* TRestRawAFTERToSignalProcess::ProcessEvent(TRestEvent* inputEvent) {
 
     // Bucle till it finds the readed bits equals the payload
     while (frameBits < payload) {
-        fread(&pHeader, sizeof(DataPacketHeader), 1, fInputBinFile);
+        int x = fread(&pHeader, sizeof(DataPacketHeader), 1, fInputBinFile);
+        if (x == 0)
+            RESTError << "TRestRawAFTERToSignalProcess::ProcessEvent. Problems reading input file."
+                      << RESTendl;
         frameBits += sizeof(DataPacketHeader);
 
         if (first)  // Timestamping (A. Tomas, 30th June 2011)
@@ -229,28 +233,28 @@ TRestEvent* TRestRawAFTERToSignalProcess::ProcessEvent(TRestEvent* inputEvent) {
 
 #ifdef NEW_DAQ_T2K_2_X
         RESTDebug << "RawDCC Head 0x" << std::hex << ntohs(pHeader.dcc) << std::dec << " Version "
-              << GET_EVENT_TYPE(ntohs(pHeader.dcc));
+                  << GET_EVENT_TYPE(ntohs(pHeader.dcc));
         RESTDebug << " Flag " << ((ntohs(pHeader.dcc) & 0x3000) >> 12);
         RESTDebug << " RT " << ((ntohs(pHeader.dcc) & 0x0C00) >> 10) << " DCCInd "
-              << ((ntohs(pHeader.dcc) & 0x03F0) >> 4);
+                  << ((ntohs(pHeader.dcc) & 0x03F0) >> 4);
         RESTDebug << " FEMInd " << (ntohs(pHeader.dcc) & 0x000F) << RESTendl;
 
         RESTDebug << "FEM0Ind " << ntohs(pHeader.hdr) << " Type " << ((ntohs(pHeader.hdr) & 0xF000) >> 12);
         RESTDebug << " L " << ((ntohs(pHeader.hdr) & 0x0800) >> 11);
         RESTDebug << " U " << ((ntohs(pHeader.hdr) & 0x0800) >> 10) << " FECFlags "
-              << ((ntohs(pHeader.hdr) & 0x03F0) >> 4);
+                  << ((ntohs(pHeader.hdr) & 0x03F0) >> 4);
         RESTDebug << " Index " << (ntohs(pHeader.hdr) & 0x000F) << RESTendl;
 
         RESTDebug << "RawFEM 0x" << std::hex << ntohs(pHeader.args) << std::dec << " M "
-              << ((ntohs(pHeader.args) & 0x8000) >> 15);
+                  << ((ntohs(pHeader.args) & 0x8000) >> 15);
         RESTDebug << " N " << ((ntohs(pHeader.args) & 0x4000) >> 14) << " Zero "
-              << ((ntohs(pHeader.args) & 0x1000) >> 13);
-        RESTDebug << " Arg2 " << GET_RB_ARG2(ntohs(pHeader.args)) << " Arg2 " << GET_RB_ARG1(ntohs(pHeader.args))
-              << RESTendl;
+                  << ((ntohs(pHeader.args) & 0x1000) >> 13);
+        RESTDebug << " Arg2 " << GET_RB_ARG2(ntohs(pHeader.args)) << " Arg2 "
+                  << GET_RB_ARG1(ntohs(pHeader.args)) << RESTendl;
         RESTDebug << "TimeStampH " << ntohs(pHeader.ts_h) << RESTendl;
         RESTDebug << "TimeStampL " << ntohs(pHeader.ts_l) << RESTendl;
         RESTDebug << "RawEvType 0x" << std::hex << ntohs(pHeader.ecnt) << std::dec << " EvTy "
-              << GET_EVENT_TYPE(ntohs(pHeader.ecnt));
+                  << GET_EVENT_TYPE(ntohs(pHeader.ecnt));
         RESTDebug << " EventCount " << GET_EVENT_COUNT(ntohs(pHeader.ecnt)) << RESTendl;
         RESTDebug << "Samples " << ntohs(pHeader.scnt) << RESTendl;
 #endif
@@ -295,7 +299,10 @@ TRestEvent* TRestRawAFTERToSignalProcess::ProcessEvent(TRestEvent* inputEvent) {
 
         if (sampleCountRead < 9) isData = false;
         for (int i = 0; i < sampleCountRead; i++) {
-            fread(&dat, sizeof(uint16_t), 1, fInputBinFile);
+            int y = fread(&dat, sizeof(uint16_t), 1, fInputBinFile);
+            if (y == 0)
+                RESTError << "TRestRawAFTERToSignalProcess::ProcessEvent. Problems reading input file."
+                          << RESTendl;
             frameBits += sizeof(dat);
             data = ntohs(dat);
 
@@ -315,20 +322,26 @@ TRestEvent* TRestRawAFTERToSignalProcess::ProcessEvent(TRestEvent* inputEvent) {
 
         RESTDebug << pay << RESTendl;
         if (pay) {
-            fread(&dat, sizeof(uint16_t), 1, fInputBinFile);
+            int z = fread(&dat, sizeof(uint16_t), 1, fInputBinFile);
+            if (z == 0)
+                RESTError << "TRestRawAFTERToSignalProcess::ProcessEvent. Problems reading input file."
+                          << RESTendl;
             frameBits += sizeof(uint16_t);
         }
 
-        fread(&pEnd, sizeof(DataPacketEnd), 1, fInputBinFile);
+        int w = fread(&pEnd, sizeof(DataPacketEnd), 1, fInputBinFile);
+        if (w == 0)
+            RESTError << "TRestRawAFTERToSignalProcess::ProcessEvent. Problems reading input file."
+                      << RESTendl;
         frameBits += sizeof(DataPacketEnd);
 
         RESTDebug << "Read "
-              << sampleCountRead * sizeof(uint16_t) + sizeof(DataPacketHeader) + sizeof(DataPacketEnd) +
-                     sampleCountRead % 2 * sizeof(uint16_t)
-              << " vs HeadSize " << ntohs(pHeader.size) << " Diff "
-              << ntohs(pHeader.size) - (sampleCountRead + sizeof(DataPacketHeader) + sizeof(DataPacketEnd) +
-                                        sampleCountRead % 2)
-              << RESTendl;
+                  << sampleCountRead * sizeof(uint16_t) + sizeof(DataPacketHeader) + sizeof(DataPacketEnd) +
+                         sampleCountRead % 2 * sizeof(uint16_t)
+                  << " vs HeadSize " << ntohs(pHeader.size) << " Diff "
+                  << ntohs(pHeader.size) - (sampleCountRead + sizeof(DataPacketHeader) +
+                                            sizeof(DataPacketEnd) + sampleCountRead % 2)
+                  << RESTendl;
         RESTDebug << "Trailer_H " << ntohs(pEnd.crc1) << " Trailer_L " << ntohs(pEnd.crc2) << RESTendl;
         RESTDebug << "Trailer " << eventTime << "\n" << RESTendl;
 

@@ -144,7 +144,7 @@ TRestRawSignal* TRestRawSignalEvent::GetMaxSignal() {
 
     Double_t max = fSignal[0].GetIntegral();
 
-    Int_t sId;
+    Int_t sId = 0;
     for (int i = 0; i < GetNumberOfSignals(); i++) {
         Int_t integ = fSignal[i].GetIntegral();
         if (max < integ) {
@@ -208,8 +208,8 @@ Double_t TRestRawSignalEvent::GetTripleMaxIntegral() {
 Double_t TRestRawSignalEvent::GetBaseLineAverage() {
     Double_t baseLineMean = 0;
 
-    for (int sgnl = 0; sgnl < GetNumberOfSignals(); sgnl++) {
-        Double_t baseline = GetSignal(sgnl)->GetBaseLine();
+    for (int signal = 0; signal < GetNumberOfSignals(); signal++) {
+        Double_t baseline = GetSignal(signal)->GetBaseLine();
         baseLineMean += baseline;
     }
 
@@ -219,9 +219,9 @@ Double_t TRestRawSignalEvent::GetBaseLineAverage() {
 Int_t TRestRawSignalEvent::GetLowestWidth(Double_t minPeakAmplitude) {
     Int_t low = 10000000;
 
-    for (int sgnl = 0; sgnl < GetNumberOfSignals(); sgnl++) {
-        if (GetSignal(sgnl)->GetMaxPeakValue() > minPeakAmplitude) {
-            Int_t lW = GetSignal(sgnl)->GetMaxPeakWidth();
+    for (int signal = 0; signal < GetNumberOfSignals(); signal++) {
+        if (GetSignal(signal)->GetMaxPeakValue() > minPeakAmplitude) {
+            Int_t lW = GetSignal(signal)->GetMaxPeakWidth();
             if (low > lW) low = lW;
         }
     }
@@ -232,9 +232,9 @@ Int_t TRestRawSignalEvent::GetLowestWidth(Double_t minPeakAmplitude) {
 Double_t TRestRawSignalEvent::GetAverageWidth(Double_t minPeakAmplitude) {
     Double_t avg = 0;
     Int_t n = 0;
-    for (int sgnl = 0; sgnl < GetNumberOfSignals(); sgnl++) {
-        if (GetSignal(sgnl)->GetMaxPeakValue() > minPeakAmplitude) {
-            avg += GetSignal(sgnl)->GetMaxPeakWidth();
+    for (int signal = 0; signal < GetNumberOfSignals(); signal++) {
+        if (GetSignal(signal)->GetMaxPeakValue() > minPeakAmplitude) {
+            avg += GetSignal(signal)->GetMaxPeakWidth();
             n++;
         }
     }
@@ -248,9 +248,9 @@ Double_t TRestRawSignalEvent::GetAverageWidth(Double_t minPeakAmplitude) {
 Double_t TRestRawSignalEvent::GetLowAverageWidth(Int_t nSignals, Double_t minPeakAmplitude) {
     std::vector<Double_t> widths;
 
-    for (int sgnl = 0; sgnl < GetNumberOfSignals(); sgnl++)
-        if (GetSignal(sgnl)->GetMaxPeakValue() > minPeakAmplitude)
-            widths.push_back(GetSignal(sgnl)->GetMaxPeakWidth());
+    for (int signal = 0; signal < GetNumberOfSignals(); signal++)
+        if (GetSignal(signal)->GetMaxPeakValue() > minPeakAmplitude)
+            widths.push_back(GetSignal(signal)->GetMaxPeakWidth());
 
     if (widths.size() == 0) return 0;
 
@@ -268,35 +268,35 @@ Double_t TRestRawSignalEvent::GetLowAverageWidth(Int_t nSignals, Double_t minPea
 Double_t TRestRawSignalEvent::GetBaseLineSigmaAverage() {
     Double_t baseLineSigmaMean = 0;
 
-    for (int sgnl = 0; sgnl < GetNumberOfSignals(); sgnl++) {
-        Double_t baselineSigma = GetSignal(sgnl)->GetBaseLineSigma();
+    for (int signal = 0; signal < GetNumberOfSignals(); signal++) {
+        Double_t baselineSigma = GetSignal(signal)->GetBaseLineSigma();
         baseLineSigmaMean += baselineSigma;
     }
 
     return baseLineSigmaMean / GetNumberOfSignals();
 }
 
-/// Perhaps we should not substract baselines on a TRestRawSignal. Just consider
+/// Perhaps we should not subtract baselines on a TRestRawSignal. Just consider
 /// it in the observables
 /// calculation if a baseline range is provided in the argument (as it is done
 /// in
 /// InitializeThresholdIntegral). This method should be probably removed.
-// void TRestRawSignalEvent::SubstractBaselines() {
-//    for (int sgnl = 0; sgnl < GetNumberOfSignals(); sgnl++)
-//    GetSignal(sgnl)->SubstractBaseline();
+// void TRestRawSignalEvent::subtractBaselines() {
+//    for (int signal = 0; signal < GetNumberOfSignals(); signal++)
+//    GetSignal(signal)->subtractBaseline();
 //}
 
-void TRestRawSignalEvent::AddChargeToSignal(Int_t sgnlID, Int_t bin, Short_t value) {
-    Int_t sgnlIndex = GetSignalIndex(sgnlID);
-    if (sgnlIndex == -1) {
-        sgnlIndex = GetNumberOfSignals();
+void TRestRawSignalEvent::AddChargeToSignal(Int_t signalID, Int_t bin, Short_t value) {
+    Int_t signalIndex = GetSignalIndex(signalID);
+    if (signalIndex == -1) {
+        signalIndex = GetNumberOfSignals();
 
-        TRestRawSignal sgnl(512);  // For the moment we use the default nBins=512
-        sgnl.SetSignalID(sgnlID);
-        AddSignal(sgnl);
+        TRestRawSignal signal(512);  // For the moment we use the default nBins=512
+        signal.SetSignalID(signalID);
+        AddSignal(signal);
     }
 
-    fSignal[sgnlIndex].IncreaseBinBy(bin, value);
+    fSignal[signalIndex].IncreaseBinBy(bin, value);
 }
 
 void TRestRawSignalEvent::PrintEvent() {
@@ -438,8 +438,8 @@ TPad* TRestRawSignalEvent::DrawEvent(const TString& option) {
         std::string str = (std::string)opt;
         // Read threshold option
         if (str.find("onlyGoodSignals[") != string::npos) {
-            size_t startPos = str.find("[");
-            size_t endPos = str.find("]");
+            size_t startPos = str.find('[');
+            size_t endPos = str.find(']');
             TString tmpStr = opt(startPos + 1, endPos - startPos - 1);
             vector<TString> optList_2 = Vector_cast<string, TString>(Split((string)tmpStr, ","));
 
@@ -493,7 +493,6 @@ TPad* TRestRawSignalEvent::DrawEvent(const TString& option) {
 
     ///// No specific signal selection ////
     if ((optList.empty()) || !(isANumber((string)optList[0]))) {
-        int sigPrinted = 0;
         // If threshold and baseline options are given
         if (thresholdCheck && baselineCheck) {
             RESTDebug << "Draw only good signals with: " << RESTendl;
@@ -541,7 +540,7 @@ TPad* TRestRawSignalEvent::DrawEvent(const TString& option) {
             RESTDebug << "First signal: " << firstSignal << RESTendl;
             RESTDebug << "Last signal: " << lastSignal << RESTendl;
 
-            if (StringToInteger((string)lastSignal) >= fSignal.size()) {
+            if (StringToInteger((string)lastSignal) >= (int)fSignal.size()) {
                 fPad->SetTitle("No Such Signal");
                 cout << "No such last signal" << endl;
                 return fPad;
@@ -575,7 +574,7 @@ TPad* TRestRawSignalEvent::DrawEvent(const TString& option) {
                     signalIDs.push_back(fSignal[n].GetID());
                 }
             }
-            // Single signal //
+            // Single signal
         } else {
             int signalID = StringToInteger((string)optList[0]);
             signalIDs.push_back(signalID);
@@ -589,9 +588,11 @@ TPad* TRestRawSignalEvent::DrawEvent(const TString& option) {
     }
 
     if (printIDs) {
-        cout << "SignalIDS:";
-        for (const auto& s : signalIDs) {
-            cout << " " << s;
+        cout << "SignalIDs:";
+        auto sortedSignalsIDs = signalIDs;
+        sort(sortedSignalsIDs.begin(), sortedSignalsIDs.end());
+        for (const auto& signalID : sortedSignalsIDs) {
+            cout << " " << signalID;
         }
         cout << endl;
     }
@@ -695,9 +696,6 @@ TPad* TRestRawSignalEvent::DrawSignal(Int_t signalID, TString option) {
 
     vector<TString> optList = Vector_cast<string, TString>(TRestTools::GetOptions((string)option));
 
-    bool ThresCheck = false;
-    bool BLCheck = false;
-
     double signalTh = 0, pointTh = 0, nOver = 0;
     int baseLineRangeInit = 0, baseLineRangeEnd = 0;
 
@@ -716,8 +714,6 @@ TPad* TRestRawSignalEvent::DrawSignal(Int_t signalID, TString option) {
             pointTh = StringToDouble((string)optList_2[0]);
             signalTh = StringToDouble((string)optList_2[1]);
             nOver = StringToDouble((string)optList_2[2]);
-
-            ThresCheck = true;
         }
 
         // Read baseline option
@@ -731,8 +727,6 @@ TPad* TRestRawSignalEvent::DrawSignal(Int_t signalID, TString option) {
 
             baseLineRangeInit = StringToInteger((string)optList_3[0]);
             baseLineRangeEnd = StringToInteger((string)optList_3[1]);
-
-            BLCheck = true;
         }
     }
 
