@@ -5,7 +5,7 @@
 #include "TString.h"
 
 class FECMetadata {
-  public:
+   public:
     Int_t id;
     Int_t ip[4];
     UShort_t clockDiv;
@@ -20,13 +20,11 @@ class FECMetadata {
     Bool_t asic_isActive[4];
     Bool_t asic_channelActive[4][79];
 
-  FECMetadata();
+    FECMetadata();
 
-  bool operator < (const FECMetadata &fM) const {
-   return id < fM.id;
- }
+    bool operator<(const FECMetadata& fM) const { return id < fM.id; }
 
-  ClassDef(FECMetadata,1);
+    ClassDef(FECMetadata, 1);
 };
 
 #endif
