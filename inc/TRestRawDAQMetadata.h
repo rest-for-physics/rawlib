@@ -25,7 +25,6 @@
 
 #include <iostream>
 
-#include "FECMetadata.h"
 #include "TRestMetadata.h"
 #include "TString.h"
 
@@ -50,6 +49,26 @@ const std::map<std::string, chipTypes> chipTypes_map = {{"after", chipTypes::AFT
 
 //! A metadata class to store DAQ information.
 class TRestRawDAQMetadata : public TRestMetadata {
+  public:
+
+  struct FECMetadata {
+    Int_t id;
+    Int_t ip[4];
+    UShort_t clockDiv;
+    TString chipType;
+    UShort_t asic_polarity[4];
+    UShort_t asic_pedCenter[4];
+    Float_t asic_pedThr[4];
+    UShort_t asic_gain[4];
+    UShort_t asic_shappingTime[4];
+    UShort_t asic_channelStart[4];
+    UShort_t asic_channelEnd[4];
+    Bool_t asic_isActive[4];
+    Bool_t asic_channelActive[4][79];
+
+    bool operator<(const FECMetadata& fM) const { return id < fM.id; }
+  };
+
    private:
     void InitFromConfigFile() override;
 
@@ -68,6 +87,7 @@ class TRestRawDAQMetadata : public TRestMetadata {
     std::vector<FECMetadata> fFEC;           // Vector of FECs with different info
 
    public:
+
     void PrintMetadata() override;
     void ReadIp(const std::string& param, Int_t* ip);
 
