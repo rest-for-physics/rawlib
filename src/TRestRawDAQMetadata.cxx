@@ -140,7 +140,7 @@ void TRestRawDAQMetadata::PrintMetadata() {
     RESTMetadata << "Acquisition type : " << fAcquisitionType.Data() << RESTendl;
     RESTMetadata << "Number of events : " << fNEvents << RESTendl;
 
-    for (auto f : fFEC) DumpFEC(f);
+    for (const auto &f : fFEC) DumpFEC(f);
     RESTMetadata << "+++++++++++++++++++++++++++++++++++++++++++++" << RESTendl;
 
     RESTMetadata << RESTendl;

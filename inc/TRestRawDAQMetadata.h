@@ -66,6 +66,25 @@ class TRestRawDAQMetadata : public TRestMetadata {
         Bool_t asic_channelActive[4][79];
 
         bool operator<(const FECMetadata& fM) const { return id < fM.id; }
+        void operator=(const FECMetadata& fM) {
+          id = fM.id;
+          clockDiv = fM.clockDiv;
+          chipType = fM.chipType;
+            for(int i=0; i<4;i++){
+              ip[i] = fM.ip[i];
+              asic_polarity[i] = fM.asic_polarity[i];
+              asic_pedCenter[i] = fM.asic_pedCenter[i];
+              asic_pedThr[i] = fM.asic_pedThr[i];
+              asic_gain[i] = fM.asic_gain[i];
+              asic_shappingTime[i] =  fM.asic_shappingTime[i];
+              asic_channelStart[i] = fM.asic_channelStart[i];
+              asic_channelEnd[i] = fM.asic_channelEnd[i];
+              asic_isActive[i] = fM.asic_isActive[i];
+                for(int j=0; j<79;j++){
+                  asic_channelActive[i][j] = fM.asic_channelActive[i][j];
+                }
+            }
+        }
     };
 
    private:
