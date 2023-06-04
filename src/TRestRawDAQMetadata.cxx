@@ -32,32 +32,27 @@
 /// Describe any parameters this process receives:
 /// * **electronicsType**: DAQ electronics type, only DCC and FEMINOS are
 /// supported so far.
-/// * **chipType**: ASIC type, only AGET and AFTER are supported so far
-/// * **clockDiv**: Clock division in the FEM
-/// * **baseIp**: IP address of the electronics
-/// * **localIp**: IP address of the local host (DAQ computer)
-/// * **triggerType**: external or internal so far
+/// * **triggerType**: internal, external, auto or tcm
 /// * **acquisitionType**: Type of acquisition: pedestal, calibration or
 /// background
-/// * **compressMode**: 0 uncompressed, 1 compress (zero suppression)
+/// * **compressMode**: allchannels, triggeredchannels or zerosuppression
 /// * **nEvents**: Number of events to be acquired (0 for infinite loop)
+/// * **nPedestalEvents**: Number of pedestal events to be acquired
 /// It also includes `FECMetadata` section (see example)
 ///
 /// ### Examples
 /// Give examples of usage and RML descriptions that can be tested.
 /// \code
 /// <TRestRawDAQMetadata name="DAQMetadata" title="DAQ Metadata" verboseLevel="info">
-///         <parameter name ="baseIp" value="192:168:10:13"/>
-///         <parameter name ="localIp" value="192:168:10:10"/>
-///         <parameter name ="electronics" value="DUMMY"/>
-///         <parameter name ="clockDiv" value="0x2" />
+///         <parameter name ="electronicsType" value="DUMMY"/>
 ///         <parameter name ="triggerType" value="external"/>
 ///         <parameter name ="acquisitionType" value="background"/>
-///         <parameter name ="compressMode" value="1"/>
-///         <parameter name ="Nevents" value="10"/>
+///         <parameter name ="compressMode" value="zerosuppression"/>
+///         <parameter name ="Nevents" value="0"/>
+///         <parameter name ="nPedestalEvents" value="100"/>
 ///
 ///   <FEC id="2" ip="192:168:10:13" chip="after" clockDiv="0x2">
-///     <ASIC id="*" isActive="true" gain="0x1" shappingTime="0x2" polarity="0" pedcenter="250" pedthr="5.0">
+///     <ASIC id="*" isActive="true" gain="0x1" shappingTime="0x2" polarity="0" pedcenter="250" pedthr="5.0" coarseThr="0x2" fineThr="0x7" multThr="32" multLimit="232">
 ///         <channel id="*" isActive="true"></channel>
 ///         <channel id="0" isActive="false"></channel>
 ///         <channel id="1" isActive="false"></channel>
@@ -106,39 +101,21 @@ void TRestRawDAQMetadata::Initialize() {
 TRestRawDAQMetadata::~TRestRawDAQMetadata() {}
 
 void TRestRawDAQMetadata::InitFromConfigFile() {
-    // string daqString;
+    TRestMetadata::InitFromConfigFile();
 
-    fElectronicsType = GetParameter("electronics");
-    fChipType = GetParameter("chip");
-    fClockDiv = StringToInteger(GetParameter("clockDiv"));
-    fTriggerType = GetParameter("triggerType");
-    fAcquisitionType = GetParameter("acquisitionType");
-    fCompressMode = StringToInteger(GetParameter("compressMode"));
-    fNEvents = StringToInteger(GetParameter("nEvents"));
-    ReadIp("baseIp", fBaseIp);
-    ReadIp("localIp", fLocalIp);
     ReadFEC();
 }
 
-void TRestRawDAQMetadata::ReadIp(const std::string& param, Int_t* ip) {
-    std::string ipString = GetParameter(param);
-    sscanf(ipString.c_str(), "%d:%d:%d:%d", &ip[0], &ip[1], &ip[2], &ip[3]);
-    // std::cout<<param<<": "<<ip<<" --> "<<ip[0]<<" "<<ip[1]<<" "<<ip[2]<<" "<<ip[3]<<std::endl;
-}
 
 void TRestRawDAQMetadata::PrintMetadata() {
     RESTMetadata << "+++++++++++++++++++++++++++++++++++++++++++++" << RESTendl;
     RESTMetadata << this->ClassName() << " content" << RESTendl;
     RESTMetadata << "+++++++++++++++++++++++++++++++++++++++++++++" << RESTendl;
-    RESTMetadata << "Base IP : " << fBaseIp[0] << "." << fBaseIp[1] << "." << fBaseIp[2] << "." << fBaseIp[3]
-                 << RESTendl;
-    RESTMetadata << "Local IP : " << fLocalIp[0] << "." << fLocalIp[1] << "." << fLocalIp[2] << "."
-                 << fLocalIp[3] << RESTendl;
-    RESTMetadata << "ElectronicsType : " << fElectronicsType.Data() << RESTendl;
-    RESTMetadata << "Clock div : 0x" << std::hex << fClockDiv << std::dec << RESTendl;
     RESTMetadata << "Trigger type : " << fTriggerType.Data() << RESTendl;
     RESTMetadata << "Acquisition type : " << fAcquisitionType.Data() << RESTendl;
+    RESTMetadata << "Compress mode : " << fCompressMode.Data() << RESTendl;
     RESTMetadata << "Number of events : " << fNEvents << RESTendl;
+    RESTMetadata << "Number of pedestal events : " << fNPedestalEvents << RESTendl;
 
     for (const auto& f : fFEC) DumpFEC(f);
     RESTMetadata << "+++++++++++++++++++++++++++++++++++++++++++++" << RESTendl;
@@ -170,30 +147,39 @@ void TRestRawDAQMetadata::ReadFEC() {
             uint16_t polarity = StringToInteger(GetFieldValue("polarity", ASICDef)) & 0x1;
             uint16_t pedCenter = StringToInteger(GetFieldValue("pedcenter", ASICDef));
             float pedThr = StringToFloat(GetFieldValue("pedthr", ASICDef));
+            uint16_t coarseThr = StringToInteger(GetFieldValue("coarseThr", ASICDef));
+            uint16_t fineThr = StringToInteger(GetFieldValue("fineThr", ASICDef));
+            uint16_t multThr = StringToInteger(GetFieldValue("multThr", ASICDef));
+            uint16_t multLimit = StringToInteger(GetFieldValue("multLimit", ASICDef));
+
             TiXmlElement* channelDef = GetElement("channel", ASICDef);
-            bool channelActive[79];
+            bool channelActive[nChannels];
             while (channelDef) {
                 std::string chId = GetFieldValue("id", channelDef);
                 bool active = StringToBool(GetFieldValue("isActive", channelDef));
                 if (chId == "*") {
-                    for (int i = 0; i < 79; i++) channelActive[i] = active;
+                    for (int i = 0; i < nChannels; i++) channelActive[i] = active;
                 } else {
                     int i = StringToInteger(chId);
-                    if (i < 79) channelActive[i] = active;
+                    if (i < nChannels) channelActive[i] = active;
                 }
                 channelDef = GetNextElement(channelDef);
             }
 
             if (id == "*") {  // Wildcard
-                for (int i = 0; i < 4; i++) {
+                for (int i = 0; i < nAsics; i++) {
                     fec.asic_gain[i] = gain;
                     fec.asic_shappingTime[i] = shappingTime;
                     fec.asic_isActive[i] = asicActive;
                     fec.asic_polarity[i] = polarity;
                     fec.asic_pedCenter[i] = pedCenter;
                     fec.asic_pedThr[i] = pedThr;
+                    fec.asic_coarseThr[i] = coarseThr;
+                    fec.asic_fineThr[i] = fineThr;
+                    fec.asic_multThr[i] = multThr;
+                    fec.asic_multLimit[i] = multLimit;
                     bool isFirst = true;
-                    for (int c = 0; c < 79; c++) {
+                    for (int c = 0; c < nChannels; c++) {
                         fec.asic_channelActive[i][c] = channelActive[c];
                         if (channelActive[c] && isFirst) {
                             fec.asic_channelStart[i] = c;
@@ -204,15 +190,19 @@ void TRestRawDAQMetadata::ReadFEC() {
                 }
             } else {
                 int i = StringToInteger(id);
-                if (i < 4) {
+                if (i < nAsics) {
                     fec.asic_gain[i] = gain;
                     fec.asic_shappingTime[i] = shappingTime;
                     fec.asic_isActive[i] = asicActive;
                     fec.asic_polarity[i] = polarity;
                     fec.asic_pedCenter[i] = pedCenter;
                     fec.asic_pedThr[i] = pedThr;
+                    fec.asic_coarseThr[i] = coarseThr;
+                    fec.asic_fineThr[i] = fineThr;
+                    fec.asic_multThr[i] = multThr;
+                    fec.asic_multLimit[i] = multLimit;
                     bool isFirst = true;
-                    for (int c = 0; c < 79; c++) {
+                    for (int c = 0; c < nChannels; c++) {
                         fec.asic_channelActive[i][c] = channelActive[c];
                         if (channelActive[c] && isFirst) {
                             fec.asic_channelStart[i] = c;
@@ -239,18 +229,22 @@ void TRestRawDAQMetadata::DumpFEC(const FECMetadata& fec) {
                  << RESTendl;
     RESTMetadata << "Chip type: " << fec.chipType << RESTendl;
     RESTMetadata << "Clock Div: 0x" << std::hex << fec.clockDiv << std::dec << RESTendl;
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < nAsics; i++) {
         if (!fec.asic_isActive[i]) continue;
         RESTMetadata << "+++++++++++++++++++++++++++++++++++++++++++++" << RESTendl;
         RESTMetadata << "ASIC " << i << RESTendl;
-        RESTMetadata << "Polarity: " << fec.asic_polarity[i] << RESTendl;
+        RESTMetadata << "Polarity: (AGET) " << fec.asic_polarity[i] << RESTendl;
         RESTMetadata << "Gain: 0x" << std::hex << fec.asic_gain[i] << std::dec << RESTendl;
         RESTMetadata << "ShappingTime: 0x" << std::hex << fec.asic_shappingTime[i] << std::dec << RESTendl;
         RESTMetadata << "Channel start: " << fec.asic_channelStart[i] << RESTendl;
         RESTMetadata << "Channel end: " << fec.asic_channelEnd[i] << RESTendl;
+        RESTMetadata << "Coarse threshold (AGET): 0x" << std::hex << fec.asic_coarseThr[i] << std::dec << RESTendl;
+        RESTMetadata << "Fine threshold (AGET): 0x" << std::hex << fec.asic_fineThr[i] << std::dec << RESTendl;
+        RESTMetadata << "Multiplicity threshold (AGET): " << fec.asic_multThr[i] << RESTendl;
+        RESTMetadata << "Multiplicity limit (AGET): " << fec.asic_multLimit[i] << RESTendl;
         RESTMetadata << "Active channels: " << RESTendl;
-        for (int c = 0; c < 79; c++) {
-            if (fec.asic_channelActive[c]) RESTMetadata << c << "; ";
+        for (int c = 0; c < nChannels; c++) {
+            if (fec.asic_channelActive[i][c]) RESTMetadata << c << "; ";
             if (c > 0 && c % 10 == 0) RESTMetadata << RESTendl;
         }
         RESTMetadata << RESTendl;
