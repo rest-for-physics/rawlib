@@ -52,7 +52,8 @@
 ///         <parameter name ="nPedestalEvents" value="100"/>
 ///
 ///   <FEC id="2" ip="192:168:10:13" chip="after" clockDiv="0x2">
-///     <ASIC id="*" isActive="true" gain="0x1" shappingTime="0x2" polarity="0" pedcenter="250" pedthr="5.0" coarseThr="0x2" fineThr="0x7" multThr="32" multLimit="232">
+///     <ASIC id="*" isActive="true" gain="0x1" shappingTime="0x2" polarity="0" pedcenter="250" pedthr="5.0"
+///     coarseThr="0x2" fineThr="0x7" multThr="32" multLimit="232">
 ///         <channel id="*" isActive="true"></channel>
 ///         <channel id="0" isActive="false"></channel>
 ///         <channel id="1" isActive="false"></channel>
@@ -105,7 +106,6 @@ void TRestRawDAQMetadata::InitFromConfigFile() {
 
     ReadFEC();
 }
-
 
 void TRestRawDAQMetadata::PrintMetadata() {
     RESTMetadata << "+++++++++++++++++++++++++++++++++++++++++++++" << RESTendl;
@@ -238,8 +238,10 @@ void TRestRawDAQMetadata::DumpFEC(const FECMetadata& fec) {
         RESTMetadata << "ShappingTime: 0x" << std::hex << fec.asic_shappingTime[i] << std::dec << RESTendl;
         RESTMetadata << "Channel start: " << fec.asic_channelStart[i] << RESTendl;
         RESTMetadata << "Channel end: " << fec.asic_channelEnd[i] << RESTendl;
-        RESTMetadata << "Coarse threshold (AGET): 0x" << std::hex << fec.asic_coarseThr[i] << std::dec << RESTendl;
-        RESTMetadata << "Fine threshold (AGET): 0x" << std::hex << fec.asic_fineThr[i] << std::dec << RESTendl;
+        RESTMetadata << "Coarse threshold (AGET): 0x" << std::hex << fec.asic_coarseThr[i] << std::dec
+                     << RESTendl;
+        RESTMetadata << "Fine threshold (AGET): 0x" << std::hex << fec.asic_fineThr[i] << std::dec
+                     << RESTendl;
         RESTMetadata << "Multiplicity threshold (AGET): " << fec.asic_multThr[i] << RESTendl;
         RESTMetadata << "Multiplicity limit (AGET): " << fec.asic_multLimit[i] << RESTendl;
         RESTMetadata << "Active channels: " << RESTendl;

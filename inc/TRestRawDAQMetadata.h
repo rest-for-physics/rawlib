@@ -42,60 +42,56 @@ enum class compressModeTypes : int { ALLCHANNELS = 0, TRIGGEREDCHANNELS, ZEROSUP
 
 const std::map<std::string, acqTypes> acqTypes_map = {{"background", acqTypes::BACKGROUND},
                                                       {"calibration", acqTypes::CALIBRATION},
-                                                      {"pedestal", acqTypes::PEDESTAL}
-                                                     };
+                                                      {"pedestal", acqTypes::PEDESTAL}};
 
 const std::map<std::string, electronicsTypes> electronicsTypes_map = {{"DUMMY", electronicsTypes::DUMMY},
                                                                       {"DCC", electronicsTypes::DCC},
-                                                                      {"FEMINOS", electronicsTypes::FEMINOS}
-                                                                     };
+                                                                      {"FEMINOS", electronicsTypes::FEMINOS}};
 
 const std::map<std::string, chipTypes> chipTypes_map = {{"after", chipTypes::AFTER},
-                                                        {"aget", chipTypes::AGET}
-                                                       };
+                                                        {"aget", chipTypes::AGET}};
 
 const std::map<std::string, triggerTypes> triggerTypes_map = {{"internal", triggerTypes::INTERNAL},
                                                               {"external", triggerTypes::EXTERNAL},
                                                               {"auto", triggerTypes::AUTO},
-                                                              {"tcm", triggerTypes::TCM}
-                                                             };
+                                                              {"tcm", triggerTypes::TCM}};
 
-const std::map<std::string, compressModeTypes> compressMode_map = {{"allchannels", compressModeTypes::ALLCHANNELS},
-                                                                   {"triggeredcchannels", compressModeTypes::TRIGGEREDCHANNELS},
-                                                                   {"zerosuppression", compressModeTypes::ZEROSUPPRESSION},
-                                                                  };
+const std::map<std::string, compressModeTypes> compressMode_map = {
+    {"allchannels", compressModeTypes::ALLCHANNELS},
+    {"triggeredcchannels", compressModeTypes::TRIGGEREDCHANNELS},
+    {"zerosuppression", compressModeTypes::ZEROSUPPRESSION},
+};
 
 }  // namespace daq_metadata_types
 
 //! A metadata class to store DAQ information.
 class TRestRawDAQMetadata : public TRestMetadata {
    public:
-
-   static constexpr int nAsics = 4;
-   static constexpr int nChannels = 79;
+    static constexpr int nAsics = 4;
+    static constexpr int nChannels = 79;
 
     struct FECMetadata {
-      Int_t id;
-      Int_t ip[nAsics];
-      UShort_t clockDiv;
-      TString chipType;
-      UShort_t triggerDelay = 0;
-      std::array <UShort_t, nAsics> asic_polarity;
-      std::array <UShort_t, nAsics> asic_pedCenter;
-      std::array <Float_t, nAsics> asic_pedThr;
-      std::array <UShort_t, nAsics> asic_gain;
-      std::array <UShort_t, nAsics> asic_shappingTime;
-      std::array <UShort_t, nAsics>asic_channelStart;
-      std::array <UShort_t, nAsics> asic_channelEnd;
-      std::array <Bool_t, nAsics> asic_isActive;
-      std::array <UShort_t, nAsics> asic_coarseThr;
-      std::array <UShort_t, nAsics> asic_fineThr;
-      std::array <UShort_t, nAsics> asic_multThr;
-      std::array <UShort_t, nAsics> asic_multLimit;
-      std::array <std::array <Bool_t, nAsics> , nChannels>asic_channelActive;
+        Int_t id;
+        Int_t ip[nAsics];
+        UShort_t clockDiv;
+        TString chipType;
+        UShort_t triggerDelay = 0;
+        std::array<UShort_t, nAsics> asic_polarity;
+        std::array<UShort_t, nAsics> asic_pedCenter;
+        std::array<Float_t, nAsics> asic_pedThr;
+        std::array<UShort_t, nAsics> asic_gain;
+        std::array<UShort_t, nAsics> asic_shappingTime;
+        std::array<UShort_t, nAsics> asic_channelStart;
+        std::array<UShort_t, nAsics> asic_channelEnd;
+        std::array<Bool_t, nAsics> asic_isActive;
+        std::array<UShort_t, nAsics> asic_coarseThr;
+        std::array<UShort_t, nAsics> asic_fineThr;
+        std::array<UShort_t, nAsics> asic_multThr;
+        std::array<UShort_t, nAsics> asic_multLimit;
+        std::array<std::array<Bool_t, nAsics>, nChannels> asic_channelActive;
 
-      bool operator<(const FECMetadata& fM) const { return id < fM.id; }
-      void operator=(const FECMetadata& fM) {
+        bool operator<(const FECMetadata& fM) const { return id < fM.id; }
+        void operator=(const FECMetadata& fM) {
             id = fM.id;
             clockDiv = fM.clockDiv;
             chipType = fM.chipType;
@@ -126,14 +122,14 @@ class TRestRawDAQMetadata : public TRestMetadata {
     void Initialize() override;
 
    protected:
-    TString fElectronicsType;                // DCC, FEMINOS, ARC, ...
-    TString fTriggerType;                    // external, internal, auto or tcm
-    TString fAcquisitionType;                // pedestal, calibration or background
-    TString fCompressMode;                   // allchannels, triggeredchannels, zerosuppression
-    Int_t fNEvents = 0;                      // 0 --> Infinite
-    Int_t fNPedestalEvents = 100;            // Number of pedestal events to be acquired
-    std::vector<FECMetadata> fFEC;           // Vector of FECMETADATA
-    TString fDecodingFile ="";
+    TString fElectronicsType;       // DCC, FEMINOS, ARC, ...
+    TString fTriggerType;           // external, internal, auto or tcm
+    TString fAcquisitionType;       // pedestal, calibration or background
+    TString fCompressMode;          // allchannels, triggeredchannels, zerosuppression
+    Int_t fNEvents = 0;             // 0 --> Infinite
+    Int_t fNPedestalEvents = 100;   // Number of pedestal events to be acquired
+    std::vector<FECMetadata> fFEC;  // Vector of FECMETADATA
+    TString fDecodingFile = "";
 
    public:
     void PrintMetadata() override;
@@ -151,7 +147,7 @@ class TRestRawDAQMetadata : public TRestMetadata {
     inline auto GetNPedestalEvents() const { return fNEvents; }
     inline auto GetCompressMode() const { return fCompressMode; }
     inline auto GetDecodingFile() const { return fDecodingFile; }
-    inline auto GetFECs()  const { return fFEC; }
+    inline auto GetFECs() const { return fFEC; }
 
     void SetAcquisitionType(const std::string& typ) { fAcquisitionType = typ; }
     void SetNEvents(const Int_t& nEv) { fNEvents = nEv; }
