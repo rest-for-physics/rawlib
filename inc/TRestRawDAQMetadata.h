@@ -144,7 +144,7 @@ class TRestRawDAQMetadata : public TRestMetadata {
     inline auto GetAcquisitionType() const { return fAcquisitionType; }
     inline auto GetElectronicsType() const { return fElectronicsType; }
     inline auto GetNEvents() const { return fNEvents; }
-    inline auto GetNPedestalEvents() const { return fNEvents; }
+    inline auto GetNPedestalEvents() const { return fNPedestalEvents; }
     inline auto GetCompressMode() const { return fCompressMode; }
     inline auto GetDecodingFile() const { return fDecodingFile; }
     inline auto GetFECs() const { return fFEC; }
