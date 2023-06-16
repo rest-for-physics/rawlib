@@ -36,13 +36,6 @@ class TRestRawSignalConvolutionFittingProcess : public TRestEventProcess {
     /// A pointer to the specific TRestRawSignalEvent input
     TRestRawSignalEvent* fRawSignalEvent;  //!
 
-    /* Metadata members
-  TVector2 fBaseLineRange;
-  TVector2 fIntegralRange;
-  Double_t fPointThreshold;
-  Double_t fSignalThreshold;
-  Int_t fNPointsOverThreshold; */
-
     void InitFromConfigFile() override;
 
     void Initialize() override;
@@ -64,18 +57,6 @@ class TRestRawSignalConvolutionFittingProcess : public TRestEventProcess {
 
     void PrintMetadata() override {
         BeginPrintProcess();
-
-        /*
-    metadata << "Baseline range : ( " << fBaseLineRange.X() << " , " <<
-    fBaseLineRange.Y() << " ) "
-         << endl;
-    metadata << "Integral range : ( " << fIntegralRange.X() << " , " <<
-    fIntegralRange.Y() << " ) " << endl;
-    metadata << "Point Threshold : " << fPointThreshold << " sigmas" << endl;
-    metadata << "Signal threshold : " << fSignalThreshold << " sigmas" << endl;
-    metadata << "Number of points over threshold : " << fNPointsOverThreshold << endl;
-    metadata << " " << endl;
-        */
 
         EndPrintProcess();
     }
