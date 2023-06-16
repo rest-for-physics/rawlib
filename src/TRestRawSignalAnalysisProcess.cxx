@@ -35,7 +35,7 @@
 /// methods, instead of mean and standard deviation, the median and IQR sigma
 /// are used.
 ///
-/// * **integralRange**: The calculated observables will only consider points
+/// * **analysisRange**: The calculated observables will only consider points
 /// found inside this range.
 ///
 /// There are 3 additional parameters that are used in combination to identify

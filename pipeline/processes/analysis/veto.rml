@@ -40,7 +40,7 @@
 		</addProcess>
 
 		<addProcess type="TRestRawSignalAnalysisProcess" name="vetoRaw" value="ON" signalsRange="(4612,4888)"
-			baseLineRange="(${BL_MIN},${BL_MAX})" integralRange="(${INT_MIN},${INT_MAX})"
+			baseLineRange="(${BL_MIN},${BL_MAX})" analysisRange="(${INT_MIN},${INT_MAX})"
 			pointThreshold="${POINT_TH}" pointsOverThreshold="${NPOINTS}" signalThreshold="${SGNL_TH}"
 			verboseLevel="silent" >
 			<observable name="max_amplitude_map" type="map<int,double>" value="ON" />
@@ -52,7 +52,7 @@
 		</addProcess>
 
 		<addProcess type="TRestRawSignalAnalysisProcess" name="mmRaw" value="ON"
-			baseLineRange="(${BL_MIN},${BL_MAX})" integralRange="(${INT_MIN},${INT_MAX})"
+			baseLineRange="(${BL_MIN},${BL_MAX})" analysisRange="(${INT_MIN},${INT_MAX})"
 			pointThreshold="${POINT_TH}" pointsOverThreshold="${NPOINTS}" signalThreshold="${SGNL_TH}"
 			verboseLevel="silent" >
             // We define all observables except MinValue because is not yet on validation.root
