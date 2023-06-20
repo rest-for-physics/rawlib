@@ -21,23 +21,35 @@
  *************************************************************************/
 
 //////////////////////////////////////////////////////////////////////////
-/// TRestRawSignalAddNoiseProcess is ... a longer description comes here
+/// TRestRawSignalAddNoiseProcess is a process that allows to add a
+/// random gaussian noise to the input TRestRawSignalEvent.
 ///
-/// DOCUMENTATION TO BE WRITTEN (main description, figures, event before
-/// and after, ...)
+/// The process makes use of TRestRawSignal::GetWhiteNoiseSignal which simply
+/// adds a random gaussian value centered on zero and with a sigma given
+/// by the parameter `noiseLevel`.
+///
+/// The process can be defined as follows:
+///
+/// \code
+/// <TRestRawSignalAddNoiseProcess name="noise" >
+///     <parameter name="noiseLevel" value="10" />
+/// </TRestRawSignalAddNoiseProcess>
+/// \endcode
+///
+/// or
+///
+/// \code
+/// <TRestRawSignalAddNoiseProcess name="noise" noiseLevel="10" />
+/// \endcode
 ///
 /// <hr>
 ///
-/// \warning **⚠ REST is under continous development.** This
-/// documentation
+/// \warning **⚠ REST is under continous development.** This documentation
 /// is offered to you by the REST community. Your HELP is needed to keep this
-/// code
-/// up to date. Your feedback will be worth to support this software, please
-/// report
-/// any problems/suggestions you may find will using it at [The REST Framework
+/// code up to date. Your feedback will be worth to support this software, please
+/// report any problems/suggestions you may find will using it at [The REST Framework
 /// forum](http://ezpc10.unizar.es). You are welcome to contribute fixing typos,
-/// updating
-/// information or adding/proposing new contributions. See also our
+/// updating information or adding/proposing new contributions. See also our
 /// <a href="https://github.com/rest-for-physics/framework/blob/master/CONTRIBUTING.md">Contribution
 /// Guide</a>.
 ///
@@ -65,8 +77,23 @@ using namespace std;
 
 ClassImp(TRestRawSignalAddNoiseProcess);
 
+///////////////////////////////////////////////
+/// \brief Default constructor
+///
 TRestRawSignalAddNoiseProcess::TRestRawSignalAddNoiseProcess() { Initialize(); }
 
+///////////////////////////////////////////////
+/// \brief Constructor loading data from a config file
+///
+/// If no configuration path is defined using TRestMetadata::SetConfigFilePath
+/// the path to the config file must be specified using full path, absolute or
+/// relative.
+///
+/// The default behaviour is that the config file must be specified with
+/// full path, absolute or relative.
+///
+/// \param configFilename A const char* giving the path to an RML file.
+///
 TRestRawSignalAddNoiseProcess::TRestRawSignalAddNoiseProcess(const char* configFilename) {
     Initialize();
     if (LoadConfigFromFile(configFilename) == -1) {
@@ -74,16 +101,26 @@ TRestRawSignalAddNoiseProcess::TRestRawSignalAddNoiseProcess(const char* configF
     }
 }
 
+///////////////////////////////////////////////
+/// \brief Default destructor
+///
 TRestRawSignalAddNoiseProcess::~TRestRawSignalAddNoiseProcess() {
     delete fOutputSignalEvent;
     // TRestRawSignalAddNoiseProcess destructor
 }
 
+///////////////////////////////////////////////
+/// \brief Function to load the default config in absence of RML input
+///
 void TRestRawSignalAddNoiseProcess::LoadDefaultConfig() {
     SetName("addSignalNoiseProcess-Default");
     SetTitle("Default config");
 }
 
+///////////////////////////////////////////////
+/// \brief Function to initialize input/output event members and define the
+/// section name
+///
 void TRestRawSignalAddNoiseProcess::Initialize() {
     SetSectionName(this->ClassName());
     SetLibraryVersion(LIBRARY_VERSION);
@@ -92,19 +129,25 @@ void TRestRawSignalAddNoiseProcess::Initialize() {
     fOutputSignalEvent = new TRestRawSignalEvent();
 }
 
+///////////////////////////////////////////////
+/// \brief Function to load the configuration from an external configuration
+/// file.
+///
+/// If no configuration path is defined in TRestMetadata::SetConfigFilePath
+/// the path to the config file must be specified using full path, absolute or
+/// relative.
+///
+/// \param configFilename A const char* giving the path to an RML file.
+/// \param name The name of the specific metadata. It will be used to find the
+/// corresponding TRestGeant4AnalysisProcess section inside the RML.
+///
 void TRestRawSignalAddNoiseProcess::LoadConfig(const string& configFilename, const string& name) {
     if (LoadConfigFromFile(configFilename, name) == -1) LoadDefaultConfig();
 }
 
-void TRestRawSignalAddNoiseProcess::InitProcess() {
-    // Function to be executed once at the beginning of process
-    // (before starting the process of the events)
-
-    // Start by calling the InitProcess function of the abstract class.
-    // Comment this if you don't want it.
-    // TRestEventProcess::InitProcess();
-}
-
+///////////////////////////////////////////////
+/// \brief The main processing event function
+///
 TRestEvent* TRestRawSignalAddNoiseProcess::ProcessEvent(TRestEvent* inputEvent) {
     fInputSignalEvent = (TRestRawSignalEvent*)inputEvent;
 
@@ -123,13 +166,4 @@ TRestEvent* TRestRawSignalAddNoiseProcess::ProcessEvent(TRestEvent* inputEvent) 
     }
 
     return fOutputSignalEvent;
-}
-
-void TRestRawSignalAddNoiseProcess::EndProcess() {
-    // Function to be executed once at the end of the process
-    // (after all events have been processed)
-
-    // Start by calling the EndProcess function of the abstract class.
-    // Comment this if you don't want it.
-    // TRestEventProcess::EndProcess();
 }

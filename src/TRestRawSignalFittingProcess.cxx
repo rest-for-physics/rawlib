@@ -41,8 +41,7 @@
 /// [3] = "PeakPosition"
 /// \endcode
 ///
-/// \htmlonly <style>div.image img[src="Fit600.png"]{width:500px;}</style>
-/// \endhtmlonly
+/// \htmlonly <style>div.image img[src="Fit600.png"]{width:500px;}</style> \endhtmlonly
 ///
 /// ![Example of fitted pulse](Fit600.png)
 ///
