@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<TRestManager name="SpecPlot" title="Example" verboseLevel="info">
+    <TRestAnalysisPlot name="restplot" title="Basic Plots" previewPlot="false" verboseLevel="silent">
+        <canvas size="(1800,1200)" divide="(3,3)" save="R[fRunNumber]_[fRunTag]_Raw.png"/>
+        <include file="panel.xml"/>
+        <plot name="MeanRateEvolution" title="Mean Rate evolution" xlabel="Threshold Integral [#]" ylabel="Counts" legend="ON" logscale="false" value="ON" xOffset="6" timeDisplay="ON">
+            <histo name="RateEvolution">
+                <variable name="timeStamp" nbins="1000" range=""/>
+                <variable name="rate_MeanRate_InHz" nbins="100" range="(0,300)"/>
+                <parameter name="lineColor" value="1"/>
+            </histo>
+        </plot>
+        <plot name="NoiseEvolution" title="Noise evolution" xlabel="Threshold Integral [#]" ylabel="Counts" legend="ON" logscale="false" value="ON" xOffset="6" timeDisplay="ON">
+            <histo name="Front_BaseLineSigma">
+                <variable name="timeStamp" nbins="1000" range=""/>
+                <variable name="front_BaseLineSigmaMean" range="(0,20)" nbins="100"/>
+                <parameter name="lineColor" value="1"/>
+            </histo>
+            <histo name="Back_BaseLineSigma">
+                <variable name="timeStamp" nbins="1000"/>
+                <variable name="back_BaseLineSigmaMean" nbins="100"/>
+                <parameter name="lineColor" value="1"/>
+            </histo>
+        </plot>
+        <plot name="ThresholdIntegral" title="ThresholdIntegrals" xlabel="Threshold Integral [#]" ylabel="Counts" legend="ON" logscale="false" value="ON" xOffset="6">
+            <histo name="Front_Integral">
+                <variable name="front_ThresholdIntegral" range="(0,30000)" nbins="1000"/>
+                <parameter name="lineColor" value="1"/>
+            </histo>
+            <histo name="Back_Integral">
+                <variable name="back_ThresholdIntegral" range="(0,30000)" nbins="1000"/>
+                <parameter name="lineColor" value="2"/>
+            </histo>
+        </plot>
+        <plot name="TripleMaxIntegral" title="TripleMaxIntegrals" xlabel="TripleMax Integral [#]" ylabel="Counts" legend="ON" logscale="false" value="ON" xOffset="6">
+            <histo name="Front_TripleIntegral">
+                <variable name="front_TripleMaxIntegral" range="(0,5000)" nbins="1000"/>
+                <parameter name="lineColor" value="1"/>
+            </histo>
+            <histo name="Back_TripleIntegral">
+                <variable name="back_TripleMaxIntegral" range="(0,5000)" nbins="1000"/>
+                <parameter name="lineColor" value="2"/>
+            </histo>
+        </plot>
+        <plot name="MaxPeakTime" title="MaxPeakTimes" xlabel="TripleMax Integral [#]" ylabel="Counts" legend="ON" logscale="false" value="ON" xOffset="6">
+            <histo name="Front_MaxPeakTime">
+                <variable name="front_MaxPeakTime" range="(0,2000)" nbins="200"/>
+                <parameter name="lineColor" value="1"/>
+            </histo>
+            <histo name="Back_MaxPeakTime">
+                <variable name="back_MaxPeakTime" range="(0,2000)" nbins="200"/>
+                <parameter name="lineColor" value="2"/>
+            </histo>
+        </plot>
+        <plot name="GoodSignals" title="GoodSignals" xlabel="Good signals [#]" ylabel="Counts" legend="ON" logscale="false" value="ON" xOffset="6">
+            <histo name="Front_NumberOfGoodSignals">
+                <variable name="front_NumberOfGoodSignals" range="(0,5)" nbins="5"/>
+                <parameter name="lineColor" value="1"/>
+            </histo>
+            <histo name="Back_NumberOfGoodSignals">
+                <variable name="back_NumberOfGoodSignals" range="(0,5)" nbins="5"/>
+                <parameter name="lineColor" value="2"/>
+            </histo>
+        </plot>
+        <plot name="FrontVersusBackIntegral" title="FrontVersusBackIntegral" xlabel="Front Integral [#]" ylabel="Back Integral" legend="ON" logscale="false" value="ON" xOffset="6">
+            <variable name="front_ThresholdIntegral" range="(0,30000)" nbins="100"/>
+            <variable name="back_ThresholdIntegral" range="(0,5000)" nbins="100"/>
+        </plot>
+        <plot name="FrontVersusBackMaxPeakTime" title="FrontVersusBackMaxPeakTime" xlabel="Front MaxPeakTime [#]" ylabel="Back MaxPeakTime" legend="ON" logscale="false" value="ON" xOffset="6">
+            <variable name="front_MaxPeakTime" range="(0,200)" nbins="100"/>
+            <variable name="back_MaxPeakTime" range="(1000,1800)" nbins="100"/>
+        </plot>
+    </TRestAnalysisPlot>
+    <addTask command="restplot-&gt;PlotCombinedCanvas()" value="ON"/>
+</TRestManager>
