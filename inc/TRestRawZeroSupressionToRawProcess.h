@@ -24,26 +24,26 @@
 #define RESTProc_TRestRawZeroSupressionToRawProcess
 
 #include "TRestEvent.h"
-#include "TRestRawSignalEvent.h"
 #include "TRestEventProcess.h"
+#include "TRestRawSignalEvent.h"
 
 /// This process remove the offset on a zerosuppression acquired event
 class TRestRawZeroSupressionToRawProcess : public TRestEventProcess {
-private:
+   private:
     /// Pointer to TRestRawSignalEvent input event
     TRestRawSignalEvent* fEvent;  //!
 
     void Initialize() override;
 
-public:
+   public:
     any GetInputEvent() const override { return fEvent; }
     any GetOutputEvent() const override { return fEvent; }
 
     void InitProcess() override;
 
-const char* GetProcessName() const override { return "ZeroSupressionToRaw"; }
+    const char* GetProcessName() const override { return "ZeroSupressionToRaw"; }
 
-    TRestEvent* ProcessEvent (TRestEvent* eventInput) override;
+    TRestEvent* ProcessEvent(TRestEvent* eventInput) override;
 
     void EndProcess() override;
 
@@ -58,6 +58,5 @@ const char* GetProcessName() const override { return "ZeroSupressionToRaw"; }
     ~TRestRawZeroSupressionToRawProcess();
 
     ClassDefOverride(TRestRawZeroSupressionToRawProcess, 1);
-
 };
 #endif

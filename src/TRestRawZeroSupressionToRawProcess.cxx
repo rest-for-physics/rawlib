@@ -23,79 +23,70 @@
 /////////////////////////////////////////////////////////////////////////
 /// TRestRawZeroSuppressionToRaw process remove the offset on a zerosuppression
 /// acquired event using the first bin as baseline.
-/// 
+///
 /// ### Examples
-/// Give examples of usage and RML descriptions that can be tested.      
+/// Give examples of usage and RML descriptions that can be tested.
 /// \code
 ///     <WRITE A CODE EXAMPLE HERE>
 /// \endcode
-///                                                                      
-/// REST-for-Physics - Software for Rare Event Searches Toolkit 		    
-///                                                                      
-/// History of developments:                                             
-///                                                                      
+///
+/// REST-for-Physics - Software for Rare Event Searches Toolkit
+///
+/// History of developments:
+///
 /// 2023-June: First implementation of TRestRawZeroSupressionToRawProcess
-/// JuanAn Garcia 
-///                                                                      
-/// \class TRestRawZeroSupressionToRawProcess                                               
+/// JuanAn Garcia
+///
+/// \class TRestRawZeroSupressionToRawProcess
 /// \author: JuanAn Garcia juanangp@unizar.es
-///                                                                      
-/// <hr>                                                                 
-///                                                                      
+///
+/// <hr>
+///
 
 #include "TRestRawZeroSupressionToRawProcess.h"
 
 ClassImp(TRestRawZeroSupressionToRawProcess);
 
-///////////////////////////////////////////////                          
-/// \brief Default constructor                                          
-///                                                                      
-TRestRawZeroSupressionToRawProcess::TRestRawZeroSupressionToRawProcess() {
-    Initialize();
-}
+///////////////////////////////////////////////
+/// \brief Default constructor
+///
+TRestRawZeroSupressionToRawProcess::TRestRawZeroSupressionToRawProcess() { Initialize(); }
 
-///////////////////////////////////////////////                          
-/// \brief Default destructor                                           
-///                                                                      
-TRestRawZeroSupressionToRawProcess::~TRestRawZeroSupressionToRawProcess() {
-}
+///////////////////////////////////////////////
+/// \brief Default destructor
+///
+TRestRawZeroSupressionToRawProcess::~TRestRawZeroSupressionToRawProcess() {}
 
-///////////////////////////////////////////////                          
-/// \brief Function to initialize input/output event members and define  
-/// the section name                                                     
-///                                                                      
+///////////////////////////////////////////////
+/// \brief Function to initialize input/output event members and define
+/// the section name
+///
 void TRestRawZeroSupressionToRawProcess::Initialize() {
     SetSectionName(this->ClassName());
     SetLibraryVersion(LIBRARY_VERSION);
-    fEvent = nullptr;     
+    fEvent = nullptr;
 }
 
-///////////////////////////////////////////////                           
-/// \brief Process initialization.                                       
-///                                                                      
-void TRestRawZeroSupressionToRawProcess::InitProcess() {
+///////////////////////////////////////////////
+/// \brief Process initialization.
+///
+void TRestRawZeroSupressionToRawProcess::InitProcess() {}
 
-
-}
-
-///////////////////////////////////////////////                          
-/// \brief The main processing event function                           
-///                                                                      
-TRestEvent* TRestRawZeroSupressionToRawProcess::ProcessEvent(TRestEvent * evInput) {
+///////////////////////////////////////////////
+/// \brief The main processing event function
+///
+TRestEvent* TRestRawZeroSupressionToRawProcess::ProcessEvent(TRestEvent* evInput) {
     fEvent = (TRestRawSignalEvent*)evInput;
-      for (int n = 0; n < fEvent->GetNumberOfSignals(); n++) {
+    for (int n = 0; n < fEvent->GetNumberOfSignals(); n++) {
         TRestRawSignal* rawSignal = fEvent->GetSignal(n);
         rawSignal->ZeroSuppressionToRaw();
-      }
+    }
 
     return fEvent;
 }
 
-///////////////////////////////////////////////                          
+///////////////////////////////////////////////
 /// \brief Function to include required actions after all events have been
-/// processed.                                                            
-///                                                                       
-void TRestRawZeroSupressionToRawProcess::EndProcess() {
-
-}
-
+/// processed.
+///
+void TRestRawZeroSupressionToRawProcess::EndProcess() {}
