@@ -122,14 +122,15 @@ class TRestRawDAQMetadata : public TRestMetadata {
     void Initialize() override;
 
    protected:
-    TString fElectronicsType;       // DCC, FEMINOS, ARC, ...
-    TString fTriggerType;           // external, internal, auto or tcm
-    TString fAcquisitionType;       // pedestal, calibration or background
-    TString fCompressMode;          // allchannels, triggeredchannels, zerosuppression
-    Int_t fNEvents = 0;             // 0 --> Infinite
-    Int_t fNPedestalEvents = 100;   // Number of pedestal events to be acquired
-    std::vector<FECMetadata> fFEC;  // Vector of FECMETADATA
-    TString fDecodingFile = "";
+    TString fElectronicsType;        // DCC, FEMINOS, ARC, ...
+    TString fTriggerType;            // external, internal, auto or tcm
+    TString fAcquisitionType;        // pedestal, calibration or background
+    TString fCompressMode;           // allchannels, triggeredchannels, zerosuppression
+    Int_t fNEvents = 0;              // 0 --> Infinite
+    Int_t fNPedestalEvents = 100;    // Number of pedestal events to be acquired
+    std::vector<FECMetadata> fFEC;   // Vector of FECMETADATA
+    TString fDecodingFile = "";      // Location of the decoding file
+    Int_t fMaxFileSize = 1000000000; // Maximum file size in bytes
 
    public:
     void PrintMetadata() override;
@@ -148,6 +149,7 @@ class TRestRawDAQMetadata : public TRestMetadata {
     inline auto GetCompressMode() const { return fCompressMode; }
     inline auto GetDecodingFile() const { return fDecodingFile; }
     inline auto GetFECs() const { return fFEC; }
+    inline auto GetMaxFileSize() const { return fMaxFileSize; }
 
     void SetAcquisitionType(const std::string& typ) { fAcquisitionType = typ; }
     void SetNEvents(const Int_t& nEv) { fNEvents = nEv; }
@@ -155,6 +157,6 @@ class TRestRawDAQMetadata : public TRestMetadata {
     void ReadFEC();
     void DumpFEC(const FECMetadata& fec);
 
-    ClassDefOverride(TRestRawDAQMetadata, 2);  // REST run class
+    ClassDefOverride(TRestRawDAQMetadata, 3);  // REST run class
 };
 #endif

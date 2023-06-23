@@ -116,6 +116,7 @@ void TRestRawDAQMetadata::PrintMetadata() {
     RESTMetadata << "Compress mode : " << fCompressMode.Data() << RESTendl;
     RESTMetadata << "Number of events : " << fNEvents << RESTendl;
     RESTMetadata << "Number of pedestal events : " << fNPedestalEvents << RESTendl;
+    RESTMetadata << "Maximum file size : " << fMaxFileSize << " bytes" << RESTendl;
 
     for (const auto& f : fFEC) DumpFEC(f);
     RESTMetadata << "+++++++++++++++++++++++++++++++++++++++++++++" << RESTendl;
