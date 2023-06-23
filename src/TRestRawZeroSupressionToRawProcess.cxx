@@ -27,7 +27,7 @@
 /// ### Examples
 /// Give examples of usage and RML descriptions that can be tested.
 /// \code
-///     <WRITE A CODE EXAMPLE HERE>
+///     <addProcess type="TRestRawZeroSupressionToRawProcess" name="zS2Raw" value="ON" />
 /// \endcode
 ///
 /// REST-for-Physics - Software for Rare Event Searches Toolkit
