@@ -895,6 +895,20 @@ void TRestRawSignal::WriteSignalToTextFile(const TString& filename) {
 }
 
 ///////////////////////////////////////////////
+/// \brief This method transforms zero suppression
+/// raw data into a raw data event using the firs
+///
+void TRestRawSignal::ZeroSuppressionToRaw( ) {
+    Short_t offset = 0;
+    for (int i = 0; i < GetNumberOfPoints(); i++){
+      const Short_t val = fSignalData[i];
+        if(val == 0 )continue;
+        if(offset == 0 )offset = val;
+        fSignalData[i] = val - offset;
+    }
+}
+
+///////////////////////////////////////////////
 /// \brief It prints the signal data on screen.
 ///
 void TRestRawSignal::Print() const {

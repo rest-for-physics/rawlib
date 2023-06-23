@@ -157,6 +157,8 @@ class TRestRawSignal : public TObject {
 
     void InitializePointsOverThreshold(const TVector2& thrPar, Int_t nPointsOver, Int_t nPointsFlat = 512);
 
+    void ZeroSuppressionToRaw();
+
     Double_t GetIntegral();
 
     Double_t GetIntegralInRange(Int_t startBin, Int_t endBin);
