@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+
+<TRestManager>
+
+    <include file="globals.xml" />
+
+	<globals>
+		<variable name="RUN_TYPE" value="RawData" overwrite="false" />
+		<variable name="FORMAT" value="[fRunTag]_run_[fRunNumber].data" overwrite="false" />
+	</globals>
+
+	<TRestRun file="run.xml"/>
+
+	<TRestProcessRunner name="RawSignals" title="Raw processing and analysis" verboseLevel="silent">
+
+		<parameter name="eventsToProcess" value="0" />
+
+		<addProcess type="TRestRawBiPoToSignalProcess" name="BiPo" value="ON" verboseLevel="silent">
+            <parameter name="electronicsType" value="MATACQ" />
+            <parameter name="minPoints" value="0" />
+		</addProcess>
+
+		<addProcess type="TRestEventRateAnalysisProcess" name="rate" observable="all" value="ON" verboseLevel="info" >
+                <observable name="SecondsFromStart" type="double" value="ON" />
+                <observable name="HoursFromStart" type="double" value="ON" />
+                <observable name="EventTimeDelay" type="double" value="ON" />
+                <observable name="MeanRate_InHz" type="double" value="ON" />
+		</addProcess>
+
+		<addProcess type="TRestRawSignalAnalysisProcess" name="front" value="ON"
+			baseLineRange="(800,1000)" integralRange="(0,1000)"
+			pointThreshold="${POINT_TH}" pointsOverThreshold="${NPOINTS}" signalThreshold="${SGNL_TH}"
+			verboseLevel="silent" >
+                <observable name="max_amplitude_map" type="map<int,double>" value="ON" />
+                <observable name="thr_integral_map" type="map<int,double>" value="ON" />
+                <observable name="BaseLineMean" type="double" value="ON" />
+                <observable name="BaseLineSigmaMean" type="double" value="ON" />
+                <observable name="NumberOfSignals" type="int" value="ON" />
+                <observable name="NumberOfGoodSignals" type="int" value="ON" />
+                <observable name="ThresholdIntegral" type="double" value="ON" />
+                <observable name="TripleMaxIntegral" type="double" value="ON" />
+                <observable name="AmplitudeRatio" type="double" value="ON" />
+                <observable name="MaxPeakTime" type="double" value="ON" />
+                <observable name="AveragePeakTime" type="double" value="ON" />
+
+                <cut name="NumberOfGoodSignals" value="(1,1000)" />
+                <parameter name="cutsEnabled" value="true" />
+		</addProcess>
+
+		<addProcess type="TRestRawSignalAnalysisProcess" name="back" value="ON"
+			baseLineRange="(2200,2400)" integralRange="(1000,2200)"
+			pointThreshold="${POINT_TH}" pointsOverThreshold="${NPOINTS}" signalThreshold="${SGNL_TH}"
+			verboseLevel="silent" >
+                <observable name="max_amplitude_map" type="map<int,double>" value="ON" />
+                <observable name="thr_integral_map" type="map<int,double>" value="ON" />
+                <observable name="BaseLineMean" type="double" value="ON" />
+                <observable name="BaseLineSigmaMean" type="double" value="ON" />
+                <observable name="NumberOfSignals" type="int" value="ON" />
+                <observable name="NumberOfGoodSignals" type="int" value="ON" />
+                <observable name="ThresholdIntegral" type="double" value="ON" />
+                <observable name="TripleMaxIntegral" type="double" value="ON" />
+                <observable name="AmplitudeRatio" type="double" value="ON" />
+                <observable name="MaxPeakTime" type="double" value="ON" />
+                <observable name="AveragePeakTime" type="double" value="ON" />
+
+                <cut name="NumberOfGoodSignals" value="(1,1000)" />
+                <parameter name="cutsEnabled" value="true" />
+		</addProcess>
+	</TRestProcessRunner>
+
+	<addTask type="processEvents" value="ON" />
+
+</TRestManager>
