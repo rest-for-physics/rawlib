@@ -147,11 +147,9 @@ class TRestRawSignal : public TObject {
 
     void Initialize();
 
-    void AddPoint(Short_t d);
+    void AddPoint(Short_t);
 
-    void AddCharge(Short_t d);
-
-    void AddDeposit(Short_t d);
+    void AddPoint(Double_t);
 
     void IncreaseBinBy(Int_t bin, Double_t data);
 

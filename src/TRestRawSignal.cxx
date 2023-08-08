@@ -126,19 +126,19 @@ void TRestRawSignal::Reset() {
 ///////////////////////////////////////////////
 /// \brief Adds a new point to the end of the signal data array
 ///
-void TRestRawSignal::AddPoint(Short_t d) { fSignalData.push_back(d); }
+void TRestRawSignal::AddPoint(Short_t value) { fSignalData.push_back(value); }
 
 ///////////////////////////////////////////////
-/// \brief Adds a new point to the end of the signal data array. Same as
-/// AddPoint.
+/// \brief Adds a new point to the end of the signal data array
 ///
-void TRestRawSignal::AddCharge(Short_t d) { AddPoint(d); }
-
-///////////////////////////////////////////////
-/// \brief Adds a new point to the end of the signal data array. Same as
-/// AddPoint.
-///
-void TRestRawSignal::AddDeposit(Short_t d) { AddPoint(d); }
+void TRestRawSignal::AddPoint(Double_t value) {
+    if (value > numeric_limits<Short_t>::max()) {
+        value = numeric_limits<Short_t>::max();
+    } else if (value < numeric_limits<Short_t>::min()) {
+        value = numeric_limits<Short_t>::min();
+    }
+    AddPoint((Short_t)value);
+}
 
 ///////////////////////////////////////////////
 /// \brief It overloads the operator [] so that we can retrieve a particular
@@ -568,7 +568,9 @@ void TRestRawSignal::GetDifferentialSignal(TRestRawSignal* diffSignal, Int_t sme
     if (smearPoints <= 0) smearPoints = 1;
     diffSignal->Initialize();
 
-    for (int i = 0; i < smearPoints; i++) diffSignal->AddPoint(0);
+    for (int i = 0; i < smearPoints; i++) {
+        diffSignal->AddPoint((Short_t)0);
+    }
 
     for (int i = smearPoints; i < this->GetNumberOfPoints() - smearPoints; i++) {
         Double_t value = 0.5 * (this->GetData(i + smearPoints) - GetData(i - smearPoints)) / smearPoints;
@@ -576,7 +578,9 @@ void TRestRawSignal::GetDifferentialSignal(TRestRawSignal* diffSignal, Int_t sme
         diffSignal->AddPoint((Short_t)value);
     }
 
-    for (int i = GetNumberOfPoints() - smearPoints; i < GetNumberOfPoints(); i++) diffSignal->AddPoint(0);
+    for (int i = GetNumberOfPoints() - smearPoints; i < GetNumberOfPoints(); i++) {
+        diffSignal->AddPoint((Short_t)0);
+    }
 }
 
 ///////////////////////////////////////////////
@@ -595,12 +599,9 @@ void TRestRawSignal::GetWhiteNoiseSignal(TRestRawSignal* noiseSignal, Double_t n
 
     for (int i = 0; i < GetNumberOfPoints(); i++) {
         Double_t value = this->GetData(i) + (Short_t)random.Gaus(0, noiseLevel);
-        if (value > numeric_limits<Short_t>::max()) {
-            value = numeric_limits<Short_t>::max();
-        } else if (value < numeric_limits<Short_t>::min()) {
-            value = numeric_limits<Short_t>::min();
-        }
-        noiseSignal->AddPoint((Short_t)value);
+        // do not cast as short so that there are no problems with overflows
+        // (https://github.com/rest-for-physics/rawlib/issues/113)
+        noiseSignal->AddPoint(value);
     }
 }
 
@@ -633,7 +634,7 @@ void TRestRawSignal::GetSignalSmoothed(TRestRawSignal* smoothedSignal, Int_t ave
 ///////////////////////////////////////////////
 /// \brief It smoothes the existing signal and returns it in a vector of Float_t values
 ///
-/// \param averagingPoints It defines the number of neightbour consecutive
+/// \param averagingPoints It defines the number of neighbour consecutive
 /// points used to average the signal
 ///
 /// \param option If the option is set to "EXCLUDE OUTLIERS", points that are too far away from the median
