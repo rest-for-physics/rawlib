@@ -25,11 +25,13 @@
 
 #include <TGraph.h>
 #include <TObject.h>
+#include <TRandom.h>
 #include <TString.h>
 #include <TVector2.h>
 
 #include <iostream>
 #include <string>
+#include <vector>
 
 //! It defines a Short_t array with a physical parameter that evolves in time using a fixed time bin.
 class TRestRawSignal : public TObject {
@@ -50,6 +52,9 @@ class TRestRawSignal : public TObject {
     std::vector<Short_t> fSignalData;
 
     Bool_t fShowWarnings = true;
+
+    /// Seed used for random number generation
+    UInt_t fSeed = gRandom->GetSeed();
 
    public:
     /// A TGraph pointer used to store the TRestRawSignal drawing
@@ -112,10 +117,7 @@ class TRestRawSignal : public TObject {
     inline TVector2 GetRange() const { return fRange; }
 
     /// Returns false if the baseline and its baseline fluctuation was not initialized.
-    inline Bool_t isBaseLineInitialized() {
-        if (fBaseLineSigma == 0 && fBaseLine == 0) return false;
-        return true;
-    }
+    inline Bool_t isBaseLineInitialized() const { return !(fBaseLineSigma == 0 && fBaseLine == 0); }
 
     Double_t GetData(Int_t n) const;
 
@@ -154,6 +156,8 @@ class TRestRawSignal : public TObject {
     void IncreaseBinBy(Int_t bin, Double_t data);
 
     void InitializePointsOverThreshold(const TVector2& thrPar, Int_t nPointsOver, Int_t nPointsFlat = 512);
+
+    UInt_t GetSeed() const { return fSeed; }
 
     Double_t GetIntegral();
 
@@ -208,6 +212,8 @@ class TRestRawSignal : public TObject {
     void WriteSignalToTextFile(const TString& filename);
 
     void Print() const;
+
+    void SetSeed(UInt_t seed) { fSeed = seed; }
 
     TGraph* GetGraph(Int_t color = 1);
 

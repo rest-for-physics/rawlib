@@ -592,13 +592,10 @@ void TRestRawSignal::GetDifferentialSignal(TRestRawSignal* diffSignal, Int_t sme
 /// as its standard deviation.
 ///
 void TRestRawSignal::GetWhiteNoiseSignal(TRestRawSignal* noiseSignal, Double_t noiseLevel) {
-    double* dd = new double();
-    uintptr_t seed = (uintptr_t)dd + (uintptr_t)this;
-    delete dd;
-    TRandom3 random(seed);
+    TRandom3 random(fSeed);
 
     for (int i = 0; i < GetNumberOfPoints(); i++) {
-        Double_t value = this->GetData(i) + (Short_t)random.Gaus(0, noiseLevel);
+        Double_t value = this->GetData(i) + random.Gaus(0, noiseLevel);
         // do not cast as short so that there are no problems with overflows
         // (https://github.com/rest-for-physics/rawlib/issues/113)
         noiseSignal->AddPoint(value);
