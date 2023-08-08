@@ -1,3 +1,12 @@
+
+#include <TRestRawSignal.h>
+#include <TRestRawSignalAddNoiseProcess.h>
+#include <TRestRawSignalEvent.h>
+#include <TRestRawSignalFittingProcess.h>
+#include <TRestRawSignalShapingProcess.h>
+
+using namespace std;
+
 Int_t fit(Bool_t draw = false) {
     TRestRawSignalEvent* ev = new TRestRawSignalEvent();
 
