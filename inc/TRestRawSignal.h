@@ -24,7 +24,6 @@
 #define RestCore_TRestRawSignal
 
 #include <TGraph.h>
-#include <TObject.h>
 #include <TRandom.h>
 #include <TString.h>
 #include <TVector2.h>
@@ -34,7 +33,7 @@
 #include <vector>
 
 //! It defines a Short_t array with a physical parameter that evolves in time using a fixed time bin.
-class TRestRawSignal : public TObject {
+class TRestRawSignal {
    private:
     void CalculateThresholdIntegral();
 
