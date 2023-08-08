@@ -220,6 +220,6 @@ class TRestRawSignal {
     TRestRawSignal(Int_t nBins);
     ~TRestRawSignal();
 
-    ClassDef(TRestRawSignal, 1);
+    ClassDef(TRestRawSignal, 2);
 };
 #endif
