@@ -27,8 +27,8 @@ TEST(TRestRawSignalRangeReductionProcess, Default) {
 
     EXPECT_TRUE(process.GetResolutionInNumberOfBits() == 12);
 
-    EXPECT_TRUE(process.GetDigitizationInputRange().X() == numeric_limits<Short_t>::min());
-    EXPECT_TRUE(process.GetDigitizationInputRange().Y() == numeric_limits<Short_t>::max());
+    EXPECT_TRUE(process.GetDigitizationInputRange().X() == numeric_limits<UShort_t>::min());
+    EXPECT_TRUE(process.GetDigitizationInputRange().Y() == numeric_limits<UShort_t>::max());
 }
 
 TEST(TRestRawSignalRangeReductionProcess, FromRml) {

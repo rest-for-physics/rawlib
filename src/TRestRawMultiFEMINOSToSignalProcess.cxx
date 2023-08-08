@@ -463,7 +463,7 @@ Bool_t TRestRawMultiFEMINOSToSignalProcess::ReadFrame(void* fr, int fr_sz) {
                 if (showSamples > 0) printf("ReadFrame: %03d 0x%04x (%4d)\n", si, r0, r0);
                 showSamples--;
             }
-            if (sgnl.GetSignalID() >= 0) sgnl.AddPoint((Short_t)r0);
+            if (sgnl.GetSignalID() >= 0) sgnl.AddPoint((UShort_t)r0);
             p++;
             si++;
         }

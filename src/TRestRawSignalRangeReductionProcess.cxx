@@ -92,7 +92,7 @@ TRestEvent* TRestRawSignalRangeReductionProcess::ProcessEvent(TRestEvent* inputE
             } else if (newValue > fDigitizationOutputRange.Y()) {
                 newValue = fDigitizationOutputRange.Y();
             }
-            const Short_t newValueDigitized = (Short_t)round(newValue);
+            const UShort_t newValueDigitized = (UShort_t)round(newValue);
             signal.AddPoint(newValueDigitized);
         }
 
@@ -114,8 +114,8 @@ void TRestRawSignalRangeReductionProcess::SetResolutionInNumberOfBits(UShort_t n
 void TRestRawSignalRangeReductionProcess::SetDigitizationInputRange(const TVector2& range) {
     fDigitizationInputRange = range;
 
-    const auto limitMin = std::numeric_limits<Short_t>::min();
-    const auto limitMax = std::numeric_limits<Short_t>::max();
+    const auto limitMin = std::numeric_limits<UShort_t>::min();
+    const auto limitMax = std::numeric_limits<UShort_t>::max();
     if (range.X() < limitMin) {
         RESTWarning << "TRestRawSignalRangeReductionProcess::SetDigitizationRange - user set start of "
                        "Digitization range to "

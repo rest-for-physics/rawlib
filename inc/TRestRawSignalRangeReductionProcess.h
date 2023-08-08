@@ -28,7 +28,7 @@
 #include "TRestRawSignalEvent.h"
 
 //! A process to reduce the range of values of the signals to emulate a realistic ADC.
-//! Using Short_t (default) is equivalent to using a 16 bit ADC, we can use this process to go from a 16 bit
+//! Using UShort_t (default) is equivalent to using a 16 bit ADC, we can use this process to go from a 16 bit
 //! signal to a 12 bit signal (between 0 and 4095) for example.
 class TRestRawSignalRangeReductionProcess : public TRestEventProcess {
    private:
@@ -40,7 +40,7 @@ class TRestRawSignalRangeReductionProcess : public TRestEventProcess {
 
     UShort_t fResolutionInBits = 12;  // from 1 to 16 bits
     TVector2 fDigitizationInputRange =
-        TVector2(std::numeric_limits<Short_t>::min(), std::numeric_limits<Short_t>::max());
+        TVector2(std::numeric_limits<UShort_t>::min(), std::numeric_limits<UShort_t>::max());
 
     TVector2 fDigitizationOutputRange;  //!
 

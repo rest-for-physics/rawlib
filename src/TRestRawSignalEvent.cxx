@@ -286,7 +286,7 @@ Double_t TRestRawSignalEvent::GetBaseLineSigmaAverage() {
 //    GetSignal(signal)->subtractBaseline();
 //}
 
-void TRestRawSignalEvent::AddChargeToSignal(Int_t signalID, Int_t bin, Short_t value) {
+void TRestRawSignalEvent::AddChargeToSignal(Int_t signalID, Int_t bin, UShort_t value) {
     Int_t signalIndex = GetSignalIndex(signalID);
     if (signalIndex == -1) {
         signalIndex = GetNumberOfSignals();
@@ -608,7 +608,7 @@ TPad* TRestRawSignalEvent::DrawEvent(const TString& option) {
 ///
 void TRestRawSignalEvent::DrawSignals(TPad* pad, const std::vector<Int_t>& signals) {
     int maxSID = -1;
-    int max = numeric_limits<Short_t>::min();
+    int max = numeric_limits<UShort_t>::min();
     int graphIndex = 1;
 
     for (const auto& s : signals) {

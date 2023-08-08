@@ -376,7 +376,7 @@ TRestEvent* TRestRawSignalAnalysisProcess::ProcessEvent(TRestEvent* inputEvent) 
     // Keep in mind, to add raw signal analysis, we must write code at before
     // This is where most of the problems occur
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    // Javier: I believe we should not substract baseline in the analysis process
+    // Javier: I believe we should not subtract baseline in the analysis process
     // then ...
     // ... of course we need to consider baseline substraction for each
     // observable. TRestRawSignal methods
@@ -386,7 +386,7 @@ TRestEvent* TRestRawSignalAnalysisProcess::ProcessEvent(TRestEvent* inputEvent) 
     // Baseline substraction will always happen when we transfer a TRestRawSignal
     // to TRestDetectorSignal
     //
-    // We do not substract baselines then now, as it was done before
+    // We do not subtract baselines then now, as it was done before
     //
     // fSignalEvent->SubstractBaselines(fBaseLineRange.X(), fBaseLineRange.Y());
     //

@@ -30,7 +30,7 @@
 ///
 /// * **Mode = 0**: For each time bin, all time bins are gathered for all the
 /// signals
-/// and ranked increasingly. We take the middle bin and substract its values to
+/// and ranked increasingly. We take the middle bin and subtract its values to
 /// all the bins corresponding to that time.
 ///
 /// * **Mode = 1**:  The method is exactly the same but we take into account

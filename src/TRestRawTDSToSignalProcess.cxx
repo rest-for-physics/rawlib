@@ -134,7 +134,7 @@ TRestEvent* TRestRawTDSToSignalProcess::ProcessEvent(TRestEvent* evInput) {
         if (fread((char*)&buffer[0], pulseDepth, 1, fInputBinFile) != 1) return nullptr;
         totalBytesReaded += pulseDepth;
         for (int j = 0; j < pulseDepth; j++) {
-            Short_t data = buffer[j];
+            UShort_t data = buffer[j];
             if (negPolarity[i]) data *= -1;  // Inversion in case pulses are negative
             data += 128;                     // Add 128 since the oscilloscope range is [-128:128]
             fSignalEvent->AddChargeToSignal(i, j, data);
