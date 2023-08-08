@@ -591,12 +591,17 @@ void TRestRawSignal::GetWhiteNoiseSignal(TRestRawSignal* noiseSignal, Double_t n
     double* dd = new double();
     uintptr_t seed = (uintptr_t)dd + (uintptr_t)this;
     delete dd;
-    TRandom3* fRandom = new TRandom3(seed);
+    TRandom3 random(seed);
 
     for (int i = 0; i < GetNumberOfPoints(); i++) {
-        noiseSignal->AddPoint(this->GetData(i) + (Short_t)fRandom->Gaus(0, noiseLevel));
+        Double_t value = this->GetData(i) + (Short_t)random.Gaus(0, noiseLevel);
+        if (value > numeric_limits<Short_t>::max()) {
+            value = numeric_limits<Short_t>::max();
+        } else if (value < numeric_limits<Short_t>::min()) {
+            value = numeric_limits<Short_t>::min();
+        }
+        noiseSignal->AddPoint((Short_t)value);
     }
-    delete fRandom;
 }
 
 ///////////////////////////////////////////////
