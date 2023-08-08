@@ -165,7 +165,7 @@ TRestEvent* TRestRawUSTCToSignalProcess::ProcessEvent(TRestEvent* inputEvent) {
             sgnl.Initialize();
             sgnl.SetSignalID(frame->signalId);
             for (int j = 0; j < 512; j++) {
-                sgnl.AddPoint((Short_t)frame->dataPoint[j]);
+                sgnl.AddPoint((UShort_t)frame->dataPoint[j]);
             }
             fSignalEvent->AddSignal(sgnl);
 

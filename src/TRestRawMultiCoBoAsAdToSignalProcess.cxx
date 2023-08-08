@@ -206,7 +206,7 @@ TRestEvent* TRestRawMultiCoBoAsAdToSignalProcess::ProcessEvent(TRestEvent* input
                     signal.Initialize();
                     signal.SetSignalID(m + data->asadId * 272);
 
-                    for (int j = 0; j < 512; j++) signal.AddPoint((Short_t)data->data[m][j]);
+                    for (int j = 0; j < 512; j++) signal.AddPoint((UShort_t)data->data[m][j]);
 
                     fSignalEvent->AddSignal(signal);
 

@@ -2,7 +2,7 @@ Int_t commonNoise() {
     TRestRawSignalEvent* ev = new TRestRawSignalEvent();
 
     TRestRawSignal* sgnl = new TRestRawSignal();
-    for (int n = 0; n < 512; n++) sgnl->AddPoint((Short_t)(50 * TMath::Sin(2 * TMath::Pi() * n / 200)));
+    for (int n = 0; n < 512; n++) sgnl->AddPoint((UShort_t)(50 * TMath::Sin(2 * TMath::Pi() * n / 200)));
 
     for (int n = 0; n < 205; n++) {
         sgnl->SetID(n);

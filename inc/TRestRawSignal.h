@@ -31,7 +31,7 @@
 #include <iostream>
 #include <string>
 
-//! It defines a Short_t array with a physical parameter that evolves in time using a fixed time bin.
+//! It defines a UShort_t array with a physical parameter that evolves in time using a fixed time bin.
 class TRestRawSignal : public TObject {
    private:
     void CalculateThresholdIntegral();
@@ -47,7 +47,7 @@ class TRestRawSignal : public TObject {
     Int_t fSignalID;
 
     /// Vector with the data of the signal
-    std::vector<Short_t> fSignalData;
+    std::vector<UShort_t> fSignalData;
 
     Bool_t fShowWarnings = true;
 
@@ -121,7 +121,7 @@ class TRestRawSignal : public TObject {
 
     Double_t GetRawData(Int_t n) const;
 
-    Short_t operator[](Int_t n);
+    UShort_t operator[](Int_t n);
 
     /// It sets the id number of the signal
     inline void SetSignalID(Int_t sID) { fSignalID = sID; }
@@ -147,11 +147,11 @@ class TRestRawSignal : public TObject {
 
     void Initialize();
 
-    void AddPoint(Short_t d);
+    void AddPoint(UShort_t d);
 
-    void AddCharge(Short_t d);
+    void AddCharge(UShort_t d);
 
-    void AddDeposit(Short_t d);
+    void AddDeposit(UShort_t d);
 
     void IncreaseBinBy(Int_t bin, Double_t data);
 
@@ -201,7 +201,7 @@ class TRestRawSignal : public TObject {
 
     void GetBaseLineCorrected(TRestRawSignal* smoothedSignal, Int_t averagingPoints);
 
-    void AddOffset(Short_t offset);
+    void AddOffset(UShort_t offset);
 
     void SignalAddition(const TRestRawSignal& signal);
 

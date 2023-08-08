@@ -126,26 +126,26 @@ void TRestRawSignal::Reset() {
 ///////////////////////////////////////////////
 /// \brief Adds a new point to the end of the signal data array
 ///
-void TRestRawSignal::AddPoint(Short_t d) { fSignalData.push_back(d); }
+void TRestRawSignal::AddPoint(UShort_t d) { fSignalData.push_back(d); }
 
 ///////////////////////////////////////////////
 /// \brief Adds a new point to the end of the signal data array. Same as
 /// AddPoint.
 ///
-void TRestRawSignal::AddCharge(Short_t d) { AddPoint(d); }
+void TRestRawSignal::AddCharge(UShort_t d) { AddPoint(d); }
 
 ///////////////////////////////////////////////
 /// \brief Adds a new point to the end of the signal data array. Same as
 /// AddPoint.
 ///
-void TRestRawSignal::AddDeposit(Short_t d) { AddPoint(d); }
+void TRestRawSignal::AddDeposit(UShort_t d) { AddPoint(d); }
 
 ///////////////////////////////////////////////
 /// \brief It overloads the operator [] so that we can retrieve a particular
 /// point *n* in the form
 /// rawSignal[n].
 ///
-Short_t TRestRawSignal::operator[](Int_t n) {
+UShort_t TRestRawSignal::operator[](Int_t n) {
     if (n >= GetNumberOfPoints()) {
         if (fShowWarnings) {
             std::cout << "TRestRawSignal::GetSignalData: outside limits" << endl;
@@ -160,7 +160,7 @@ Short_t TRestRawSignal::operator[](Int_t n) {
 ///////////////////////////////////////////////
 /// \brief It returns the data value of point *n* including baseline correction.
 ///
-/// This method will substract the internal value of fBaseLine that is extracted
+/// This method will subtract the internal value of fBaseLine that is extracted
 /// from the existing data points
 /// after calling the method CalculateBaseLine. If CalculateBaseLine has not
 /// been called previously, this
@@ -538,7 +538,7 @@ Bool_t TRestRawSignal::IsADCSaturation(int Nflat) {
     if (Nflat <= 0) return false;
     // GetMaxPeakBin() will always find the first max peak bin if multiple bins are in same max value.
     int index = GetMaxPeakBin();
-    Short_t value = fSignalData[index];
+    UShort_t value = fSignalData[index];
 
     bool sat = false;
     if (index + Nflat <= (int)fSignalData.size()) {
@@ -573,7 +573,7 @@ void TRestRawSignal::GetDifferentialSignal(TRestRawSignal* diffSignal, Int_t sme
     for (int i = smearPoints; i < this->GetNumberOfPoints() - smearPoints; i++) {
         Double_t value = 0.5 * (this->GetData(i + smearPoints) - GetData(i - smearPoints)) / smearPoints;
 
-        diffSignal->AddPoint((Short_t)value);
+        diffSignal->AddPoint((UShort_t)value);
     }
 
     for (int i = GetNumberOfPoints() - smearPoints; i < GetNumberOfPoints(); i++) diffSignal->AddPoint(0);
@@ -594,7 +594,7 @@ void TRestRawSignal::GetWhiteNoiseSignal(TRestRawSignal* noiseSignal, Double_t n
     TRandom3* fRandom = new TRandom3(seed);
 
     for (int i = 0; i < GetNumberOfPoints(); i++) {
-        noiseSignal->AddPoint(this->GetData(i) + (Short_t)fRandom->Gaus(0, noiseLevel));
+        noiseSignal->AddPoint(this->GetData(i) + (UShort_t)fRandom->Gaus(0, noiseLevel));
     }
     delete fRandom;
 }
@@ -613,12 +613,12 @@ void TRestRawSignal::GetSignalSmoothed(TRestRawSignal* smoothedSignal, Int_t ave
 
     Double_t sumAvg = GetIntegralInRange(0, averagingPoints) / averagingPoints;
 
-    for (int i = 0; i <= averagingPoints / 2; i++) smoothedSignal->AddPoint((Short_t)sumAvg);
+    for (int i = 0; i <= averagingPoints / 2; i++) smoothedSignal->AddPoint((UShort_t)sumAvg);
 
     for (int i = averagingPoints / 2 + 1; i < GetNumberOfPoints() - averagingPoints / 2; i++) {
         sumAvg -= this->GetRawData(i - (averagingPoints / 2 + 1)) / averagingPoints;
         sumAvg += this->GetRawData(i + averagingPoints / 2) / averagingPoints;
-        smoothedSignal->AddPoint((Short_t)sumAvg);
+        smoothedSignal->AddPoint((UShort_t)sumAvg);
     }
 
     for (int i = GetNumberOfPoints() - averagingPoints / 2; i < GetNumberOfPoints(); i++)
@@ -752,10 +752,10 @@ void TRestRawSignal::CalculateBaseLineMedian(Int_t startBin, Int_t endBin) {
              << endl;
         endBin = fSignalData.size();
     } else {
-        vector<Short_t>::const_iterator first = fSignalData.begin() + startBin;
-        vector<Short_t>::const_iterator last = fSignalData.begin() + endBin;
-        vector<Short_t> v(first, last);
-        const Short_t* signalInRange = &v[0];
+        vector<UShort_t>::const_iterator first = fSignalData.begin() + startBin;
+        vector<UShort_t>::const_iterator last = fSignalData.begin() + endBin;
+        vector<UShort_t> v(first, last);
+        const UShort_t* signalInRange = &v[0];
         fBaseLine = TMath::Median(endBin - startBin, signalInRange);
     }
 }
@@ -806,12 +806,12 @@ void TRestRawSignal::CalculateBaseLineSigmaIQR(Int_t startBin, Int_t endBin) {
     if (endBin - startBin <= 0) {
         fBaseLineSigma = 0;
     } else {
-        vector<Short_t>::const_iterator first = fSignalData.begin() + startBin;
-        vector<Short_t>::const_iterator last = fSignalData.begin() + endBin;
-        vector<Short_t> v(first, last);
+        vector<UShort_t>::const_iterator first = fSignalData.begin() + startBin;
+        vector<UShort_t>::const_iterator last = fSignalData.begin() + endBin;
+        vector<UShort_t> v(first, last);
         std::sort(v.begin(), v.end());
-        Short_t Q1 = v[(int)(endBin - startBin) * 0.25];
-        Short_t Q3 = v[(int)(endBin - startBin) * 0.75];
+        UShort_t Q1 = v[(int)(endBin - startBin) * 0.25];
+        UShort_t Q3 = v[(int)(endBin - startBin) * 0.75];
         Double_t IQR = Q3 - Q1;
         fBaseLineSigma =
             IQR / 1.349;  // IQR/1.349 equals the standard deviation in case of normally distributed data
@@ -821,7 +821,7 @@ void TRestRawSignal::CalculateBaseLineSigmaIQR(Int_t startBin, Int_t endBin) {
 ///////////////////////////////////////////////
 /// \brief This method adds an offset to the signal data
 ///
-void TRestRawSignal::AddOffset(Short_t offset) {
+void TRestRawSignal::AddOffset(UShort_t offset) {
     if (fBaseLine != 0 || fBaseLineSigma != 0) fBaseLineSigma += (Double_t)offset;
     for (int i = 0; i < GetNumberOfPoints(); i++) fSignalData[i] = fSignalData[i] + offset;
 }
@@ -832,7 +832,7 @@ void TRestRawSignal::AddOffset(Short_t offset) {
 void TRestRawSignal::Scale(Double_t value) {
     for (int i = 0; i < GetNumberOfPoints(); i++) {
         Double_t scaledValue = value * fSignalData[i];
-        fSignalData[i] = (Short_t)scaledValue;
+        fSignalData[i] = (UShort_t)scaledValue;
     }
 }
 

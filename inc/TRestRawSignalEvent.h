@@ -64,7 +64,7 @@ class TRestRawSignalEvent : public TRestEvent {
 
     void RemoveSignalWithId(Int_t sId);
 
-    void AddChargeToSignal(Int_t sgnlID, Int_t bin, Short_t value);
+    void AddChargeToSignal(Int_t sgnlID, Int_t bin, UShort_t value);
 
     void SetTailPoints(Int_t p) {
         for (int n = 0; n < GetNumberOfSignals(); n++) fSignal[n].SetTailPoints(p);
