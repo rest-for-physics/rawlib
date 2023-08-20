@@ -59,6 +59,8 @@ class TRestRawSignalEvent : public TRestEvent {
         return true;
     }
 
+    std::vector<TRestRawSignal> GetSignals() const { return fSignal; }
+
     // Setters
     void AddSignal(TRestRawSignal& s);
 
