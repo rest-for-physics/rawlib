@@ -325,7 +325,7 @@ TRestEvent* TRestRawSignalAnalysisProcess::ProcessEvent(TRestEvent* inputEvent) 
 
         /// Important call we need to initialize the points over threshold in a TRestRawSignal
         signal->InitializePointsOverThreshold(TVector2(fPointThreshold, fSignalThreshold),
-                                            fPointsOverThreshold);
+                                              fPointsOverThreshold);
 
         if (fRangeEnabled && (signal->GetID() < fSignalsRange.X() || signal->GetID() > fSignalsRange.Y()))
             continue;
