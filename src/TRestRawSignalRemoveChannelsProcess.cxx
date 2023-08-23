@@ -145,19 +145,19 @@ TRestEvent* TRestRawSignalRemoveChannelsProcess::ProcessEvent(TRestEvent* inputE
     fInputSignalEvent = (TRestRawSignalEvent*)inputEvent;
 
     for (int n = 0; n < fInputSignalEvent->GetNumberOfSignals(); n++) {
-        TRestRawSignal* sgnl = fInputSignalEvent->GetSignal(n);
+        TRestRawSignal* signal = fInputSignalEvent->GetSignal(n);
 
         Bool_t removeChannel = false;
         for (unsigned int x = 0; x < fChannelIds.size() && !removeChannel; x++)
-            if (sgnl->GetID() == fChannelIds[x]) removeChannel = true;
+            if (signal->GetID() == fChannelIds[x]) removeChannel = true;
 
-        if (!removeChannel) fOutputSignalEvent->AddSignal(*sgnl);
+        if (!removeChannel) fOutputSignalEvent->AddSignal(*signal);
 
         if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Extreme)
-            cout << "Channel ID : " << sgnl->GetID() << endl;
+            cout << "Channel ID : " << signal->GetID() << endl;
 
         if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Debug && removeChannel)
-            cout << "Removing channel id : " << sgnl->GetID() << endl;
+            cout << "Removing channel id : " << signal->GetID() << endl;
     }
 
     if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Extreme) GetChar();

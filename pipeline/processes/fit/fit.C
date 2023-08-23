@@ -10,10 +10,10 @@ using namespace std;
 Int_t fit(Bool_t draw = false) {
     TRestRawSignalEvent* ev = new TRestRawSignalEvent();
 
-    TRestRawSignal* sgnl = new TRestRawSignal();
-    for (int n = 0; n < 512; n++) sgnl->AddPoint(0);
-    sgnl->IncreaseBinBy(70, 100);
-    ev->AddSignal(*sgnl);
+    TRestRawSignal* signal = new TRestRawSignal();
+    for (int n = 0; n < 512; n++) signal->AddPoint(0);
+    signal->IncreaseBinBy(70, 100);
+    ev->AddSignal(*signal);
 
     ///// Initializing processes through metadata definition
     string cfgFile = "metadata.rml";

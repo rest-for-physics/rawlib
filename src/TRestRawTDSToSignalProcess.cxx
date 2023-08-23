@@ -124,12 +124,12 @@ TRestEvent* TRestRawTDSToSignalProcess::ProcessEvent(TRestEvent* evInput) {
     fSignalEvent->SetID(nEvents);
     fSignalEvent->SetTime(tNow + static_cast<double>(eventhead.clockTicksLT) * 1E-6);
     // Need to initialize TRestRawSignal with the proper data length
-    TRestRawSignal sgnl(pulseDepth);
+    TRestRawSignal signal(pulseDepth);
 
     // We loop over the recorded channels, we have one data frame per channel
     for (int i = 0; i < nChannels; i++) {
-        sgnl.SetSignalID(i);
-        fSignalEvent->AddSignal(sgnl);
+        signal.SetSignalID(i);
+        fSignalEvent->AddSignal(signal);
         // Read data frame and store in buffer
         if (fread((char*)&buffer[0], pulseDepth, 1, fInputBinFile) != 1) return nullptr;
         totalBytesReaded += pulseDepth;

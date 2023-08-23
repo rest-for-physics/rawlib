@@ -302,11 +302,11 @@ TRestEvent* TRestRawSignalFittingProcess::ProcessEvent(TRestEvent* inputEvent) {
      * Then, we might need to initialize points over threshold
      *
   for (int s = 0; s < fRawSignalEvent->GetNumberOfSignals(); s++) {
-    TRestRawSignal* sgnl = fRawSignalEvent->GetSignal(s);
+    TRestRawSignal* signal = fRawSignalEvent->GetSignal(s);
 
     /// Important call we need to initialize the points over threshold in a
   TRestRawSignal
-    sgnl->InitializePointsOverThreshold(TVector2(fPointThreshold,
+    signal->InitializePointsOverThreshold(TVector2(fPointThreshold,
   fSignalThreshold),
                                         fNPointsOverThreshold);
 

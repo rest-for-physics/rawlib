@@ -66,7 +66,7 @@ class TRestRawSignalEvent : public TRestEvent {
 
     void RemoveSignalWithId(Int_t sId);
 
-    void AddChargeToSignal(Int_t sgnlID, Int_t bin, Short_t value);
+    void AddChargeToSignal(Int_t signalID, Int_t bin, Short_t value);
 
     void SetTailPoints(Int_t p) {
         for (int n = 0; n < GetNumberOfSignals(); n++) fSignal[n].SetTailPoints(p);
@@ -146,8 +146,8 @@ class TRestRawSignalEvent : public TRestEvent {
 
     Double_t GetMaxValue();
     Double_t GetMinValue();
-    Double_t GetMinTime();
-    Double_t GetMaxTime();
+    Double_t GetMinTime() const;
+    Double_t GetMaxTime() const;
 
     // Default
     void Initialize();

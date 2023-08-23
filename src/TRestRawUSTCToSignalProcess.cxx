@@ -162,15 +162,15 @@ TRestEvent* TRestRawUSTCToSignalProcess::ProcessEvent(TRestEvent* inputEvent) {
     for (unsigned int i = 0; i < fEventBuffer[fCurrentBuffer].size(); i++) {
         USTCDataFrame* frame = &fEventBuffer[fCurrentBuffer][i];
         if (frame->evId == fCurrentEvent && frame->eventTime == evtTime) {
-            sgnl.Initialize();
-            sgnl.SetSignalID(frame->signalId);
+            signal.Initialize();
+            signal.SetSignalID(frame->signalId);
             for (int j = 0; j < 512; j++) {
-                sgnl.AddPoint((Short_t)frame->dataPoint[j]);
+                signal.AddPoint((Short_t)frame->dataPoint[j]);
             }
-            fSignalEvent->AddSignal(sgnl);
+            fSignalEvent->AddSignal(signal);
 
             RESTDebug << "AsAdId, AgetId, chnId, max value: " << frame->boardId << ", " << frame->chipId
-                      << ", " << frame->channelId << ", " << sgnl.GetMaxValue() << RESTendl;
+                      << ", " << frame->channelId << ", " << signal.GetMaxValue() << RESTendl;
 
         } else {
             RESTWarning << "TRestRawUSTCToSignalProcess : unmatched signal frame!" << RESTendl;

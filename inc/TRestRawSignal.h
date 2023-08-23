@@ -30,6 +30,7 @@
 
 #include <iostream>
 #include <string>
+#include <utility>
 #include <vector>
 
 //! It defines a Short_t array with a physical parameter that evolves in time using a fixed time bin.
@@ -87,7 +88,7 @@ class TRestRawSignal {
     inline Int_t GetID() const { return fSignalID; }
 
     /// Returns the actual number of points, or size of the signal
-    inline Int_t GetNumberOfPoints() const { return fSignalData.size(); }
+    inline size_t GetNumberOfPoints() const { return fSignalData.size(); }
 
     /// Returns a std::vector containing the indexes of data points over threshold
     inline std::vector<Int_t> GetPointsOverThreshold() const { return fPointsOverThreshold; }
@@ -118,11 +119,15 @@ class TRestRawSignal {
     /// Returns false if the baseline and its baseline fluctuation was not initialized.
     inline Bool_t isBaseLineInitialized() const { return !(fBaseLineSigma == 0 && fBaseLine == 0); }
 
+    /// Returns the (time, amplitude) of the peaks in the signal.
+    /// Peaks are defined as the points that are above the threshold and are separated by a minimum distance.
+    std::vector<std::pair<UShort_t, double>> GetPeaks(double threshold, double distance) const;
+
     Double_t GetData(Int_t n) const;
 
     Double_t GetRawData(Int_t n) const;
 
-    Short_t operator[](Int_t n);
+    Short_t operator[](size_t n);
 
     /// It sets the id number of the signal
     inline void SetSignalID(Int_t sID) { fSignalID = sID; }

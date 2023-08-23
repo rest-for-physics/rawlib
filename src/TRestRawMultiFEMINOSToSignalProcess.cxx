@@ -429,13 +429,13 @@ Bool_t TRestRawMultiFEMINOSToSignalProcess::ReadFrame(void* fr, int fr_sz) {
 
     Int_t showSamples = fShowSamples;
 
-    TRestRawSignal sgnl;
-    sgnl.SetSignalID(-1);
+    TRestRawSignal signal;
+    signal.SetSignalID(-1);
     while (!done) {
         // Is it a prefix for 14-bit content?
         if ((*p & PFX_14_BIT_CONTENT_MASK) == PFX_CARD_CHIP_CHAN_HIT_IX) {
-            if (sgnl.GetSignalID() >= 0 && sgnl.GetNumberOfPoints() >= fMinPoints)
-                fSignalEvent->AddSignal(sgnl);
+            if (signal.GetSignalID() >= 0 && int(signal.GetNumberOfPoints()) >= fMinPoints)
+                fSignalEvent->AddSignal(signal);
 
             cardNumber = GET_CARD_IX(*p);
             chipNumber = GET_CHIP_IX(*p);
@@ -452,8 +452,8 @@ Bool_t TRestRawMultiFEMINOSToSignalProcess::ReadFrame(void* fr, int fr_sz) {
             p++;
             si = 0;
 
-            sgnl.Initialize();
-            sgnl.SetSignalID(daqChannel);
+            signal.Initialize();
+            signal.SetSignalID(daqChannel);
 
         }
         // Is it a prefix for 12-bit content?
@@ -463,7 +463,7 @@ Bool_t TRestRawMultiFEMINOSToSignalProcess::ReadFrame(void* fr, int fr_sz) {
                 if (showSamples > 0) printf("ReadFrame: %03d 0x%04x (%4d)\n", si, r0, r0);
                 showSamples--;
             }
-            if (sgnl.GetSignalID() >= 0) sgnl.AddPoint((Short_t)r0);
+            if (signal.GetSignalID() >= 0) signal.AddPoint((Short_t)r0);
             p++;
             si++;
         }
@@ -549,8 +549,8 @@ Bool_t TRestRawMultiFEMINOSToSignalProcess::ReadFrame(void* fr, int fr_sz) {
 
         // Is it a prefix for 0-bit content?
         else if ((*p & PFX_0_BIT_CONTENT_MASK) == PFX_END_OF_FRAME) {
-            if (sgnl.GetSignalID() >= 0 && sgnl.GetNumberOfPoints() >= fMinPoints)
-                fSignalEvent->AddSignal(sgnl);
+            if (signal.GetSignalID() >= 0 && int(signal.GetNumberOfPoints()) >= fMinPoints)
+                fSignalEvent->AddSignal(signal);
 
             if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Debug)
                 printf("ReadFrame: ----- End of Frame -----\n");

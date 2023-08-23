@@ -246,7 +246,7 @@ Double_t TRestRawSignalEvent::GetAverageWidth(Double_t minPeakAmplitude) {
 }
 
 Double_t TRestRawSignalEvent::GetLowAverageWidth(Int_t nSignals, Double_t minPeakAmplitude) {
-    std::vector<Double_t> widths;
+    vector<Double_t> widths;
 
     for (int signal = 0; signal < GetNumberOfSignals(); signal++)
         if (GetSignal(signal)->GetMaxPeakValue() > minPeakAmplitude)
@@ -254,7 +254,7 @@ Double_t TRestRawSignalEvent::GetLowAverageWidth(Int_t nSignals, Double_t minPea
 
     if (widths.size() == 0) return 0;
 
-    std::sort(widths.begin(), widths.end());
+    sort(widths.begin(), widths.end());
 
     Int_t nMax = nSignals;
     if (widths.size() < (unsigned int)nSignals) nMax = widths.size();
@@ -338,12 +338,14 @@ Double_t TRestRawSignalEvent::GetMinValue() {
     return fMinValue;
 }
 
-Double_t TRestRawSignalEvent::GetMinTime() { return 0; }
+Double_t TRestRawSignalEvent::GetMinTime() const { return 0; }
 
-Double_t TRestRawSignalEvent::GetMaxTime() {
+Double_t TRestRawSignalEvent::GetMaxTime() const {
     Double_t maxTime = 512;
 
-    if (GetNumberOfSignals() > 0) maxTime = fSignal[0].GetNumberOfPoints();
+    if (GetNumberOfSignals() > 0) {
+        maxTime = fSignal[0].GetNumberOfPoints();
+    }
 
     return maxTime;
 }
@@ -435,7 +437,7 @@ TPad* TRestRawSignalEvent::DrawEvent(const TString& option) {
     int sRangeInit = 0, sRangeEnd = 0;
 
     for (const auto& opt : optList) {
-        std::string str = (std::string)opt;
+        string str = (string)opt;
         // Read threshold option
         if (str.find("onlyGoodSignals[") != string::npos) {
             size_t startPos = str.find('[');
@@ -489,7 +491,7 @@ TPad* TRestRawSignalEvent::DrawEvent(const TString& option) {
         }
     }
 
-    std::vector<int> signalIDs;  // Signal IDs to print
+    vector<int> signalIDs;  // Signal IDs to print
 
     ///// No specific signal selection ////
     if ((optList.empty()) || !(isANumber((string)optList[0]))) {
@@ -606,7 +608,7 @@ TPad* TRestRawSignalEvent::DrawEvent(const TString& option) {
 /// \brief This method draws selected signal IDs, given by the vector
 /// passed as reference
 ///
-void TRestRawSignalEvent::DrawSignals(TPad* pad, const std::vector<Int_t>& signals) {
+void TRestRawSignalEvent::DrawSignals(TPad* pad, const vector<Int_t>& signals) {
     int maxSID = -1;
     int max = numeric_limits<Short_t>::min();
     int graphIndex = 1;
@@ -632,9 +634,9 @@ void TRestRawSignalEvent::DrawSignals(TPad* pad, const std::vector<Int_t>& signa
     }
 
     TRestRawSignal* signalMaxID = GetSignalById(maxSID);
-    std::string title = "Event ID " + std::to_string(GetID());
+    string title = "Event ID " + to_string(GetID());
     if (signals.size() == 1) {
-        title += " Signal ID " + std::to_string(maxSID);
+        title += " Signal ID " + to_string(maxSID);
     }
 
     signalMaxID->fGraph->SetTitle(title.c_str());
@@ -744,7 +746,7 @@ TPad* TRestRawSignalEvent::DrawSignal(Int_t signalID, TString option) {
     RESTInfo << "Drawing signalID. Event ID : " << this->GetID() << " Signal ID : " << signal->GetID()
              << RESTendl;
 
-    for (int n = 0; n < signal->GetNumberOfPoints(); n++) gr->SetPoint(n, n, signal->GetData(n));
+    for (int n = 0; n < int(signal->GetNumberOfPoints()); n++) gr->SetPoint(n, n, signal->GetData(n));
 
     gr->Draw("AC*");
 
