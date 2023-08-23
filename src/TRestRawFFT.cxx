@@ -48,12 +48,12 @@ Double_t TRestRawFFT::GetFrequencyNorm2(Int_t n) {
     return norm2;
 }
 
-void TRestRawFFT::ForwardSignalFFT(TRestRawSignal* sgnl, Int_t fNStart, Int_t fNEnd) {
-    Int_t n = sgnl->GetNumberOfPoints() - fNStart - fNEnd;
+void TRestRawFFT::ForwardSignalFFT(TRestRawSignal* signal, Int_t fNStart, Int_t fNEnd) {
+    Int_t n = signal->GetNumberOfPoints() - fNStart - fNEnd;
     SetNfft(n);
 
-    for (int i = fNStart; i < sgnl->GetNumberOfPoints() - fNEnd; i++) {
-        fTimeReal[i - fNStart] = sgnl->GetData(i);
+    for (size_t i = fNStart; i < signal->GetNumberOfPoints() - fNEnd; i++) {
+        fTimeReal[i - fNStart] = signal->GetData(i);
         fTimeImg[i - fNStart] = 0;
     }
 
@@ -101,9 +101,9 @@ void TRestRawFFT::ProduceDelta(Int_t t_o, Int_t Nfft) {
     delete forward;
 }
 
-void TRestRawFFT::GetSignal(TRestRawSignal* sgnl) {
-    sgnl->Reset();
-    for (int i = 0; i < fNfft; i++) sgnl->AddPoint(fTimeReal.GetArray()[i]);
+void TRestRawFFT::GetSignal(TRestRawSignal* signal) {
+    signal->Reset();
+    for (int i = 0; i < fNfft; i++) signal->AddPoint(fTimeReal.GetArray()[i]);
 }
 
 void TRestRawFFT::MultiplyBy(TRestRawFFT* fftInput, Int_t from, Int_t to) {

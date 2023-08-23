@@ -145,7 +145,7 @@ void TRestRawSignal::AddPoint(Double_t value) {
 /// point *n* in the form
 /// rawSignal[n].
 ///
-Short_t TRestRawSignal::operator[](Int_t n) {
+Short_t TRestRawSignal::operator[](size_t n) {
     if (n >= GetNumberOfPoints()) {
         if (fShowWarnings) {
             std::cout << "TRestRawSignal::GetSignalData: outside limits" << endl;
@@ -178,7 +178,7 @@ Double_t TRestRawSignal::GetRawData(Int_t n) const { return (Double_t)fSignalDat
 /// \brief It adds the content of data to fSignalData[bin].
 ///
 void TRestRawSignal::IncreaseBinBy(Int_t bin, Double_t data) {
-    if (bin >= GetNumberOfPoints()) {
+    if (bin >= Int_t(GetNumberOfPoints())) {
         if (fShowWarnings) {
             std::cout << "TRestRawSignal::IncreaseBinBy: outside limits" << endl;
             std::cout << "Warnings at TRestRawSignal have been disabled" << endl;
@@ -313,8 +313,12 @@ Double_t TRestRawSignal::GetIntegral() {
 /// by (startBin,endBin).
 ///
 Double_t TRestRawSignal::GetIntegralInRange(Int_t startBin, Int_t endBin) {
-    if (startBin < 0) startBin = 0;
-    if (endBin <= 0 || endBin > GetNumberOfPoints()) endBin = GetNumberOfPoints();
+    if (startBin < 0) {
+        startBin = 0;
+    }
+    if (endBin <= 0 || endBin > Int_t(GetNumberOfPoints())) {
+        endBin = GetNumberOfPoints();
+    }
 
     Double_t sum = 0;
     for (int i = startBin; i < endBin; i++) sum += GetRawData(i);
@@ -429,7 +433,9 @@ Double_t TRestRawSignal::GetTripleMaxIntegral() {
 
     Int_t cBin = GetMaxPeakBin();
 
-    if (cBin + 1 >= GetNumberOfPoints()) return 0;
+    if (cBin + 1 >= Int_t(GetNumberOfPoints())) {
+        return 0;
+    }
 
     Double_t a1 = GetData(cBin);
     Double_t a2 = GetData(cBin - 1);
@@ -444,7 +450,9 @@ Double_t TRestRawSignal::GetTripleMaxIntegral() {
 ///
 Double_t TRestRawSignal::GetAverageInRange(Int_t startBin, Int_t endBin) {
     if (startBin < 0) startBin = 0;
-    if (endBin <= 0 || endBin > GetNumberOfPoints()) endBin = GetNumberOfPoints();
+    if (endBin <= 0 || endBin > Int_t(GetNumberOfPoints())) {
+        endBin = GetNumberOfPoints();
+    }
 
     Double_t sum = 0;
     for (int i = startBin; i <= endBin; i++) sum += this->GetData(i);
@@ -572,13 +580,13 @@ void TRestRawSignal::GetDifferentialSignal(TRestRawSignal* diffSignal, Int_t sme
         diffSignal->AddPoint((Short_t)0);
     }
 
-    for (int i = smearPoints; i < this->GetNumberOfPoints() - smearPoints; i++) {
+    for (int i = smearPoints; i < Int_t(this->GetNumberOfPoints()) - smearPoints; i++) {
         Double_t value = 0.5 * (this->GetData(i + smearPoints) - GetData(i - smearPoints)) / smearPoints;
 
         diffSignal->AddPoint((Short_t)value);
     }
 
-    for (int i = GetNumberOfPoints() - smearPoints; i < GetNumberOfPoints(); i++) {
+    for (int i = GetNumberOfPoints() - smearPoints; i < int(GetNumberOfPoints()); i++) {
         diffSignal->AddPoint((Short_t)0);
     }
 }
@@ -594,7 +602,7 @@ void TRestRawSignal::GetDifferentialSignal(TRestRawSignal* diffSignal, Int_t sme
 void TRestRawSignal::GetWhiteNoiseSignal(TRestRawSignal* noiseSignal, Double_t noiseLevel) {
     TRandom3 random(fSeed);
 
-    for (int i = 0; i < GetNumberOfPoints(); i++) {
+    for (int i = 0; i < int(GetNumberOfPoints()); i++) {
         Double_t value = this->GetData(i) + random.Gaus(0, noiseLevel);
         // do not cast as short so that there are no problems with overflows
         // (https://github.com/rest-for-physics/rawlib/issues/113)
@@ -618,13 +626,13 @@ void TRestRawSignal::GetSignalSmoothed(TRestRawSignal* smoothedSignal, Int_t ave
 
     for (int i = 0; i <= averagingPoints / 2; i++) smoothedSignal->AddPoint((Short_t)sumAvg);
 
-    for (int i = averagingPoints / 2 + 1; i < GetNumberOfPoints() - averagingPoints / 2; i++) {
+    for (int i = averagingPoints / 2 + 1; i < int(GetNumberOfPoints()) - averagingPoints / 2; i++) {
         sumAvg -= this->GetRawData(i - (averagingPoints / 2 + 1)) / averagingPoints;
         sumAvg += this->GetRawData(i + averagingPoints / 2) / averagingPoints;
         smoothedSignal->AddPoint((Short_t)sumAvg);
     }
 
-    for (int i = GetNumberOfPoints() - averagingPoints / 2; i < GetNumberOfPoints(); i++)
+    for (int i = GetNumberOfPoints() - averagingPoints / 2; i < int(GetNumberOfPoints()); i++)
         smoothedSignal->AddPoint(sumAvg);
 }
 
@@ -649,13 +657,13 @@ std::vector<Float_t> TRestRawSignal::GetSignalSmoothed(Int_t averagingPoints, st
 
         for (int i = 0; i <= averagingPoints / 2; i++) result[i] = sumAvg;
 
-        for (int i = averagingPoints / 2 + 1; i < GetNumberOfPoints() - averagingPoints / 2; i++) {
+        for (int i = averagingPoints / 2 + 1; i < int(GetNumberOfPoints()) - averagingPoints / 2; i++) {
             sumAvg -= this->GetRawData(i - (averagingPoints / 2 + 1)) / averagingPoints;
             sumAvg += this->GetRawData(i + averagingPoints / 2) / averagingPoints;
             result[i] = sumAvg;
         }
 
-        for (int i = GetNumberOfPoints() - averagingPoints / 2; i < GetNumberOfPoints(); i++)
+        for (int i = GetNumberOfPoints() - averagingPoints / 2; i < int(GetNumberOfPoints()); i++)
             result[i] = sumAvg;
     } else if (ToUpper(option) == "EXCLUDE OUTLIERS") {
         result = GetSignalSmoothed_ExcludeOutliers(averagingPoints);
@@ -688,7 +696,7 @@ std::vector<Float_t> TRestRawSignal::GetSignalSmoothed_ExcludeOutliers(Int_t ave
 
     // Points in the middle
     float_t amplitude;
-    for (int i = averagingPoints / 2 + 1; i < GetNumberOfPoints() - averagingPoints / 2; i++) {
+    for (int i = averagingPoints / 2 + 1; i < int(GetNumberOfPoints()) - averagingPoints / 2; i++) {
         amplitude = this->GetRawData(i - (averagingPoints / 2 + 1));
         sumAvg -= (std::abs(amplitude - fBaseLine) > 3 * fBaseLineSigma) ? fBaseLine / averagingPoints
                                                                          : amplitude / averagingPoints;
@@ -699,7 +707,8 @@ std::vector<Float_t> TRestRawSignal::GetSignalSmoothed_ExcludeOutliers(Int_t ave
     }
 
     // Points at the end, where we can calculate a moving average
-    for (int i = GetNumberOfPoints() - averagingPoints / 2; i < GetNumberOfPoints(); i++) result[i] = sumAvg;
+    for (int i = GetNumberOfPoints() - averagingPoints / 2; i < int(GetNumberOfPoints()); i++)
+        result[i] = sumAvg;
     return result;
 }
 
@@ -718,7 +727,7 @@ void TRestRawSignal::GetBaseLineCorrected(TRestRawSignal* smoothedSignal, Int_t 
 
     std::vector<Float_t> averagedSignal = GetSignalSmoothed(averagingPoints, "EXCLUDE OUTLIERS");
 
-    for (int i = 0; i < GetNumberOfPoints(); i++) {
+    for (int i = 0; i < int(GetNumberOfPoints()); i++) {
         smoothedSignal->AddPoint(GetRawData(i) - averagedSignal[i]);
     }
 }
@@ -826,14 +835,14 @@ void TRestRawSignal::CalculateBaseLineSigmaIQR(Int_t startBin, Int_t endBin) {
 ///
 void TRestRawSignal::AddOffset(Short_t offset) {
     if (fBaseLine != 0 || fBaseLineSigma != 0) fBaseLineSigma += (Double_t)offset;
-    for (int i = 0; i < GetNumberOfPoints(); i++) fSignalData[i] = fSignalData[i] + offset;
+    for (int i = 0; i < int(GetNumberOfPoints()); i++) fSignalData[i] = fSignalData[i] + offset;
 }
 
 ///////////////////////////////////////////////
 /// \brief This method scales the signal by a given value
 ///
 void TRestRawSignal::Scale(Double_t value) {
-    for (int i = 0; i < GetNumberOfPoints(); i++) {
+    for (int i = 0; i < int(GetNumberOfPoints()); i++) {
         Double_t scaledValue = value * fSignalData[i];
         fSignalData[i] = (Short_t)scaledValue;
     }
@@ -850,7 +859,7 @@ void TRestRawSignal::SignalAddition(const TRestRawSignal& signal) {
         return;
     }
 
-    for (int i = 0; i < GetNumberOfPoints(); i++) {
+    for (int i = 0; i < int(GetNumberOfPoints()); i++) {
         fSignalData[i] += signal.GetData(i);
     }
 }
@@ -861,7 +870,7 @@ void TRestRawSignal::SignalAddition(const TRestRawSignal& signal) {
 void TRestRawSignal::WriteSignalToTextFile(const TString& filename) {
     // We should check it is writable
     FILE* file = fopen(filename.Data(), "w");
-    for (int i = 0; i < GetNumberOfPoints(); i++) fprintf(file, "%d\t%lf\n", i, GetData(i));
+    for (int i = 0; i < int(GetNumberOfPoints()); i++) fprintf(file, "%d\t%lf\n", i, GetData(i));
     fclose(file);
 }
 
@@ -874,7 +883,7 @@ void TRestRawSignal::Print() const {
     cout << "Baseline : " << fBaseLine << endl;
     cout << "Baseline sigma : " << fBaseLineSigma << endl;
     cout << "+++++++++++++++++++++" << endl;
-    for (int i = 0; i < GetNumberOfPoints(); i++)
+    for (int i = 0; i < int(GetNumberOfPoints()); i++)
         cout << "Bin : " << i << " amplitude : " << GetRawData(i) << endl;
     cout << "---------------------" << endl;
 }
@@ -890,7 +899,7 @@ TGraph* TRestRawSignal::GetGraph(Int_t color) {
     fGraph->SetLineColor(color % 8 + 1);
     fGraph->SetMarkerStyle(7);
 
-    for (int i = 0; i < GetNumberOfPoints(); i++) {
+    for (int i = 0; i < int(GetNumberOfPoints()); i++) {
         fGraph->SetPoint(i, i, GetData(i));
     }
 
@@ -907,4 +916,24 @@ TGraph* TRestRawSignal::GetGraph(Int_t color) {
      */
 
     return fGraph;
+}
+
+vector<pair<UShort_t, double>> TRestRawSignal::GetPeaks(double threshold, UShort_t distance) const {
+    vector<pair<UShort_t, double>> peaks;
+
+    for (UShort_t i = 0; i < GetNumberOfPoints(); i++) {
+        const double point = GetRawData(i);
+        if (i > 0 && i < GetNumberOfPoints() - 1) {
+            double prevPoint = GetRawData(i - 1);
+            double nextPoint = GetRawData(i + 1);
+
+            if (point > threshold && point >= prevPoint && point >= nextPoint) {
+                // Check if the peak is spaced far enough from the previous peak
+                if (peaks.empty() || i - peaks.back().first >= distance) {
+                    peaks.push_back(std::make_pair(i, point));
+                }
+            }
+        }
+    }
+    return peaks;
 }

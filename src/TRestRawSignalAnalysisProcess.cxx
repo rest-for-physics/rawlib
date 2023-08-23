@@ -321,31 +321,31 @@ TRestEvent* TRestRawSignalAnalysisProcess::ProcessEvent(TRestEvent* inputEvent) 
     fSignalEvent->SetRange(fIntegralRange);
 
     for (int s = 0; s < fSignalEvent->GetNumberOfSignals(); s++) {
-        TRestRawSignal* sgnl = fSignalEvent->GetSignal(s);
+        TRestRawSignal* signal = fSignalEvent->GetSignal(s);
 
         /// Important call we need to initialize the points over threshold in a TRestRawSignal
-        sgnl->InitializePointsOverThreshold(TVector2(fPointThreshold, fSignalThreshold),
-                                            fPointsOverThreshold);
+        signal->InitializePointsOverThreshold(TVector2(fPointThreshold, fSignalThreshold),
+                                              fPointsOverThreshold);
 
-        if (fRangeEnabled && (sgnl->GetID() < fSignalsRange.X() || sgnl->GetID() > fSignalsRange.Y()))
+        if (fRangeEnabled && (signal->GetID() < fSignalsRange.X() || signal->GetID() > fSignalsRange.Y()))
             continue;
 
         // We do not want that signals that are not identified as such contribute to
         // define our observables
         // nkx: we still need to store all the signals in baseline/rise time maps in
         // case for noise analysis
-        // if (sgnl->GetPointsOverThreshold().size() < 2) continue;
-        if (sgnl->GetPointsOverThreshold().size() >= 2) nGoodSignals++;
+        // if (signal->GetPointsOverThreshold().size() < 2) continue;
+        if (signal->GetPointsOverThreshold().size() >= 2) nGoodSignals++;
 
         // Now TRestRawSignal returns directly baseline subtracted values
-        baseline[sgnl->GetID()] = sgnl->GetBaseLine();
-        baselinesigma[sgnl->GetID()] = sgnl->GetBaseLineSigma();
-        ampsgn_intmethod[sgnl->GetID()] = sgnl->GetThresholdIntegral();
-        ampsgn_maxmethod[sgnl->GetID()] = sgnl->GetMaxPeakValue();
-        risetime[sgnl->GetID()] = sgnl->GetRiseTime();
-        peak_time[sgnl->GetID()] = sgnl->GetMaxPeakBin();
-        npointsot[sgnl->GetID()] = sgnl->GetPointsOverThreshold().size();
-        if (sgnl->IsADCSaturation()) saturatedchnId.push_back(sgnl->GetID());
+        baseline[signal->GetID()] = signal->GetBaseLine();
+        baselinesigma[signal->GetID()] = signal->GetBaseLineSigma();
+        ampsgn_intmethod[signal->GetID()] = signal->GetThresholdIntegral();
+        ampsgn_maxmethod[signal->GetID()] = signal->GetMaxPeakValue();
+        risetime[signal->GetID()] = signal->GetRiseTime();
+        peak_time[signal->GetID()] = signal->GetMaxPeakBin();
+        npointsot[signal->GetID()] = signal->GetPointsOverThreshold().size();
+        if (signal->IsADCSaturation()) saturatedchnId.push_back(signal->GetID());
     }
 
     SetObservableValue("pointsoverthres_map", npointsot);
@@ -438,19 +438,19 @@ TRestEvent* TRestRawSignalAnalysisProcess::ProcessEvent(TRestEvent* inputEvent) 
     Double_t peakTimeAverage = 0;
 
     for (int s = 0; s < fSignalEvent->GetNumberOfSignals(); s++) {
-        TRestRawSignal* sgnl = fSignalEvent->GetSignal(s);
+        TRestRawSignal* signal = fSignalEvent->GetSignal(s);
 
-        if (fRangeEnabled && (sgnl->GetID() < fSignalsRange.X() || sgnl->GetID() > fSignalsRange.Y()))
+        if (fRangeEnabled && (signal->GetID() < fSignalsRange.X() || signal->GetID() > fSignalsRange.Y()))
             continue;
 
-        if (sgnl->GetPointsOverThreshold().size() > 1) {
+        if (signal->GetPointsOverThreshold().size() > 1) {
             Double_t value = fSignalEvent->GetSignal(s)->GetMaxValue();
             maxValueIntegral += value;
 
             if (value > maxValue) maxValue = value;
             if (value < minValue) minValue = value;
 
-            Double_t peakBin = sgnl->GetMaxPeakBin();
+            Double_t peakBin = signal->GetMaxPeakBin();
             peakTimeAverage += peakBin;
 
             if (minPeakTime > peakBin) minPeakTime = peakBin;

@@ -169,10 +169,10 @@ TRestEvent* TRestRawFindResponseSignalProcess::ProcessEvent(TRestEvent* inputEve
 
     if (maxPeak < 400 || maxPeak > 600) return nullptr;
 
-    TRestRawSignal* sgnl = fInputSignalEvent->GetSignal(dominantSignal);
-    sgnl->Scale(1000. / maxPeak);
+    TRestRawSignal* signal = fInputSignalEvent->GetSignal(dominantSignal);
+    signal->Scale(1000. / maxPeak);
 
-    fOutputSignalEvent->AddSignal(*sgnl);
+    fOutputSignalEvent->AddSignal(*signal);
 
     return fOutputSignalEvent;
 }

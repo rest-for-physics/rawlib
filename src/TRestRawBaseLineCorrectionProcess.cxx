@@ -92,17 +92,17 @@ TRestEvent* TRestRawBaseLineCorrectionProcess::ProcessEvent(TRestEvent* evInput)
     fInputEvent = (TRestRawSignalEvent*)evInput;
 
     for (int s = 0; s < fInputEvent->GetNumberOfSignals(); s++) {
-        TRestRawSignal* sgnl = fInputEvent->GetSignal(s);
+        TRestRawSignal* signal = fInputEvent->GetSignal(s);
 
-        if (fRangeEnabled && (sgnl->GetID() < fSignalsRange.X() || sgnl->GetID() > fSignalsRange.Y())) {
-            fOutputEvent->AddSignal(*sgnl);
+        if (fRangeEnabled && (signal->GetID() < fSignalsRange.X() || signal->GetID() > fSignalsRange.Y())) {
+            fOutputEvent->AddSignal(*signal);
             continue;
         }
 
-        TRestRawSignal sgnl2;
-        sgnl->GetBaseLineCorrected(&sgnl2, fSmoothingWindow);
-        sgnl2.SetID(sgnl->GetID());
-        fOutputEvent->AddSignal(sgnl2);
+        TRestRawSignal signal2;
+        signal->GetBaseLineCorrected(&signal2, fSmoothingWindow);
+        signal2.SetID(signal->GetID());
+        fOutputEvent->AddSignal(signal2);
     }
 
     return fOutputEvent;

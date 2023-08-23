@@ -416,12 +416,12 @@ bool TRestRawFEUDreamToSignalProcess::ReadDreamData(FeuReadOut& Feu) {
 
                     // loop on samples
                     if (Feu.physChannel < MaxPhysChannel) {
-                        Int_t sgnlIndex = fSignalEvent->GetSignalIndex(Feu.physChannel);
-                        if (sgnlIndex == -1) {
-                            sgnlIndex = fSignalEvent->GetNumberOfSignals();
-                            TRestRawSignal sgnl(fMinPoints);
-                            sgnl.SetSignalID(Feu.physChannel);
-                            fSignalEvent->AddSignal(sgnl);
+                        Int_t signalIndex = fSignalEvent->GetSignalIndex(Feu.physChannel);
+                        if (signalIndex == -1) {
+                            signalIndex = fSignalEvent->GetNumberOfSignals();
+                            TRestRawSignal signal(fMinPoints);
+                            signal.SetSignalID(Feu.physChannel);
+                            fSignalEvent->AddSignal(signal);
                         }
                         fSignalEvent->AddChargeToSignal(Feu.physChannel, Feu.isample,
                                                         Feu.current_data.get_data());
@@ -472,12 +472,12 @@ bool TRestRawFEUDreamToSignalProcess::ReadDreamData(FeuReadOut& Feu) {
                 }
 
                 if (Feu.physChannel < MaxPhysChannel) {
-                    Int_t sgnlIndex = fSignalEvent->GetSignalIndex(Feu.physChannel);
-                    if (sgnlIndex == -1) {
-                        sgnlIndex = fSignalEvent->GetNumberOfSignals();
-                        TRestRawSignal sgnl(fMinPoints);
-                        sgnl.SetSignalID(Feu.physChannel);
-                        fSignalEvent->AddSignal(sgnl);
+                    Int_t signalIndex = fSignalEvent->GetSignalIndex(Feu.physChannel);
+                    if (signalIndex == -1) {
+                        signalIndex = fSignalEvent->GetNumberOfSignals();
+                        TRestRawSignal signal(fMinPoints);
+                        signal.SetSignalID(Feu.physChannel);
+                        fSignalEvent->AddSignal(signal);
                     }
                     fSignalEvent->AddChargeToSignal(Feu.physChannel, Feu.isample, Feu.channel_data);
                 } else

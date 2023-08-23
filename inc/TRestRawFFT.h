@@ -42,7 +42,7 @@ class TRestRawFFT : public TObject {
 
     inline Int_t GetNfft() const { return fNfft; }
 
-    void GetSignal(TRestRawSignal* sgnl);
+    void GetSignal(TRestRawSignal* signal);
 
     // Setters
     void SetNfft(Int_t n);
@@ -56,7 +56,7 @@ class TRestRawFFT : public TObject {
     void GaussianSecondOrderResponse(Double_t f1, Double_t f2, Double_t Ao, Double_t sigma);
 
     // FFT processing
-    void ForwardSignalFFT(TRestRawSignal* sgnl, Int_t fNStart = 0, Int_t fNEnd = 0);
+    void ForwardSignalFFT(TRestRawSignal* signal, Int_t fNStart = 0, Int_t fNEnd = 0);
     void BackwardFFT();
 
     void RenormalizeNode(Int_t n, Double_t factor);

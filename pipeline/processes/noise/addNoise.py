@@ -7,12 +7,12 @@ ROOT.gSystem.Load("libRestRaw.so")
 
 rawEv = ROOT.TRestRawSignalEvent()
 
-sgnl = ROOT.TRestRawSignal()
+signal = ROOT.TRestRawSignal()
 
 for x in range(0, 512):
-    sgnl.AddPoint(0)
+    signal.AddPoint(0)
 
-rawEv.AddSignal(sgnl)
+rawEv.AddSignal(signal)
 
 addNoiseProcess = ROOT.TRestRawSignalAddNoiseProcess("metadata.rml")
 

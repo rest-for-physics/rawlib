@@ -90,12 +90,12 @@
 /// which returns a std::pair<vector<string>,vector<string>>, which contains in the first entry the name of
 /// the veto group,
 /// and in the second the comma separated string of the corresponding signal IDs. The signal IDs can
-/// susequently be converted
+/// subsequently be converted
 /// into a vector<double> by using the TRestStringHelper::StringToElements() method.
 ///
 /// <hr>
 ///
-/// \warning **⚠ REST is under continous development.** This documentation
+/// \warning **⚠ REST is under continuous development.** This documentation
 /// is offered to you by the REST community. Your HELP is needed to keep this code
 /// up to date. Your feedback will be worth to support this software, please report
 /// any problems/suggestions you may find while using it at [The REST Framework
@@ -220,8 +220,8 @@ void TRestRawVetoAnalysisProcess::Initialize() {
 TRestEvent* TRestRawVetoAnalysisProcess::ProcessEvent(TRestEvent* inputEvent) {
     fSignalEvent = (TRestRawSignalEvent*)inputEvent;
 
-    map<int, Double_t> VetoMaxPeakAmplitude_map;
-    map<int, Double_t> VetoPeakTime_map;
+    map<int, Double_t> VetoMaxPeakAmplitudeMap;
+    map<int, Double_t> VetoPeakTimeMap;
 
     Int_t VetoAboveThreshold = 0;
     Int_t NVetoAboveThreshold = 0;
@@ -230,8 +230,8 @@ TRestEvent* TRestRawVetoAnalysisProcess::ProcessEvent(TRestEvent* inputEvent) {
 
     fSignalEvent->SetRange(fRange);
 
-    VetoMaxPeakAmplitude_map.clear();
-    VetoPeakTime_map.clear();
+    VetoMaxPeakAmplitudeMap.clear();
+    VetoPeakTimeMap.clear();
 
     // **************************************************************
     // if list of veto Ids without groups is given ******************
@@ -244,40 +244,39 @@ TRestEvent* TRestRawVetoAnalysisProcess::ProcessEvent(TRestEvent* inputEvent) {
             // is -1
             if (fSignalEvent->GetSignalIndex(fVetoSignalId[i]) != -1) {
                 // We extract the parameters from the veto signal
-                TRestRawSignal* sgnl = fSignalEvent->GetSignalById(fVetoSignalId[i]);
+                TRestRawSignal* signal = fSignalEvent->GetSignalById(fVetoSignalId[i]);
                 // Deal with noise
-                sgnl->CalculateBaseLine(fBaseLineRange.X(), fBaseLineRange.Y(), "ROBUST");
-                sgnl->InitializePointsOverThreshold(TVector2(fPointThreshold, fSignalThreshold),
-                                                    fPointsOverThreshold);
+                signal->CalculateBaseLine(fBaseLineRange.X(), fBaseLineRange.Y(), "ROBUST");
+                signal->InitializePointsOverThreshold(TVector2(fPointThreshold, fSignalThreshold),
+                                                      fPointsOverThreshold);
 
-                // Save two maps with (veto panel ID, max amplitude) and (veto panel ID,
-                // peak time)
-                if (sgnl->GetPointsOverThreshold().size() >= (unsigned int)fPointsOverThreshold) {
+                // Save two maps with (veto panel ID, max amplitude) and (veto panel ID, peak time)
+                if (signal->GetPointsOverThreshold().size() >= (unsigned int)fPointsOverThreshold) {
                     // signal is not noise
-                    VetoMaxPeakAmplitude_map[fVetoSignalId[i]] = sgnl->GetMaxPeakValue();
+                    VetoMaxPeakAmplitudeMap[fVetoSignalId[i]] = signal->GetMaxPeakValue();
                 } else {
                     // signal is noise
-                    VetoMaxPeakAmplitude_map[fVetoSignalId[i]] = 0;
+                    VetoMaxPeakAmplitudeMap[fVetoSignalId[i]] = 0;
                 }
-                VetoPeakTime_map[fVetoSignalId[i]] = sgnl->GetMaxPeakBin();
+                VetoPeakTimeMap[fVetoSignalId[i]] = signal->GetMaxPeakBin();
                 // We remove the signal from the event
                 fSignalEvent->RemoveSignalWithId(fVetoSignalId[i]);
 
                 // check if signal is above threshold
-                if (sgnl->GetMaxPeakValue() > fThreshold) {
+                if (signal->GetMaxPeakValue() > fThreshold) {
                     VetoAboveThreshold = 1;
                     NVetoAboveThreshold += 1;
                 }
                 // check if signal is in time window
-                if (sgnl->GetMaxPeakBin() > fTimeWindow[0] && sgnl->GetMaxPeakBin() < fTimeWindow[1]) {
+                if (signal->GetMaxPeakBin() > fTimeWindow[0] && signal->GetMaxPeakBin() < fTimeWindow[1]) {
                     VetoInTimeWindow = 1;
                     NVetoInTimeWindow += 1;
                 }
             }
         }
 
-        SetObservableValue("PeakTime", VetoPeakTime_map);
-        SetObservableValue("MaxPeakAmplitude", VetoMaxPeakAmplitude_map);
+        SetObservableValue("PeakTime", VetoPeakTimeMap);
+        SetObservableValue("MaxPeakAmplitude", VetoMaxPeakAmplitudeMap);
         if (fThreshold != -1) {
             SetObservableValue("VetoAboveThreshold", VetoAboveThreshold);
             SetObservableValue("NvetoAboveThreshold", NVetoAboveThreshold);
@@ -304,45 +303,44 @@ TRestEvent* TRestRawVetoAnalysisProcess::ProcessEvent(TRestEvent* inputEvent) {
             // iterate over vetoes in each group
             vector<double> groupIds = StringToElements(fVetoGroupIds[i], ",");
             for (unsigned int j = 0; j < groupIds.size(); j++) {
-                // Checks if channel (groupIds) participated in the event. If not,
-                // it is -1
+                // Checks if channel (groupIds) participated in the event. If not it is -1
                 if (fSignalEvent->GetSignalIndex(groupIds[j]) != -1) {
                     // We extract the parameters from the veto signal
-                    TRestRawSignal* sgnl = fSignalEvent->GetSignalById(groupIds[j]);
+                    TRestRawSignal* signal = fSignalEvent->GetSignalById(groupIds[j]);
                     // Deal with noise
-                    sgnl->CalculateBaseLine(fBaseLineRange.X(), fBaseLineRange.Y(), "ROBUST");
-                    sgnl->InitializePointsOverThreshold(TVector2(fPointThreshold, fSignalThreshold),
-                                                        fPointsOverThreshold);
-                    // Save two maps with (veto panel ID, max amplitude) and (veto panel
-                    // ID, peak time)
-                    if (sgnl->GetPointsOverThreshold().size() >= (unsigned int)fPointsOverThreshold) {
+                    signal->CalculateBaseLine(fBaseLineRange.X(), fBaseLineRange.Y(), "ROBUST");
+                    signal->InitializePointsOverThreshold(TVector2(fPointThreshold, fSignalThreshold),
+                                                          fPointsOverThreshold);
+                    // Save two maps with (veto panel ID, max amplitude) and (veto panel ID, peak time)
+                    if (signal->GetPointsOverThreshold().size() >= (unsigned int)fPointsOverThreshold) {
                         // signal is not noise
-                        VetoMaxPeakAmplitude_map[groupIds[j]] = sgnl->GetMaxPeakValue();
+                        VetoMaxPeakAmplitudeMap[groupIds[j]] = signal->GetMaxPeakValue();
                     } else {
                         // signal is noise
-                        VetoMaxPeakAmplitude_map[groupIds[j]] = 0;
+                        VetoMaxPeakAmplitudeMap[groupIds[j]] = 0;
                     }
-                    VetoPeakTime_map[groupIds[j]] = sgnl->GetMaxPeakBin();
+                    VetoPeakTimeMap[groupIds[j]] = signal->GetMaxPeakBin();
                     // We remove the signal from the event
                     fSignalEvent->RemoveSignalWithId(groupIds[j]);
 
                     // check if signal is above threshold
-                    if (sgnl->GetMaxPeakValue() > fThreshold) {
+                    if (signal->GetMaxPeakValue() > fThreshold) {
                         VetoAboveThreshold = 1;
                         NVetoAboveThreshold += 1;
                     }
                     // check if signal is in time window
-                    if (sgnl->GetMaxPeakBin() > fTimeWindow[0] && sgnl->GetMaxPeakBin() < fTimeWindow[1]) {
+                    if (signal->GetMaxPeakBin() > fTimeWindow[0] &&
+                        signal->GetMaxPeakBin() < fTimeWindow[1]) {
                         VetoInTimeWindow = 1;
                         NVetoInTimeWindow += 1;
                     }
                 }
             }
-            SetObservableValue(fPeakTime[i], VetoPeakTime_map);
-            SetObservableValue(fPeakAmp[i], VetoMaxPeakAmplitude_map);
+            SetObservableValue(fPeakTime[i], VetoPeakTimeMap);
+            SetObservableValue(fPeakAmp[i], VetoMaxPeakAmplitudeMap);
 
-            VetoMaxPeakAmplitude_map.clear();
-            VetoPeakTime_map.clear();
+            VetoMaxPeakAmplitudeMap.clear();
+            VetoPeakTimeMap.clear();
         }
 
         if (fThreshold != -1) {
@@ -358,7 +356,9 @@ TRestEvent* TRestRawVetoAnalysisProcess::ProcessEvent(TRestEvent* inputEvent) {
     if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Debug) {
         fSignalEvent->PrintEvent();
 
-        if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Extreme) GetChar();
+        if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Extreme) {
+            GetChar();
+        }
     }
 
     return fSignalEvent;
@@ -366,17 +366,21 @@ TRestEvent* TRestRawVetoAnalysisProcess::ProcessEvent(TRestEvent* inputEvent) {
 
 /// \brief Function that returns the index of a specified veto group within the group name vector and ID
 /// vector
-Int_t TRestRawVetoAnalysisProcess::GetGroupIndex(string groupName) {
+Int_t TRestRawVetoAnalysisProcess::GetGroupIndex(const string& groupName) {
     auto it = find(fVetoGroupNames.begin(), fVetoGroupNames.end(), groupName);
-    if (it != fVetoGroupNames.end()) return it - fVetoGroupNames.begin();
+    if (it != fVetoGroupNames.end()) {
+        return it - fVetoGroupNames.begin();
+    }
     return -1;
 }
 
 /// \brief Function that returns a string of the signal IDs for the specified veto group
-string TRestRawVetoAnalysisProcess::GetGroupIds(string groupName) {
+string TRestRawVetoAnalysisProcess::GetGroupIds(const string& groupName) {
     Int_t index = GetGroupIndex(groupName);
-    if (index != -1) return fVetoGroupIds[index];
-    return std::string("-1");
+    if (index != -1) {
+        return fVetoGroupIds[index];
+    }
+    return "-1";
 }
 
 ///////////////////////////////////////////////

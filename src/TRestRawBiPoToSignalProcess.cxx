@@ -179,9 +179,9 @@ TRestEvent* TRestRawBiPoToSignalProcess::ProcessEvent(TRestEvent* inputEvent) {
 
         RESTDebug << "Number of channels : " << fMatacqBoard[bIndex].nChannels << RESTendl;
         for (int nch = 0; nch < fMatacqBoard[bIndex].nChannels; nch++) {
-            TRestRawSignal sgnl;
-            sgnl.Initialize();
-            sgnl.SetSignalID(100 * boardAddress + nch);
+            TRestRawSignal signal;
+            signal.Initialize();
+            signal.SetSignalID(100 * boardAddress + nch);
 
             Int_t nBins = fBiPoSettings[bIndex].t1_window + fBiPoSettings[bIndex].t2_window;
 
@@ -195,12 +195,12 @@ TRestEvent* TRestRawBiPoToSignalProcess::ProcessEvent(TRestEvent* inputEvent) {
                     v = TMath::Power(2, 12);
                 }
 
-                if (sgnl.GetSignalID() >= 0) sgnl.AddPoint(v);
+                if (signal.GetSignalID() >= 0) signal.AddPoint(v);
             }
 
-            RESTDebug << "Adding signal with id : " << sgnl.GetID() << RESTendl;
-            RESTDebug << "Number of points: " << sgnl.GetNumberOfPoints() << RESTendl;
-            fSignalEvent->AddSignal(sgnl);
+            RESTDebug << "Adding signal with id : " << signal.GetID() << RESTendl;
+            RESTDebug << "Number of points: " << signal.GetNumberOfPoints() << RESTendl;
+            fSignalEvent->AddSignal(signal);
         }
 
         return fSignalEvent;

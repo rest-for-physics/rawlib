@@ -148,9 +148,9 @@ TRestEvent* TRestRawSignalChannelActivityProcess::ProcessEvent(TRestEvent* input
     Int_t Nlow = 0;
     Int_t Nhigh = 0;
     for (int s = 0; s < fSignalEvent->GetNumberOfSignals(); s++) {
-        TRestRawSignal* sgnl = fSignalEvent->GetSignal(s);
-        if (sgnl->GetMaxValue() > fHighThreshold) Nhigh++;
-        if (sgnl->GetMaxValue() > fLowThreshold) Nlow++;
+        TRestRawSignal* signal = fSignalEvent->GetSignal(s);
+        if (signal->GetMaxValue() > fHighThreshold) Nhigh++;
+        if (signal->GetMaxValue() > fLowThreshold) Nlow++;
     }
 
     for (int s = 0; s < fSignalEvent->GetNumberOfSignals(); s++) {

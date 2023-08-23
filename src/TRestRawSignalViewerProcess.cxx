@@ -226,7 +226,7 @@ void TRestRawSignalViewerProcess::EndProcess() {
 ///////////////////////////////////////////////
 /// \brief A helper method to draw signals in a pad
 ///
-TPad* TRestRawSignalViewerProcess::DrawSignal(Int_t signal) {
+TPad* TRestRawSignalViewerProcess::DrawSignal(Int_t signalID) {
     TPad* pad = new TPad(this->GetName(), this->GetTitle(), 0, 0, 1, 1);
 
     pad->cd();
@@ -236,12 +236,12 @@ TPad* TRestRawSignalViewerProcess::DrawSignal(Int_t signal) {
     TGraph* gr = new TGraph();
     fDrawingObjects.push_back((TObject*)gr);
 
-    TRestRawSignal* sgnl = fSignalEvent->GetSignal(signal);
+    TRestRawSignal* signal = fSignalEvent->GetSignal(signalID);
 
-    RESTInfo << "Drawing signal. Event ID : " << fSignalEvent->GetID() << " Signal ID : " << sgnl->GetID()
+    RESTInfo << "Drawing signal. Event ID : " << fSignalEvent->GetID() << " Signal ID : " << signal->GetID()
              << RESTendl;
 
-    for (int n = 0; n < sgnl->GetNumberOfPoints(); n++) gr->SetPoint(n, n, sgnl->GetData(n));
+    for (int n = 0; n < int(signal->GetNumberOfPoints()); n++) gr->SetPoint(n, n, signal->GetData(n));
 
     gr->Draw("AC*");
 
@@ -252,11 +252,11 @@ TPad* TRestRawSignalViewerProcess::DrawSignal(Int_t signal) {
     gr2->SetLineColor(2);
 
     for (int n = fBaseLineRange.X(); n < fBaseLineRange.Y(); n++)
-        gr2->SetPoint(n - fBaseLineRange.X(), n, sgnl->GetData(n));
+        gr2->SetPoint(n - fBaseLineRange.X(), n, signal->GetData(n));
 
     gr2->Draw("CP");
 
-    vector<Int_t> pOver = sgnl->GetPointsOverThreshold();
+    vector<Int_t> pOver = signal->GetPointsOverThreshold();
 
     TGraph* gr3[5];
     Int_t nGraphs = 0;
@@ -267,7 +267,7 @@ TPad* TRestRawSignalViewerProcess::DrawSignal(Int_t signal) {
     Int_t point = 0;
     Int_t nPoints = pOver.size();
     for (int n = 0; n < nPoints; n++) {
-        gr3[nGraphs]->SetPoint(point, pOver[n], sgnl->GetData(pOver[n]));
+        gr3[nGraphs]->SetPoint(point, pOver[n], signal->GetData(pOver[n]));
         point++;
         if (n + 1 < nPoints && pOver[n + 1] - pOver[n] > 1) {
             gr3[nGraphs]->Draw("CP");
