@@ -120,8 +120,9 @@ class TRestRawSignal {
     inline Bool_t isBaseLineInitialized() const { return !(fBaseLineSigma == 0 && fBaseLine == 0); }
 
     /// Returns the (time, amplitude) of the peaks in the signal.
-    /// Peaks are defined as the points that are above the threshold and are separated by a minimum distance.
-    std::vector<std::pair<UShort_t, double>> GetPeaks(double threshold, double distance) const;
+    /// Peaks are defined as the points that are above the threshold and are separated by a minimum distance
+    /// in time bin units. The threshold must be set in absolute value (regardless of the baseline)
+    std::vector<std::pair<UShort_t, double>> GetPeaks(double threshold, UShort_t distance = 5) const;
 
     Double_t GetData(Int_t n) const;
 
