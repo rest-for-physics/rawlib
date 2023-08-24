@@ -4,6 +4,8 @@
 
 #include "TRestRawPeaksFinderProcess.h"
 
+#include "TRestRawReadoutMetadata.h"
+
 ClassImp(TRestRawPeaksFinderProcess);
 
 using namespace std;
@@ -22,15 +24,22 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
 
     for (int signalIndex = 0; signalIndex < fSignalEvent->GetNumberOfSignals(); signalIndex++) {
         const auto signal = fSignalEvent->GetSignal(signalIndex);
-        const auto channelId = signal->GetSignalID();
-        const auto channelType = fReadoutMetadata->GetChannelType(channelId);
+        const UShort_t channelId = signal->GetSignalID();
+        const string channelType = fReadoutMetadata->GetChannelType(channelId);
+        const string channelName = fReadoutMetadata->GetChannelName(channelId);
 
         // check if channel type is in the list of selected channel types
         if (fChannelTypes.find(channelType) == fChannelTypes.end()) {
             continue;
         }
 
-        // const auto peaks = signal->GetPeaks();
+        signal->CalculateBaseLine(0, 5);
+        const auto peaks = signal->GetPeaks(signal->GetBaseLine() + 1.0);
+
+        cout << "Signal ID: " << channelId << " Name: " << channelName << endl;
+        for (const auto& [time, amplitude] : peaks) {
+            cout << "   - Peak at " << time << " with amplitude " << amplitude << endl;
+        }
     }
 
     return inputEvent;
