@@ -31,6 +31,8 @@ class TRestRawPeaksFinderProcess : public TRestEventProcess {
 
     explicit TRestRawPeaksFinderProcess(const char* configFilename){};
 
+    static TRestRawReadoutMetadata* Metadata;
+
     TRestRawPeaksFinderProcess() = default;
     ~TRestRawPeaksFinderProcess() = default;
 

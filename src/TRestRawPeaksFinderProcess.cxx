@@ -10,8 +10,12 @@ ClassImp(TRestRawPeaksFinderProcess);
 
 using namespace std;
 
+TRestRawReadoutMetadata* TRestRawPeaksFinderProcess::Metadata = nullptr;
+
 void TRestRawPeaksFinderProcess::InitProcess() {
-    fReadoutMetadata = GetMetadata<TRestRawReadoutMetadata>();
+    // fReadoutMetadata = GetMetadata<TRestRawReadoutMetadata>();
+
+    fReadoutMetadata = TRestRawPeaksFinderProcess::Metadata;
 
     if (!fReadoutMetadata) {
         cerr << "TRestRawPeaksFinderProcess::InitProcess: raw readout metadata is null" << endl;
