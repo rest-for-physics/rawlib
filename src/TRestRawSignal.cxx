@@ -908,3 +908,23 @@ TGraph* TRestRawSignal::GetGraph(Int_t color) {
 
     return fGraph;
 }
+
+vector<pair<UShort_t, double>> TRestRawSignal::GetPeaks(double threshold, UShort_t distance) const {
+    vector<pair<UShort_t, double>> peaks;
+
+    for (UShort_t i = 0; i < GetNumberOfPoints(); i++) {
+        const double point = GetRawData(i);
+        if (i > 0 && i < GetNumberOfPoints() - 1) {
+            double prevPoint = GetRawData(i - 1);
+            double nextPoint = GetRawData(i + 1);
+
+            if (point > threshold && point >= prevPoint && point >= nextPoint) {
+                // Check if the peak is spaced far enough from the previous peak
+                if (peaks.empty() || i - peaks.back().first >= distance) {
+                    peaks.push_back(std::make_pair(i, point));
+                }
+            }
+        }
+    }
+    return peaks;
+}
