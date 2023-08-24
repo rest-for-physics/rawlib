@@ -41,3 +41,13 @@ std::string TRestRawReadoutMetadata::GetChannelName(UShort_t channel) const {
     }
     return fChannelInfo.at(channel).name;
 }
+
+std::vector<UShort_t> TRestRawReadoutMetadata::GetChannelIDsForType(const std::string& type) const {
+    std::vector<UShort_t> result;
+    for (const auto& channel : fChannelInfo) {
+        if (channel.second.type == type) {
+            result.push_back(channel.first);
+        }
+    }
+    return result;
+}

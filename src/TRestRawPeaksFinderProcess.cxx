@@ -4,6 +4,8 @@
 
 #include "TRestRawPeaksFinderProcess.h"
 
+#include <utility>
+
 #include "TRestRawReadoutMetadata.h"
 
 ClassImp(TRestRawPeaksFinderProcess);
@@ -21,10 +23,21 @@ void TRestRawPeaksFinderProcess::InitProcess() {
         cerr << "TRestRawPeaksFinderProcess::InitProcess: raw readout metadata is null" << endl;
         exit(1);
     }
+
+    for (const auto& type : fChannelTypes) {
+        for (const auto& channelId : fReadoutMetadata->GetChannelIDsForType(type)) {
+            fChannelIds.insert(channelId);
+        }
+    }
 }
 
 TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
     fSignalEvent = dynamic_cast<TRestRawSignalEvent*>(inputEvent);
+
+    map<UShort_t, vector<pair<UShort_t, double>>> peaksSignalMap;
+    for (const auto& id : fChannelIds) {
+        peaksSignalMap[id] = {};
+    }
 
     for (int signalIndex = 0; signalIndex < fSignalEvent->GetNumberOfSignals(); signalIndex++) {
         const auto signal = fSignalEvent->GetSignal(signalIndex);
@@ -40,10 +53,22 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
         signal->CalculateBaseLine(0, 5);
         const auto peaks = signal->GetPeaks(signal->GetBaseLine() + 1.0);
 
+        /*
         cout << "Signal ID: " << channelId << " Name: " << channelName << endl;
         for (const auto& [time, amplitude] : peaks) {
             cout << "   - Peak at " << time << " with amplitude " << amplitude << endl;
         }
+        */
+
+        peaksSignalMap[channelId] = peaks;
+    }
+
+    for (const auto& [channelId, peaks] : peaksSignalMap) {
+        string name = fReadoutMetadata->GetChannelName(channelId);
+        if (name.empty()) {
+            to_string(channelId);
+        }
+        SetObservableValue("peaks_" + name, peaks);
     }
 
     return inputEvent;

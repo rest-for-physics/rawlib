@@ -19,6 +19,8 @@ class TRestRawPeaksFinderProcess : public TRestEventProcess {
         "veto",
     };  // this process will only be applied to selected channel types
 
+    std::set<UShort_t> fChannelIds;  // this process will only be applied to selected channel ids
+
    public:
     any GetInputEvent() const override { return fSignalEvent; }
     any GetOutputEvent() const override { return fSignalEvent; }

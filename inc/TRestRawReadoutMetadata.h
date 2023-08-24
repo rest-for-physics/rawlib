@@ -27,6 +27,8 @@ class TRestRawReadoutMetadata : public TRestMetadata {
     std::string GetChannelType(UShort_t channel) const;
     std::string GetChannelName(UShort_t channel) const;
 
+    std::vector<UShort_t> GetChannelIDsForType(const std::string& type) const;
+
     void PrintMetadata() const;
 
     TRestRawReadoutMetadata() = default;
