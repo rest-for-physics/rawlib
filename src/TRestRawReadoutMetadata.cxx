@@ -15,12 +15,13 @@ void TRestRawReadoutMetadata::PrintMetadata() const {
         const auto& info = channel.second;
         typesCount[info.type]++;
     }
-    cout << "Channel types:" << endl;
+    cout << "Channel types: ";
     for (const auto& type : typesCount) {
-        cout << type.first << ": " << type.second << endl;
+        cout << type.first << " (" << type.second << "), ";
     }
+    cout << endl;
 
     for (const auto& [channelId, info] : fChannelInfo) {
-        cout << "Channel " << channelId << ": " << info.type << " " << info.name << endl;
+        cout << "   - Channel " << channelId << ": " << info.type << " " << info.name << endl;
     }
 }
