@@ -433,7 +433,7 @@ TRestEvent* TRestRawSignalAnalysisProcess::ProcessEvent(TRestEvent* inputEvent) 
     Double_t maxValueIntegral = 0;
     Double_t minDownValue = 1.e6;
 
-    Double_t minPeakTime = 1000;  // TODO sustitute this for something better
+    Double_t minPeakTime = 1000;  // TODO substitute this for something better
     Double_t maxPeakTime = 0;
     Double_t peakTimeAverage = 0;
 
