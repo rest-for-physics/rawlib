@@ -315,17 +315,23 @@ void TRestRawSignalEvent::PrintEvent() {
 // TODO: GetMaxTimeFast, GetMinTimeFast, GetMaxValueFast that return the value
 // of fMinTime, fMaxTime, etc
 void TRestRawSignalEvent::SetMaxAndMin() {
-    fMinValue = 1E10;
-    fMaxValue = -1E10;
-    fMinTime = 0;
-    fMaxTime = -1E10;
+    fMinValue = numeric_limits<Double_t>::max();
+    fMaxValue = numeric_limits<Double_t>::min();
+    fMinTime = numeric_limits<Double_t>::max();
+    fMaxTime = numeric_limits<Double_t>::min();
 
     for (int s = 0; s < GetNumberOfSignals(); s++) {
-        if (fMinValue > fSignal[s].GetMinValue()) fMinValue = fSignal[s].GetMinValue();
-        if (fMaxValue < fSignal[s].GetMaxValue()) fMaxValue = fSignal[s].GetMaxValue();
+        if (fMinValue > fSignal[s].GetMinValue()) {
+            fMinValue = fSignal[s].GetMinValue();
+        }
+        if (fMaxValue < fSignal[s].GetMaxValue()) {
+            fMaxValue = fSignal[s].GetMaxValue();
+        }
     }
 
-    if (GetNumberOfSignals() > 0) fMaxTime = fSignal[0].GetNumberOfPoints();
+    if (GetNumberOfSignals() > 0) {
+        fMaxTime = fSignal[0].GetNumberOfPoints();
+    }
 }
 
 Double_t TRestRawSignalEvent::GetMaxValue() {
