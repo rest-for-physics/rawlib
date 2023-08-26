@@ -15,8 +15,6 @@ using namespace std;
 TRestRawReadoutMetadata* TRestRawPeaksFinderProcess::Metadata = nullptr;
 
 void TRestRawPeaksFinderProcess::InitProcess() {
-    // fReadoutMetadata = GetMetadata<TRestRawReadoutMetadata>();
-
     fReadoutMetadata = TRestRawPeaksFinderProcess::Metadata;
 
     if (!fReadoutMetadata) {
@@ -42,6 +40,11 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
     for (int signalIndex = 0; signalIndex < fSignalEvent->GetNumberOfSignals(); signalIndex++) {
         const auto signal = fSignalEvent->GetSignal(signalIndex);
         const UShort_t channelId = signal->GetSignalID();
+
+        if (fChannelIds.find(channelId) == fChannelIds.end()) {
+            continue;
+        }
+
         const string channelType = fReadoutMetadata->GetChannelType(channelId);
         const string channelName = fReadoutMetadata->GetChannelName(channelId);
 
@@ -72,4 +75,18 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
     }
 
     return inputEvent;
+}
+
+void TRestRawPeaksFinderProcess::InitFromConfigFile() {
+    const auto filterType = GetParameter("channelType", "");
+    if (!filterType.empty()) {
+        fChannelTypes.insert(filterType);
+    }
+
+    cout << "TRestRawPeaksFinderProcess::InitProcess: filter type: " << filterType << endl;
+
+    if (fChannelTypes.empty()) {
+        cerr << "TRestRawPeaksFinderProcess::InitProcess: no channel types selected" << endl;
+        exit(1);
+    }
 }
