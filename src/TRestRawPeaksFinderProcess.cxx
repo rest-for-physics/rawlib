@@ -51,7 +51,7 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
         }
 
         signal->CalculateBaseLine(0, 5);
-        const auto peaks = signal->GetPeaks(signal->GetBaseLine() + 1.0);
+        const auto peaks = signal->GetPeaks(signal->GetBaseLine() + 1.0, fDistance);
 
         for (const auto& [time, amplitude] : peaks) {
             eventPeaks.emplace_back(channelId, time, amplitude);
@@ -64,12 +64,56 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
         */
     }
 
-    // sort eventPeaks by signal id, then by time
-    sort(eventPeaks.begin(), eventPeaks.end(), [](const auto& a, const auto& b) {
-        return get<0>(a) < get<0>(b) || (get<0>(a) == get<0>(b) && get<1>(a) < get<1>(b));
-    });
+    // sort eventPeaks by time, then signal id
+    sort(eventPeaks.begin(), eventPeaks.end(),
+         [](const tuple<UShort_t, UShort_t, double>& a, const tuple<UShort_t, UShort_t, double>& b) {
+             return std::tie(std::get<1>(a), std::get<0>(a)) < std::tie(std::get<1>(b), std::get<0>(b));
+         });
 
     SetObservableValue("peaks", eventPeaks);
+
+    std::vector<UShort_t> windowIndex(eventPeaks.size(), 0);  // Initialize with zeros
+    std::vector<UShort_t> windowCenter;  // for each different window, the center of the window
+
+    for (size_t peakIndex = 0; peakIndex < eventPeaks.size(); peakIndex++) {
+        const auto& [channelId, time, amplitude] = eventPeaks[peakIndex];
+        const auto windowTime = time - fWindow / 2;
+        const auto windowEnd = time + fWindow / 2;
+
+        // check if the peak is already in a window
+        if (windowIndex[peakIndex] != 0) {
+            continue;
+        }
+
+        // create a new window
+        windowCenter.push_back(time);
+
+        // add the peak to the window
+        windowIndex[peakIndex] = windowCenter.size();
+
+        // add the peaks that are in the window
+        for (size_t otherPeakIndex = peakIndex + 1; otherPeakIndex < eventPeaks.size(); otherPeakIndex++) {
+            const auto& [otherChannelId, otherTime, otherAmplitude] = eventPeaks[otherPeakIndex];
+
+            if (otherTime < windowTime) {
+                continue;
+            }
+
+            if (otherTime > windowEnd) {
+                break;
+            }
+
+            windowIndex[otherPeakIndex] = windowCenter.size();
+        }
+    }
+
+    // subtract 1 from windowIndex so it starts on 0
+    for (auto& index : windowIndex) {
+        index--;
+    }
+
+    SetObservableValue("windowIndex", windowIndex);
+    SetObservableValue("windowCenter", windowCenter);
 
     return inputEvent;
 }
@@ -89,6 +133,8 @@ void TRestRawPeaksFinderProcess::InitFromConfigFile() {
 
     fThresholdOverBaseline = StringToDouble(GetParameter("thresholdOverBaseline", fThresholdOverBaseline));
     fBaselineRange = Get2DVectorParameterWithUnits("baselineRange", fBaselineRange);
+    fDistance = StringToDouble(GetParameter("distance", fDistance));
+    fWindow = StringToDouble(GetParameter("window", fWindow));
 
     if (fBaselineRange.X() > fBaselineRange.Y() || fBaselineRange.X() < 0 || fBaselineRange.Y() < 0) {
         cerr << "TRestRawPeaksFinderProcess::InitProcess: baseline range is not sorted or < 0" << endl;
@@ -97,6 +143,16 @@ void TRestRawPeaksFinderProcess::InitFromConfigFile() {
 
     if (fThresholdOverBaseline < 0) {
         cerr << "TRestRawPeaksFinderProcess::InitProcess: threshold over baseline is < 0" << endl;
+        exit(1);
+    }
+
+    if (fDistance <= 0) {
+        cerr << "TRestRawPeaksFinderProcess::InitProcess: distance is < 0" << endl;
+        exit(1);
+    }
+
+    if (fWindow <= 0) {
+        cerr << "TRestRawPeaksFinderProcess::InitProcess: window is < 0" << endl;
         exit(1);
     }
 }
@@ -116,4 +172,7 @@ void TRestRawPeaksFinderProcess::PrintMetadata() {
 
     cout << "Threshold over baseline: " << fThresholdOverBaseline << endl;
     cout << "Baseline range: " << fBaselineRange.X() << " - " << fBaselineRange.Y() << endl;
+
+    cout << "Distance: " << fDistance << endl;
+    cout << "Window: " << fWindow << endl;
 }
