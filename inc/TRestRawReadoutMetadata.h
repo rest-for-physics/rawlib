@@ -21,9 +21,7 @@ class TRestRawReadoutMetadata : public TRestMetadata {
     void InitializeFromReadout(TRestDetectorReadout* readout);
 
    public:
-    bool IsChannelType(UShort_t channel, std::string type) const;
-    bool IsChannelVeto(UShort_t channel) const;
-    bool IsChannelMicromegas(UShort_t channel) const;
+    bool IsChannelType(UShort_t channel, const std::string& type) const;
     std::string GetChannelType(UShort_t channel) const;
     std::string GetChannelName(UShort_t channel) const;
 

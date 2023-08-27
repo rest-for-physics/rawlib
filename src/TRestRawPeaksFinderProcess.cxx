@@ -112,6 +112,24 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
         index--;
     }
 
+    // validation
+    // check only values from 0 ... windowCenter.size() -1 are in windowIndex
+    // ALL values in this range should appear at least once
+    for (size_t index = 0; index < windowCenter.size(); index++) {
+        bool found = false;
+        for (const auto& window : windowIndex) {
+            if (window == index) {
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            cerr << "TRestRawPeaksFinderProcess::ProcessEvent: window index " << index << " not found"
+                 << endl;
+            exit(1);
+        }
+    }
+
     SetObservableValue("windowIndex", windowIndex);
     SetObservableValue("windowCenter", windowCenter);
 
