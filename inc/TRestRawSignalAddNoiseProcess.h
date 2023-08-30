@@ -51,10 +51,10 @@ class TRestRawSignalAddNoiseProcess : public TRestEventProcess {
     inline void SetNoiseLevel(Double_t noiseLevel) { fNoiseLevel = noiseLevel; }
 
     /// Returns a pointer to the input signal event
-    any GetInputEvent() const override { return fInputSignalEvent; }
+    RESTValue GetInputEvent() const override { return fInputSignalEvent; }
 
     /// Returns a pointer to the output signal event
-    any GetOutputEvent() const override { return fOutputSignalEvent; }
+    RESTValue GetOutputEvent() const override { return fOutputSignalEvent; }
 
     TRestEvent* ProcessEvent(TRestEvent* inputEvent) override;
 

@@ -60,8 +60,8 @@ class TRestRawSignalShapingProcess : public TRestEventProcess {
     inline Double_t GetShapingGain() const { return fShapingGain; }
     inline void SetShapingGain(Double_t shapingGain) { fShapingGain = shapingGain; }
 
-    any GetInputEvent() const override { return fInputSignalEvent; }
-    any GetOutputEvent() const override { return fOutputSignalEvent; }
+    RESTValue GetInputEvent() const override { return fInputSignalEvent; }
+    RESTValue GetOutputEvent() const override { return fOutputSignalEvent; }
 
     void InitProcess() override;
     TRestEvent* ProcessEvent(TRestEvent* inputEvent) override;

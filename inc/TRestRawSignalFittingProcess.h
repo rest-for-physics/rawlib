@@ -49,8 +49,8 @@ class TRestRawSignalFittingProcess : public TRestEventProcess {
     // add here the members of your event process
 
    public:
-    any GetInputEvent() const override { return fRawSignalEvent; }
-    any GetOutputEvent() const override { return fRawSignalEvent; }
+    RESTValue GetInputEvent() const override { return fRawSignalEvent; }
+    RESTValue GetOutputEvent() const override { return fRawSignalEvent; }
 
     inline Double_t GetShaping() const { return fShaping; }
     inline Double_t GetStartPosition() const { return fStartPosition; }

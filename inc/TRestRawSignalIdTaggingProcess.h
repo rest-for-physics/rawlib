@@ -64,8 +64,8 @@ class TRestRawSignalIdTaggingProcess : public TRestEventProcess {
     // add here the members of your event process
 
    public:
-    any GetInputEvent() const override { return fSignalEvent; }
-    any GetOutputEvent() const override { return fSignalEvent; }
+    RESTValue GetInputEvent() const override { return fSignalEvent; }
+    RESTValue GetOutputEvent() const override { return fSignalEvent; }
 
     void InitProcess() override;
     TRestEvent* ProcessEvent(TRestEvent* inputEvent) override;
