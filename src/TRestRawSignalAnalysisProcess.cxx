@@ -287,6 +287,12 @@ void TRestRawSignalAnalysisProcess::InitProcess() {
     fReadoutMetadata = TRestRawSignalAnalysisProcess::Metadata;
 }
 
+void TRestRawSignalAnalysisProcess::InitFromConfigFile() {
+    const auto filterType = GetParameter("channelType", "");
+    if (!filterType.empty()) {
+        fChannelTypes.insert(filterType);
+    }
+}
 ///////////////////////////////////////////////
 /// \brief The main processing event function
 ///
@@ -294,6 +300,7 @@ TRestEvent* TRestRawSignalAnalysisProcess::ProcessEvent(TRestEvent* inputEvent) 
     fSignalEvent = (TRestRawSignalEvent*)inputEvent;
     fSignalEvent->InitializeReferences(GetRunInfo());
     auto event = fSignalEvent->GetSignalEventForTypes(fChannelTypes, fReadoutMetadata);
+
     // we save some complex typed analysis result
     map<int, Double_t> baseline;
     map<int, Double_t> baselinesigma;
