@@ -26,17 +26,17 @@ void TRestRawReadoutMetadata::PrintMetadata() const {
     }
 }
 
-std::string TRestRawReadoutMetadata::GetChannelType(UShort_t channel) const {
+std::string TRestRawReadoutMetadata::GetTypeForChannelId(UShort_t channel) const {
     if (fChannelInfo.find(channel) == fChannelInfo.end()) {
-        cerr << "TRestRawReadoutMetadata::GetChannelType: channel " << channel << " not found" << endl;
+        cerr << "TRestRawReadoutMetadata::GetTypeForChannelId: channel " << channel << " not found" << endl;
         return {};
     }
     return fChannelInfo.at(channel).type;
 }
 
-std::string TRestRawReadoutMetadata::GetChannelName(UShort_t channel) const {
+std::string TRestRawReadoutMetadata::GetNameForChannelId(UShort_t channel) const {
     if (fChannelInfo.find(channel) == fChannelInfo.end()) {
-        cerr << "TRestRawReadoutMetadata::GetChannelName: channel " << channel << " not found" << endl;
+        cerr << "TRestRawReadoutMetadata::GetNameForChannelId: channel " << channel << " not found" << endl;
         return {};
     }
     return fChannelInfo.at(channel).name;

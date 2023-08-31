@@ -806,7 +806,7 @@ TRestRawSignalEvent TRestRawSignalEvent::GetSignalEventForType(const string& typ
         exit(1);
     }
     for (const auto& signal : fSignal) {
-        const string signalType = metadata->GetChannelType(signal.GetSignalID());
+        const string signalType = metadata->GetTypeForChannelId(signal.GetSignalID());
         if (signalType == type) {
             signalEvent.AddSignal(const_cast<TRestRawSignal&>(signal));
         }

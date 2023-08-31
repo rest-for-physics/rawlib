@@ -42,8 +42,8 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
             continue;
         }
 
-        const string channelType = fReadoutMetadata->GetChannelType(channelId);
-        const string channelName = fReadoutMetadata->GetChannelName(channelId);
+        const string channelType = fReadoutMetadata->GetTypeForChannelId(channelId);
+        const string channelName = fReadoutMetadata->GetNameForChannelId(channelId);
 
         // check if channel type is in the list of selected channel types
         if (fChannelTypes.find(channelType) == fChannelTypes.end()) {
