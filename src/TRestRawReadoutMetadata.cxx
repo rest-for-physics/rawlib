@@ -22,7 +22,8 @@ void TRestRawReadoutMetadata::PrintMetadata() const {
     cout << endl;
 
     for (const auto& [channelId, info] : fChannelInfo) {
-        cout << "   - Channel " << channelId << ": " << info.type << " " << info.name << endl;
+        cout << "   - Channel ID: " << channelId << ", channel DAQ ID: " << info.daqId
+             << ", type: " << info.type << ", name: " << info.name << endl;
     }
 }
 

@@ -810,7 +810,7 @@ TRestRawSignalEvent TRestRawSignalEvent::GetSignalEventForType(const string& typ
 }
 
 TRestRawSignalEvent TRestRawSignalEvent::GetSignalEventForTypes(
-    const std::set<std::string>& types, const TRestRawReadoutMetadata* readoutMetadata ) const {
+    const std::set<std::string>& types, const TRestRawReadoutMetadata* readoutMetadata) const {
     TRestRawSignalEvent signalEvent;
     signalEvent.SetEventInfo((TRestEvent*)this);
     auto metadata = readoutMetadata ? readoutMetadata : GetReadoutMetadata();
