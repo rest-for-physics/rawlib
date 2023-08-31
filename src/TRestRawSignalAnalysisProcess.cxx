@@ -278,7 +278,9 @@ void TRestRawSignalAnalysisProcess::Initialize() {
 /// \brief Process initialization.
 ///
 void TRestRawSignalAnalysisProcess::InitProcess() {
-    if (fSignalsRange.X() != -1 && fSignalsRange.Y() != -1) fRangeEnabled = true;
+    if (fSignalsRange.X() != -1 && fSignalsRange.Y() != -1) {
+        fRangeEnabled = true;
+    }
 }
 
 ///////////////////////////////////////////////
@@ -303,14 +305,7 @@ TRestEvent* TRestRawSignalAnalysisProcess::ProcessEvent(TRestEvent* inputEvent) 
     ampsgn_intmethod.clear();
     risetime.clear();
     npointsot.clear();
-    /*
-  baselinemean = 0;
-  baselinesigmamean = 0;
-  ampeve_intmethod = 0;
-  ampeve_maxmethod = 0;
-  risetimemean = 0;
-  Double_t maxeve = 0;
-    */
+
     Int_t nGoodSignals = 0;
 
     /// We define (or re-define) the baseline range and calculation range of our
@@ -327,8 +322,9 @@ TRestEvent* TRestRawSignalAnalysisProcess::ProcessEvent(TRestEvent* inputEvent) 
         sgnl->InitializePointsOverThreshold(TVector2(fPointThreshold, fSignalThreshold),
                                             fPointsOverThreshold);
 
-        if (fRangeEnabled && (sgnl->GetID() < fSignalsRange.X() || sgnl->GetID() > fSignalsRange.Y()))
+        if (fRangeEnabled && (sgnl->GetID() < fSignalsRange.X() || sgnl->GetID() > fSignalsRange.Y())) {
             continue;
+        }
 
         // We do not want that signals that are not identified as such contribute to
         // define our observables
@@ -457,7 +453,9 @@ TRestEvent* TRestRawSignalAnalysisProcess::ProcessEvent(TRestEvent* inputEvent) 
             if (maxPeakTime < peakBin) maxPeakTime = peakBin;
         }
         Double_t mindownvalue = fSignalEvent->GetSignal(s)->GetMinValue();
-        if (mindownvalue < minDownValue) minDownValue = mindownvalue;
+        if (mindownvalue < minDownValue) {
+            minDownValue = mindownvalue;
+        }
     }
 
     if (nGoodSignals > 0) peakTimeAverage /= nGoodSignals;
@@ -485,13 +483,15 @@ TRestEvent* TRestRawSignalAnalysisProcess::ProcessEvent(TRestEvent* inputEvent) 
     SetObservableValue("AveragePeakTime", peakTimeAverage);
 
     if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Debug) {
-        for (auto i : fObservablesDefined) {
+        for (const auto& i : fObservablesDefined) {
             fAnalysisTree->PrintObservable(i.second);
         }
     }
 
     // If cut condition matches the event will be not registered.
-    if (ApplyCut()) return nullptr;
+    if (ApplyCut()) {
+        return nullptr;
+    }
 
     return fSignalEvent;
 }

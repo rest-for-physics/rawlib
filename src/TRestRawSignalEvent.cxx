@@ -684,7 +684,7 @@ void TRestRawSignalEvent::DrawSignals(TPad* pad, const std::vector<Int_t>& signa
 /// DrawEvent(100,"goodSignals[3.5,1.5,7]:baseLineRange[20,150]");
 /// \endcode
 ///
-TPad* TRestRawSignalEvent::DrawSignal(Int_t signalID, TString option) {
+TPad* TRestRawSignalEvent::DrawSignal(Int_t signalID, const TString& option) {
     int nSignals = this->GetNumberOfSignals();
 
     if (fPad != nullptr) {
@@ -750,7 +750,9 @@ TPad* TRestRawSignalEvent::DrawSignal(Int_t signalID, TString option) {
     RESTInfo << "Drawing signalID. Event ID : " << this->GetID() << " Signal ID : " << signal->GetID()
              << RESTendl;
 
-    for (int n = 0; n < signal->GetNumberOfPoints(); n++) gr->SetPoint(n, n, signal->GetData(n));
+    for (int n = 0; n < signal->GetNumberOfPoints(); n++) {
+        gr->SetPoint(n, n, signal->GetData(n));
+    }
 
     gr->Draw("AC*");
 
@@ -759,8 +761,9 @@ TPad* TRestRawSignalEvent::DrawSignal(Int_t signalID, TString option) {
     gr2->SetLineWidth(2);
     gr2->SetLineColor(2);  // Red
 
-    for (int n = baseLineRangeInit; n < baseLineRangeEnd; n++)
+    for (int n = baseLineRangeInit; n < baseLineRangeEnd; n++) {
         gr2->SetPoint(n - baseLineRangeInit, n, signal->GetData(n));
+    }
 
     gr2->Draw("CP");
 
@@ -787,7 +790,34 @@ TPad* TRestRawSignalEvent::DrawSignal(Int_t signalID, TString option) {
         }
     }
 
-    if (nPoints > 0) gr3[nGraphs]->Draw("CP");
+    if (nPoints > 0) {
+        gr3[nGraphs]->Draw("CP");
+    }
 
     return fPad;
+}
+
+TRestRawSignalEvent TRestRawSignalEvent::GetSignalEventForType(const string& type) const {
+    TRestRawSignalEvent signalEvent;
+    signalEvent.SetEventInfo((TRestEvent*)this);
+    const auto metadata = GetReadoutMetadata();
+    if (metadata == nullptr) {
+        cerr << "TRestRawSignalEvent::GetSignalEventForType: metadata is nullptr" << endl;
+        exit(1);
+    }
+    for (const auto& signal : fSignal) {
+        const string signalType = metadata->GetChannelType(signal.GetSignalID());
+        if (signalType == type) {
+            signalEvent.AddSignal(const_cast<TRestRawSignal&>(signal));
+        }
+    }
+    return signalEvent;
+}
+
+TRestRawReadoutMetadata* TRestRawSignalEvent::GetReadoutMetadata() const {
+    if (fRun == nullptr) {
+        RESTError << "TRestRawSignalEvent::GetReadoutMetadata: fRun is nullptr" << RESTendl;
+        return nullptr;
+    }
+    return dynamic_cast<TRestRawReadoutMetadata*>(fRun->GetMetadataClass("TRestRawReadoutMetadata"));
 }

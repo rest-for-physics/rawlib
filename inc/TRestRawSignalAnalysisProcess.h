@@ -43,9 +43,9 @@ class TRestRawSignalAnalysisProcess : public TRestEventProcess {
     TVector2 fIntegralRange = TVector2(10, 500);
 
     /// Option for calculation of baseline parameters, can be set to "ROBUST"
-    std::string fBaseLineOption = "";  //<
+    std::string fBaseLineOption;  //<
 
-    /// The number of sigmas over baseline fluctuations to identify a point overthreshold
+    /// The number of sigmas over baseline fluctuations to identify a point over threshold
     Double_t fPointThreshold = 2;
 
     /// A parameter to define a minimum signal fluctuation. Measured in sigmas.
@@ -87,8 +87,8 @@ class TRestRawSignalAnalysisProcess : public TRestEventProcess {
 
     const char* GetProcessName() const override { return "rawSignalAnalysis"; }
 
-    TRestRawSignalAnalysisProcess();   // Constructor
-    ~TRestRawSignalAnalysisProcess();  // Destructor
+    TRestRawSignalAnalysisProcess();
+    ~TRestRawSignalAnalysisProcess();
 
     ClassDefOverride(TRestRawSignalAnalysisProcess, 5);
 };
