@@ -797,7 +797,19 @@ TPad* TRestRawSignalEvent::DrawSignal(Int_t signalID, const TString& option) {
     return fPad;
 }
 
+TRestRawReadoutMetadata* TRestRawSignalEvent::GetReadoutMetadata() const {
+    if (fRun == nullptr) {
+        RESTError << "TRestRawSignalEvent::GetReadoutMetadata: fRun is nullptr" << RESTendl;
+        return nullptr;
+    }
+    return dynamic_cast<TRestRawReadoutMetadata*>(fRun->GetMetadataClass("TRestRawReadoutMetadata"));
+}
+
 TRestRawSignalEvent TRestRawSignalEvent::GetSignalEventForType(const string& type) const {
+    return GetSignalEventForTypes({type});
+}
+
+TRestRawSignalEvent TRestRawSignalEvent::GetSignalEventForTypes(const std::set<std::string>& types) const {
     TRestRawSignalEvent signalEvent;
     signalEvent.SetEventInfo((TRestEvent*)this);
     const auto metadata = GetReadoutMetadata();
@@ -807,17 +819,9 @@ TRestRawSignalEvent TRestRawSignalEvent::GetSignalEventForType(const string& typ
     }
     for (const auto& signal : fSignal) {
         const string signalType = metadata->GetTypeForChannelId(signal.GetSignalID());
-        if (signalType == type) {
+        if (types.empty() || types.find(signalType) != types.end()) {
             signalEvent.AddSignal(const_cast<TRestRawSignal&>(signal));
         }
     }
     return signalEvent;
-}
-
-TRestRawReadoutMetadata* TRestRawSignalEvent::GetReadoutMetadata() const {
-    if (fRun == nullptr) {
-        RESTError << "TRestRawSignalEvent::GetReadoutMetadata: fRun is nullptr" << RESTendl;
-        return nullptr;
-    }
-    return dynamic_cast<TRestRawReadoutMetadata*>(fRun->GetMetadataClass("TRestRawReadoutMetadata"));
 }

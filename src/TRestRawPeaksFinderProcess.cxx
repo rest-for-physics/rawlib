@@ -14,28 +14,33 @@ using namespace std;
 
 TRestRawReadoutMetadata* TRestRawPeaksFinderProcess::Metadata = nullptr;
 
-void TRestRawPeaksFinderProcess::InitProcess() {
-    fReadoutMetadata = TRestRawPeaksFinderProcess::Metadata;
-
-    if (!fReadoutMetadata) {
-        cerr << "TRestRawPeaksFinderProcess::InitProcess: raw readout metadata is null" << endl;
-        exit(1);
-    }
-
-    for (const auto& type : fChannelTypes) {
-        for (const auto& channelId : fReadoutMetadata->GetChannelIDsForType(type)) {
-            fChannelIds.insert(channelId);
-        }
-    }
-}
+void TRestRawPeaksFinderProcess::InitProcess() { }
 
 TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
     fSignalEvent = dynamic_cast<TRestRawSignalEvent*>(inputEvent);
 
+    if (fReadoutMetadata == nullptr) {
+        fReadoutMetadata = fSignalEvent->GetReadoutMetadata();
+
+        if (fReadoutMetadata == nullptr) {
+            cerr << "TRestRawPeaksFinderProcess::ProcessEvent: readout metadata is null" << endl;
+            exit(1);
+        }
+
+        for (const auto& type : fChannelTypes) {
+            for (const auto& channelId : fReadoutMetadata->GetChannelIDsForType(type)) {
+                fChannelIds.insert(channelId);
+            }
+        }
+    }
+
+    // filter the event by channel type
+    auto event = fSignalEvent->GetSignalEventForTypes(fChannelTypes);
+
     std::vector<tuple<UShort_t, UShort_t, double>> eventPeaks;
 
-    for (int signalIndex = 0; signalIndex < fSignalEvent->GetNumberOfSignals(); signalIndex++) {
-        const auto signal = fSignalEvent->GetSignal(signalIndex);
+    for (int signalIndex = 0; signalIndex < event.GetNumberOfSignals(); signalIndex++) {
+        const auto signal = event.GetSignal(signalIndex);
         const UShort_t channelId = signal->GetSignalID();
 
         if (fChannelIds.find(channelId) == fChannelIds.end()) {

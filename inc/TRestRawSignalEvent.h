@@ -125,6 +125,7 @@ class TRestRawSignalEvent : public TRestEvent {
     }
 
     TRestRawSignalEvent GetSignalEventForType(const std::string& type) const;
+    TRestRawSignalEvent GetSignalEventForTypes(const std::set<std::string>& types) const;
 
     TRestRawSignal* GetMaxSignal();
 
