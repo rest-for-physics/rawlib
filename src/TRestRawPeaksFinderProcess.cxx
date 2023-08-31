@@ -19,6 +19,7 @@ void TRestRawPeaksFinderProcess::InitProcess() { fReadoutMetadata = TRestRawPeak
 TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
     fSignalEvent = dynamic_cast<TRestRawSignalEvent*>(inputEvent);
     fSignalEvent->InitializeReferences(GetRunInfo());
+    auto event = fSignalEvent->GetSignalEventForTypes(fChannelTypes, fReadoutMetadata);
 
     if (fReadoutMetadata == nullptr) {
         fReadoutMetadata = fSignalEvent->GetReadoutMetadata();
@@ -27,29 +28,16 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
             cerr << "TRestRawPeaksFinderProcess::ProcessEvent: readout metadata is null" << endl;
             exit(1);
         }
-
-        for (const auto& type : fChannelTypes) {
-            for (const auto& channelId : fReadoutMetadata->GetChannelIDsForType(type)) {
-                fChannelIds.insert(channelId);
-            }
-        }
     }
-
-    // filter the event by channel type
-    auto event = fSignalEvent->GetSignalEventForTypes(fChannelTypes, fReadoutMetadata);
 
     std::vector<tuple<UShort_t, UShort_t, double>> eventPeaks;
 
     for (int signalIndex = 0; signalIndex < event.GetNumberOfSignals(); signalIndex++) {
         const auto signal = event.GetSignal(signalIndex);
-        const UShort_t channelId = signal->GetSignalID();
+        const UShort_t signalId = signal->GetSignalID();
 
-        if (fChannelIds.find(channelId) == fChannelIds.end()) {
-            continue;
-        }
-
-        const string channelType = fReadoutMetadata->GetTypeForChannelId(channelId);
-        const string channelName = fReadoutMetadata->GetNameForChannelId(channelId);
+        const string channelType = fReadoutMetadata->GetTypeForChannelDaqId(signalId);
+        const string channelName = fReadoutMetadata->GetNameForChannelDaqId(signalId);
 
         // check if channel type is in the list of selected channel types
         if (fChannelTypes.find(channelType) == fChannelTypes.end()) {
@@ -60,7 +48,7 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
         const auto peaks = signal->GetPeaks(signal->GetBaseLine() + 1.0, fDistance);
 
         for (const auto& [time, amplitude] : peaks) {
-            eventPeaks.emplace_back(channelId, time, amplitude);
+            eventPeaks.emplace_back(signalId, time, amplitude);
         }
         /*
         cout << "Signal ID: " << channelId << " Name: " << channelName << endl;
@@ -151,8 +139,7 @@ void TRestRawPeaksFinderProcess::InitFromConfigFile() {
     cout << "TRestRawPeaksFinderProcess::InitProcess: filter type: " << filterType << endl;
 
     if (fChannelTypes.empty()) {
-        cerr << "TRestRawPeaksFinderProcess::InitProcess: no channel types selected" << endl;
-        exit(1);
+        // if no channel type is specified, use all channel types
     }
 
     fThresholdOverBaseline = StringToDouble(GetParameter("thresholdOverBaseline", fThresholdOverBaseline));
@@ -185,12 +172,6 @@ void TRestRawPeaksFinderProcess::PrintMetadata() {
     cout << "Applying process to channel types: ";
     for (const auto& type : fChannelTypes) {
         cout << type << " ";
-    }
-    cout << endl;
-
-    cout << "Applying process to channel ids: ";
-    for (const auto& id : fChannelIds) {
-        cout << id << " ";
     }
     cout << endl;
 

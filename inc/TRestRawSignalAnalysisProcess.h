@@ -61,6 +61,8 @@ class TRestRawSignalAnalysisProcess : public TRestEventProcess {
 
     void Initialize() override;
 
+    std::set<std::string> fChannelTypes = {};  // this process will only be applied to selected channel types
+
    protected:
     // add here the members of your event process
 

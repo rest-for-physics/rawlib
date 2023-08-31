@@ -21,29 +21,31 @@ void TRestRawReadoutMetadata::PrintMetadata() const {
     }
     cout << endl;
 
-    for (const auto& [channelId, info] : fChannelInfo) {
-        cout << "   - Channel ID: " << channelId << ", channel DAQ ID: " << info.daqId
+    for (const auto& [channelDaqId, info] : fChannelInfo) {
+        cout << "   - Channel DAQ ID: " << channelDaqId << ", channel ID: " << info.channelId
              << ", type: " << info.type << ", name: " << info.name << endl;
     }
 }
 
-std::string TRestRawReadoutMetadata::GetTypeForChannelId(UShort_t channel) const {
+std::string TRestRawReadoutMetadata::GetTypeForChannelDaqId(UShort_t channel) const {
     if (fChannelInfo.find(channel) == fChannelInfo.end()) {
-        cerr << "TRestRawReadoutMetadata::GetTypeForChannelId: channel " << channel << " not found" << endl;
-        return {};
+        cerr << "TRestRawReadoutMetadata::GetTypeForChannelDaqId: channel " << channel << " not found"
+             << endl;
+        exit(1);
     }
     return fChannelInfo.at(channel).type;
 }
 
-std::string TRestRawReadoutMetadata::GetNameForChannelId(UShort_t channel) const {
+std::string TRestRawReadoutMetadata::GetNameForChannelDaqId(UShort_t channel) const {
     if (fChannelInfo.find(channel) == fChannelInfo.end()) {
-        cerr << "TRestRawReadoutMetadata::GetNameForChannelId: channel " << channel << " not found" << endl;
-        return {};
+        cerr << "TRestRawReadoutMetadata::GetNameForChannelDaqId: channel " << channel << " not found"
+             << endl;
+        exit(1);
     }
     return fChannelInfo.at(channel).name;
 }
 
-std::vector<UShort_t> TRestRawReadoutMetadata::GetChannelIDsForType(const std::string& type) const {
+std::vector<UShort_t> TRestRawReadoutMetadata::GetChannelDaqIDsForType(const std::string& type) const {
     std::vector<UShort_t> result;
     for (const auto& channel : fChannelInfo) {
         if (channel.second.type == type) {

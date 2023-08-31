@@ -811,6 +811,7 @@ TRestRawSignalEvent TRestRawSignalEvent::GetSignalEventForType(const string& typ
 
 TRestRawSignalEvent TRestRawSignalEvent::GetSignalEventForTypes(
     const std::set<std::string>& types, const TRestRawReadoutMetadata* readoutMetadata) const {
+    // TODO: verify this works
     TRestRawSignalEvent signalEvent;
     signalEvent.SetEventInfo((TRestEvent*)this);
     auto metadata = readoutMetadata ? readoutMetadata : GetReadoutMetadata();
@@ -819,7 +820,7 @@ TRestRawSignalEvent TRestRawSignalEvent::GetSignalEventForTypes(
         exit(1);
     }
     for (const auto& signal : fSignal) {
-        const string signalType = metadata->GetTypeForChannelId(signal.GetSignalID());
+        const string signalType = metadata->GetTypeForChannelDaqId(signal.GetSignalID());
         if (types.empty() || types.find(signalType) != types.end()) {
             signalEvent.AddSignal(const_cast<TRestRawSignal&>(signal));
         }

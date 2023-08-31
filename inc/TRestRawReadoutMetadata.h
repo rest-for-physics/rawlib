@@ -14,7 +14,7 @@ class TRestRawReadoutMetadata : public TRestMetadata {
     struct ChannelInfo {
         std::string type;
         std::string name;
-        UShort_t daqId;
+        UShort_t channelId;
         // other members
     };
     // maps daq id to channel info
@@ -23,12 +23,12 @@ class TRestRawReadoutMetadata : public TRestMetadata {
     void InitializeFromReadout(TRestDetectorReadout* readout);
 
    public:
-    std::string GetTypeForChannelId(UShort_t channel) const;
-    std::string GetNameForChannelId(UShort_t channel) const;
+    std::string GetTypeForChannelDaqId(UShort_t channel) const;
+    std::string GetNameForChannelDaqId(UShort_t channel) const;
 
-    Int_t GetDaqIdForChannelId(UShort_t channel) const;
+    Int_t GetChannelIdForChannelDaqId(UShort_t channel) const;
 
-    std::vector<UShort_t> GetChannelIDsForType(const std::string& type) const;
+    std::vector<UShort_t> GetChannelDaqIDsForType(const std::string& type) const;
 
     void PrintMetadata() const;
 
