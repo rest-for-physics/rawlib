@@ -253,6 +253,8 @@ using namespace std;
 
 ClassImp(TRestRawSignalAnalysisProcess);
 
+TRestRawReadoutMetadata* TRestRawSignalAnalysisProcess::Metadata = nullptr;
+
 ///////////////////////////////////////////////
 /// \brief Default constructor
 ///
@@ -281,6 +283,8 @@ void TRestRawSignalAnalysisProcess::InitProcess() {
     if (fSignalsRange.X() != -1 && fSignalsRange.Y() != -1) {
         fRangeEnabled = true;
     }
+
+    fReadoutMetadata = TRestRawSignalAnalysisProcess::Metadata;
 }
 
 ///////////////////////////////////////////////
@@ -288,6 +292,7 @@ void TRestRawSignalAnalysisProcess::InitProcess() {
 ///
 TRestEvent* TRestRawSignalAnalysisProcess::ProcessEvent(TRestEvent* inputEvent) {
     fSignalEvent = (TRestRawSignalEvent*)inputEvent;
+    fSignalEvent->InitializeReferences(GetRunInfo());
 
     // we save some complex typed analysis result
     map<int, Double_t> baseline;

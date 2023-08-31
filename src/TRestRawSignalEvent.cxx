@@ -809,12 +809,13 @@ TRestRawSignalEvent TRestRawSignalEvent::GetSignalEventForType(const string& typ
     return GetSignalEventForTypes({type});
 }
 
-TRestRawSignalEvent TRestRawSignalEvent::GetSignalEventForTypes(const std::set<std::string>& types) const {
+TRestRawSignalEvent TRestRawSignalEvent::GetSignalEventForTypes(
+    const std::set<std::string>& types, const TRestRawReadoutMetadata* readoutMetadata ) const {
     TRestRawSignalEvent signalEvent;
     signalEvent.SetEventInfo((TRestEvent*)this);
-    const auto metadata = GetReadoutMetadata();
+    auto metadata = readoutMetadata ? readoutMetadata : GetReadoutMetadata();
     if (metadata == nullptr) {
-        cerr << "TRestRawSignalEvent::GetSignalEventForType: metadata is nullptr" << endl;
+        cerr << "TRestRawSignalEvent::GetSignalEventForTypes: metadata is nullptr" << endl;
         exit(1);
     }
     for (const auto& signal : fSignal) {

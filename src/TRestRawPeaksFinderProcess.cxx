@@ -14,10 +14,11 @@ using namespace std;
 
 TRestRawReadoutMetadata* TRestRawPeaksFinderProcess::Metadata = nullptr;
 
-void TRestRawPeaksFinderProcess::InitProcess() { }
+void TRestRawPeaksFinderProcess::InitProcess() { fReadoutMetadata = TRestRawPeaksFinderProcess::Metadata; }
 
 TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
     fSignalEvent = dynamic_cast<TRestRawSignalEvent*>(inputEvent);
+    fSignalEvent->InitializeReferences(GetRunInfo());
 
     if (fReadoutMetadata == nullptr) {
         fReadoutMetadata = fSignalEvent->GetReadoutMetadata();
@@ -35,7 +36,7 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
     }
 
     // filter the event by channel type
-    auto event = fSignalEvent->GetSignalEventForTypes(fChannelTypes);
+    auto event = fSignalEvent->GetSignalEventForTypes(fChannelTypes, fReadoutMetadata);
 
     std::vector<tuple<UShort_t, UShort_t, double>> eventPeaks;
 

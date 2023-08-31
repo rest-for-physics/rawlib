@@ -34,6 +34,8 @@ class TRestRawPeaksFinderProcess : public TRestEventProcess {
 
     void PrintMetadata() override;
 
+    static TRestRawReadoutMetadata* Metadata;
+
     void InitProcess() override;
     TRestEvent* ProcessEvent(TRestEvent* inputEvent) override;
     void EndProcess() override {}
@@ -43,8 +45,6 @@ class TRestRawPeaksFinderProcess : public TRestEventProcess {
     explicit TRestRawPeaksFinderProcess(const char* configFilename){};
 
     void InitFromConfigFile() override;
-
-    static TRestRawReadoutMetadata* Metadata;
 
     TRestRawPeaksFinderProcess() = default;
     ~TRestRawPeaksFinderProcess() = default;

@@ -57,6 +57,8 @@ class TRestRawSignalAnalysisProcess : public TRestEventProcess {
     /// It defines the signals id range where analysis is applied
     TVector2 fSignalsRange = TVector2(-1, -1);  //<
 
+    TRestRawReadoutMetadata* fReadoutMetadata = nullptr;
+
     void Initialize() override;
 
    protected:
@@ -68,6 +70,8 @@ class TRestRawSignalAnalysisProcess : public TRestEventProcess {
 
     void InitProcess() override;
     TRestEvent* ProcessEvent(TRestEvent* inputEvent) override;
+
+    static TRestRawReadoutMetadata* Metadata;
 
     void PrintMetadata() override {
         BeginPrintProcess();
