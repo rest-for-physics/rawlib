@@ -816,12 +816,12 @@ TRestRawSignalEvent TRestRawSignalEvent::GetSignalEventForTypes(
     signalEvent.SetEventInfo((TRestEvent*)this);
     auto metadata = readoutMetadata ? readoutMetadata : GetReadoutMetadata();
     if (metadata == nullptr) {
-        cerr << "TRestRawSignalEvent::GetSignalEventForTypes: metadata is nullptr" << endl;
-        exit(1);
+        // cerr << "TRestRawSignalEvent::GetSignalEventForTypes: metadata is nullptr" << endl;
+        // exit(1);
     }
     for (const auto& signal : fSignal) {
-        const string signalType = metadata->GetTypeForChannelDaqId(signal.GetSignalID());
-        if (types.empty() || types.find(signalType) != types.end()) {
+        if (types.empty() ||
+            types.find(metadata->GetTypeForChannelDaqId(signal.GetSignalID())) != types.end()) {
             signalEvent.AddSignal(const_cast<TRestRawSignal&>(signal));
         }
     }
