@@ -8,6 +8,8 @@ using namespace std;
 
 ClassImp(TRestRawReadoutMetadata);
 
+TRestRawReadoutMetadata* TRestRawReadoutMetadata::Metadata = nullptr;
+
 void TRestRawReadoutMetadata::PrintMetadata() const {
     cout << "Number of channels: " << fChannelInfo.size() << endl;
     map<string, int> typesCount;
