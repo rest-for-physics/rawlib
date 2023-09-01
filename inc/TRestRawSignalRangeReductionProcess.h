@@ -61,6 +61,9 @@ class TRestRawSignalRangeReductionProcess : public TRestEventProcess {
 
     void LoadConfig(const std::string& configFilename, const std::string& name = "");
 
+    Double_t  ConvertFromStartingRangeToTargetRange(Double_t value) const;
+    Double_t  ConvertFromTargetRangeToStartingRange(Double_t  value) const;
+
     inline void PrintMetadata() override {
         BeginPrintProcess();
 
