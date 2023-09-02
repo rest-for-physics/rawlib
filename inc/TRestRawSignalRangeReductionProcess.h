@@ -42,7 +42,7 @@ class TRestRawSignalRangeReductionProcess : public TRestEventProcess {
     TVector2 fDigitizationInputRange =
         TVector2(std::numeric_limits<Short_t>::min(), std::numeric_limits<Short_t>::max());
 
-    TVector2 fDigitizationOutputRange;  //!
+    TVector2 fDigitizationOutputRange;
 
    public:
     void Initialize() override;
@@ -84,6 +84,6 @@ class TRestRawSignalRangeReductionProcess : public TRestEventProcess {
     // Destructor
     ~TRestRawSignalRangeReductionProcess();
 
-    ClassDefOverride(TRestRawSignalRangeReductionProcess, 1);
+    ClassDefOverride(TRestRawSignalRangeReductionProcess, 2);
 };
 #endif  // RestCore_TRestRawSignalRangeReductionProcess
