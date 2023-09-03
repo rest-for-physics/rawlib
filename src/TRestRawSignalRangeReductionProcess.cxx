@@ -65,8 +65,6 @@ void TRestRawSignalRangeReductionProcess::InitFromConfigFile() {
 
 void TRestRawSignalRangeReductionProcess::InitProcess() {
     fDigitizationOutputRange = {0, TMath::Power(2, fResolutionInBits) - 1};
-
-    PrintMetadata();
 }
 
 TRestEvent* TRestRawSignalRangeReductionProcess::ProcessEvent(TRestEvent* inputEvent) {

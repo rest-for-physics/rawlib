@@ -136,8 +136,6 @@ void TRestRawPeaksFinderProcess::InitFromConfigFile() {
         fChannelTypes.insert(filterType);
     }
 
-    cout << "TRestRawPeaksFinderProcess::InitProcess: filter type: " << filterType << endl;
-
     if (fChannelTypes.empty()) {
         // if no channel type is specified, use all channel types
     }
