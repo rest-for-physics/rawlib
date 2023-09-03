@@ -127,7 +127,7 @@ Double_t TRestRawSignalRangeReductionProcess::ConvertFromStartingRangeToTargetRa
     const Double_t conversionFactor = (fDigitizationOutputRange.Y() - fDigitizationOutputRange.X()) /
                                       (fDigitizationInputRange.Y() - fDigitizationInputRange.X());
     const Double_t newValue =
-        fDigitizationOutputRange.X() + (value - fDigitizationInputRange.X()) * conversionFactor;
+        round(fDigitizationOutputRange.X() + (value - fDigitizationInputRange.X()) * conversionFactor);
 
     if (newValue < fDigitizationOutputRange.X()) {
         return fDigitizationOutputRange.X();
@@ -142,7 +142,7 @@ Double_t TRestRawSignalRangeReductionProcess::ConvertFromTargetRangeToStartingRa
     const Double_t conversionFactor = (fDigitizationInputRange.Y() - fDigitizationInputRange.X()) /
                                       (fDigitizationOutputRange.Y() - fDigitizationOutputRange.X());
     const Double_t newValue =
-        fDigitizationInputRange.X() + (value - fDigitizationOutputRange.X()) * conversionFactor;
+        round(fDigitizationInputRange.X() + (value - fDigitizationOutputRange.X()) * conversionFactor);
 
     if (newValue < fDigitizationInputRange.X()) {
         return fDigitizationInputRange.X();
