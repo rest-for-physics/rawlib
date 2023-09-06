@@ -158,7 +158,7 @@ Int_t REST_Raw_PlotVetoData(
             obsID = aTree->GetObservableID(obsNameTime[i]);
             peakTimeMap.clear();
 
-            any a = aTree->GetObservable(obsID);
+            auto a = aTree->GetObservable(obsID);
 
             a >> peakTimeMap;
 

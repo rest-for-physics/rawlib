@@ -53,8 +53,8 @@ class TRestRawSignalConvolutionFittingProcess : public TRestEventProcess {
     // add here the members of your event process
 
    public:
-    any GetInputEvent() const override { return fRawSignalEvent; }
-    any GetOutputEvent() const override { return fRawSignalEvent; }
+    RESTValue GetInputEvent() const override { return fRawSignalEvent; }
+    RESTValue GetOutputEvent() const override { return fRawSignalEvent; }
 
     void InitProcess() override;
     TRestEvent* ProcessEvent(TRestEvent* inputEvent) override;
