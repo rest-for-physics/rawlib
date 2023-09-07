@@ -12,9 +12,7 @@ ClassImp(TRestRawPeaksFinderProcess);
 
 using namespace std;
 
-TRestRawReadoutMetadata* TRestRawPeaksFinderProcess::Metadata = nullptr;
-
-void TRestRawPeaksFinderProcess::InitProcess() { fReadoutMetadata = TRestRawPeaksFinderProcess::Metadata; }
+void TRestRawPeaksFinderProcess::InitProcess() {}
 
 TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
     fSignalEvent = dynamic_cast<TRestRawSignalEvent*>(inputEvent);
@@ -23,11 +21,11 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
 
     if (fReadoutMetadata == nullptr) {
         fReadoutMetadata = fSignalEvent->GetReadoutMetadata();
+    }
 
-        if (fReadoutMetadata == nullptr) {
-            cerr << "TRestRawPeaksFinderProcess::ProcessEvent: readout metadata is null" << endl;
-            exit(1);
-        }
+    if (fReadoutMetadata == nullptr) {
+        cerr << "TRestRawPeaksFinderProcess::ProcessEvent: readout metadata is null" << endl;
+        exit(1);
     }
 
     std::vector<tuple<UShort_t, UShort_t, double>> eventPeaks;

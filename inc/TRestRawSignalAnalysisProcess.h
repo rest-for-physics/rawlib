@@ -73,8 +73,6 @@ class TRestRawSignalAnalysisProcess : public TRestEventProcess {
     void InitProcess() override;
     TRestEvent* ProcessEvent(TRestEvent* inputEvent) override;
 
-    static TRestRawReadoutMetadata* Metadata;
-
     void InitFromConfigFile() override;
 
     void PrintMetadata() override {

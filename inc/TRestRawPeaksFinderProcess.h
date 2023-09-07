@@ -32,8 +32,6 @@ class TRestRawPeaksFinderProcess : public TRestEventProcess {
 
     void PrintMetadata() override;
 
-    static TRestRawReadoutMetadata* Metadata;
-
     void InitProcess() override;
     TRestEvent* ProcessEvent(TRestEvent* inputEvent) override;
     void EndProcess() override {}

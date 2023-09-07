@@ -253,8 +253,6 @@ using namespace std;
 
 ClassImp(TRestRawSignalAnalysisProcess);
 
-TRestRawReadoutMetadata* TRestRawSignalAnalysisProcess::Metadata = nullptr;
-
 ///////////////////////////////////////////////
 /// \brief Default constructor
 ///
@@ -272,7 +270,6 @@ TRestRawSignalAnalysisProcess::~TRestRawSignalAnalysisProcess() {}
 void TRestRawSignalAnalysisProcess::Initialize() {
     SetSectionName(this->ClassName());
     SetLibraryVersion(LIBRARY_VERSION);
-
     fSignalEvent = nullptr;
 }
 
@@ -283,8 +280,6 @@ void TRestRawSignalAnalysisProcess::InitProcess() {
     if (fSignalsRange.X() != -1 && fSignalsRange.Y() != -1) {
         fRangeEnabled = true;
     }
-
-    fReadoutMetadata = TRestRawSignalAnalysisProcess::Metadata;
 }
 
 void TRestRawSignalAnalysisProcess::InitFromConfigFile() {

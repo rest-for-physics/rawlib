@@ -35,8 +35,6 @@ class TRestRawReadoutMetadata : public TRestMetadata {
     TRestRawReadoutMetadata() = default;
     ~TRestRawReadoutMetadata() = default;
 
-    static TRestRawReadoutMetadata* Metadata;
-
     ClassDef(TRestRawReadoutMetadata, 1)
 };
 
