@@ -142,7 +142,9 @@ void TRestRawSignalAddNoiseProcess::Initialize() {
 /// corresponding TRestGeant4AnalysisProcess section inside the RML.
 ///
 void TRestRawSignalAddNoiseProcess::LoadConfig(const string& configFilename, const string& name) {
-    if (LoadConfigFromFile(configFilename, name) == -1) LoadDefaultConfig();
+    if (LoadConfigFromFile(configFilename, name) == -1) {
+        LoadDefaultConfig();
+    }
 }
 
 ///////////////////////////////////////////////

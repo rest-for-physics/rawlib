@@ -1,8 +1,19 @@
+
+#include <TRestRawSignal.h>
+#include <TRestRawSignalAddNoiseProcess.h>
+#include <TRestRawSignalEvent.h>
+#include <TRestRawSignalFittingProcess.h>
+#include <TRestRawSignalShapingProcess.h>
+
+using namespace std;
+
 Int_t GeneralFit(Bool_t draw = false) {
     TRestRawSignalEvent* ev = new TRestRawSignalEvent();
 
     TRestRawSignal* sgnl = new TRestRawSignal();
-    for (int n = 0; n < 512; n++) sgnl->AddPoint(0);
+    for (int n = 0; n < 512; n++) {
+        sgnl->AddPoint((Double_t)0);
+    }
     sgnl->IncreaseBinBy(70, 100);
     ev->AddSignal(*sgnl);
 

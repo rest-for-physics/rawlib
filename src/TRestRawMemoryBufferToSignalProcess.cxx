@@ -304,19 +304,19 @@ TRestEvent* TRestRawMemoryBufferToSignalProcess::ProcessEvent(TRestEvent* inputE
             SemaphoreRed(fSemaphoreId);
 
             for (unsigned int s = 0; s < fShMem_daqInfo->nSignals; s++) {
-                TRestRawSignal sgnl;
-                sgnl.SetSignalID(fShMem_Buffer[s * (maxSamples + 1)]);
+                TRestRawSignal signal;
+                signal.SetSignalID(fShMem_Buffer[s * (maxSamples + 1)]);
 
                 if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Debug)
-                    cout << "s : " << s << " id : " << sgnl.GetSignalID() << endl;
+                    cout << "s : " << s << " id : " << signal.GetSignalID() << endl;
 
                 for (int n = 0; n < maxSamples; n++) {
-                    sgnl.AddPoint(fShMem_Buffer[s * (maxSamples + 1) + 1 + n]);
+                    signal.AddPoint((Short_t)fShMem_Buffer[s * (maxSamples + 1) + 1 + n]);
                 }
-                fOutputRawSignalEvent->AddSignal(sgnl);
+                fOutputRawSignalEvent->AddSignal(signal);
 
                 if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Extreme) {
-                    sgnl.Print();
+                    signal.Print();
                     GetChar();
                 }
             }

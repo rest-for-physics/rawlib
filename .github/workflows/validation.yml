@@ -144,3 +144,27 @@ jobs:
           cd ${{ env.RAW_LIB_PATH }}/pipeline/external/dream
           restManager --c dream.rml --f dummyDreamData.fdf
           restRoot -b -q dream.C
+  BiPoData:
+    name: Process BiPo data
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/lobis/root-geant4-garfield:rest-for-physics
+    needs: [ build-rawlib ]
+    steps:
+      - uses: rest-for-physics/framework/.github/actions/checkout@master
+        with:
+          branch: ${{ env.BRANCH_NAME }}
+          repository: rest-for-physics/rawlib
+          path: ${{ env.RAW_LIB_PATH }}
+      - name: Restore cache
+        uses: actions/cache@v3
+        id: rawlib-install-cache
+        with:
+          key: ${{ env.BRANCH_NAME }}-${{ github.sha }}
+          path: ${{ env.REST_PATH }}
+      - name: BiPo data
+        run: |
+          source ${{ env.REST_PATH }}/thisREST.sh
+          cd ${{ env.RAW_LIB_PATH }}/pipeline/external/BiPo
+          restManager --c BiPoToRawSignal.rml --f BiPo3Mod2_run_2600.data
+          restRoot -b -q Validate.C
