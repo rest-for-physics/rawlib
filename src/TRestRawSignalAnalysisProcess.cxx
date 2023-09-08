@@ -288,13 +288,15 @@ void TRestRawSignalAnalysisProcess::InitFromConfigFile() {
         fChannelTypes.insert(filterType);
     }
 }
+
 ///////////////////////////////////////////////
 /// \brief The main processing event function
 ///
-TRestEvent* TRestRawSignalAnalysisProcess::ProcessEvent(TRestEvent* inputEvent) {
-    fSignalEvent = (TRestRawSignalEvent*)inputEvent;
+TRestEvent *TRestRawSignalAnalysisProcess::ProcessEvent(TRestEvent *inputEvent) {
+    fSignalEvent = (TRestRawSignalEvent *) inputEvent;
     fSignalEvent->InitializeReferences(GetRunInfo());
-    auto event = fSignalEvent->GetSignalEventForTypes(fChannelTypes, fReadoutMetadata);
+    // auto event = fSignalEvent->GetSignalEventForTypes(fChannelTypes, fReadoutMetadata);
+    auto event = *fSignalEvent;
 
     // we save some complex typed analysis result
     map<int, Double_t> baseline;
@@ -323,7 +325,7 @@ TRestEvent* TRestRawSignalAnalysisProcess::ProcessEvent(TRestEvent* inputEvent) 
     event.SetRange(fIntegralRange);
 
     for (int s = 0; s < event.GetNumberOfSignals(); s++) {
-        TRestRawSignal* sgnl = event.GetSignal(s);
+        TRestRawSignal *sgnl = event.GetSignal(s);
 
         /// Important call we need to initialize the points over threshold in a TRestRawSignal
         sgnl->InitializePointsOverThreshold(TVector2(fPointThreshold, fSignalThreshold),
@@ -441,7 +443,7 @@ TRestEvent* TRestRawSignalAnalysisProcess::ProcessEvent(TRestEvent* inputEvent) 
     Double_t peakTimeAverage = 0;
 
     for (int s = 0; s < event.GetNumberOfSignals(); s++) {
-        TRestRawSignal* sgnl = event.GetSignal(s);
+        TRestRawSignal *sgnl = event.GetSignal(s);
 
         if (fRangeEnabled && (sgnl->GetID() < fSignalsRange.X() || sgnl->GetID() > fSignalsRange.Y()))
             continue;
@@ -490,7 +492,7 @@ TRestEvent* TRestRawSignalAnalysisProcess::ProcessEvent(TRestEvent* inputEvent) 
     SetObservableValue("AveragePeakTime", peakTimeAverage);
 
     if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Debug) {
-        for (const auto& i : fObservablesDefined) {
+        for (const auto &i: fObservablesDefined) {
             fAnalysisTree->PrintObservable(i.second);
         }
     }
