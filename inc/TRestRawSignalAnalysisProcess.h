@@ -29,9 +29,9 @@
 
 //! An analysis process to extract valuable information from a TRestRawSignalEvent.
 class TRestRawSignalAnalysisProcess : public TRestEventProcess {
-   private:
+private:
     /// A pointer to the specific TRestRawSignalEvent input
-    TRestRawSignalEvent* fSignalEvent;  //!
+    TRestRawSignalEvent *fSignalEvent;  //!
 
     /// Just a flag to quickly determine if we have to apply the range filter
     Bool_t fRangeEnabled = false;  //!
@@ -51,27 +51,32 @@ class TRestRawSignalAnalysisProcess : public TRestEventProcess {
     /// A parameter to define a minimum signal fluctuation. Measured in sigmas.
     Double_t fSignalThreshold = 5;
 
+    /// avoid error when loading parameters (not used)
+    std::string fChannelType; //!
+
     /// The minimum number of points over threshold to identify a signal as such
     Int_t fPointsOverThreshold = 5;
 
     /// It defines the signals id range where analysis is applied
     TVector2 fSignalsRange = TVector2(-1, -1);  //<
 
-    TRestRawReadoutMetadata* fReadoutMetadata = nullptr;
+    TRestRawReadoutMetadata *fReadoutMetadata = nullptr;
 
     void Initialize() override;
 
     std::set<std::string> fChannelTypes = {};  // this process will only be applied to selected channel types
 
-   protected:
+protected:
     // add here the members of your event process
 
-   public:
+public:
     RESTValue GetInputEvent() const override { return fSignalEvent; }
+
     RESTValue GetOutputEvent() const override { return fSignalEvent; }
 
     void InitProcess() override;
-    TRestEvent* ProcessEvent(TRestEvent* inputEvent) override;
+
+    TRestEvent *ProcessEvent(TRestEvent *inputEvent) override;
 
     void InitFromConfigFile() override;
 
@@ -91,11 +96,13 @@ class TRestRawSignalAnalysisProcess : public TRestEventProcess {
         EndPrintProcess();
     }
 
-    const char* GetProcessName() const override { return "rawSignalAnalysis"; }
+    const char *GetProcessName() const override { return "rawSignalAnalysis"; }
 
     TRestRawSignalAnalysisProcess();
+
     ~TRestRawSignalAnalysisProcess();
 
-    ClassDefOverride(TRestRawSignalAnalysisProcess, 5);
+ClassDefOverride(TRestRawSignalAnalysisProcess, 5);
 };
+
 #endif
