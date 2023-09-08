@@ -1,0 +1,14 @@
+<TRestRun name="TREX-DM" title="TREX-DM test data analysis" verboseLevel="silent">
+	<parameter name="experimentName" value="BiPo"/>
+	<parameter name="runNumber" value="preserve"/>
+	<parameter name="runTag" value="preserve"/>
+	<parameter name="runType" value="${RUN_TYPE}"/>
+	<parameter name="runDescription" value=""/>
+	<parameter name="user" value="${USER}"/>
+	<parameter name="verboseLevel" value="0"/>
+	<parameter name="overwrite" value="on" />
+	<parameter name="outputFileName" value="[fRunType]_[fRunTag]_[fRunNumber].root" />
+	<parameter name="readOnly" value="false" />
+	<parameter name="inputFormat" value="${FORMAT}" />
+
+</TRestRun>

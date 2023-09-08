@@ -105,8 +105,8 @@ class TRestRawMemoryBufferToSignalProcess : public TRestEventProcess {
 
    protected:
    public:
-    any GetInputEvent() const override { return any((TRestEvent*)nullptr); }
-    any GetOutputEvent() const override { return fOutputRawSignalEvent; }
+    RESTValue GetInputEvent() const override { return RESTValue((TRestEvent*)nullptr); }
+    RESTValue GetOutputEvent() const override { return fOutputRawSignalEvent; }
 
     void InitProcess() override;
 

@@ -58,15 +58,15 @@ class TRestRawToSignalProcess : public TRestEventProcess {
     void LoadDefaultConfig();
 
    public:
-    any GetInputEvent() const override { return any((TRestEvent*)nullptr); }
-    any GetOutputEvent() const override { return fSignalEvent; }
+    RESTValue GetInputEvent() const override { return RESTValue((TRestEvent*)nullptr); }
+    RESTValue GetOutputEvent() const override { return fSignalEvent; }
 
     virtual void InitProcess() override {
         fRunOrigin = fRunInfo->GetRunNumber();
         fSubRunOrigin = fRunInfo->GetSubRunNumber();
     }
 
-    void PrintMetadata() override;
+    virtual void PrintMetadata() override;
     void Initialize() override;
     TRestMetadata* GetProcessMetadata() const { return nullptr; }
 

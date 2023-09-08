@@ -50,8 +50,8 @@ class TRestRawSignalRemoveChannelsProcess : public TRestEventProcess {
     TVector2 fSignalRange = TVector2(-1, -1);
 
    public:
-    any GetInputEvent() const override { return fInputSignalEvent; }
-    any GetOutputEvent() const override { return fOutputSignalEvent; }
+    RESTValue GetInputEvent() const override { return fInputSignalEvent; }
+    RESTValue GetOutputEvent() const override { return fOutputSignalEvent; }
 
     TRestEvent* ProcessEvent(TRestEvent* inputEvent) override;
 
