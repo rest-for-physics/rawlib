@@ -758,30 +758,19 @@ TPad* TRestRawSignalEvent::DrawSignal(Int_t signalID, TString option) {
 
     gr2->Draw("CP");
 
-    vector<Int_t> pOver = signal->GetPointsOverThreshold();
+    auto pOver = signal->GetPointsOverThreshold();
 
-    TGraph* gr3[5];
-    Int_t nGraphs = 0;
-    gr3[nGraphs] = new TGraph();
-    gr3[nGraphs]->SetLineWidth(2);
-    gr3[nGraphs]->SetLineColor(3);
+    TGraph* gr3;
+    gr3 = new TGraph();
+    gr3->SetLineWidth(2);
+    gr3->SetLineColor(3);
     Int_t point = 0;
-    Int_t nPoints = pOver.size();
-    for (int n = 0; n < nPoints; n++) {
-        gr3[nGraphs]->SetPoint(point, pOver[n], signal->GetData(pOver[n]));
+    for (const auto& [index, data] : pOver) {
+        gr3->SetPoint(point, index, data);
         point++;
-        if (n + 1 < nPoints && pOver[n + 1] - pOver[n] > 1) {
-            gr3[nGraphs]->Draw("CP");
-            nGraphs++;
-            if (nGraphs > 4) cout << "Ngraphs : " << nGraphs << endl;
-            point = 0;
-            gr3[nGraphs] = new TGraph();
-            gr3[nGraphs]->SetLineWidth(2);
-            gr3[nGraphs]->SetLineColor(3);  // Green
-        }
     }
 
-    if (nPoints > 0) gr3[nGraphs]->Draw("CP");
+    if (!pOver.empty()) gr3->Draw("CP");
 
     return fPad;
 }

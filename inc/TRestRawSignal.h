@@ -37,10 +37,6 @@ class TRestRawSignal {
    private:
     void CalculateThresholdIntegral();
 
-    void CalculateBaseLineSigmaSD(Int_t startBin, Int_t endBin);
-
-    void CalculateBaseLineSigmaIQR(Int_t startBin, Int_t endBin);
-
     std::vector<Float_t> GetSignalSmoothed_ExcludeOutliers(Int_t averagingPoints);
 
    protected:
@@ -60,7 +56,7 @@ class TRestRawSignal {
     TGraph* fGraph;  //!
 
     /// A std::vector containing the index of points that are identified over threshold.
-    std::vector<Int_t> fPointsOverThreshold;  //!
+    std::vector<std::pair<Int_t, Float_t> > fPointsOverThreshold;  //!
 
     /// It stores the integral value obtained from the points identified over threshold.
     Double_t fThresholdIntegral = -1;  //!
@@ -84,13 +80,13 @@ class TRestRawSignal {
     inline Int_t GetSignalID() const { return fSignalID; }
 
     /// Returns the value of signal ID
-    inline Int_t GetID() const { return fSignalID; }
+    inline Int_t GetID() const { return GetSignalID(); }
 
     /// Returns the actual number of points, or size of the signal
     inline Int_t GetNumberOfPoints() const { return fSignalData.size(); }
 
     /// Returns a std::vector containing the indexes of data points over threshold
-    inline std::vector<Int_t> GetPointsOverThreshold() const { return fPointsOverThreshold; }
+    inline auto GetPointsOverThreshold() const { return fPointsOverThreshold; }
 
     /// Returns the maximum value found in the data points. It includes baseline correction
     inline Double_t GetMaxValue() { return GetMaxPeakValue(); }
@@ -115,8 +111,12 @@ class TRestRawSignal {
     /// Returns the range defined by user
     inline TVector2 GetRange() const { return fRange; }
 
+    inline std::vector<Short_t> GetSignalData() const { return fSignalData; }
+
     /// Returns false if the baseline and its baseline fluctuation was not initialized.
     inline Bool_t isBaseLineInitialized() const { return !(fBaseLineSigma == 0 && fBaseLine == 0); }
+
+    std::vector<Float_t> GetData() const;
 
     Double_t GetData(Int_t n) const;
 
@@ -188,15 +188,9 @@ class TRestRawSignal {
 
     void GetDifferentialSignal(TRestRawSignal* diffSignal, Int_t smearPoints);
 
-    void GetSignalSmoothed(TRestRawSignal* smoothedSignal, Int_t averagingPoints);
-
     std::vector<Float_t> GetSignalSmoothed(Int_t averagingPoints, std::string option = "");
 
     void GetWhiteNoiseSignal(TRestRawSignal* noiseSignal, Double_t noiseLevel = 1.);
-
-    void CalculateBaseLineMean(Int_t startBin, Int_t endBin);
-
-    void CalculateBaseLineMedian(Int_t startBin, Int_t endBin);
 
     void CalculateBaseLine(Int_t startBin, Int_t endBin, const std::string& option = "");
 
