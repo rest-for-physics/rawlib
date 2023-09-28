@@ -315,17 +315,23 @@ void TRestRawSignalEvent::PrintEvent() {
 // TODO: GetMaxTimeFast, GetMinTimeFast, GetMaxValueFast that return the value
 // of fMinTime, fMaxTime, etc
 void TRestRawSignalEvent::SetMaxAndMin() {
-    fMinValue = 1E10;
-    fMaxValue = -1E10;
-    fMinTime = 0;
-    fMaxTime = -1E10;
+    fMinValue = numeric_limits<Double_t>::max();
+    fMaxValue = numeric_limits<Double_t>::min();
+    fMinTime = numeric_limits<Double_t>::max();
+    fMaxTime = numeric_limits<Double_t>::min();
 
     for (int s = 0; s < GetNumberOfSignals(); s++) {
-        if (fMinValue > fSignal[s].GetMinValue()) fMinValue = fSignal[s].GetMinValue();
-        if (fMaxValue < fSignal[s].GetMaxValue()) fMaxValue = fSignal[s].GetMaxValue();
+        if (fMinValue > fSignal[s].GetMinValue()) {
+            fMinValue = fSignal[s].GetMinValue();
+        }
+        if (fMaxValue < fSignal[s].GetMaxValue()) {
+            fMaxValue = fSignal[s].GetMaxValue();
+        }
     }
 
-    if (GetNumberOfSignals() > 0) fMaxTime = fSignal[0].GetNumberOfPoints();
+    if (GetNumberOfSignals() > 0) {
+        fMaxTime = fSignal[0].GetNumberOfPoints();
+    }
 }
 
 Double_t TRestRawSignalEvent::GetMaxValue() {
@@ -678,7 +684,7 @@ void TRestRawSignalEvent::DrawSignals(TPad* pad, const std::vector<Int_t>& signa
 /// DrawEvent(100,"goodSignals[3.5,1.5,7]:baseLineRange[20,150]");
 /// \endcode
 ///
-TPad* TRestRawSignalEvent::DrawSignal(Int_t signalID, TString option) {
+TPad* TRestRawSignalEvent::DrawSignal(Int_t signalID, const TString& option) {
     int nSignals = this->GetNumberOfSignals();
 
     if (fPad != nullptr) {
@@ -744,7 +750,9 @@ TPad* TRestRawSignalEvent::DrawSignal(Int_t signalID, TString option) {
     RESTInfo << "Drawing signalID. Event ID : " << this->GetID() << " Signal ID : " << signal->GetID()
              << RESTendl;
 
-    for (int n = 0; n < signal->GetNumberOfPoints(); n++) gr->SetPoint(n, n, signal->GetData(n));
+    for (int n = 0; n < signal->GetNumberOfPoints(); n++) {
+        gr->SetPoint(n, n, signal->GetData(n));
+    }
 
     gr->Draw("AC*");
 
@@ -753,8 +761,9 @@ TPad* TRestRawSignalEvent::DrawSignal(Int_t signalID, TString option) {
     gr2->SetLineWidth(2);
     gr2->SetLineColor(2);  // Red
 
-    for (int n = baseLineRangeInit; n < baseLineRangeEnd; n++)
+    for (int n = baseLineRangeInit; n < baseLineRangeEnd; n++) {
         gr2->SetPoint(n - baseLineRangeInit, n, signal->GetData(n));
+    }
 
     gr2->Draw("CP");
 
@@ -781,7 +790,40 @@ TPad* TRestRawSignalEvent::DrawSignal(Int_t signalID, TString option) {
         }
     }
 
-    if (nPoints > 0) gr3[nGraphs]->Draw("CP");
+    if (nPoints > 0) {
+        gr3[nGraphs]->Draw("CP");
+    }
 
     return fPad;
+}
+
+TRestRawReadoutMetadata* TRestRawSignalEvent::GetReadoutMetadata() const {
+    if (fRun == nullptr) {
+        RESTError << "TRestRawSignalEvent::GetReadoutMetadata: fRun is nullptr" << RESTendl;
+        return nullptr;
+    }
+    return dynamic_cast<TRestRawReadoutMetadata*>(fRun->GetMetadataClass("TRestRawReadoutMetadata"));
+}
+
+TRestRawSignalEvent TRestRawSignalEvent::GetSignalEventForType(const string& type) const {
+    return GetSignalEventForTypes({type});
+}
+
+TRestRawSignalEvent TRestRawSignalEvent::GetSignalEventForTypes(
+    const std::set<std::string>& types, const TRestRawReadoutMetadata* readoutMetadata) const {
+    // TODO: verify this works
+    TRestRawSignalEvent signalEvent;
+    signalEvent.SetEventInfo((TRestEvent*)this);
+    auto metadata = readoutMetadata ? readoutMetadata : GetReadoutMetadata();
+    if (metadata == nullptr) {
+        // cerr << "TRestRawSignalEvent::GetSignalEventForTypes: metadata is nullptr" << endl;
+        // exit(1);
+    }
+    for (const auto& signal : fSignal) {
+        if (types.empty() ||
+            types.find(metadata->GetTypeForChannelDaqId(signal.GetSignalID())) != types.end()) {
+            signalEvent.AddSignal(const_cast<TRestRawSignal&>(signal));
+        }
+    }
+    return signalEvent;
 }

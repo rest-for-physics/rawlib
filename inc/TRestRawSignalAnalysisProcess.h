@@ -43,13 +43,16 @@ class TRestRawSignalAnalysisProcess : public TRestEventProcess {
     TVector2 fIntegralRange = TVector2(10, 500);
 
     /// Option for calculation of baseline parameters, can be set to "ROBUST"
-    std::string fBaseLineOption = "";  //<
+    std::string fBaseLineOption;  //<
 
-    /// The number of sigmas over baseline fluctuations to identify a point overthreshold
+    /// The number of sigmas over baseline fluctuations to identify a point over threshold
     Double_t fPointThreshold = 2;
 
     /// A parameter to define a minimum signal fluctuation. Measured in sigmas.
     Double_t fSignalThreshold = 5;
+
+    /// avoid error when loading parameters (not used)
+    std::string fChannelType;  //!
 
     /// The minimum number of points over threshold to identify a signal as such
     Int_t fPointsOverThreshold = 5;
@@ -57,17 +60,25 @@ class TRestRawSignalAnalysisProcess : public TRestEventProcess {
     /// It defines the signals id range where analysis is applied
     TVector2 fSignalsRange = TVector2(-1, -1);  //<
 
+    TRestRawReadoutMetadata* fReadoutMetadata = nullptr;
+
     void Initialize() override;
+
+    std::set<std::string> fChannelTypes = {};  // this process will only be applied to selected channel types
 
    protected:
     // add here the members of your event process
 
    public:
     RESTValue GetInputEvent() const override { return fSignalEvent; }
+
     RESTValue GetOutputEvent() const override { return fSignalEvent; }
 
     void InitProcess() override;
+
     TRestEvent* ProcessEvent(TRestEvent* inputEvent) override;
+
+    void InitFromConfigFile() override;
 
     void PrintMetadata() override {
         BeginPrintProcess();
@@ -87,9 +98,11 @@ class TRestRawSignalAnalysisProcess : public TRestEventProcess {
 
     const char* GetProcessName() const override { return "rawSignalAnalysis"; }
 
-    TRestRawSignalAnalysisProcess();   // Constructor
-    ~TRestRawSignalAnalysisProcess();  // Destructor
+    TRestRawSignalAnalysisProcess();
+
+    ~TRestRawSignalAnalysisProcess();
 
     ClassDefOverride(TRestRawSignalAnalysisProcess, 5);
 };
+
 #endif

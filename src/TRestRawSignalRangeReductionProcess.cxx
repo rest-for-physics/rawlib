@@ -65,8 +65,6 @@ void TRestRawSignalRangeReductionProcess::InitFromConfigFile() {
 
 void TRestRawSignalRangeReductionProcess::InitProcess() {
     fDigitizationOutputRange = {0, TMath::Power(2, fResolutionInBits) - 1};
-
-    PrintMetadata();
 }
 
 TRestEvent* TRestRawSignalRangeReductionProcess::ProcessEvent(TRestEvent* inputEvent) {
@@ -76,8 +74,6 @@ TRestEvent* TRestRawSignalRangeReductionProcess::ProcessEvent(TRestEvent* inputE
         return nullptr;
     }
 
-    const Double_t conversionFactor = (fDigitizationOutputRange.Y() - fDigitizationOutputRange.X()) /
-                                      (fDigitizationInputRange.Y() - fDigitizationInputRange.X());
     for (int n = 0; n < fInputRawSignalEvent->GetNumberOfSignals(); n++) {
         const TRestRawSignal* inputSignal = fInputRawSignalEvent->GetSignal(n);
         TRestRawSignal signal;
@@ -85,15 +81,8 @@ TRestEvent* TRestRawSignalRangeReductionProcess::ProcessEvent(TRestEvent* inputE
 
         for (int i = 0; i < inputSignal->GetNumberOfPoints(); i++) {
             const Double_t value = (Double_t)inputSignal->GetData(i);
-            Double_t newValue =
-                fDigitizationOutputRange.X() + (value - fDigitizationInputRange.X()) * conversionFactor;
-            if (newValue < fDigitizationOutputRange.X()) {
-                newValue = fDigitizationOutputRange.X();
-            } else if (newValue > fDigitizationOutputRange.Y()) {
-                newValue = fDigitizationOutputRange.Y();
-            }
-            const Short_t newValueDigitized = (Short_t)round(newValue);
-            signal.AddPoint(newValueDigitized);
+            Double_t newValue = ConvertFromStartingRangeToTargetRange(value);
+            signal.AddPoint(newValue);
         }
 
         fOutputRawSignalEvent->AddSignal(signal);
@@ -130,4 +119,35 @@ void TRestRawSignalRangeReductionProcess::SetDigitizationInputRange(const TVecto
                     << limitMax << RESTendl;
         fDigitizationInputRange = TVector2(range.X(), limitMax);
     }
+}
+
+Double_t TRestRawSignalRangeReductionProcess::ConvertFromStartingRangeToTargetRange(Double_t value) const {
+    const Double_t conversionFactor = (fDigitizationOutputRange.Y() - fDigitizationOutputRange.X()) /
+                                      (fDigitizationInputRange.Y() - fDigitizationInputRange.X());
+    const Double_t newValue =
+        round(fDigitizationOutputRange.X() + (value - fDigitizationInputRange.X()) * conversionFactor);
+
+    if (newValue < fDigitizationOutputRange.X()) {
+        return fDigitizationOutputRange.X();
+    } else if (newValue > fDigitizationOutputRange.Y()) {
+        return fDigitizationOutputRange.Y();
+    }
+
+    return newValue;
+}
+
+Double_t TRestRawSignalRangeReductionProcess::ConvertFromTargetRangeToStartingRange(Double_t value) const {
+    const Double_t conversionFactor = (fDigitizationInputRange.Y() - fDigitizationInputRange.X()) /
+                                      (fDigitizationOutputRange.Y() - fDigitizationOutputRange.X());
+    const Double_t newValue =
+        round(fDigitizationInputRange.X() + (value - fDigitizationOutputRange.X()) * conversionFactor);
+
+    if (newValue < fDigitizationInputRange.X()) {
+        return fDigitizationInputRange.X();
+    }
+    if (newValue > fDigitizationInputRange.Y()) {
+        return fDigitizationInputRange.Y();
+    }
+
+    return newValue;
 }
