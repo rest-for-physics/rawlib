@@ -359,9 +359,9 @@ Double_t TRestRawSignalEvent::GetMaxTime() {
 
 Double_t fAuxiliar = 0;
 
-void SetAuxiliar( Double_t aux ) { fAuxiliar = aux; }
+void SetAuxiliar(Double_t aux) { fAuxiliar = aux; }
 
-auto GetAuxiliar( ) { return fAuxiliar; }
+auto GetAuxiliar() { return fAuxiliar; }
 
 ///////////////////////////////////////////////
 /// \brief This method draws current raw signal event in a TPad.

@@ -19,8 +19,8 @@
  * If not, see http://www.gnu.org/licenses/.                             *
  * For the list of contributors see $REST_PATH/CREDITS.                  *
  *************************************************************************/
- 
- ////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////
 /// The TRestRawBiPoSignalAnalysisProcess is meant to add specific BiPo
 /// observables when doing the analysis.
 /// For the moment it gives the observable T1-T2_distance
@@ -80,9 +80,8 @@ void TRestRawBiPoToSignalProcess::InitProcess() {
 /// \brief The main processing event function
 ///
 TRestEvent* TRestRawBiPoSignalAnalysisProcess::ProcessEvent(TRestEvent* inputEvent) {
-	fSignalEvent = (TRestRawSignalEvent*)inputEvent;
-	
-	Double_t t1t2_BiPo = event.GetAuxiliar();
-    	SetObservableValue("T1-T2_distance", t1t2_BiPo);
-}
+    fSignalEvent = (TRestRawSignalEvent*)inputEvent;
 
+    Double_t t1t2_BiPo = event.GetAuxiliar();
+    SetObservableValue("T1-T2_distance", t1t2_BiPo);
+}

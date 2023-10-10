@@ -27,7 +27,6 @@
 
 #include "TRestEventProcess.h"
 
-class TRestRawSignalAnalysisProcess : public TRestEventProcess {
-}
+class TRestRawSignalAnalysisProcess : public TRestEventProcess {}
 
-#endif 
+#endif

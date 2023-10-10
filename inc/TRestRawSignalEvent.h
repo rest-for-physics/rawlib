@@ -71,10 +71,10 @@ class TRestRawSignalEvent : public TRestEvent {
     void SetTailPoints(Int_t p) {
         for (int n = 0; n < GetNumberOfSignals(); n++) fSignal[n].SetTailPoints(p);
     }
-    
+
     // Set and Get for BiPo
     void SetAuxiliar(Double_t aux);
-    auto GetAuxiliar( );
+    auto GetAuxiliar();
 
     /// It sets the range to be used for the baseline calculation and calls
     /// TRestRawSignal::CalculateBaseLine()
