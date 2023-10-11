@@ -1,0 +1,29 @@
+name: Check on framework PR
+
+on:
+  pull_request:
+    branches: [ "master" ]
+    types: [ "opened", "reopened", "created", "closed", "synchronize"]
+
+  workflow_dispatch:
+
+env:
+  BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  submodules-pr:
+    runs-on: ubuntu-latest
+    if: github.head_ref || github.ref_name != 'master'
+    steps:
+    - uses: actions/checkout@v3
+    #TODO change action branch
+    - name: Checkout submodules
+      uses: rest-for-physics/framework/.github/actions/automerge@auto-merge
+      with:
+        branch: ${{ env.BRANCH_NAME }}
+        repository: "rest-for-physics/framework"
+        token: ${{ secrets.REST_TOKEN }}
