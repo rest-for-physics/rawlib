@@ -26,6 +26,7 @@
 #include "TRestRawSignalEvent.h"
 #include "TRestEventProcess.h"
 
+<<<<<<< HEAD
 /// TODO Write here a brief description. Just one line!
 class TRestRawBiPoAnalysisProcess : public TRestEventProcess {
 private:
@@ -74,4 +75,8 @@ const char* GetProcessName() const override { return "BiPoAnalysis"; }
     ClassDefOverride(TRestRawBiPoAnalysisProcess, 1);
 
 };
+=======
+class TRestRawSignalAnalysisProcess : public TRestEventProcess {}
+
+>>>>>>> be55b092b46a7aa84ff6a83d22ec1516bf2f470e
 #endif

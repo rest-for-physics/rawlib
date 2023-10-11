@@ -72,10 +72,17 @@ class TRestRawSignalEvent : public TRestEvent {
     void SetTailPoints(Int_t p) {
         for (int n = 0; n < GetNumberOfSignals(); n++) fSignal[n].SetTailPoints(p);
     }
+<<<<<<< HEAD
     
     // Set and Get a tmp variable (for BiPo)
     void SetAuxiliar(Double_t aux);
     // auto GetAuxiliar( ) { return fAuxiliar; }
+=======
+
+    // Set and Get for BiPo
+    void SetAuxiliar(Double_t aux);
+    auto GetAuxiliar();
+>>>>>>> be55b092b46a7aa84ff6a83d22ec1516bf2f470e
 
     /// It sets the range to be used for the baseline calculation and calls
     /// TRestRawSignal::CalculateBaseLine()

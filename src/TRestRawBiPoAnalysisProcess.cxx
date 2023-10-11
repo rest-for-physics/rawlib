@@ -83,6 +83,7 @@ void TRestRawBiPoAnalysisProcess::InitProcess() {
     fEventCounter = 0;
 }
 
+<<<<<<< HEAD
 ///////////////////////////////////////////////                          
 /// \brief The main processing event function                           
 ///                                                                      
@@ -107,4 +108,14 @@ void TRestRawBiPoAnalysisProcess::EndProcess() {
     // Write here the jobs to do when all the events are processed
 
 }
+=======
+///////////////////////////////////////////////
+/// \brief The main processing event function
+///
+TRestEvent* TRestRawBiPoSignalAnalysisProcess::ProcessEvent(TRestEvent* inputEvent) {
+    fSignalEvent = (TRestRawSignalEvent*)inputEvent;
+>>>>>>> be55b092b46a7aa84ff6a83d22ec1516bf2f470e
 
+    Double_t t1t2_BiPo = event.GetAuxiliar();
+    SetObservableValue("T1-T2_distance", t1t2_BiPo);
+}
