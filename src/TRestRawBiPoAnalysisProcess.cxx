@@ -38,7 +38,7 @@
 /// \author     Ana Quintana
 ///
 /// <hr>
-///
+///                                                                   
 
 #include "TRestRawBiPoAnalysisProcess.h"
 
@@ -46,70 +46,65 @@ using namespace std;
 
 ClassImp(TRestRawBiPoAnalysisProcess);
 
-///////////////////////////////////////////////
-/// \brief Default constructor
-///
-TRestRawBiPoAnalysisProcess::TRestRawBiPoAnalysisProcess() { Initialize(); }
+///////////////////////////////////////////////                          
+/// \brief Default constructor                                          
+///                                                                      
+TRestRawBiPoAnalysisProcess::TRestRawBiPoAnalysisProcess() {
+    Initialize();
+}
 
-///////////////////////////////////////////////
-/// \brief Default destructor
-///
-TRestRawBiPoAnalysisProcess::~TRestRawBiPoAnalysisProcess() {}
+///////////////////////////////////////////////                          
+/// \brief Default destructor                                           
+///                                                                      
+TRestRawBiPoAnalysisProcess::~TRestRawBiPoAnalysisProcess() {
+}
 
-///////////////////////////////////////////////
-/// \brief Function to initialize input/output event members and define
-/// the section name
-///
+///////////////////////////////////////////////                          
+/// \brief Function to initialize input/output event members and define  
+/// the section name                                                     
+///                                                                      
 void TRestRawBiPoAnalysisProcess::Initialize() {
     SetSectionName(this->ClassName());
     SetLibraryVersion(LIBRARY_VERSION);
     fAnaEvent = NULL;
 
-    // Initialize here the values of class data members if needed
+    // Initialize here the values of class data members if needed       
+
 }
 
-///////////////////////////////////////////////
-/// \brief Process initialization. Observable names can be re-interpreted
-/// here. Any action in the process required before starting event process
-/// might be added here.
-///
+///////////////////////////////////////////////                           
+/// \brief Process initialization. Observable names can be re-interpreted 
+/// here. Any action in the process required before starting event process 
+/// might be added here.                                                 
+///                                                                      
 void TRestRawBiPoAnalysisProcess::InitProcess() {
     TRestRawToSignalProcess::InitProcess();
 
     fEventCounter = 0;
 }
 
-<<<<<<< HEAD
-///////////////////////////////////////////////
-/// \brief The main processing event function
-///
-TRestEvent* TRestRawBiPoAnalysisProcess::ProcessEvent(TRestEvent* evInput) {
+///////////////////////////////////////////////                          
+/// \brief The main processing event function                           
+///                                                                      
+TRestEvent* TRestRawBiPoAnalysisProcess::ProcessEvent(TRestEvent * evInput) {
     fSignalEvent = (TRestRawSignalEvent*)evInput;
 
     // Write here the main logic of process: TRestRawBiPoAnalysisProcess
     // Read data from input event, write data to output event, and save observables to tree
-
+    
+    
     Double_t t1t2_BiPo = event.GetAuxiliar();
     SetObservableValue("T1-T2_distance", t1t2_BiPo);
 
-    // return fAnaEvent;
+    //return fAnaEvent;
 }
 
-///////////////////////////////////////////////
+///////////////////////////////////////////////                          
 /// \brief Function to include required actions after all events have been
-/// processed.
-///
+/// processed.                                                            
+///                                                                       
 void TRestRawBiPoAnalysisProcess::EndProcess() {
     // Write here the jobs to do when all the events are processed
-}
-=======
-///////////////////////////////////////////////
-/// \brief The main processing event function
-///
-TRestEvent* TRestRawBiPoSignalAnalysisProcess::ProcessEvent(TRestEvent* inputEvent) {
-    fSignalEvent = (TRestRawSignalEvent*)inputEvent;
->>>>>>> be55b092b46a7aa84ff6a83d22ec1516bf2f470e
 
-Double_t t1t2_BiPo = event.GetAuxiliar();
-SetObservableValue("T1-T2_distance", t1t2_BiPo);
 }
+

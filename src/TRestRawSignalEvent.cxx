@@ -354,21 +354,10 @@ Double_t TRestRawSignalEvent::GetMaxTime() {
     return maxTime;
 }
 
-<<<<<<< HEAD
 // An auxiliar variable that can be used to store temporal values.
-Double_t fAuxiliar = 0;
+Double_t fAuxiliar =0;
 void TRestRawSignalEvent::SetAuxiliar(Double_t aux) { fAuxiliar = aux; }
-auto GetAuxiliar() { return fAuxiliar; }
-=======
-// Specific variable to recover the T2-T1 distance from TRestRawBiPoToSignalProcess
-// to then be used in the new TRestRawBiPoAnalysisProcess
-
-Double_t fAuxiliar = 0;
-
-void SetAuxiliar(Double_t aux) { fAuxiliar = aux; }
-
-auto GetAuxiliar() { return fAuxiliar; }
->>>>>>> be55b092b46a7aa84ff6a83d22ec1516bf2f470e
+auto GetAuxiliar( ) { return fAuxiliar; }
 
 ///////////////////////////////////////////////
 /// \brief This method draws current raw signal event in a TPad.
