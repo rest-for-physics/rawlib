@@ -355,9 +355,9 @@ Double_t TRestRawSignalEvent::GetMaxTime() {
 }
 
 // An auxiliar variable that can be used to store temporal values.
-Double_t fAuxiliar =0;
+Double_t fAuxiliar = 0;
 void TRestRawSignalEvent::SetAuxiliar(Double_t aux) { fAuxiliar = aux; }
-auto GetAuxiliar( ) { return fAuxiliar; }
+auto GetAuxiliar() { return fAuxiliar; }
 
 ///////////////////////////////////////////////
 /// \brief This method draws current raw signal event in a TPad.
