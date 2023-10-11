@@ -23,38 +23,38 @@
 #ifndef RESTProc_TRestRawBiPoAnalysisProcess
 #define RESTProc_TRestRawBiPoAnalysisProcess
 
-#include "TRestRawSignalEvent.h"
 #include "TRestEventProcess.h"
+#include "TRestRawSignalEvent.h"
 
 <<<<<<< HEAD
-/// TODO Write here a brief description. Just one line!
-class TRestRawBiPoAnalysisProcess : public TRestEventProcess {
-private:
+    /// TODO Write here a brief description. Just one line!
+    class TRestRawBiPoAnalysisProcess : public TRestEventProcess {
+   private:
     /// A pointer to the specific TRestRawSignalEvent input event
     TRestRawSignalEvent* fAnaEvent;  //!
 
     void Initialize() override;
 
     // Add here the members or parameters for your event process.
-    // You can set their default values here together. 
+    // You can set their default values here together.
     // Note: add "//!" mark at the end of the member definition
     // if you don't want to save them to disk.
 
     /// REMOVE THIS MEMBER! A dummy member that will be written to the ROOT file.
-    Double_t fDummy = 3.14; //<
+    Double_t fDummy = 3.14;  //<
 
     /// REMOVE THIS MEMBER! A dummy member that will be NOT written to the ROOT file.
-    Double_t fDummyVar = 3.14; //!
+    Double_t fDummyVar = 3.14;  //!
 
-public:
+   public:
     any GetInputEvent() const override { return fAnaEvent; }
     any GetOutputEvent() const override { return fAnaEvent; }
 
     void InitProcess() override;
 
-const char* GetProcessName() const override { return "BiPoAnalysis"; }
+    const char* GetProcessName() const override { return "BiPoAnalysis"; }
 
-    TRestEvent* ProcessEvent (TRestEvent* eventInput) override;
+    TRestEvent* ProcessEvent(TRestEvent* eventInput) override;
 
     void EndProcess() override;
 
@@ -73,7 +73,6 @@ const char* GetProcessName() const override { return "BiPoAnalysis"; }
     // ROOT class definition helper. Increase the number in it every time
     // you add/rename/remove the process parameters
     ClassDefOverride(TRestRawBiPoAnalysisProcess, 1);
-
 };
 =======
 class TRestRawSignalAnalysisProcess : public TRestEventProcess {}

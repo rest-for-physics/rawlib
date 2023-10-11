@@ -356,9 +356,9 @@ Double_t TRestRawSignalEvent::GetMaxTime() {
 
 <<<<<<< HEAD
 // An auxiliar variable that can be used to store temporal values.
-Double_t fAuxiliar =0;
+Double_t fAuxiliar = 0;
 void TRestRawSignalEvent::SetAuxiliar(Double_t aux) { fAuxiliar = aux; }
-auto GetAuxiliar( ) { return fAuxiliar; }
+auto GetAuxiliar() { return fAuxiliar; }
 =======
 // Specific variable to recover the T2-T1 distance from TRestRawBiPoToSignalProcess
 // to then be used in the new TRestRawBiPoAnalysisProcess
