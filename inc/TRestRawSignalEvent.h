@@ -44,7 +44,7 @@ class TRestRawSignalEvent : public TRestEvent {
     Double_t fMaxTime;   //!
     Double_t fMinValue;  //!
     Double_t fMaxValue;  //!
-    // Double_t fAuxiliar = 0;
+    Double_t fAuxiliar = 0;
 
     TVector2 fBaseLineRange = TVector2(-1, -1);  //!
     TVector2 fRange = TVector2(-1, -1);          //!
