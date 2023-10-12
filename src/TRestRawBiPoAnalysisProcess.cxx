@@ -89,7 +89,7 @@ TRestEvent* TRestRawBiPoAnalysisProcess::ProcessEvent(TRestEvent* evInput) {
     // Read data from input event, write data to output event, and save observables to tree
 
     Double_t t1t2_BiPo = event.GetAuxiliar();
-    SetObservableValue("T1-T2_distance", t1t2_BiPo);
+    SetObservableValue("t1t2", t1t2_BiPo);
 
     // return fAnaEvent;
 }
