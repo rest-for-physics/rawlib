@@ -75,7 +75,7 @@ class TRestRawSignalEvent : public TRestEvent {
 
     // Set and Get a tmp variable (for BiPo)
     void SetAuxiliar(Double_t aux);
-    auto GetAuxiliar( ) { return fAuxiliar; }
+    auto GetAuxiliar() { return fAuxiliar; }
 
     /// It sets the range to be used for the baseline calculation and calls
     /// TRestRawSignal::CalculateBaseLine()
