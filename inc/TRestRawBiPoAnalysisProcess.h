@@ -26,24 +26,12 @@
 #include "TRestEventProcess.h"
 #include "TRestRawSignalEvent.h"
 
-/// TODO Write here a brief description. Just one line!
 class TRestRawBiPoAnalysisProcess : public TRestEventProcess {
    private:
     /// A pointer to the specific TRestRawSignalEvent input event
     TRestRawSignalEvent* fAnaEvent;  //!
 
     void Initialize() override;
-
-    // Add here the members or parameters for your event process.
-    // You can set their default values here together.
-    // Note: add "//!" mark at the end of the member definition
-    // if you don't want to save them to disk.
-
-    /// REMOVE THIS MEMBER! A dummy member that will be written to the ROOT file.
-    Double_t fDummy = 3.14;  //<
-
-    /// REMOVE THIS MEMBER! A dummy member that will be NOT written to the ROOT file.
-    Double_t fDummyVar = 3.14;  //!
 
    public:
     any GetInputEvent() const override { return fAnaEvent; }

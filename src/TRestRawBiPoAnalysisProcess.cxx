@@ -23,7 +23,8 @@
 ////////////////////////////////////////////////////////////////////////
 /// The TRestRawBiPoSignalAnalysisProcess is meant to add specific BiPo
 /// observables when doing the analysis.
-/// For the moment it gives the observable T1-T2_distance
+/// For the moment it gives the observable "t1t2" which is the time distance
+/// between the frist and second window in the BiPo analysis
 ///
 ///--------------------------------------------------------------------------
 ///
@@ -88,7 +89,7 @@ TRestEvent* TRestRawBiPoAnalysisProcess::ProcessEvent(TRestEvent* evInput) {
     // Write here the main logic of process: TRestRawBiPoAnalysisProcess
     // Read data from input event, write data to output event, and save observables to tree
 
-    Double_t t1t2_BiPo = event.GetAuxiliar();
+    Double_t t1t2_BiPo = fSignalEvvent->GetAuxiliar();
     SetObservableValue("t1t2", t1t2_BiPo);
 
     // return fAnaEvent;
