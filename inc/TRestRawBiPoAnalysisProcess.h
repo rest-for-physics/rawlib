@@ -34,8 +34,8 @@ class TRestRawBiPoAnalysisProcess : public TRestEventProcess {
     void Initialize() override;
 
    public:
-    any GetInputEvent() const override { return fAnaEvent; }
-    any GetOutputEvent() const override { return fAnaEvent; }
+    RESTValue GetInputEvent() const override { return fAnaEvent; }
+    RESTValue GetOutputEvent() const override { return fAnaEvent; }
 
     void InitProcess() override;
 
