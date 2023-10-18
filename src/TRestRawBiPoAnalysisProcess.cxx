@@ -75,24 +75,24 @@ void TRestRawBiPoAnalysisProcess::Initialize() {
 /// might be added here.
 ///
 void TRestRawBiPoAnalysisProcess::InitProcess() {
-    TRestRawToSignalProcess::InitProcess();
+    //TRestRawToSignalProcess::InitProcess();
 
-    fEventCounter = 0;
+    //fEventCounter = 0;
 }
 
 ///////////////////////////////////////////////
 /// \brief The main processing event function
 ///
 TRestEvent* TRestRawBiPoAnalysisProcess::ProcessEvent(TRestEvent* evInput) {
-    fSignalEvent = (TRestRawSignalEvent*)evInput;
+    fAnaEvent = (TRestRawSignalEvent*)evInput;
 
     // Write here the main logic of process: TRestRawBiPoAnalysisProcess
     // Read data from input event, write data to output event, and save observables to tree
 
-    Double_t t1t2_BiPo = fSignalEvvent->GetAuxiliar();
+    Int_t t1t2_BiPo = fAnaEvent->GetAuxiliar();
     SetObservableValue("t1t2", t1t2_BiPo);
 
-    // return fAnaEvent;
+    return fAnaEvent;
 }
 
 ///////////////////////////////////////////////
