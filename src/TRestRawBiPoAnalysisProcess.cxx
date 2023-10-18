@@ -75,9 +75,9 @@ void TRestRawBiPoAnalysisProcess::Initialize() {
 /// might be added here.
 ///
 void TRestRawBiPoAnalysisProcess::InitProcess() {
-    //TRestRawToSignalProcess::InitProcess();
+    // TRestRawToSignalProcess::InitProcess();
 
-    //fEventCounter = 0;
+    // fEventCounter = 0;
 }
 
 ///////////////////////////////////////////////
