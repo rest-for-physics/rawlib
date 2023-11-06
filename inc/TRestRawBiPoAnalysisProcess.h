@@ -45,11 +45,8 @@ class TRestRawBiPoAnalysisProcess : public TRestEventProcess {
 
     void EndProcess() override;
 
-    ///  It prints out the process parameters stored in the metadata structure
     void PrintMetadata() override {
         BeginPrintProcess();
-
-        // Write here how to print the added process members and parameters.
 
         EndPrintProcess();
     }
@@ -57,8 +54,6 @@ class TRestRawBiPoAnalysisProcess : public TRestEventProcess {
     TRestRawBiPoAnalysisProcess();
     ~TRestRawBiPoAnalysisProcess();
 
-    // ROOT class definition helper. Increase the number in it every time
-    // you add/rename/remove the process parameters
     ClassDefOverride(TRestRawBiPoAnalysisProcess, 1);
 };
 #endif
