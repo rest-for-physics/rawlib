@@ -83,7 +83,7 @@
 using namespace std;
 
 #include "TTimeStamp.h"
-#include "zlib.h"
+// #include "zlib.h"
 
 ClassImp(TRestRawBiPoToSignalProcess);
 
@@ -529,6 +529,7 @@ Int_t TRestRawBiPoToSignalProcess::ReadBiPoEventData(std::vector<uint16_t>& mdat
     }
     totalBytesReaded += sizeof(int32_t);
     RESTDebug << " T1-T2 distance --> " << tmp << RESTendl;
+    fSignalEvent->SetAuxiliar(tmp);
 
     mdata.resize(data_size);
     if (fread(&mdata[0], sizeof(uint16_t), data_size, fInputBinFile) != (size_t)data_size) {

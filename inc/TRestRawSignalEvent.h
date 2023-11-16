@@ -44,6 +44,7 @@ class TRestRawSignalEvent : public TRestEvent {
     Double_t fMaxTime;   //!
     Double_t fMinValue;  //!
     Double_t fMaxValue;  //!
+    Double_t fAuxiliar = 0;
 
     TVector2 fBaseLineRange = TVector2(-1, -1);  //!
     TVector2 fRange = TVector2(-1, -1);          //!
@@ -71,6 +72,10 @@ class TRestRawSignalEvent : public TRestEvent {
     void SetTailPoints(Int_t p) {
         for (int n = 0; n < GetNumberOfSignals(); n++) fSignal[n].SetTailPoints(p);
     }
+
+    // Set and Get a tmp variable (for BiPo)
+    void SetAuxiliar(Double_t aux);
+    auto GetAuxiliar() { return fAuxiliar; }
 
     /// It sets the range to be used for the baseline calculation and calls
     /// TRestRawSignal::CalculateBaseLine()
