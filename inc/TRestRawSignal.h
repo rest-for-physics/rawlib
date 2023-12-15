@@ -220,6 +220,11 @@ class TRestRawSignal {
 
     TGraph* GetGraph(Int_t color = 1);
 
+    /// Returns the (time, amplitude) of the peaks in the signal.
+    /// Peaks are defined as the points that are above the threshold and are separated by a minimum distance
+    /// in time bin units. The threshold must be set in absolute value (regardless of the baseline)
+    std::vector<std::pair<UShort_t, double>> GetPeaks(double threshold, UShort_t distance = 5) const;
+
     TRestRawSignal();
     TRestRawSignal(Int_t nBins);
     TRestRawSignal(Int_t sID, std::vector<Short_t>& sData);

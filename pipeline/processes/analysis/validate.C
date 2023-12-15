@@ -21,7 +21,7 @@ Int_t validate() {
     average /= elems;
 
     if (elems != 14) {
-        cout << "Number of veto signals identified is not 14!" << endl;
+        cout << "Number of veto signals identified is not 14! Computed value: " << elems << endl;
         return 2;
     }
 

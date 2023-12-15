@@ -23,12 +23,12 @@
 #ifndef RestDAQ_TRestRawSignalEvent
 #define RestDAQ_TRestRawSignalEvent
 
-#include <TArrayD.h>
 #include <TAxis.h>
 #include <TGraph.h>
-#include <TObject.h>
 #include <TPad.h>
 #include <TRestEvent.h>
+#include <TRestRawReadoutMetadata.h>
+#include <TRestRun.h>
 #include <TVector2.h>
 
 #include <iostream>
@@ -44,6 +44,7 @@ class TRestRawSignalEvent : public TRestEvent {
     Double_t fMaxTime;   //!
     Double_t fMinValue;  //!
     Double_t fMaxValue;  //!
+    Double_t fAuxiliar = 0;
 
     TVector2 fBaseLineRange = TVector2(-1, -1);  //!
     TVector2 fRange = TVector2(-1, -1);          //!
@@ -71,6 +72,10 @@ class TRestRawSignalEvent : public TRestEvent {
     void SetTailPoints(Int_t p) {
         for (int n = 0; n < GetNumberOfSignals(); n++) fSignal[n].SetTailPoints(p);
     }
+
+    // Set and Get a tmp variable (for BiPo)
+    void SetAuxiliar(Double_t aux);
+    auto GetAuxiliar() { return fAuxiliar; }
 
     /// It sets the range to be used for the baseline calculation and calls
     /// TRestRawSignal::CalculateBaseLine()
@@ -111,8 +116,7 @@ class TRestRawSignalEvent : public TRestEvent {
     }
 
     Bool_t isBaseLineInitialized() {
-        // If one signal is initialized we assume initialization happened for any
-        // signal
+        // If one signal is initialized we assume initialization happened for any signal
         for (int n = 0; n < GetNumberOfSignals(); n++)
             if (fSignal[n].isBaseLineInitialized()) return true;
         return false;
@@ -124,6 +128,10 @@ class TRestRawSignalEvent : public TRestEvent {
 
         return &fSignal[index];
     }
+
+    TRestRawSignalEvent GetSignalEventForType(const std::string& type) const;
+    TRestRawSignalEvent GetSignalEventForTypes(
+        const std::set<std::string>& types, const TRestRawReadoutMetadata* readoutMetadata = nullptr) const;
 
     TRestRawSignal* GetMaxSignal();
 
@@ -155,7 +163,9 @@ class TRestRawSignalEvent : public TRestEvent {
 
     TPad* DrawEvent(const TString& option = "");
     void DrawSignals(TPad* pad, const std::vector<Int_t>& signals);
-    TPad* DrawSignal(Int_t signalID, TString option = "");
+    TPad* DrawSignal(Int_t signalID, const TString& option = "");
+
+    TRestRawReadoutMetadata* GetReadoutMetadata() const;
 
     // Constructor
     TRestRawSignalEvent();
