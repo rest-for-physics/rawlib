@@ -1,12 +1,7 @@
-//
-// Created by lobis on 24-Aug-23.
-//
 
 #include "TRestRawPeaksFinderProcess.h"
 
 #include <utility>
-
-#include "TRestRawReadoutMetadata.h"
 
 ClassImp(TRestRawPeaksFinderProcess);
 
@@ -62,7 +57,20 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
              return std::tie(std::get<1>(a), std::get<0>(a)) < std::tie(std::get<1>(b), std::get<0>(b));
          });
 
-    SetObservableValue("peaks", eventPeaks);
+    // SetObservableValue("peaks", eventPeaks); // problems with dictionaries
+    std::vector<UShort_t> peaksChannelId;
+    std::vector<UShort_t> peaksTime;
+    std::vector<double> peaksAmplitude;
+
+    for (const auto& [channelId, time, amplitude] : eventPeaks) {
+        peaksChannelId.push_back(channelId);
+        peaksTime.push_back(time);
+        peaksAmplitude.push_back(amplitude);
+    }
+
+    SetObservableValue("peaksChannelId", peaksChannelId);
+    SetObservableValue("peaksTime", peaksTime);
+    SetObservableValue("peaksAmplitude", peaksAmplitude);
 
     std::vector<UShort_t> windowIndex(eventPeaks.size(), 0);  // Initialize with zeros
     std::vector<UShort_t> windowCenter;  // for each different window, the center of the window
