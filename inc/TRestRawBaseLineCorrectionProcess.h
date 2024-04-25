@@ -23,25 +23,31 @@
 #ifndef RESTProc_TRestRawBaseLineCorrectionProcess
 #define RESTProc_TRestRawBaseLineCorrectionProcess
 
-#include "TRestEventProcess.h"
+#include <TRestEventProcess.h>
+
 #include "TRestRawSignalEvent.h"
+#include "TRestRawReadoutMetadata.h"
 
 class TRestRawBaseLineCorrectionProcess : public TRestEventProcess {
    private:
     // We define specific input/output event data holders
-    TRestRawSignalEvent* fInputEvent;   //!
+    TRestRawSignalEvent* fInputEvent;   //!        
     TRestRawSignalEvent* fOutputEvent;  //!
+	TRestRawReadoutMetadata* fReadoutMetadata = nullptr; 
 
     void Initialize() override;
 
     /// It defines the signals id range where analysis is applied
-    TVector2 fSignalsRange = TVector2(-1, -1);
+	TVector2 fSignalsRange = {-1, -1};
 
     /// Time window width in bins for the moving average filter for baseline correction
-    Int_t fSmoothingWindow = 75;
+	UShort_t fSmoothingWindow = 75;
 
     /// Just a flag to quickly determine if we have to apply the range filter
     Bool_t fRangeEnabled = false;  //!
+
+	/// Specify the channel types we want the process to be applied for
+	std::set<std::string> fChannelTypes = {};
 
    public:
     RESTValue GetInputEvent() const override { return fInputEvent; }
@@ -53,16 +59,32 @@ class TRestRawBaseLineCorrectionProcess : public TRestEventProcess {
 
     void EndProcess() override;
 
-    void PrintMetadata() override {
-        BeginPrintProcess();
+	void InitFromConfigFile() override;
 
-        RESTMetadata << "Smoothing window size: " << fSmoothingWindow << RESTendl;
-        RESTMetadata << "Baseline correction applied to signals with IDs in range (" << fSignalsRange.X()
-                     << "," << fSignalsRange.Y() << ")" << RESTendl;
+	void PrintMetadata() override {
+		BeginPrintProcess();
 
-        EndPrintProcess();
-    }
+		if (!fChannelTypes.empty()) {
+		    RESTMetadata << "Selected channel types: ";
+		    // Iterate through each channel type in fChannelTypes and print it
+		    for (auto it = fChannelTypes.begin(); it != fChannelTypes.end(); ++it) {
+		        RESTMetadata << *it;
+		        // If it's not the last element, print a comma and a space
+		        if (std::next(it) != fChannelTypes.end()) {
+		            RESTMetadata << ", ";
+		        }
+		    }
+		    RESTMetadata << RESTendl;
+		} else {
+		    RESTMetadata << "No channel type chosen." << RESTendl;
+		}
+		
+		RESTMetadata << "Smoothing window size: " << fSmoothingWindow << RESTendl;
+		RESTMetadata << "Baseline correction applied to signals with IDs in range (" << fSignalsRange.X()
+		             << "," << fSignalsRange.Y() << ")" << RESTendl;
 
+		EndPrintProcess();
+	}
     /// Returns a new instance of this class
     TRestEventProcess* Maker() { return new TRestRawBaseLineCorrectionProcess; }
 
