@@ -25,30 +25,30 @@
 
 #include <TRestEventProcess.h>
 
-#include "TRestRawSignalEvent.h"
 #include "TRestRawReadoutMetadata.h"
+#include "TRestRawSignalEvent.h"
 
 using namespace std;
 
 class TRestRawBaseLineCorrectionProcess : public TRestEventProcess {
    private:
     // We define specific input/output event data holders
-    TRestRawSignalEvent* fInputEvent;   //!        
+    TRestRawSignalEvent* fInputEvent;   //!
     TRestRawSignalEvent* fOutputEvent;  //!
-	TRestRawReadoutMetadata* fReadoutMetadata = nullptr; 
+    TRestRawReadoutMetadata* fReadoutMetadata = nullptr;
 
     void Initialize() override;
 
     /// It defines the signals id range where analysis is applied
-	TVector2 fSignalsRange = {-1, -1};
+    TVector2 fSignalsRange = {-1, -1};
 
     /// Time window width in bins for the moving average filter for baseline correction
-	UShort_t fSmoothingWindow = 75;
+    UShort_t fSmoothingWindow = 75;
 
     /// Just a flag to quickly determine if we have to apply the range filter
     Bool_t fRangeEnabled = false;  //!
 
-	/// Maps defined later
+    /// Maps defined later
 
    public:
     RESTValue GetInputEvent() const override { return fInputEvent; }
@@ -60,32 +60,34 @@ class TRestRawBaseLineCorrectionProcess : public TRestEventProcess {
 
     void EndProcess() override;
 
-	void InitFromConfigFile() override;
+    void InitFromConfigFile() override;
 
-	struct Parameters {
+    struct Parameters {
         Double_t smoothingWindow = 75.0;
         TVector2 signalsRange = {-1, -1};
     };
 
-	void PrintMetadata() override {
-		BeginPrintProcess();
+    void PrintMetadata() override {
+        BeginPrintProcess();
 
-		for (const auto& channelType : fChannelTypes) {
-        	RESTMetadata << RESTendl;
-        	string type = channelType;
+        for (const auto& channelType : fChannelTypes) {
+            RESTMetadata << RESTendl;
+            string type = channelType;
 
-        	RESTMetadata << "Readout type: " << type << RESTendl;
-			RESTMetadata << "Smoothing window size: " << fParametersMap.at(channelType).smoothingWindow << RESTendl;
-        	RESTMetadata << "Baseline correction applied to signals with IDs in range (" << fParametersMap.at(channelType).signalsRange.X()
-		             << "," << fParametersMap.at(channelType).signalsRange.Y() << ")" << RESTendl;
-		}
+            RESTMetadata << "Readout type: " << type << RESTendl;
+            RESTMetadata << "Smoothing window size: " << fParametersMap.at(channelType).smoothingWindow
+                         << RESTendl;
+            RESTMetadata << "Baseline correction applied to signals with IDs in range ("
+                         << fParametersMap.at(channelType).signalsRange.X() << ","
+                         << fParametersMap.at(channelType).signalsRange.Y() << ")" << RESTendl;
+        }
 
-    	if (fChannelTypes.empty()) {
-        	RESTMetadata << "No channel type specified. All types will be processed." << RESTendl;
-    	}
+        if (fChannelTypes.empty()) {
+            RESTMetadata << "No channel type specified. All types will be processed." << RESTendl;
+        }
 
-		EndPrintProcess();
-	}
+        EndPrintProcess();
+    }
 
     /// Returns a new instance of this class
     TRestEventProcess* Maker() { return new TRestRawBaseLineCorrectionProcess; }
@@ -100,9 +102,9 @@ class TRestRawBaseLineCorrectionProcess : public TRestEventProcess {
     // you add/rename/remove the process parameters
     ClassDefOverride(TRestRawBaseLineCorrectionProcess, 1);
 
-	private:
-	/// Specify the channel types we want the process to be applied for
-	std::set<std::string> fChannelTypes;
-	std::map<std::string, Parameters> fParametersMap;
+   private:
+    /// Specify the channel types we want the process to be applied for
+    std::set<std::string> fChannelTypes;
+    std::map<std::string, Parameters> fParametersMap;
 };
 #endif
