@@ -28,7 +28,6 @@
 #include "TRestRawReadoutMetadata.h"
 #include "TRestRawSignalEvent.h"
 
-
 class TRestRawBaseLineCorrectionProcess : public TRestEventProcess {
    private:
     // We define specific input/output event data holders

@@ -124,7 +124,9 @@ TRestEvent* TRestRawBaseLineCorrectionProcess::ProcessEvent(TRestEvent* evInput)
 }
 
 void TRestRawBaseLineCorrectionProcess::InitProcess() {
-    if (fSignalsRange.X() != -1 && fSignalsRange.Y() != -1) {fRangeEnabled = true;}
+    if (fSignalsRange.X() != -1 && fSignalsRange.Y() != -1) {
+        fRangeEnabled = true;
+    }
 
     const auto filterType = GetParameter("channelType", "");
     if (!filterType.empty()) {
