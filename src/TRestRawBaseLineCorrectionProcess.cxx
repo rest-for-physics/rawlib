@@ -142,6 +142,8 @@ void TRestRawBaseLineCorrectionProcess::EndProcess() {}
 
 void TRestRawBaseLineCorrectionProcess::Initialize() {
     SetSectionName(this->ClassName());
+    SetLibraryVersion(LIBRARY_VERSION);
+
     fInputEvent = NULL;
     fOutputEvent = new TRestRawSignalEvent();
 }

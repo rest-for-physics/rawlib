@@ -73,14 +73,16 @@ class TRestRawBaseLineCorrectionProcess : public TRestEventProcess {
 		for (const auto& channelType : fChannelTypes) {
         	RESTMetadata << RESTendl;
         	string type = channelType;
-        	if (type.empty()) {
-            	RESTMetadata << "No channel type specified. All types will be processed." << RESTendl;
-        	}
+
         	RESTMetadata << "Readout type: " << type << RESTendl;
 			RESTMetadata << "Smoothing window size: " << fParametersMap.at(channelType).smoothingWindow << RESTendl;
         	RESTMetadata << "Baseline correction applied to signals with IDs in range (" << fParametersMap.at(channelType).signalsRange.X()
 		             << "," << fParametersMap.at(channelType).signalsRange.Y() << ")" << RESTendl;
 		}
+
+    	if (fChannelTypes.empty()) {
+        	RESTMetadata << "No channel type specified. All types will be processed." << RESTendl;
+    	}
 
 		EndPrintProcess();
 	}
