@@ -68,8 +68,11 @@
 /////////////////////////////////////////////////////////////////////////
 
 #include "TRestRawBaseLineCorrectionProcess.h"
- 
-#include <utility>
+
+#include <TObjString.h>
+#include <TRestRawReadoutMetadata.h>
+
+using namespace std;
 
 ClassImp(TRestRawBaseLineCorrectionProcess);
 
@@ -78,27 +81,6 @@ TRestRawBaseLineCorrectionProcess::TRestRawBaseLineCorrectionProcess() { Initial
 TRestRawBaseLineCorrectionProcess::~TRestRawBaseLineCorrectionProcess() {
     delete fInputEvent;
     delete fOutputEvent;
-}
-
-
-void TRestRawBaseLineCorrectionProcess::Initialize() {
-    SetSectionName(this->ClassName());
-    fInputEvent = NULL;
-    fOutputEvent = new TRestRawSignalEvent();
-}
-
-void TRestRawBaseLineCorrectionProcess::InitProcess() {
-    if (fSignalsRange.X() != -1 && fSignalsRange.Y() != -1) fRangeEnabled = true;
-
-	const auto filterType = GetParameter("channelType", "");
-    if (!filterType.empty()) {
-        fChannelTypes.insert(filterType);
-		std::cout << "Types: " << filterType << std::endl;
-    }
- 
-    if (fChannelTypes.empty()) {
-        // if no channel type is specified, use all channel types
-    }
 }
 
 TRestEvent* TRestRawBaseLineCorrectionProcess::ProcessEvent(TRestEvent* evInput) {
@@ -141,18 +123,55 @@ TRestEvent* TRestRawBaseLineCorrectionProcess::ProcessEvent(TRestEvent* evInput)
     return fOutputEvent;
 }
 
-void TRestRawBaseLineCorrectionProcess::EndProcess() {}
+void TRestRawBaseLineCorrectionProcess::InitProcess() {
+    if (fSignalsRange.X() != -1 && fSignalsRange.Y() != -1) fRangeEnabled = true;
 
-void TRestRawBaseLineCorrectionProcess::InitFromConfigFile() {
-    const auto filterType = GetParameter("channelType", "");
+	const auto filterType = GetParameter("channelType", "");
     if (!filterType.empty()) {
         fChannelTypes.insert(filterType);
+		std::cout << "Types: " << filterType << std::endl;
     }
  
     if (fChannelTypes.empty()) {
         // if no channel type is specified, use all channel types
     }
+}
 
-    fSignalsRange = Get2DVectorParameterWithUnits("signalsRange", fSignalsRange);
-    fSmoothingWindow = StringToDouble(GetParameter("smoothingWindow", fSmoothingWindow));
+void TRestRawBaseLineCorrectionProcess::EndProcess() {}
+
+
+void TRestRawBaseLineCorrectionProcess::Initialize() {
+    SetSectionName(this->ClassName());
+    fInputEvent = NULL;
+    fOutputEvent = new TRestRawSignalEvent();
+}
+
+void TRestRawBaseLineCorrectionProcess::InitFromConfigFile() {
+	TString channelTypesString = GetParameter("channelTypes", "");
+    // split it by ","
+    TObjArray* channelTypesArray = channelTypesString.Tokenize(",");
+    for (int i = 0; i < channelTypesArray->GetEntries(); i++) {
+        fChannelTypes.insert(((TObjString*)channelTypesArray->At(i))->GetString().Data());
+    }
+    cout << "Channel types: ";
+    for (const auto& type : fChannelTypes) {
+        cout << type << " ";
+    }
+    cout << endl;
+
+    for (const auto& type : fChannelTypes) {
+        fChannelTypes.insert(type);
+        fParametersMap[type] = {};
+ 
+        string typeCamelCase = type;
+        typeCamelCase[0] = toupper(typeCamelCase[0]);
+ 
+        Parameters parameters;
+        parameters.smoothingWindow = GetDblParameterWithUnits("smoothingWindow" + typeCamelCase, parameters.smoothingWindow);
+        parameters.signalsRange =
+            Get2DVectorParameterWithUnits("signalsRange" + typeCamelCase, parameters.signalsRange);
+        ;
+        fParametersMap[type] = parameters;
+    }
+
 }
