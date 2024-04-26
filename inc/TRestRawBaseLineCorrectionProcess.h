@@ -28,7 +28,6 @@
 #include "TRestRawReadoutMetadata.h"
 #include "TRestRawSignalEvent.h"
 
-using namespace std;
 
 class TRestRawBaseLineCorrectionProcess : public TRestEventProcess {
    private:
@@ -100,7 +99,7 @@ class TRestRawBaseLineCorrectionProcess : public TRestEventProcess {
 
     // ROOT class definition helper. Increase the number in it every time
     // you add/rename/remove the process parameters
-    ClassDefOverride(TRestRawBaseLineCorrectionProcess, 1);
+    ClassDefOverride(TRestRawBaseLineCorrectionProcess, 2);
 
    private:
     /// Specify the channel types we want the process to be applied for
