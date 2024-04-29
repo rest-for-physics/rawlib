@@ -32,7 +32,7 @@ namespace daq_metadata_types {
 
 enum class acqTypes : int { BACKGROUND = 0, CALIBRATION, PEDESTAL };
 
-enum class electronicsTypes : int { DUMMY = 0, DCC, FEMINOS };
+enum class electronicsTypes : int { DUMMY = 0, DCC, FEMINOS, ARC };
 
 enum class chipTypes : int { AFTER = 0, AGET };
 
