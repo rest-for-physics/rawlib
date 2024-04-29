@@ -46,7 +46,8 @@ const std::map<std::string, acqTypes> acqTypes_map = {{"background", acqTypes::B
 
 const std::map<std::string, electronicsTypes> electronicsTypes_map = {{"DUMMY", electronicsTypes::DUMMY},
                                                                       {"DCC", electronicsTypes::DCC},
-                                                                      {"FEMINOS", electronicsTypes::FEMINOS}};
+                                                                      {"FEMINOS", electronicsTypes::FEMINOS},
+{"ARC", electronicsTypes::ARC}                                      };
 
 const std::map<std::string, chipTypes> chipTypes_map = {{"after", chipTypes::AFTER},
                                                         {"aget", chipTypes::AGET}};
