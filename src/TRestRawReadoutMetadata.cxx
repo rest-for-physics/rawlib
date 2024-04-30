@@ -38,7 +38,7 @@ std::string TRestRawReadoutMetadata::GetTypeForChannelDaqId(UShort_t channel) co
 
 std::string TRestRawReadoutMetadata::GetNameForChannelDaqId(UShort_t channel) const {
     if (fChannelInfo.find(channel) == fChannelInfo.end()) {
-		return unknownChannelType;
+        return unknownChannelType;
     }
     return fChannelInfo.at(channel).name;
 }
