@@ -6,6 +6,8 @@
 
 using namespace std;
 
+const std::string unknownChannelType = "unknown";
+
 ClassImp(TRestRawReadoutMetadata);
 
 void TRestRawReadoutMetadata::PrintMetadata() const {
@@ -29,18 +31,14 @@ void TRestRawReadoutMetadata::PrintMetadata() const {
 
 std::string TRestRawReadoutMetadata::GetTypeForChannelDaqId(UShort_t channel) const {
     if (fChannelInfo.find(channel) == fChannelInfo.end()) {
-        cerr << "TRestRawReadoutMetadata::GetTypeForChannelDaqId: channel " << channel << " not found"
-             << endl;
-        exit(1);
+        return unknownChannelType;
     }
     return fChannelInfo.at(channel).type;
 }
 
 std::string TRestRawReadoutMetadata::GetNameForChannelDaqId(UShort_t channel) const {
     if (fChannelInfo.find(channel) == fChannelInfo.end()) {
-        cerr << "TRestRawReadoutMetadata::GetNameForChannelDaqId: channel " << channel << " not found"
-             << endl;
-        exit(1);
+		return unknownChannelType;
     }
     return fChannelInfo.at(channel).name;
 }
