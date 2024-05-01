@@ -26,6 +26,7 @@
 #include <TRestRawSignalEvent.h>
 
 #include "TRestEventProcess.h"
+#include "TRestRawReadoutMetadata.h"
 
 //! A process allowing to remove selected channels from a TRestRawSignalEvent
 class TRestRawSignalRemoveChannelsProcess : public TRestEventProcess {
@@ -36,6 +37,9 @@ class TRestRawSignalRemoveChannelsProcess : public TRestEventProcess {
 
     /// A pointer to the specific TRestRawSignalEvent input
     TRestRawSignalEvent* fOutputSignalEvent;  //!
+
+    /// A pointer to the readout metadata
+    TRestRawReadoutMetadata* fReadoutMetadata = nullptr; //!
 #endif
 
     void InitFromConfigFile() override;
@@ -46,6 +50,7 @@ class TRestRawSignalRemoveChannelsProcess : public TRestEventProcess {
 
    protected:
     std::vector<Int_t> fChannelIds;
+    std::vector<std::string> fChannelTypes;
 
     TVector2 fSignalRange = TVector2(-1, -1);
 

@@ -67,6 +67,7 @@
 /// <hr>
 ///
 #include "TRestRawSignalRemoveChannelsProcess.h"
+#include <TRestRawReadoutMetadata.h>
 
 using namespace std;
 
@@ -143,24 +144,54 @@ void TRestRawSignalRemoveChannelsProcess::LoadConfig(const string& configFilenam
 ///
 TRestEvent* TRestRawSignalRemoveChannelsProcess::ProcessEvent(TRestEvent* inputEvent) {
     fInputSignalEvent = (TRestRawSignalEvent*)inputEvent;
+    fInputSignalEvent->InitializeReferences(GetRunInfo());
+
+    if (fReadoutMetadata == nullptr) {
+        fReadoutMetadata = fInputSignalEvent->GetReadoutMetadata();
+    }
+
+    if (fReadoutMetadata == nullptr) {
+        std::cerr << "TRestRawBaseLineCorrectionProcess::ProcessEvent: readout metadata is null" << std::endl;
+        exit(1);
+    }
 
     for (int n = 0; n < fInputSignalEvent->GetNumberOfSignals(); n++) {
         TRestRawSignal* sgnl = fInputSignalEvent->GetSignal(n);
 
-        Bool_t removeChannel = false;
-        for (unsigned int x = 0; x < fChannelIds.size() && !removeChannel; x++)
-            if (sgnl->GetID() == fChannelIds[x]) removeChannel = true;
+        bool removeSignal = false;
 
-        if (!removeChannel) fOutputSignalEvent->AddSignal(*sgnl);
+        // Check if the channel ID matches any specified for removal
+        for (unsigned int x = 0; x < fChannelIds.size() && !removeSignal; x++) {
+            if (sgnl->GetID() == fChannelIds[x]) {
+                removeSignal = true;
+            }
+        }
 
-        if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Extreme)
+        // Check if the channel type matches any specified for removal
+        if (!removeSignal) {
+            std::string channelType = fInputSignalEvent->GetReadoutMetadata()->GetTypeForChannelDaqId(sgnl->GetSignalID());
+            if (std::find(fChannelTypes.begin(), fChannelTypes.end(), channelType) != fChannelTypes.end()) {
+                removeSignal = true;
+            }
+        }
+
+        if (!removeSignal) {
+            fOutputSignalEvent->AddSignal(*sgnl);
+        }
+
+        // Logging messages
+        if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Extreme) {
             cout << "Channel ID : " << sgnl->GetID() << endl;
+        }
 
-        if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Debug && removeChannel)
+        if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Debug && removeSignal) {
             cout << "Removing channel id : " << sgnl->GetID() << endl;
+        }
     }
 
-    if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Extreme) GetChar();
+    if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Extreme) {
+        GetChar();
+    }
 
     return fOutputSignalEvent;
 }
@@ -183,5 +214,11 @@ void TRestRawSignalRemoveChannelsProcess::InitFromConfigFile() {
         TVector2 v = StringTo2DVector(GetFieldValue("range", removeChannelDefinition));
         if (v.X() >= 0 && v.Y() >= 0 && v.Y() > v.X())
             for (int n = (Int_t)v.X(); n <= (Int_t)v.Y(); n++) fChannelIds.push_back(n);
+    }
+
+    pos = 0;
+    while ((removeChannelDefinition = GetKEYDefinition("removeChannels", pos)) != "") {
+        string type = GetFieldValue("type", removeChannelDefinition);
+        fChannelTypes.push_back(type);
     }
 }
