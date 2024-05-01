@@ -99,7 +99,9 @@ TRestEvent* TRestRawBaseLineCorrectionProcess::ProcessEvent(TRestEvent* evInput)
     }
 
     if (fReadoutMetadata == nullptr && !fChannelTypes.empty()) {
-        cerr << "TRestRawBaseLineCorrectionProcess::ProcessEvent: readout metadata is null, cannot filter the process by signal type" << endl;
+        cerr << "TRestRawBaseLineCorrectionProcess::ProcessEvent: readout metadata is null, cannot filter "
+                "the process by signal type"
+             << endl;
         exit(1);
     }
 
