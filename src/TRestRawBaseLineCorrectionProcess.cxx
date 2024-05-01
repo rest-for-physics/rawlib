@@ -98,8 +98,8 @@ TRestEvent* TRestRawBaseLineCorrectionProcess::ProcessEvent(TRestEvent* evInput)
         fReadoutMetadata = fInputEvent->GetReadoutMetadata();
     }
 
-    if (fReadoutMetadata == nullptr) {
-        std::cerr << "TRestRawBaseLineCorrectionProcess::ProcessEvent: readout metadata is null" << std::endl;
+    if (fReadoutMetadata == nullptr && !fChannelTypes.empty()) {
+        cerr << "TRestRawBaseLineCorrectionProcess::ProcessEvent: readout metadata is null, cannot filter the process by signal type" << endl;
         exit(1);
     }
 
@@ -107,8 +107,8 @@ TRestEvent* TRestRawBaseLineCorrectionProcess::ProcessEvent(TRestEvent* evInput)
         TRestRawSignal* sgnl = fInputEvent->GetSignal(s);
         const UShort_t signalId = sgnl->GetSignalID();
 
-        const std::string channelType = fReadoutMetadata->GetTypeForChannelDaqId(signalId);
-        const std::string channelName = fReadoutMetadata->GetNameForChannelDaqId(signalId);
+        const string channelType = fReadoutMetadata->GetTypeForChannelDaqId(signalId);
+        const string channelName = fReadoutMetadata->GetNameForChannelDaqId(signalId);
 
         // Check if channel type is in the list of selected channel types
         if (!fChannelTypes.empty() && fChannelTypes.find(channelType) == fChannelTypes.end()) {
@@ -142,7 +142,7 @@ void TRestRawBaseLineCorrectionProcess::InitFromConfigFile() {
     const auto filterType = GetParameter("channelType", "");
     if (!filterType.empty()) {
         fChannelTypes.insert(filterType);
-        std::cout << "Type: " << filterType << std::endl;
+        cout << "Type: " << filterType << endl;
     }
     /*
        if (fChannelTypes.empty()) {
