@@ -85,6 +85,6 @@ class TRestRawSignalRemoveChannelsProcess : public TRestEventProcess {
     // Destructor
     ~TRestRawSignalRemoveChannelsProcess();
 
-    ClassDefOverride(TRestRawSignalRemoveChannelsProcess, 1);
+    ClassDefOverride(TRestRawSignalRemoveChannelsProcess, 2);
 };
 #endif

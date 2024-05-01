@@ -152,42 +152,43 @@ TRestEvent* TRestRawSignalRemoveChannelsProcess::ProcessEvent(TRestEvent* inputE
     }
 
     if (fReadoutMetadata == nullptr) {
-        std::cerr << "TRestRawBaseLineCorrectionProcess::ProcessEvent: readout metadata is null" << std::endl;
+        cerr << "TRestRawBaseLineCorrectionProcess::ProcessEvent: readout metadata is null" << endl;
         exit(1);
     }
 
     for (int n = 0; n < fInputSignalEvent->GetNumberOfSignals(); n++) {
-        TRestRawSignal* sgnl = fInputSignalEvent->GetSignal(n);
+        TRestRawSignal* signal = fInputSignalEvent->GetSignal(n);
 
         bool removeSignal = false;
 
         // Check if the channel ID matches any specified for removal
         for (unsigned int x = 0; x < fChannelIds.size() && !removeSignal; x++) {
-            if (sgnl->GetID() == fChannelIds[x]) {
+            if (signal->GetID() == fChannelIds[x]) {
                 removeSignal = true;
+                break;
             }
         }
 
         // Check if the channel type matches any specified for removal
         if (!removeSignal) {
-            std::string channelType =
-                fInputSignalEvent->GetReadoutMetadata()->GetTypeForChannelDaqId(sgnl->GetSignalID());
-            if (std::find(fChannelTypes.begin(), fChannelTypes.end(), channelType) != fChannelTypes.end()) {
+            string channelType =
+                fInputSignalEvent->GetReadoutMetadata()->GetTypeForChannelDaqId(signal->GetSignalID());
+            if (find(fChannelTypes.begin(), fChannelTypes.end(), channelType) != fChannelTypes.end()) {
                 removeSignal = true;
             }
         }
 
         if (!removeSignal) {
-            fOutputSignalEvent->AddSignal(*sgnl);
+            fOutputSignalEvent->AddSignal(*signal);
         }
 
         // Logging messages
         if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Extreme) {
-            cout << "Channel ID : " << sgnl->GetID() << endl;
+            cout << "Channel ID : " << signal->GetID() << endl;
         }
 
         if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Debug && removeSignal) {
-            cout << "Removing channel id : " << sgnl->GetID() << endl;
+            cout << "Removing channel id : " << signal->GetID() << endl;
         }
     }
 
