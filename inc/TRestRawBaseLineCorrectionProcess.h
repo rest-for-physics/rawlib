@@ -24,15 +24,15 @@
 #define RESTProc_TRestRawBaseLineCorrectionProcess
 
 #include "TRestEventProcess.h"
-#include "TRestRawSignalEvent.h"
 #include "TRestRawReadoutMetadata.h"
+#include "TRestRawSignalEvent.h"
 
 class TRestRawBaseLineCorrectionProcess : public TRestEventProcess {
    private:
     // We define specific input/output event data holders
-    TRestRawSignalEvent* fInputEvent;   //!
-    TRestRawSignalEvent* fOutputEvent;  //!
-	TRestRawReadoutMetadata* fReadoutMetadata = nullptr; //!
+    TRestRawSignalEvent* fInputEvent;                     //!
+    TRestRawSignalEvent* fOutputEvent;                    //!
+    TRestRawReadoutMetadata* fReadoutMetadata = nullptr;  //!
 
     void Initialize() override;
 
@@ -51,7 +51,7 @@ class TRestRawBaseLineCorrectionProcess : public TRestEventProcess {
     RESTValue GetInputEvent() const override { return fInputEvent; }
     RESTValue GetOutputEvent() const override { return fOutputEvent; }
 
-	void PrintMetadata() override;
+    void PrintMetadata() override;
 
     void InitProcess() override;
 

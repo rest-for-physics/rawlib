@@ -68,6 +68,7 @@
 /////////////////////////////////////////////////////////////////////////
 
 #include "TRestRawBaseLineCorrectionProcess.h"
+
 #include <TRestRawReadoutMetadata.h>
 
 using namespace std;
@@ -90,7 +91,7 @@ void TRestRawBaseLineCorrectionProcess::Initialize() {
 }
 
 TRestEvent* TRestRawBaseLineCorrectionProcess::ProcessEvent(TRestEvent* evInput) {
-	fInputEvent = dynamic_cast<TRestRawSignalEvent*>(evInput);
+    fInputEvent = dynamic_cast<TRestRawSignalEvent*>(evInput);
     fInputEvent->InitializeReferences(GetRunInfo());
 
     if (fReadoutMetadata == nullptr) {
@@ -102,31 +103,31 @@ TRestEvent* TRestRawBaseLineCorrectionProcess::ProcessEvent(TRestEvent* evInput)
         exit(1);
     }
 
-        for (int s = 0; s < fInputEvent->GetNumberOfSignals(); s++) {
-            TRestRawSignal* sgnl = fInputEvent->GetSignal(s);
-            const UShort_t signalId = sgnl->GetSignalID();
+    for (int s = 0; s < fInputEvent->GetNumberOfSignals(); s++) {
+        TRestRawSignal* sgnl = fInputEvent->GetSignal(s);
+        const UShort_t signalId = sgnl->GetSignalID();
 
-            const std::string channelType = fReadoutMetadata->GetTypeForChannelDaqId(signalId);
-            const std::string channelName = fReadoutMetadata->GetNameForChannelDaqId(signalId);
+        const std::string channelType = fReadoutMetadata->GetTypeForChannelDaqId(signalId);
+        const std::string channelName = fReadoutMetadata->GetNameForChannelDaqId(signalId);
 
-            // Check if channel type is in the list of selected channel types
-            if (!fChannelTypes.empty() && fChannelTypes.find(channelType) == fChannelTypes.end()) {
-                // If channel type is not in the selected types, add the signal without baseline correction
-                fOutputEvent->AddSignal(*sgnl);
-                continue;
-            }
-
-            if (fRangeEnabled && (sgnl->GetID() < fSignalsRange.X() || sgnl->GetID() > fSignalsRange.Y())) {
-                // If signal is outside the specified range, add the signal without baseline correction
-                fOutputEvent->AddSignal(*sgnl);
-                continue;
-            }
-
-            TRestRawSignal sgnl2;
-            sgnl->GetBaseLineCorrected(&sgnl2, fSmoothingWindow);
-            sgnl2.SetID(sgnl->GetID());
-            fOutputEvent->AddSignal(sgnl2);
+        // Check if channel type is in the list of selected channel types
+        if (!fChannelTypes.empty() && fChannelTypes.find(channelType) == fChannelTypes.end()) {
+            // If channel type is not in the selected types, add the signal without baseline correction
+            fOutputEvent->AddSignal(*sgnl);
+            continue;
         }
+
+        if (fRangeEnabled && (sgnl->GetID() < fSignalsRange.X() || sgnl->GetID() > fSignalsRange.Y())) {
+            // If signal is outside the specified range, add the signal without baseline correction
+            fOutputEvent->AddSignal(*sgnl);
+            continue;
+        }
+
+        TRestRawSignal sgnl2;
+        sgnl->GetBaseLineCorrected(&sgnl2, fSmoothingWindow);
+        sgnl2.SetID(sgnl->GetID());
+        fOutputEvent->AddSignal(sgnl2);
+    }
 
     return fOutputEvent;
 }
@@ -141,19 +142,19 @@ void TRestRawBaseLineCorrectionProcess::InitFromConfigFile() {
     const auto filterType = GetParameter("channelType", "");
     if (!filterType.empty()) {
         fChannelTypes.insert(filterType);
-		std::cout << "Type: " << filterType << std::endl;
+        std::cout << "Type: " << filterType << std::endl;
     }
- /*
-    if (fChannelTypes.empty()) {
-        // if no channel type is specified, use all channel types
-    }
- */
+    /*
+       if (fChannelTypes.empty()) {
+           // if no channel type is specified, use all channel types
+       }
+    */
     fSignalsRange = Get2DVectorParameterWithUnits("signalsRange", fSignalsRange);
     fSmoothingWindow = StringToDouble(GetParameter("smoothingWindow", fSmoothingWindow));
 }
 
 void TRestRawBaseLineCorrectionProcess::PrintMetadata() {
-	BeginPrintProcess();
+    BeginPrintProcess();
 
     if (fChannelTypes.empty()) {
         RESTMetadata << "No type specified. All signal types will be processed." << RESTendl;
@@ -165,11 +166,11 @@ void TRestRawBaseLineCorrectionProcess::PrintMetadata() {
         RESTMetadata << RESTendl;
     }
 
-	RESTMetadata << "Smoothing window size: " << fSmoothingWindow << RESTendl;
-	RESTMetadata << "Baseline correction applied to signals with IDs in range (" << fSignalsRange.X()
-	             << "," << fSignalsRange.Y() << ")" << RESTendl;
+    RESTMetadata << "Smoothing window size: " << fSmoothingWindow << RESTendl;
+    RESTMetadata << "Baseline correction applied to signals with IDs in range (" << fSignalsRange.X() << ","
+                 << fSignalsRange.Y() << ")" << RESTendl;
 
-	EndPrintProcess();
+    EndPrintProcess();
 }
 
 void TRestRawBaseLineCorrectionProcess::EndProcess() {}

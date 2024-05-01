@@ -39,7 +39,7 @@ class TRestRawSignalRemoveChannelsProcess : public TRestEventProcess {
     TRestRawSignalEvent* fOutputSignalEvent;  //!
 
     /// A pointer to the readout metadata
-    TRestRawReadoutMetadata* fReadoutMetadata = nullptr; //!
+    TRestRawReadoutMetadata* fReadoutMetadata = nullptr;  //!
 #endif
 
     void InitFromConfigFile() override;

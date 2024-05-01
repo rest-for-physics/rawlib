@@ -67,6 +67,7 @@
 /// <hr>
 ///
 #include "TRestRawSignalRemoveChannelsProcess.h"
+
 #include <TRestRawReadoutMetadata.h>
 
 using namespace std;
@@ -169,7 +170,8 @@ TRestEvent* TRestRawSignalRemoveChannelsProcess::ProcessEvent(TRestEvent* inputE
 
         // Check if the channel type matches any specified for removal
         if (!removeSignal) {
-            std::string channelType = fInputSignalEvent->GetReadoutMetadata()->GetTypeForChannelDaqId(sgnl->GetSignalID());
+            std::string channelType =
+                fInputSignalEvent->GetReadoutMetadata()->GetTypeForChannelDaqId(sgnl->GetSignalID());
             if (std::find(fChannelTypes.begin(), fChannelTypes.end(), channelType) != fChannelTypes.end()) {
                 removeSignal = true;
             }
