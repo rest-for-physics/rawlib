@@ -172,9 +172,8 @@ TRestEvent* TRestRawSignalRemoveChannelsProcess::ProcessEvent(TRestEvent* inputE
         }
 
         // Check if the channel type matches any specified for removal
-        if (!removeSignal) {
-            string channelType =
-                fInputSignalEvent->GetReadoutMetadata()->GetTypeForChannelDaqId(signal->GetSignalID());
+        if (!removeSignal && !fChannelTypes.empty()) {
+            string channelType = fReadoutMetadata->GetTypeForChannelDaqId(signal->GetSignalID());
             if (find(fChannelTypes.begin(), fChannelTypes.end(), channelType) != fChannelTypes.end()) {
                 removeSignal = true;
             }
@@ -217,6 +216,9 @@ void TRestRawSignalRemoveChannelsProcess::InitFromConfigFile() {
     pos = 0;
     while (!(removeChannelDefinition = GetKEYDefinition("removeChannels", pos)).empty()) {
         TVector2 v = StringTo2DVector(GetFieldValue("range", removeChannelDefinition));
+        if (v.X() == -1 && v.Y() == -1) {
+            continue;
+        }
         if (v.X() >= 0 && v.Y() >= 0 && v.Y() > v.X()) {
             for (int n = (Int_t)v.X(); n <= (Int_t)v.Y(); n++) {
                 fChannelIds.push_back(n);
