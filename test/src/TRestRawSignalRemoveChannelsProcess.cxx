@@ -21,7 +21,8 @@ TEST(TRestRawSignalRemoveChannelsProcess, TestFiles) {
     EXPECT_TRUE(fs::is_directory(filesPath));
     // Check it's not empty
     EXPECT_TRUE(!fs::is_empty(filesPath));
-    EXPECT_TRUE(fs::exists(restRawSignalRemoveChannelsProcessRml));
+    EXPECT_TRUE(fs::exists(restRawSignalRemoveChannelsProcessRmlIds));
+    EXPECT_TRUE(fs::exists(restRawSignalRemoveChannelsProcessRmlTypes));
 }
 
 TEST(TRestRawSignalRemoveChannelsProcess, FromRmlIds) {
