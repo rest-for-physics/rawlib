@@ -18,12 +18,14 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
         fReadoutMetadata = fSignalEvent->GetReadoutMetadata();
     }
 
-    if (fReadoutMetadata == nullptr) {
-        cerr << "TRestRawPeaksFinderProcess::ProcessEvent: readout metadata is null" << endl;
+    if (fReadoutMetadata == nullptr && !fChannelTypes.empty()) {
+        cerr << "TRestRawBaseLineCorrectionProcess::ProcessEvent: readout metadata is null, cannot filter "
+                "the process by signal type"
+             << endl;
         exit(1);
     }
 
-    std::vector<tuple<UShort_t, UShort_t, double>> eventPeaks;
+    vector<tuple<UShort_t, UShort_t, double>> eventPeaks;
 
     for (int signalIndex = 0; signalIndex < event.GetNumberOfSignals(); signalIndex++) {
         const auto signal = event.GetSignal(signalIndex);
@@ -54,13 +56,13 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
     // sort eventPeaks by time, then signal id
     sort(eventPeaks.begin(), eventPeaks.end(),
          [](const tuple<UShort_t, UShort_t, double>& a, const tuple<UShort_t, UShort_t, double>& b) {
-             return std::tie(std::get<1>(a), std::get<0>(a)) < std::tie(std::get<1>(b), std::get<0>(b));
+             return tie(get<1>(a), get<0>(a)) < tie(get<1>(b), get<0>(b));
          });
 
     // SetObservableValue("peaks", eventPeaks); // problems with dictionaries
-    std::vector<UShort_t> peaksChannelId;
-    std::vector<UShort_t> peaksTime;
-    std::vector<double> peaksAmplitude;
+    vector<UShort_t> peaksChannelId;
+    vector<UShort_t> peaksTime;
+    vector<double> peaksAmplitude;
 
     for (const auto& [channelId, time, amplitude] : eventPeaks) {
         peaksChannelId.push_back(channelId);
@@ -72,8 +74,8 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
     SetObservableValue("peaksTime", peaksTime);
     SetObservableValue("peaksAmplitude", peaksAmplitude);
 
-    std::vector<UShort_t> windowIndex(eventPeaks.size(), 0);  // Initialize with zeros
-    std::vector<UShort_t> windowCenter;  // for each different window, the center of the window
+    vector<UShort_t> windowIndex(eventPeaks.size(), 0);  // Initialize with zeros
+    vector<UShort_t> windowCenter;  // for each different window, the center of the window
 
     for (size_t peakIndex = 0; peakIndex < eventPeaks.size(); peakIndex++) {
         const auto& [channelId, time, amplitude] = eventPeaks[peakIndex];

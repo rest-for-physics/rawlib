@@ -68,8 +68,6 @@
 ///
 #include "TRestRawSignalRemoveChannelsProcess.h"
 
-#include <TRestRawReadoutMetadata.h>
-
 using namespace std;
 
 ClassImp(TRestRawSignalRemoveChannelsProcess);
@@ -94,7 +92,9 @@ TRestRawSignalRemoveChannelsProcess::TRestRawSignalRemoveChannelsProcess() { Ini
 TRestRawSignalRemoveChannelsProcess::TRestRawSignalRemoveChannelsProcess(const char* configFilename) {
     Initialize();
 
-    if (LoadConfigFromFile(configFilename) == -1) LoadDefaultConfig();
+    if (LoadConfigFromFile(configFilename) == -1) {
+        LoadDefaultConfig();
+    }
 
     PrintMetadata();
 }
@@ -151,8 +151,10 @@ TRestEvent* TRestRawSignalRemoveChannelsProcess::ProcessEvent(TRestEvent* inputE
         fReadoutMetadata = fInputSignalEvent->GetReadoutMetadata();
     }
 
-    if (fReadoutMetadata == nullptr) {
-        cerr << "TRestRawBaseLineCorrectionProcess::ProcessEvent: readout metadata is null" << endl;
+    if (fReadoutMetadata == nullptr && !fChannelTypes.empty()) {
+        cerr << "TRestRawBaseLineCorrectionProcess::ProcessEvent: readout metadata is null, cannot filter "
+                "the process by signal type"
+             << endl;
         exit(1);
     }
 
@@ -162,8 +164,8 @@ TRestEvent* TRestRawSignalRemoveChannelsProcess::ProcessEvent(TRestEvent* inputE
         bool removeSignal = false;
 
         // Check if the channel ID matches any specified for removal
-        for (unsigned int x = 0; x < fChannelIds.size() && !removeSignal; x++) {
-            if (signal->GetID() == fChannelIds[x]) {
+        for (int fChannelId : fChannelIds) {
+            if (signal->GetID() == fChannelId) {
                 removeSignal = true;
                 break;
             }
@@ -207,13 +209,13 @@ void TRestRawSignalRemoveChannelsProcess::InitFromConfigFile() {
     size_t pos = 0;
 
     string removeChannelDefinition;
-    while ((removeChannelDefinition = GetKEYDefinition("removeChannel", pos)) != "") {
+    while (!(removeChannelDefinition = GetKEYDefinition("removeChannel", pos)).empty()) {
         Int_t id = StringToInteger(GetFieldValue("id", removeChannelDefinition));
         fChannelIds.push_back(id);
     }
 
     pos = 0;
-    while ((removeChannelDefinition = GetKEYDefinition("removeChannels", pos)) != "") {
+    while (!(removeChannelDefinition = GetKEYDefinition("removeChannels", pos)).empty()) {
         TVector2 v = StringTo2DVector(GetFieldValue("range", removeChannelDefinition));
         if (v.X() >= 0 && v.Y() >= 0 && v.Y() > v.X())
             for (int n = (Int_t)v.X(); n <= (Int_t)v.Y(); n++) {
@@ -222,7 +224,7 @@ void TRestRawSignalRemoveChannelsProcess::InitFromConfigFile() {
     }
 
     pos = 0;
-    while ((removeChannelDefinition = GetKEYDefinition("removeChannels", pos)) != "") {
+    while (!(removeChannelDefinition = GetKEYDefinition("removeChannels", pos)).empty()) {
         string type = GetFieldValue("type", removeChannelDefinition);
         fChannelTypes.push_back(type);
     }

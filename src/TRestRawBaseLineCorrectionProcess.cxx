@@ -69,8 +69,6 @@
 
 #include "TRestRawBaseLineCorrectionProcess.h"
 
-#include <TRestRawReadoutMetadata.h>
-
 using namespace std;
 
 ClassImp(TRestRawBaseLineCorrectionProcess);
@@ -86,7 +84,7 @@ void TRestRawBaseLineCorrectionProcess::Initialize() {
     SetSectionName(this->ClassName());
     SetLibraryVersion(LIBRARY_VERSION);
 
-    fInputEvent = NULL;
+    fInputEvent = nullptr;
     fOutputEvent = new TRestRawSignalEvent();
 }
 
@@ -106,8 +104,8 @@ TRestEvent* TRestRawBaseLineCorrectionProcess::ProcessEvent(TRestEvent* evInput)
     }
 
     for (int s = 0; s < fInputEvent->GetNumberOfSignals(); s++) {
-        TRestRawSignal* sgnl = fInputEvent->GetSignal(s);
-        const UShort_t signalId = sgnl->GetSignalID();
+        TRestRawSignal* signal = fInputEvent->GetSignal(s);
+        const UShort_t signalId = signal->GetSignalID();
 
         const string channelType = fReadoutMetadata->GetTypeForChannelDaqId(signalId);
         const string channelName = fReadoutMetadata->GetNameForChannelDaqId(signalId);
@@ -115,20 +113,20 @@ TRestEvent* TRestRawBaseLineCorrectionProcess::ProcessEvent(TRestEvent* evInput)
         // Check if channel type is in the list of selected channel types
         if (!fChannelTypes.empty() && fChannelTypes.find(channelType) == fChannelTypes.end()) {
             // If channel type is not in the selected types, add the signal without baseline correction
-            fOutputEvent->AddSignal(*sgnl);
+            fOutputEvent->AddSignal(*signal);
             continue;
         }
 
-        if (fRangeEnabled && (sgnl->GetID() < fSignalsRange.X() || sgnl->GetID() > fSignalsRange.Y())) {
+        if (fRangeEnabled && (signal->GetID() < fSignalsRange.X() || signal->GetID() > fSignalsRange.Y())) {
             // If signal is outside the specified range, add the signal without baseline correction
-            fOutputEvent->AddSignal(*sgnl);
+            fOutputEvent->AddSignal(*signal);
             continue;
         }
 
-        TRestRawSignal sgnl2;
-        sgnl->GetBaseLineCorrected(&sgnl2, fSmoothingWindow);
-        sgnl2.SetID(sgnl->GetID());
-        fOutputEvent->AddSignal(sgnl2);
+        TRestRawSignal signalCorrected;
+        signal->GetBaseLineCorrected(&signalCorrected, fSmoothingWindow);
+        signalCorrected.SetID(signal->GetID());
+        fOutputEvent->AddSignal(signalCorrected);
     }
 
     return fOutputEvent;
