@@ -147,6 +147,9 @@ TRestEvent* TRestRawSignalRemoveChannelsProcess::ProcessEvent(TRestEvent* inputE
     fInputSignalEvent = (TRestRawSignalEvent*)inputEvent;
     fInputSignalEvent->InitializeReferences(GetRunInfo());
 
+    // Avoid it to be filled again every time a new event is processed
+    fChannelTypesToRemove.clear();
+
     if (fReadoutMetadata == nullptr) {
         fReadoutMetadata = fInputSignalEvent->GetReadoutMetadata();
     }
@@ -176,6 +179,8 @@ TRestEvent* TRestRawSignalRemoveChannelsProcess::ProcessEvent(TRestEvent* inputE
             string channelType = fReadoutMetadata->GetTypeForChannelDaqId(signal->GetSignalID());
             if (find(fChannelTypes.begin(), fChannelTypes.end(), channelType) != fChannelTypes.end()) {
                 removeSignal = true;
+                // Add the channel type and ID to the vector
+                fChannelTypesToRemove.emplace_back(channelType, signal->GetID());
             }
         }
 

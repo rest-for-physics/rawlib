@@ -50,6 +50,7 @@ class TRestRawSignalRemoveChannelsProcess : public TRestEventProcess {
 
    protected:
     std::vector<Int_t> fChannelIds;
+    std::vector<std::tuple<std::string, int>> fChannelTypesToRemove;
     std::vector<std::string> fChannelTypes;
 
    public:
@@ -67,8 +68,14 @@ class TRestRawSignalRemoveChannelsProcess : public TRestEventProcess {
     void PrintMetadata() override {
         BeginPrintProcess();
 
-        for (int fChannelId : fChannelIds) {
-            RESTMetadata << "Channel id to remove : " << fChannelId << RESTendl;
+        for (int channelId : fChannelIds) {
+            RESTMetadata << "Channel id to remove: " << channelId << RESTendl;
+        }
+
+        for (const auto& channel : fChannelTypesToRemove) {
+            std::string channelType = std::get<0>(channel);
+            int channelId = std::get<1>(channel);
+            RESTMetadata << "Channel id of type \"" << channelType << "\" to remove: " << channelId << RESTendl;
         }
 
         EndPrintProcess();
@@ -87,6 +94,6 @@ class TRestRawSignalRemoveChannelsProcess : public TRestEventProcess {
     // Destructor
     ~TRestRawSignalRemoveChannelsProcess();
 
-    ClassDefOverride(TRestRawSignalRemoveChannelsProcess, 2);
+    ClassDefOverride(TRestRawSignalRemoveChannelsProcess, 3);
 };
 #endif
