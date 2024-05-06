@@ -152,7 +152,7 @@ TRestEvent* TRestRawSignalRemoveChannelsProcess::ProcessEvent(TRestEvent* inputE
     }
 
     if (fReadoutMetadata == nullptr && !fChannelTypes.empty()) {
-        cerr << "TRestRawBaseLineCorrectionProcess::ProcessEvent: readout metadata is null, cannot filter "
+        cerr << "TRestRawSignalRemoveChannelsProcess::ProcessEvent: readout metadata is null, cannot filter "
                 "the process by signal type"
              << endl;
         exit(1);
@@ -217,15 +217,19 @@ void TRestRawSignalRemoveChannelsProcess::InitFromConfigFile() {
     pos = 0;
     while (!(removeChannelDefinition = GetKEYDefinition("removeChannels", pos)).empty()) {
         TVector2 v = StringTo2DVector(GetFieldValue("range", removeChannelDefinition));
-        if (v.X() >= 0 && v.Y() >= 0 && v.Y() > v.X())
+        if (v.X() >= 0 && v.Y() >= 0 && v.Y() > v.X()) {
             for (int n = (Int_t)v.X(); n <= (Int_t)v.Y(); n++) {
                 fChannelIds.push_back(n);
             }
+        }
     }
 
     pos = 0;
     while (!(removeChannelDefinition = GetKEYDefinition("removeChannels", pos)).empty()) {
         string type = GetFieldValue("type", removeChannelDefinition);
+        if (type.empty() || type == "Not defined") {
+            continue;
+        }
         fChannelTypes.push_back(type);
     }
 }

@@ -19,7 +19,7 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
     }
 
     if (fReadoutMetadata == nullptr && !fChannelTypes.empty()) {
-        cerr << "TRestRawBaseLineCorrectionProcess::ProcessEvent: readout metadata is null, cannot filter "
+        cerr << "TRestRawPeaksFinderProcess::ProcessEvent: readout metadata is null, cannot filter "
                 "the process by signal type"
              << endl;
         exit(1);

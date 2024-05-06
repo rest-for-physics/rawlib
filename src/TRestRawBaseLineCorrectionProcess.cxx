@@ -142,15 +142,10 @@ void TRestRawBaseLineCorrectionProcess::InitFromConfigFile() {
     const auto filterType = GetParameter("channelType", "");
     if (!filterType.empty()) {
         fChannelTypes.insert(filterType);
-        cout << "Type: " << filterType << endl;
     }
-    /*
-       if (fChannelTypes.empty()) {
-           // if no channel type is specified, use all channel types
-       }
-    */
+
     fSignalsRange = Get2DVectorParameterWithUnits("signalsRange", fSignalsRange);
-    fSmoothingWindow = StringToDouble(GetParameter("smoothingWindow", fSmoothingWindow));
+    fSmoothingWindow = (Int_t)StringToDouble(GetParameter("smoothingWindow", double(fSmoothingWindow)));
 }
 
 void TRestRawBaseLineCorrectionProcess::PrintMetadata() {
