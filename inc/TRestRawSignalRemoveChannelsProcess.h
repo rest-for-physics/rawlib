@@ -52,8 +52,6 @@ class TRestRawSignalRemoveChannelsProcess : public TRestEventProcess {
     std::vector<Int_t> fChannelIds;
     std::vector<std::string> fChannelTypes;
 
-    TVector2 fSignalRange = TVector2(-1, -1);
-
    public:
     RESTValue GetInputEvent() const override { return fInputSignalEvent; }
     RESTValue GetOutputEvent() const override { return fOutputSignalEvent; }

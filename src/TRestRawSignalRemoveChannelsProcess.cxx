@@ -210,6 +210,9 @@ void TRestRawSignalRemoveChannelsProcess::InitFromConfigFile() {
     string removeChannelDefinition;
     while (!(removeChannelDefinition = GetKEYDefinition("removeChannel", pos)).empty()) {
         Int_t id = StringToInteger(GetFieldValue("id", removeChannelDefinition));
+        if (id < 0) {
+            continue;
+        }
         fChannelIds.push_back(id);
     }
 
