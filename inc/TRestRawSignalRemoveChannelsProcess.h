@@ -62,12 +62,16 @@ class TRestRawSignalRemoveChannelsProcess : public TRestEventProcess {
 
     void LoadConfig(const std::string& configFilename, const std::string& name = "");
 
+    std::vector<std::string> GetChannelTypes() const { return fChannelTypes; }
+    std::vector<Int_t> GetChannelIds() const { return fChannelIds; }
+
     /// It prints out the process parameters stored in the metadata structure
     void PrintMetadata() override {
         BeginPrintProcess();
 
-        for (unsigned int n = 0; n < fChannelIds.size(); n++)
-            RESTMetadata << "Channel id to remove : " << fChannelIds[n] << RESTendl;
+        for (int fChannelId : fChannelIds) {
+            RESTMetadata << "Channel id to remove : " << fChannelId << RESTendl;
+        }
 
         EndPrintProcess();
     }

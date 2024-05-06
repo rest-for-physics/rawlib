@@ -1,0 +1,4 @@
+<TRestRawSignalRemoveChannelsProcess name="testProcess">
+    <removeChannels type="tpc" />
+    <removeChannels type="veto" />
+</TRestRawSignalRemoveChannelsProcess>
