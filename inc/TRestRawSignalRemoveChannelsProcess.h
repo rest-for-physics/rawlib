@@ -75,7 +75,8 @@ class TRestRawSignalRemoveChannelsProcess : public TRestEventProcess {
         for (const auto& channel : fChannelTypesToRemove) {
             std::string channelType = std::get<0>(channel);
             int channelId = std::get<1>(channel);
-            RESTMetadata << "Channel id of type \"" << channelType << "\" to remove: " << channelId << RESTendl;
+            RESTMetadata << "Channel id of type \"" << channelType << "\" to remove: " << channelId
+                         << RESTendl;
         }
 
         EndPrintProcess();
