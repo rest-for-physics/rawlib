@@ -71,6 +71,10 @@ class TRestRawSignalChannelActivityProcess : public TRestEventProcess {
     void PrintMetadata() override {
         BeginPrintProcess();
 
+        if (!fChannelType.empty()) {
+            RESTMetadata << "channelType : " << fChannelType << RESTendl;
+        }
+
         RESTMetadata << "Low signal threshold activity : " << fLowThreshold << RESTendl;
         RESTMetadata << "High signal threshold activity : " << fHighThreshold << RESTendl;
 
