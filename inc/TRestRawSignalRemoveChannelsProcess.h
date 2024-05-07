@@ -23,15 +23,14 @@
 #ifndef RestCore_TRestRawSignalRemoveChannelsProcess
 #define RestCore_TRestRawSignalRemoveChannelsProcess
 
-#include <TRestRawSignalEvent.h>
+#include <TRestEventProcess.h>
 
-#include "TRestEventProcess.h"
 #include "TRestRawReadoutMetadata.h"
+#include "TRestRawSignalEvent.h"
 
 //! A process allowing to remove selected channels from a TRestRawSignalEvent
 class TRestRawSignalRemoveChannelsProcess : public TRestEventProcess {
    private:
-#ifndef __CINT__
     /// A pointer to the specific TRestDetectorSignalEvent input
     TRestRawSignalEvent* fInputSignalEvent;  //!
 
@@ -40,7 +39,6 @@ class TRestRawSignalRemoveChannelsProcess : public TRestEventProcess {
 
     /// A pointer to the readout metadata
     TRestRawReadoutMetadata* fReadoutMetadata = nullptr;  //!
-#endif
 
     void InitFromConfigFile() override;
 
@@ -50,8 +48,9 @@ class TRestRawSignalRemoveChannelsProcess : public TRestEventProcess {
 
    protected:
     std::vector<Int_t> fChannelIds;
-    std::vector<std::tuple<std::string, int>> fChannelTypesToRemove;
     std::vector<std::string> fChannelTypes;
+
+    std::map<Int_t, std::string> fChannelTypesToRemove;
 
    public:
     RESTValue GetInputEvent() const override { return fInputSignalEvent; }
@@ -65,22 +64,7 @@ class TRestRawSignalRemoveChannelsProcess : public TRestEventProcess {
     std::vector<Int_t> GetChannelIds() const { return fChannelIds; }
 
     /// It prints out the process parameters stored in the metadata structure
-    void PrintMetadata() override {
-        BeginPrintProcess();
-
-        for (int channelId : fChannelIds) {
-            RESTMetadata << "Channel id to remove: " << channelId << RESTendl;
-        }
-
-        for (const auto& channel : fChannelTypesToRemove) {
-            std::string channelType = std::get<0>(channel);
-            int channelId = std::get<1>(channel);
-            RESTMetadata << "Channel id of type \"" << channelType << "\" to remove: " << channelId
-                         << RESTendl;
-        }
-
-        EndPrintProcess();
-    }
+    void PrintMetadata() override;
 
     /// Returns a new instance of this class
     TRestEventProcess* Maker() { return new TRestRawSignalRemoveChannelsProcess; }

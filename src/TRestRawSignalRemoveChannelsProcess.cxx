@@ -137,7 +137,9 @@ void TRestRawSignalRemoveChannelsProcess::Initialize() {
 /// corresponding TRestGeant4AnalysisProcess section inside the RML.
 ///
 void TRestRawSignalRemoveChannelsProcess::LoadConfig(const string& configFilename, const string& name) {
-    if (LoadConfigFromFile(configFilename, name) == -1) LoadDefaultConfig();
+    if (LoadConfigFromFile(configFilename, name) == -1) {
+        LoadDefaultConfig();
+    }
 }
 
 ///////////////////////////////////////////////
@@ -146,9 +148,6 @@ void TRestRawSignalRemoveChannelsProcess::LoadConfig(const string& configFilenam
 TRestEvent* TRestRawSignalRemoveChannelsProcess::ProcessEvent(TRestEvent* inputEvent) {
     fInputSignalEvent = (TRestRawSignalEvent*)inputEvent;
     fInputSignalEvent->InitializeReferences(GetRunInfo());
-
-    // Avoid it to be filled again every time a new event is processed
-    fChannelTypesToRemove.clear();
 
     if (fReadoutMetadata == nullptr) {
         fReadoutMetadata = fInputSignalEvent->GetReadoutMetadata();
@@ -176,11 +175,18 @@ TRestEvent* TRestRawSignalRemoveChannelsProcess::ProcessEvent(TRestEvent* inputE
 
         // Check if the channel type matches any specified for removal
         if (!removeSignal && !fChannelTypes.empty()) {
-            string channelType = fReadoutMetadata->GetTypeForChannelDaqId(signal->GetSignalID());
+            const auto signalId = signal->GetSignalID();
+            string channelType = fReadoutMetadata->GetTypeForChannelDaqId(signalId);
             if (find(fChannelTypes.begin(), fChannelTypes.end(), channelType) != fChannelTypes.end()) {
                 removeSignal = true;
                 // Add the channel type and ID to the vector
-                fChannelTypesToRemove.emplace_back(channelType, signal->GetID());
+                if (fChannelTypesToRemove.find(signalId) != fChannelTypesToRemove.end() &&
+                    fChannelTypesToRemove.at(signalId) != channelType) {
+                    throw runtime_error(
+                        "TRestRawSignalRemoveChannelsProcess: Signal was already recorded to have some type, "
+                        "but it changed");
+                }
+                fChannelTypesToRemove[signalId] = channelType;
             }
         }
 
@@ -242,4 +248,26 @@ void TRestRawSignalRemoveChannelsProcess::InitFromConfigFile() {
         }
         fChannelTypes.push_back(type);
     }
+}
+
+void TRestRawSignalRemoveChannelsProcess::PrintMetadata() {
+    BeginPrintProcess();
+
+    for (int channelId : fChannelIds) {
+        RESTMetadata << "Channel id to remove: " << channelId << RESTendl;
+    }
+
+    if (!fChannelTypes.empty()) {
+        RESTMetadata << "Channel types to be removed: ";
+        for (const auto& type : fChannelTypes) {
+            RESTMetadata << type << " ";
+        }
+        RESTMetadata << RESTendl;
+    }
+
+    for (const auto& [signalId, type] : fChannelTypesToRemove) {
+        RESTMetadata << "Removing channel of type '" << type << "' and id " << signalId << RESTendl;
+    }
+
+    EndPrintProcess();
 }
