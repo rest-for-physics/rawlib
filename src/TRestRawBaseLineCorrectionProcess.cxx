@@ -69,6 +69,8 @@
 
 #include "TRestRawBaseLineCorrectionProcess.h"
 
+using namespace std;
+
 ClassImp(TRestRawBaseLineCorrectionProcess);
 
 TRestRawBaseLineCorrectionProcess::TRestRawBaseLineCorrectionProcess() { Initialize(); }
@@ -80,32 +82,90 @@ TRestRawBaseLineCorrectionProcess::~TRestRawBaseLineCorrectionProcess() {
 
 void TRestRawBaseLineCorrectionProcess::Initialize() {
     SetSectionName(this->ClassName());
-    fInputEvent = NULL;
+    SetLibraryVersion(LIBRARY_VERSION);
+
+    fInputEvent = nullptr;
     fOutputEvent = new TRestRawSignalEvent();
 }
 
-void TRestRawBaseLineCorrectionProcess::InitProcess() {
-    if (fSignalsRange.X() != -1 && fSignalsRange.Y() != -1) fRangeEnabled = true;
-}
-
 TRestEvent* TRestRawBaseLineCorrectionProcess::ProcessEvent(TRestEvent* evInput) {
-    fInputEvent = (TRestRawSignalEvent*)evInput;
+    fInputEvent = dynamic_cast<TRestRawSignalEvent*>(evInput);
+    fInputEvent->InitializeReferences(GetRunInfo());
+
+    if (fReadoutMetadata == nullptr) {
+        fReadoutMetadata = fInputEvent->GetReadoutMetadata();
+    }
+
+    if (fReadoutMetadata == nullptr && !fChannelTypes.empty()) {
+        cerr << "TRestRawBaseLineCorrectionProcess::ProcessEvent: readout metadata is null, cannot filter "
+                "the process by signal type"
+             << endl;
+        exit(1);
+    }
 
     for (int s = 0; s < fInputEvent->GetNumberOfSignals(); s++) {
-        TRestRawSignal* sgnl = fInputEvent->GetSignal(s);
+        TRestRawSignal* signal = fInputEvent->GetSignal(s);
+        const UShort_t signalId = signal->GetSignalID();
 
-        if (fRangeEnabled && (sgnl->GetID() < fSignalsRange.X() || sgnl->GetID() > fSignalsRange.Y())) {
-            fOutputEvent->AddSignal(*sgnl);
+        const string channelType = fReadoutMetadata->GetTypeForChannelDaqId(signalId);
+        const string channelName = fReadoutMetadata->GetNameForChannelDaqId(signalId);
+
+        // Check if channel type is in the list of selected channel types
+        if (!fChannelTypes.empty() && fChannelTypes.find(channelType) == fChannelTypes.end()) {
+            // If channel type is not in the selected types, add the signal without baseline correction
+            fOutputEvent->AddSignal(*signal);
             continue;
         }
 
-        TRestRawSignal sgnl2;
-        sgnl->GetBaseLineCorrected(&sgnl2, fSmoothingWindow);
-        sgnl2.SetID(sgnl->GetID());
-        fOutputEvent->AddSignal(sgnl2);
+        if (fRangeEnabled && (signal->GetID() < fSignalsRange.X() || signal->GetID() > fSignalsRange.Y())) {
+            // If signal is outside the specified range, add the signal without baseline correction
+            fOutputEvent->AddSignal(*signal);
+            continue;
+        }
+
+        TRestRawSignal signalCorrected;
+        signal->GetBaseLineCorrected(&signalCorrected, fSmoothingWindow);
+        signalCorrected.SetID(signal->GetID());
+        fOutputEvent->AddSignal(signalCorrected);
     }
 
     return fOutputEvent;
+}
+
+void TRestRawBaseLineCorrectionProcess::InitProcess() {}
+
+void TRestRawBaseLineCorrectionProcess::InitFromConfigFile() {
+    if (fSignalsRange.X() != -1 && fSignalsRange.Y() != -1) {
+        fRangeEnabled = true;
+    }
+
+    const auto filterType = GetParameter("channelType", "");
+    if (!filterType.empty()) {
+        fChannelTypes.insert(filterType);
+    }
+
+    fSignalsRange = Get2DVectorParameterWithUnits("signalsRange", fSignalsRange);
+    fSmoothingWindow = (Int_t)StringToDouble(GetParameter("smoothingWindow", double(fSmoothingWindow)));
+}
+
+void TRestRawBaseLineCorrectionProcess::PrintMetadata() {
+    BeginPrintProcess();
+
+    if (fChannelTypes.empty()) {
+        RESTMetadata << "No type specified. All signal types will be processed." << RESTendl;
+    } else {
+        RESTMetadata << "Channel type for baseline correction: ";
+        for (const auto& channelType : fChannelTypes) {
+            RESTMetadata << channelType << " ";
+        }
+        RESTMetadata << RESTendl;
+    }
+
+    RESTMetadata << "Smoothing window size: " << fSmoothingWindow << RESTendl;
+    RESTMetadata << "Baseline correction applied to signals with IDs in range (" << fSignalsRange.X() << ","
+                 << fSignalsRange.Y() << ")" << RESTendl;
+
+    EndPrintProcess();
 }
 
 void TRestRawBaseLineCorrectionProcess::EndProcess() {}

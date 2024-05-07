@@ -92,7 +92,9 @@ TRestRawSignalRemoveChannelsProcess::TRestRawSignalRemoveChannelsProcess() { Ini
 TRestRawSignalRemoveChannelsProcess::TRestRawSignalRemoveChannelsProcess(const char* configFilename) {
     Initialize();
 
-    if (LoadConfigFromFile(configFilename) == -1) LoadDefaultConfig();
+    if (LoadConfigFromFile(configFilename) == -1) {
+        LoadDefaultConfig();
+    }
 
     PrintMetadata();
 }
@@ -135,7 +137,9 @@ void TRestRawSignalRemoveChannelsProcess::Initialize() {
 /// corresponding TRestGeant4AnalysisProcess section inside the RML.
 ///
 void TRestRawSignalRemoveChannelsProcess::LoadConfig(const string& configFilename, const string& name) {
-    if (LoadConfigFromFile(configFilename, name) == -1) LoadDefaultConfig();
+    if (LoadConfigFromFile(configFilename, name) == -1) {
+        LoadDefaultConfig();
+    }
 }
 
 ///////////////////////////////////////////////
@@ -143,24 +147,66 @@ void TRestRawSignalRemoveChannelsProcess::LoadConfig(const string& configFilenam
 ///
 TRestEvent* TRestRawSignalRemoveChannelsProcess::ProcessEvent(TRestEvent* inputEvent) {
     fInputSignalEvent = (TRestRawSignalEvent*)inputEvent;
+    fInputSignalEvent->InitializeReferences(GetRunInfo());
 
-    for (int n = 0; n < fInputSignalEvent->GetNumberOfSignals(); n++) {
-        TRestRawSignal* sgnl = fInputSignalEvent->GetSignal(n);
-
-        Bool_t removeChannel = false;
-        for (unsigned int x = 0; x < fChannelIds.size() && !removeChannel; x++)
-            if (sgnl->GetID() == fChannelIds[x]) removeChannel = true;
-
-        if (!removeChannel) fOutputSignalEvent->AddSignal(*sgnl);
-
-        if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Extreme)
-            cout << "Channel ID : " << sgnl->GetID() << endl;
-
-        if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Debug && removeChannel)
-            cout << "Removing channel id : " << sgnl->GetID() << endl;
+    if (fReadoutMetadata == nullptr) {
+        fReadoutMetadata = fInputSignalEvent->GetReadoutMetadata();
     }
 
-    if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Extreme) GetChar();
+    if (fReadoutMetadata == nullptr && !fChannelTypes.empty()) {
+        cerr << "TRestRawSignalRemoveChannelsProcess::ProcessEvent: readout metadata is null, cannot filter "
+                "the process by signal type"
+             << endl;
+        exit(1);
+    }
+
+    for (int n = 0; n < fInputSignalEvent->GetNumberOfSignals(); n++) {
+        TRestRawSignal* signal = fInputSignalEvent->GetSignal(n);
+
+        bool removeSignal = false;
+
+        // Check if the channel ID matches any specified for removal
+        for (int fChannelId : fChannelIds) {
+            if (signal->GetID() == fChannelId) {
+                removeSignal = true;
+                break;
+            }
+        }
+
+        // Check if the channel type matches any specified for removal
+        if (!removeSignal && !fChannelTypes.empty()) {
+            const auto signalId = signal->GetSignalID();
+            string channelType = fReadoutMetadata->GetTypeForChannelDaqId(signalId);
+            if (find(fChannelTypes.begin(), fChannelTypes.end(), channelType) != fChannelTypes.end()) {
+                removeSignal = true;
+                // Add the channel type and ID to the vector
+                if (fChannelTypesToRemove.find(signalId) != fChannelTypesToRemove.end() &&
+                    fChannelTypesToRemove.at(signalId) != channelType) {
+                    throw runtime_error(
+                        "TRestRawSignalRemoveChannelsProcess: Signal was already recorded to have some type, "
+                        "but it changed");
+                }
+                fChannelTypesToRemove[signalId] = channelType;
+            }
+        }
+
+        if (!removeSignal) {
+            fOutputSignalEvent->AddSignal(*signal);
+        }
+
+        // Logging messages
+        if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Extreme) {
+            cout << "Channel ID : " << signal->GetID() << endl;
+        }
+
+        if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Debug && removeSignal) {
+            cout << "Removing channel id : " << signal->GetID() << endl;
+        }
+    }
+
+    if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Extreme) {
+        GetChar();
+    }
 
     return fOutputSignalEvent;
 }
@@ -173,15 +219,55 @@ void TRestRawSignalRemoveChannelsProcess::InitFromConfigFile() {
     size_t pos = 0;
 
     string removeChannelDefinition;
-    while ((removeChannelDefinition = GetKEYDefinition("removeChannel", pos)) != "") {
+    while (!(removeChannelDefinition = GetKEYDefinition("removeChannel", pos)).empty()) {
         Int_t id = StringToInteger(GetFieldValue("id", removeChannelDefinition));
+        if (id < 0) {
+            continue;
+        }
         fChannelIds.push_back(id);
     }
 
     pos = 0;
-    while ((removeChannelDefinition = GetKEYDefinition("removeChannels", pos)) != "") {
+    while (!(removeChannelDefinition = GetKEYDefinition("removeChannels", pos)).empty()) {
         TVector2 v = StringTo2DVector(GetFieldValue("range", removeChannelDefinition));
-        if (v.X() >= 0 && v.Y() >= 0 && v.Y() > v.X())
-            for (int n = (Int_t)v.X(); n <= (Int_t)v.Y(); n++) fChannelIds.push_back(n);
+        if (v.X() == -1 && v.Y() == -1) {
+            continue;
+        }
+        if (v.X() >= 0 && v.Y() >= 0 && v.Y() > v.X()) {
+            for (int n = (Int_t)v.X(); n <= (Int_t)v.Y(); n++) {
+                fChannelIds.push_back(n);
+            }
+        }
     }
+
+    pos = 0;
+    while (!(removeChannelDefinition = GetKEYDefinition("removeChannels", pos)).empty()) {
+        string type = GetFieldValue("type", removeChannelDefinition);
+        if (type.empty() || type == "Not defined") {
+            continue;
+        }
+        fChannelTypes.push_back(type);
+    }
+}
+
+void TRestRawSignalRemoveChannelsProcess::PrintMetadata() {
+    BeginPrintProcess();
+
+    for (int channelId : fChannelIds) {
+        RESTMetadata << "Channel id to remove: " << channelId << RESTendl;
+    }
+
+    if (!fChannelTypes.empty()) {
+        RESTMetadata << "Channel types to be removed: ";
+        for (const auto& type : fChannelTypes) {
+            RESTMetadata << type << " ";
+        }
+        RESTMetadata << RESTendl;
+    }
+
+    for (const auto& [signalId, type] : fChannelTypesToRemove) {
+        RESTMetadata << "Removing channel of type '" << type << "' and id " << signalId << RESTendl;
+    }
+
+    EndPrintProcess();
 }

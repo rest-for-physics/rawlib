@@ -23,20 +23,22 @@
 #ifndef RestCore_TRestRawSignalRemoveChannelsProcess
 #define RestCore_TRestRawSignalRemoveChannelsProcess
 
-#include <TRestRawSignalEvent.h>
+#include <TRestEventProcess.h>
 
-#include "TRestEventProcess.h"
+#include "TRestRawReadoutMetadata.h"
+#include "TRestRawSignalEvent.h"
 
 //! A process allowing to remove selected channels from a TRestRawSignalEvent
 class TRestRawSignalRemoveChannelsProcess : public TRestEventProcess {
    private:
-#ifndef __CINT__
     /// A pointer to the specific TRestDetectorSignalEvent input
     TRestRawSignalEvent* fInputSignalEvent;  //!
 
     /// A pointer to the specific TRestRawSignalEvent input
     TRestRawSignalEvent* fOutputSignalEvent;  //!
-#endif
+
+    /// A pointer to the readout metadata
+    TRestRawReadoutMetadata* fReadoutMetadata = nullptr;  //!
 
     void InitFromConfigFile() override;
 
@@ -46,8 +48,9 @@ class TRestRawSignalRemoveChannelsProcess : public TRestEventProcess {
 
    protected:
     std::vector<Int_t> fChannelIds;
+    std::vector<std::string> fChannelTypes;
 
-    TVector2 fSignalRange = TVector2(-1, -1);
+    std::map<Int_t, std::string> fChannelTypesToRemove;
 
    public:
     RESTValue GetInputEvent() const override { return fInputSignalEvent; }
@@ -57,15 +60,11 @@ class TRestRawSignalRemoveChannelsProcess : public TRestEventProcess {
 
     void LoadConfig(const std::string& configFilename, const std::string& name = "");
 
+    std::vector<std::string> GetChannelTypes() const { return fChannelTypes; }
+    std::vector<Int_t> GetChannelIds() const { return fChannelIds; }
+
     /// It prints out the process parameters stored in the metadata structure
-    void PrintMetadata() override {
-        BeginPrintProcess();
-
-        for (unsigned int n = 0; n < fChannelIds.size(); n++)
-            RESTMetadata << "Channel id to remove : " << fChannelIds[n] << RESTendl;
-
-        EndPrintProcess();
-    }
+    void PrintMetadata() override;
 
     /// Returns a new instance of this class
     TRestEventProcess* Maker() { return new TRestRawSignalRemoveChannelsProcess; }
@@ -80,6 +79,6 @@ class TRestRawSignalRemoveChannelsProcess : public TRestEventProcess {
     // Destructor
     ~TRestRawSignalRemoveChannelsProcess();
 
-    ClassDefOverride(TRestRawSignalRemoveChannelsProcess, 1);
+    ClassDefOverride(TRestRawSignalRemoveChannelsProcess, 3);
 };
 #endif

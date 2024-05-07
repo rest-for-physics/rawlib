@@ -24,18 +24,20 @@
 #define RESTProc_TRestRawBaseLineCorrectionProcess
 
 #include "TRestEventProcess.h"
+#include "TRestRawReadoutMetadata.h"
 #include "TRestRawSignalEvent.h"
 
 class TRestRawBaseLineCorrectionProcess : public TRestEventProcess {
    private:
     // We define specific input/output event data holders
-    TRestRawSignalEvent* fInputEvent;   //!
-    TRestRawSignalEvent* fOutputEvent;  //!
+    TRestRawSignalEvent* fInputEvent;                     //!
+    TRestRawSignalEvent* fOutputEvent;                    //!
+    TRestRawReadoutMetadata* fReadoutMetadata = nullptr;  //!
 
     void Initialize() override;
 
     /// It defines the signals id range where analysis is applied
-    TVector2 fSignalsRange = TVector2(-1, -1);
+    TVector2 fSignalsRange = {-1, -1};
 
     /// Time window width in bins for the moving average filter for baseline correction
     Int_t fSmoothingWindow = 75;
@@ -43,9 +45,13 @@ class TRestRawBaseLineCorrectionProcess : public TRestEventProcess {
     /// Just a flag to quickly determine if we have to apply the range filter
     Bool_t fRangeEnabled = false;  //!
 
+    std::set<std::string> fChannelTypes = {};  // this process will only be applied to selected channel types
+
    public:
     RESTValue GetInputEvent() const override { return fInputEvent; }
     RESTValue GetOutputEvent() const override { return fOutputEvent; }
+
+    void PrintMetadata() override;
 
     void InitProcess() override;
 
@@ -53,15 +59,7 @@ class TRestRawBaseLineCorrectionProcess : public TRestEventProcess {
 
     void EndProcess() override;
 
-    void PrintMetadata() override {
-        BeginPrintProcess();
-
-        RESTMetadata << "Smoothing window size: " << fSmoothingWindow << RESTendl;
-        RESTMetadata << "Baseline correction applied to signals with IDs in range (" << fSignalsRange.X()
-                     << "," << fSignalsRange.Y() << ")" << RESTendl;
-
-        EndPrintProcess();
-    }
+    void InitFromConfigFile() override;
 
     /// Returns a new instance of this class
     TRestEventProcess* Maker() { return new TRestRawBaseLineCorrectionProcess; }
@@ -74,6 +72,6 @@ class TRestRawBaseLineCorrectionProcess : public TRestEventProcess {
 
     // ROOT class definition helper. Increase the number in it every time
     // you add/rename/remove the process parameters
-    ClassDefOverride(TRestRawBaseLineCorrectionProcess, 1);
+    ClassDefOverride(TRestRawBaseLineCorrectionProcess, 2);
 };
 #endif
