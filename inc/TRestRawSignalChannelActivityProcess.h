@@ -87,6 +87,6 @@ class TRestRawSignalChannelActivityProcess : public TRestEventProcess {
     TRestRawSignalChannelActivityProcess();
     ~TRestRawSignalChannelActivityProcess();
 
-    ClassDefOverride(TRestRawSignalChannelActivityProcess, 4);
+    ClassDefOverride(TRestRawSignalChannelActivityProcess, 5);
 };
 #endif

@@ -103,6 +103,6 @@ class TRestRawCommonNoiseReductionProcess : public TRestEventProcess {
     // Destructor
     ~TRestRawCommonNoiseReductionProcess();
 
-    ClassDefOverride(TRestRawCommonNoiseReductionProcess, 2);
+    ClassDefOverride(TRestRawCommonNoiseReductionProcess, 3);
 };
 #endif
