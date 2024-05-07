@@ -90,12 +90,12 @@
 /// which returns a std::pair<vector<string>,vector<string>>, which contains in the first entry the name of
 /// the veto group,
 /// and in the second the comma separated string of the corresponding signal IDs. The signal IDs can
-/// susequently be converted
+/// subsequently be converted
 /// into a vector<double> by using the TRestStringHelper::StringToElements() method.
 ///
 /// <hr>
 ///
-/// \warning **⚠ REST is under continous development.** This documentation
+/// \warning **⚠ REST is under continuous development.** This documentation
 /// is offered to you by the REST community. Your HELP is needed to keep this code
 /// up to date. Your feedback will be worth to support this software, please report
 /// any problems/suggestions you may find while using it at [The REST Framework
@@ -452,7 +452,6 @@ void TRestRawVetoAnalysisProcess::InitFromConfigFile() {
 void TRestRawVetoAnalysisProcess::PrintMetadata() {
     BeginPrintProcess();
 
-    // Print output metadata using, metadata << endl;
     for (unsigned int i = 0; i < fVetoGroupNames.size(); i++) {
         RESTMetadata << "Veto group " << fVetoGroupNames[i] << " signal IDs: " << fVetoGroupIds[i]
                      << RESTendl;

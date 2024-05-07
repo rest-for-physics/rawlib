@@ -175,15 +175,15 @@ void TRestRawPeaksFinderProcess::InitFromConfigFile() {
 }
 
 void TRestRawPeaksFinderProcess::PrintMetadata() {
-    cout << "Applying process to channel types: ";
+    RESTMetadata << "Applying process to channel types: ";
     for (const auto& type : fChannelTypes) {
-        cout << type << " ";
+        RESTMetadata << type << " ";
     }
-    cout << endl;
+    RESTMetadata << RESTendl;
 
-    cout << "Threshold over baseline: " << fThresholdOverBaseline << endl;
-    cout << "Baseline range: " << fBaselineRange.X() << " - " << fBaselineRange.Y() << endl;
+    RESTMetadata << "Threshold over baseline: " << fThresholdOverBaseline << RESTendl;
+    RESTMetadata << "Baseline range: " << fBaselineRange.X() << " - " << fBaselineRange.Y() << RESTendl;
 
-    cout << "Distance: " << fDistance << endl;
-    cout << "Window: " << fWindow << endl;
+    RESTMetadata << "Distance: " << fDistance << RESTendl;
+    RESTMetadata << "Window: " << fWindow << RESTendl;
 }
