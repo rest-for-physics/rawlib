@@ -85,11 +85,11 @@
 ///
 #include "TRestRawCommonNoiseReductionProcess.h"
 
-using namespace std;
-
 #include <algorithm>
 #include <iostream>
 #include <vector>
+
+using namespace std;
 
 ClassImp(TRestRawCommonNoiseReductionProcess);
 
@@ -113,7 +113,9 @@ TRestRawCommonNoiseReductionProcess::TRestRawCommonNoiseReductionProcess() { Ini
 TRestRawCommonNoiseReductionProcess::TRestRawCommonNoiseReductionProcess(const char* configFilename) {
     Initialize();
 
-    if (LoadConfigFromFile(configFilename)) LoadDefaultConfig();
+    if (LoadConfigFromFile(configFilename)) {
+        LoadDefaultConfig();
+    }
 }
 
 ///////////////////////////////////////////////
@@ -154,7 +156,9 @@ void TRestRawCommonNoiseReductionProcess::Initialize() {
 /// corresponding TRestGeant4AnalysisProcess section inside the RML.
 ///
 void TRestRawCommonNoiseReductionProcess::LoadConfig(const string& configFilename, const string& name) {
-    if (LoadConfigFromFile(configFilename, name)) LoadDefaultConfig();
+    if (LoadConfigFromFile(configFilename, name)) {
+        LoadDefaultConfig();
+    }
 }
 
 ///////////////////////////////////////////////
@@ -169,38 +173,80 @@ TRestEvent* TRestRawCommonNoiseReductionProcess::ProcessEvent(TRestEvent* inputE
     fInputEvent = (TRestRawSignalEvent*)inputEvent;
 
     if (fInputEvent->GetNumberOfSignals() < fMinSignalsRequired) {
-        for (int sgnl = 0; sgnl < fInputEvent->GetNumberOfSignals(); sgnl++) {
-            fOutputEvent->AddSignal(*fInputEvent->GetSignal(sgnl));
+        for (int signal = 0; signal < fInputEvent->GetNumberOfSignals(); signal++) {
+            fOutputEvent->AddSignal(*fInputEvent->GetSignal(signal));
         }
         return fOutputEvent;
     }
 
-    // Event base line determination.
+    if (fReadoutMetadata == nullptr) {
+        fReadoutMetadata = fInputEvent->GetReadoutMetadata();
+    }
+
+    if (fReadoutMetadata == nullptr && !fChannelType.empty()) {
+        cerr << "TRestRawCommonNoiseReductionProcess::ProcessEvent: readout metadata is null, cannot filter "
+                "the process by signal type"
+             << endl;
+        exit(1);
+    }
+
+    vector<TRestRawSignal*> signalsToProcess;
+    vector<TRestRawSignal*> signalsToIgnore;
+
+    if (fChannelType.empty()) {
+        for (int signal = 0; signal < fInputEvent->GetNumberOfSignals(); signal++) {
+            signalsToProcess.push_back(fInputEvent->GetSignal(signal));
+        }
+    } else {
+        for (int signal = 0; signal < fInputEvent->GetNumberOfSignals(); signal++) {
+            TRestRawSignal* signalPtr = fInputEvent->GetSignal(signal);
+            const UShort_t signalId = signalPtr->GetSignalID();
+            const string channelType = fReadoutMetadata->GetTypeForChannelDaqId(signalId);
+
+            if (fChannelType == channelType) {
+                signalsToProcess.push_back(signalPtr);
+            } else {
+                signalsToIgnore.push_back(signalPtr);
+            }
+        }
+    }
+
+    // add signals to ignore to the event
+    for (auto signal : signalsToIgnore) {
+        fOutputEvent->AddSignal(*signal);
+    }
+
+    auto eventToProcess = TRestRawSignalEvent();
+    for (auto signal : signalsToProcess) {
+        eventToProcess.AddSignal(*signal);
+    }
+
+    // Event baseline determination.
     Double_t baseLineMean = 0;
-    for (int sgnl = 0; sgnl < fInputEvent->GetNumberOfSignals(); sgnl++) {
-        fInputEvent->GetSignal(sgnl)->CalculateBaseLine(20, 150);
-        Double_t baseline = fInputEvent->GetSignal(sgnl)->GetBaseLine();
+    for (int signal = 0; signal < eventToProcess.GetNumberOfSignals(); signal++) {
+        eventToProcess.GetSignal(signal)->CalculateBaseLine(20, 150);
+        Double_t baseline = eventToProcess.GetSignal(signal)->GetBaseLine();
         baseLineMean += baseline;
     }
-    Double_t Baseline = baseLineMean / fInputEvent->GetNumberOfSignals();
+    Double_t Baseline = baseLineMean / eventToProcess.GetNumberOfSignals();
 
     if (fBlocks == 0) {
-        Int_t N = fInputEvent->GetNumberOfSignals();
+        Int_t N = eventToProcess.GetNumberOfSignals();
 
         // if (GetVerboseLevel() >= REST_Debug) N = 1;
-        for (int sgnl = 0; sgnl < N; sgnl++) {
-            fOutputEvent->AddSignal(*fInputEvent->GetSignal(sgnl));
+        for (int signal = 0; signal < N; signal++) {
+            fOutputEvent->AddSignal(*eventToProcess.GetSignal(signal));
         }
 
-        Int_t nBins = fInputEvent->GetSignal(0)->GetNumberOfPoints();
-        vector<Double_t> sgnlValues(N, 0.0);
+        Int_t nBins = eventToProcess.GetSignal(0)->GetNumberOfPoints();
+        vector<Double_t> signalValues(N, 0.0);
 
         for (Int_t bin = 0; bin < nBins; bin++) {
-            for (Int_t sgnl = 0; sgnl < N; sgnl++) {
-                sgnlValues[sgnl] = fOutputEvent->GetSignal(sgnl)->GetRawData(bin);
+            for (Int_t signal = 0; signal < N; signal++) {
+                signalValues[signal] = fOutputEvent->GetSignal(signal)->GetRawData(bin);
             }
 
-            std::sort(sgnlValues.begin(), sgnlValues.end());
+            std::sort(signalValues.begin(), signalValues.end());
 
             // Sorting the different methods
             Int_t begin = 0, middle = 0, end = 0;
@@ -221,13 +267,13 @@ TRestEvent* TRestRawCommonNoiseReductionProcess::ProcessEvent(TRestEvent* inputE
 
             // Calculation of the correction to be made to each TRestRawSignal
             Double_t binCorrection = 0.0;
-            for (Int_t i = begin; i <= end; i++) binCorrection += sgnlValues[i];
+            for (Int_t i = begin; i <= end; i++) binCorrection += signalValues[i];
 
             binCorrection = binCorrection / norm;
 
             // Correction applied.
-            for (Int_t sgnl = 0; sgnl < N; sgnl++)
-                fOutputEvent->GetSignal(sgnl)->IncreaseBinBy(bin, Baseline - binCorrection);
+            for (Int_t signal = 0; signal < N; signal++)
+                fOutputEvent->GetSignal(signal)->IncreaseBinBy(bin, Baseline - binCorrection);
         }
 
         return fOutputEvent;
@@ -246,39 +292,39 @@ TRestEvent* TRestRawCommonNoiseReductionProcess::ProcessEvent(TRestEvent* inputE
             nSign = 0;
             // if (GetVerboseLevel() >= REST_Debug) N = 1;
 
-            for (Int_t sgnl = 0; sgnl < N; sgnl++) {
-                sigID = firstInBlock + sgnl;
-                fInputEvent->GetSignalById(sigID)->CalculateBaseLine(20, 500);
-                if (fInputEvent->GetSignalById(sigID)->GetBaseLineSigma() >= 3.3) {
+            for (Int_t signal = 0; signal < N; signal++) {
+                sigID = firstInBlock + signal;
+                eventToProcess.GetSignalById(sigID)->CalculateBaseLine(20, 500);
+                if (eventToProcess.GetSignalById(sigID)->GetBaseLineSigma() >= 3.3) {
                     // debug << "Baseline1: " <<
-                    // fInputEvent->GetSignalById(sigID)->GetBaseLineSigma() <<
+                    // eventToProcess.GetSignalById(sigID)->GetBaseLineSigma() <<
                     // endl;
-                    fOutputEvent->AddSignal(*fInputEvent->GetSignalById(sigID));
+                    fOutputEvent->AddSignal(*eventToProcess.GetSignalById(sigID));
                     nSign++;
                 }
             }
 
-            Int_t nBins = fInputEvent->GetSignal(0)->GetNumberOfPoints();
-            vector<Double_t> sgnlValues(nSign, 0.0);
+            Int_t nBins = eventToProcess.GetSignal(0)->GetNumberOfPoints();
+            vector<Double_t> signalValues(nSign, 0.0);
 
             // debug << "nSign: " << nSign << endl;
 
             for (Int_t bin = 0; bin < nBins; bin++) {
                 int i = 0;
-                for (Int_t sgnl = 0; sgnl < N; sgnl++) {
-                    sigID = firstInBlock + sgnl;
-                    if (fInputEvent->GetSignalById(sigID)->GetBaseLineSigma() >= 3.3) {
+                for (Int_t signal = 0; signal < N; signal++) {
+                    sigID = firstInBlock + signal;
+                    if (eventToProcess.GetSignalById(sigID)->GetBaseLineSigma() >= 3.3) {
                         // debug << "Baseline2: " <<
-                        // fInputEvent->GetSignalById(sigID)->GetBaseLineSigma() <<
+                        // eventToProcess.GetSignalById(sigID)->GetBaseLineSigma() <<
                         // endl;
                         // debug << fOutputEvent->GetSignalById(sigID)->GetRawData(bin) <<
                         // endl;
-                        sgnlValues[i] = fOutputEvent->GetSignalById(sigID)->GetRawData(bin);
+                        signalValues[i] = fOutputEvent->GetSignalById(sigID)->GetRawData(bin);
                         i++;
                     }
                 }
 
-                std::sort(sgnlValues.begin(), sgnlValues.end());
+                std::sort(signalValues.begin(), signalValues.end());
 
                 // Sorting the different methods
                 Int_t begin = 0, middle = 0, end = 0;
@@ -299,21 +345,23 @@ TRestEvent* TRestRawCommonNoiseReductionProcess::ProcessEvent(TRestEvent* inputE
 
                 // Calculation of the correction to be made to each TRestRawSignal
                 Double_t binCorrection = 0.0;
-                for (Int_t i = begin; i <= end; i++) binCorrection += sgnlValues[i];
+                for (Int_t i = begin; i <= end; i++) {
+                    binCorrection += signalValues[i];
+                }
 
                 binCorrection = binCorrection / norm;
 
                 // Correction applied.
-                for (Int_t sgnl = 0; sgnl < N; sgnl++) {
-                    if (fInputEvent->GetSignalById(firstInBlock + sgnl)->GetBaseLineSigma() >= 3.3) {
-                        fOutputEvent->GetSignalById(firstInBlock + sgnl)
+                for (Int_t signal = 0; signal < N; signal++) {
+                    if (eventToProcess.GetSignalById(firstInBlock + signal)->GetBaseLineSigma() >= 3.3) {
+                        fOutputEvent->GetSignalById(firstInBlock + signal)
                             ->IncreaseBinBy(bin, Baseline - binCorrection);
                     }
                 }
             }
-            for (int sgnl = 0; sgnl < N; sgnl++) {
-                if (fInputEvent->GetSignalById(firstInBlock + sgnl)->GetBaseLineSigma() < 3.3) {
-                    fOutputEvent->AddSignal(*fInputEvent->GetSignalById(firstInBlock + sgnl));
+            for (int signal = 0; signal < N; signal++) {
+                if (eventToProcess.GetSignalById(firstInBlock + signal)->GetBaseLineSigma() < 3.3) {
+                    fOutputEvent->AddSignal(*eventToProcess.GetSignalById(firstInBlock + signal));
                 }
             }
         }
@@ -326,11 +374,4 @@ TRestEvent* TRestRawCommonNoiseReductionProcess::ProcessEvent(TRestEvent* inputE
 /// \brief Function to include required actions after all events have been
 /// processed. This method will write the channels histogram.
 ///
-void TRestRawCommonNoiseReductionProcess::EndProcess() {
-    // Function to be executed once at the end of the process
-    // (after all events have been processed)
-
-    // Start by calling the EndProcess function of the abstract class.
-    // Comment this if you don't want it.
-    // TRestEventProcess::EndProcess();
-}
+void TRestRawCommonNoiseReductionProcess::EndProcess() {}
