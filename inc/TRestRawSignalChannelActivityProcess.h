@@ -24,9 +24,9 @@
 #define RestCore_TRestRawSignalChannelActivityProcess
 
 #include <TH1D.h>
-#include <TRestRawSignalEvent.h>
+#include <TRestEventProcess.h>
 
-#include "TRestEventProcess.h"
+#include "TRestRawSignalEvent.h"
 
 //! A pure analysis process to generate histograms with detector channels
 //! activity
@@ -53,6 +53,9 @@ class TRestRawSignalChannelActivityProcess : public TRestEventProcess {
    private:
     /// A pointer to the specific TRestRawSignalEvent input
     TRestRawSignalEvent* fSignalEvent = nullptr;  //!
+
+    std::string fChannelType;
+    TRestRawReadoutMetadata* fReadoutMetadata = nullptr;  //!
 
     void Initialize() override;
 
