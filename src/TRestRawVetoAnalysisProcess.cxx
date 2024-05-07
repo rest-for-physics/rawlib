@@ -199,10 +199,7 @@ void TRestRawVetoAnalysisProcess::LoadConfig(const string& configFilename, const
 /// \brief Function to use in initialization of process members before starting
 /// to process the event
 ///
-void TRestRawVetoAnalysisProcess::InitProcess() {
-    // For example, try to initialize a pointer to existing metadata
-    // accessible from TRestRun
-}
+void TRestRawVetoAnalysisProcess::InitProcess() {}
 
 ///////////////////////////////////////////////
 /// \brief Function to initialize input/output event members and define the
@@ -451,6 +448,13 @@ void TRestRawVetoAnalysisProcess::InitFromConfigFile() {
 ///
 void TRestRawVetoAnalysisProcess::PrintMetadata() {
     BeginPrintProcess();
+
+    if ((fVetoSignalId.empty() || fVetoSignalId[0] != -1) && fVetoGroupNames.empty()) {
+        RESTMetadata
+            << "Veto analysis process will apply to veto signals (to be determined during processing)"
+            << RESTendl;
+        return;
+    }
 
     for (unsigned int i = 0; i < fVetoGroupNames.size(); i++) {
         RESTMetadata << "Veto group " << fVetoGroupNames[i] << " signal IDs: " << fVetoGroupIds[i]
