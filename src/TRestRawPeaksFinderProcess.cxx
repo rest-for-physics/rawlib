@@ -188,6 +188,6 @@ void TRestRawPeaksFinderProcess::PrintMetadata() {
 
     RESTMetadata << "Distance: " << fDistance << RESTendl;
     RESTMetadata << "Window: " << fWindow << RESTendl;
-    
+
     EndPrintProcess();
 }
