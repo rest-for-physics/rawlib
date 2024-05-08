@@ -174,7 +174,7 @@ TRestEvent* TRestRawCommonNoiseReductionProcess::ProcessEvent(TRestEvent* inputE
 
     const auto run = GetRunInfo();
     if (run != nullptr) {
-        fInputEvent->InitializeReferences(GetRunInfo());
+        fInputEvent->InitializeReferences(run);
     }
 
     if (fInputEvent->GetNumberOfSignals() < fMinSignalsRequired) {
