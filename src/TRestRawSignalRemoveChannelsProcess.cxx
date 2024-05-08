@@ -146,8 +146,12 @@ void TRestRawSignalRemoveChannelsProcess::LoadConfig(const string& configFilenam
 /// \brief The main processing event function
 ///
 TRestEvent* TRestRawSignalRemoveChannelsProcess::ProcessEvent(TRestEvent* inputEvent) {
-    fInputSignalEvent = (TRestRawSignalEvent*)inputEvent;
-    fInputSignalEvent->InitializeReferences(GetRunInfo());
+    fInputSignalEvent = dynamic_cast<TRestRawSignalEvent*>(inputEvent);
+
+    const auto run = GetRunInfo();
+    if (run != nullptr) {
+        fInputSignalEvent->InitializeReferences(run);
+    }
 
     if (fReadoutMetadata == nullptr) {
         fReadoutMetadata = fInputSignalEvent->GetReadoutMetadata();

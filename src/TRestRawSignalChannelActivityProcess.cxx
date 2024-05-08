@@ -43,7 +43,7 @@
 ///
 /// \htmlonly <style>div.image img[src="daqChActRaw.png"]{width:1000px;}</style>
 /// \endhtmlonly
-/// ![An ilustration of the daq raw signals channel activity](daqChActRaw.png)
+/// ![An illustration of the daq raw signals channel activity](daqChActRaw.png)
 ///
 /// * **rChannelActivityRaw**: histogram based on the readout channels, i.e.,
 /// after converting the daq channel numbering into readout channel numbering
@@ -128,7 +128,7 @@ void TRestRawSignalChannelActivityProcess::Initialize() {
 /// using
 /// the limits defined in the process metadata members.
 ///
-/// The readout histograms will only be created in case an appropiate readout
+/// The readout histograms will only be created in case an appropriate readout
 /// definition
 /// is found in the processing chain.
 ///
@@ -143,20 +143,35 @@ void TRestRawSignalChannelActivityProcess::InitProcess() {
 /// \brief The main processing event function
 ///
 TRestEvent* TRestRawSignalChannelActivityProcess::ProcessEvent(TRestEvent* inputEvent) {
-    fSignalEvent = (TRestRawSignalEvent*)inputEvent;
+    fSignalEvent = dynamic_cast<TRestRawSignalEvent*>(inputEvent);
 
-    Int_t Nlow = 0;
-    Int_t Nhigh = 0;
-    for (int s = 0; s < fSignalEvent->GetNumberOfSignals(); s++) {
-        TRestRawSignal* sgnl = fSignalEvent->GetSignal(s);
-        if (sgnl->GetMaxValue() > fHighThreshold) Nhigh++;
-        if (sgnl->GetMaxValue() > fLowThreshold) Nlow++;
+    const auto run = GetRunInfo();
+    if (run != nullptr) {
+        fSignalEvent->InitializeReferences(run);
+    }
+
+    if (fReadoutMetadata == nullptr) {
+        fReadoutMetadata = fSignalEvent->GetReadoutMetadata();
+    }
+
+    if (fReadoutMetadata == nullptr && !fChannelType.empty()) {
+        cerr << "TRestRawSignalChannelActivityProcess::ProcessEvent: readout metadata is null, cannot filter "
+                "the process by signal type"
+             << endl;
+        exit(1);
     }
 
     for (int s = 0; s < fSignalEvent->GetNumberOfSignals(); s++) {
+        const auto signal = fSignalEvent->GetSignal(s);
+        if (!fChannelType.empty()) {
+            const auto channelType = fReadoutMetadata->GetTypeForChannelDaqId(signal->GetID());
+            if (fChannelType != channelType) {
+                continue;
+            }
+        }
         // Adding signal to the channel activity histogram
         if (!fReadOnly) {
-            Int_t daqChannel = fSignalEvent->GetSignal(s)->GetID();
+            Int_t daqChannel = signal->GetID();
             fDaqChannelsHisto->Fill(daqChannel);
         }
     }

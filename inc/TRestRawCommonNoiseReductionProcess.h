@@ -23,9 +23,9 @@
 #ifndef RestCore_TRestRawCommonNoiseReductionProcess
 #define RestCore_TRestRawCommonNoiseReductionProcess
 
+#include <TRestEventProcess.h>
 #include <TRestRawSignalEvent.h>
 
-#include "TRestEventProcess.h"
 #include "TRestRawSignal.h"
 
 //! A process to subtract the common channels noise from RawSignal type
@@ -50,12 +50,12 @@ class TRestRawCommonNoiseReductionProcess : public TRestEventProcess {
     /// Minimum number of signals required to apply the process.
     Int_t fMinSignalsRequired = 200;
 
+    std::string fChannelType;
+    TRestRawReadoutMetadata* fReadoutMetadata = nullptr;  //!
+
     void Initialize() override;
 
     void LoadDefaultConfig();
-
-   protected:
-    // add here the members of your event process
 
    public:
     RESTValue GetInputEvent() const override { return fInputEvent; }
@@ -72,9 +72,17 @@ class TRestRawCommonNoiseReductionProcess : public TRestEventProcess {
     void PrintMetadata() override {
         BeginPrintProcess();
 
+        if (!fChannelType.empty()) {
+            RESTMetadata << "channelType : " << fChannelType << RESTendl;
+        }
+
         RESTMetadata << " mode : [" << fMode << "]";
-        if (fMode == 0) RESTMetadata << " --> Mode 0 activated." << RESTendl;
-        if (fMode == 1) RESTMetadata << " --> Mode 1 activated." << RESTendl;
+        if (fMode == 0) {
+            RESTMetadata << " --> Mode 0 activated." << RESTendl;
+        }
+        if (fMode == 1) {
+            RESTMetadata << " --> Mode 1 activated." << RESTendl;
+        }
         RESTMetadata << " centerWidth : " << fCenterWidth << RESTendl;
         RESTMetadata << "blocks : [" << fBlocks << "]" << RESTendl;
         RESTMetadata << " Minimum number of signals : " << fMinSignalsRequired << RESTendl;
@@ -95,6 +103,6 @@ class TRestRawCommonNoiseReductionProcess : public TRestEventProcess {
     // Destructor
     ~TRestRawCommonNoiseReductionProcess();
 
-    ClassDefOverride(TRestRawCommonNoiseReductionProcess, 2);
+    ClassDefOverride(TRestRawCommonNoiseReductionProcess, 3);
 };
 #endif
