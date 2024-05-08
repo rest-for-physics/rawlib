@@ -143,14 +143,19 @@ void TRestRawSignalChannelActivityProcess::InitProcess() {
 /// \brief The main processing event function
 ///
 TRestEvent* TRestRawSignalChannelActivityProcess::ProcessEvent(TRestEvent* inputEvent) {
-    fSignalEvent = (TRestRawSignalEvent*)inputEvent;
+    fSignalEvent = dynamic_cast<TRestRawSignalEvent*>(inputEvent);
+
+    const auto run = GetRunInfo();
+    if (run != nullptr) {
+        fSignalEvent->InitializeReferences(run);
+    }
 
     if (fReadoutMetadata == nullptr) {
         fReadoutMetadata = fSignalEvent->GetReadoutMetadata();
     }
 
     if (fReadoutMetadata == nullptr && !fChannelType.empty()) {
-        cerr << "TRestRawCommonNoiseReductionProcess::ProcessEvent: readout metadata is null, cannot filter "
+        cerr << "TRestRawSignalChannelActivityProcess::ProcessEvent: readout metadata is null, cannot filter "
                 "the process by signal type"
              << endl;
         exit(1);

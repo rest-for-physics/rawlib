@@ -11,6 +11,7 @@ void TRestRawPeaksFinderProcess::InitProcess() {}
 
 TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
     fSignalEvent = dynamic_cast<TRestRawSignalEvent*>(inputEvent);
+    
     const auto run = GetRunInfo();
     if (run != nullptr) {
         fSignalEvent->InitializeReferences(run);
