@@ -170,7 +170,7 @@ void TRestRawCommonNoiseReductionProcess::InitProcess() {}
 /// \brief The main processing event function
 ///
 TRestEvent* TRestRawCommonNoiseReductionProcess::ProcessEvent(TRestEvent* inputEvent) {
-    fInputEvent = (TRestRawSignalEvent*)inputEvent;
+    fInputEvent = dynamic_cast<TRestRawSignalEvent*>(inputEvent);
 
     const auto run = GetRunInfo();
     if (run != nullptr) {
