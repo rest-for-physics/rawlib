@@ -171,6 +171,7 @@ void TRestRawCommonNoiseReductionProcess::InitProcess() {}
 ///
 TRestEvent* TRestRawCommonNoiseReductionProcess::ProcessEvent(TRestEvent* inputEvent) {
     fInputEvent = (TRestRawSignalEvent*)inputEvent;
+    fInputEvent->InitializeReferences(GetRunInfo());
 
     if (fInputEvent->GetNumberOfSignals() < fMinSignalsRequired) {
         for (int signal = 0; signal < fInputEvent->GetNumberOfSignals(); signal++) {

@@ -175,6 +175,8 @@ void TRestRawPeaksFinderProcess::InitFromConfigFile() {
 }
 
 void TRestRawPeaksFinderProcess::PrintMetadata() {
+    BeginPrintProcess();
+
     RESTMetadata << "Applying process to channel types: ";
     for (const auto& type : fChannelTypes) {
         RESTMetadata << type << " ";
@@ -186,4 +188,6 @@ void TRestRawPeaksFinderProcess::PrintMetadata() {
 
     RESTMetadata << "Distance: " << fDistance << RESTendl;
     RESTMetadata << "Window: " << fWindow << RESTendl;
+    
+    EndPrintProcess();
 }
