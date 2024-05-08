@@ -11,7 +11,11 @@ void TRestRawPeaksFinderProcess::InitProcess() {}
 
 TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
     fSignalEvent = dynamic_cast<TRestRawSignalEvent*>(inputEvent);
-    fSignalEvent->InitializeReferences(GetRunInfo());
+    const auto run = GetRunInfo();
+    if (run != nullptr) {
+        fSignalEvent->InitializeReferences(run);
+    }
+
     auto event = fSignalEvent->GetSignalEventForTypes(fChannelTypes, fReadoutMetadata);
 
     if (fReadoutMetadata == nullptr) {

@@ -90,7 +90,11 @@ void TRestRawBaseLineCorrectionProcess::Initialize() {
 
 TRestEvent* TRestRawBaseLineCorrectionProcess::ProcessEvent(TRestEvent* evInput) {
     fInputEvent = dynamic_cast<TRestRawSignalEvent*>(evInput);
-    fInputEvent->InitializeReferences(GetRunInfo());
+
+    const auto run = GetRunInfo();
+    if (run != nullptr) {
+        fInputEvent->InitializeReferences(run);
+    }
 
     if (fReadoutMetadata == nullptr) {
         fReadoutMetadata = fInputEvent->GetReadoutMetadata();

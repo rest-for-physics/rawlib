@@ -218,6 +218,11 @@ void TRestRawVetoAnalysisProcess::Initialize() {
 TRestEvent* TRestRawVetoAnalysisProcess::ProcessEvent(TRestEvent* inputEvent) {
     fSignalEvent = (TRestRawSignalEvent*)inputEvent;
 
+    const auto run = GetRunInfo();
+    if (run != nullptr) {
+        fSignalEvent->InitializeReferences(run);
+    }
+
     map<int, Double_t> VetoMaxPeakAmplitude_map;
     map<int, Double_t> VetoPeakTime_map;
 
