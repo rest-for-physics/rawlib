@@ -52,7 +52,7 @@ class TRestRawSignalChannelActivityProcess : public TRestEventProcess {
 
    private:
     /// A pointer to the specific TRestRawSignalEvent input
-    TRestRawSignalEvent* fSignalEvent = nullptr;  //!
+    TRestRawSignalEvent* fInputEvent = nullptr;  //!
 
     std::string fChannelType;
     TRestRawReadoutMetadata* fReadoutMetadata = nullptr;  //!
@@ -60,8 +60,8 @@ class TRestRawSignalChannelActivityProcess : public TRestEventProcess {
     void Initialize() override;
 
    public:
-    RESTValue GetInputEvent() const override { return fSignalEvent; }
-    RESTValue GetOutputEvent() const override { return fSignalEvent; }
+    RESTValue GetInputEvent() const override { return fInputEvent; }
+    RESTValue GetOutputEvent() const override { return fInputEvent; }
 
     void InitProcess() override;
     TRestEvent* ProcessEvent(TRestEvent* inputEvent) override;

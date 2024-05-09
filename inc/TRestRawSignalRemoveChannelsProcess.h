@@ -32,10 +32,10 @@
 class TRestRawSignalRemoveChannelsProcess : public TRestEventProcess {
    private:
     /// A pointer to the specific TRestDetectorSignalEvent input
-    TRestRawSignalEvent* fInputSignalEvent;  //!
+    TRestRawSignalEvent* fInputEvent;  //!
 
     /// A pointer to the specific TRestRawSignalEvent input
-    TRestRawSignalEvent* fOutputSignalEvent;  //!
+    TRestRawSignalEvent* fOutputEvent;  //!
 
     /// A pointer to the readout metadata
     TRestRawReadoutMetadata* fReadoutMetadata = nullptr;  //!
@@ -53,8 +53,8 @@ class TRestRawSignalRemoveChannelsProcess : public TRestEventProcess {
     std::map<Int_t, std::string> fChannelTypesToRemove;
 
    public:
-    RESTValue GetInputEvent() const override { return fInputSignalEvent; }
-    RESTValue GetOutputEvent() const override { return fOutputSignalEvent; }
+    RESTValue GetInputEvent() const override { return fInputEvent; }
+    RESTValue GetOutputEvent() const override { return fOutputEvent; }
 
     TRestEvent* ProcessEvent(TRestEvent* inputEvent) override;
 

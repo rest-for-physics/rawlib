@@ -270,7 +270,8 @@ TRestRawSignalAnalysisProcess::~TRestRawSignalAnalysisProcess() {}
 void TRestRawSignalAnalysisProcess::Initialize() {
     SetSectionName(this->ClassName());
     SetLibraryVersion(LIBRARY_VERSION);
-    fSignalEvent = nullptr;
+
+    fInputEvent = nullptr;
 }
 
 ///////////////////////////////////////////////
@@ -294,9 +295,25 @@ void TRestRawSignalAnalysisProcess::InitFromConfigFile() {
 /// \brief The main processing event function
 ///
 TRestEvent* TRestRawSignalAnalysisProcess::ProcessEvent(TRestEvent* inputEvent) {
-    fSignalEvent = (TRestRawSignalEvent*)inputEvent;
-    fSignalEvent->InitializeReferences(GetRunInfo());
-    auto event = fSignalEvent->GetSignalEventForTypes(fChannelTypes, fReadoutMetadata);
+    fInputEvent = dynamic_cast<TRestRawSignalEvent*>(inputEvent);
+
+    const auto run = GetRunInfo();
+    if (run != nullptr) {
+        fInputEvent->InitializeReferences(run);
+    }
+
+    if (fReadoutMetadata == nullptr) {
+        fReadoutMetadata = fInputEvent->GetReadoutMetadata();
+    }
+
+    if (fReadoutMetadata == nullptr && !fChannelTypes.empty()) {
+        cerr << "TRestRawSignalAnalysisProcess::ProcessEvent: readout metadata is null, cannot filter "
+                "the process by signal type"
+             << endl;
+        exit(1);
+    }
+    
+    auto event = fInputEvent->GetSignalEventForTypes(fChannelTypes, fReadoutMetadata);
 
     // we save some complex typed analysis result
     map<int, Double_t> baseline;
@@ -393,7 +410,7 @@ TRestEvent* TRestRawSignalAnalysisProcess::ProcessEvent(TRestEvent* inputEvent) 
     //
     // We do not substract baselines then now, as it was done before
     //
-    // fSignalEvent->SubstractBaselines(fBaseLineRange.X(), fBaseLineRange.Y());
+    // fInputEvent->SubstractBaselines(fBaseLineRange.X(), fBaseLineRange.Y());
     //
     // Methods in TRestRawSignal have been updated to consider baseline.
     // TRestRawSignal now implements that internally. We need to define the
@@ -502,5 +519,5 @@ TRestEvent* TRestRawSignalAnalysisProcess::ProcessEvent(TRestEvent* inputEvent) 
         return nullptr;
     }
 
-    return fSignalEvent;
+    return fInputEvent;
 }

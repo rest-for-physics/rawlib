@@ -12,7 +12,7 @@
 
 class TRestRawPeaksFinderProcess : public TRestEventProcess {
    private:
-    TRestRawSignalEvent* fSignalEvent = nullptr;          //!
+    TRestRawSignalEvent* fInputEvent = nullptr;          //!
     TRestRawReadoutMetadata* fReadoutMetadata = nullptr;  //!
 
     /// \brief threshold over baseline to consider a peak
@@ -27,8 +27,8 @@ class TRestRawPeaksFinderProcess : public TRestEventProcess {
     std::set<std::string> fChannelTypes = {};  // this process will only be applied to selected channel types
 
    public:
-    RESTValue GetInputEvent() const override { return fSignalEvent; }
-    RESTValue GetOutputEvent() const override { return fSignalEvent; }
+    RESTValue GetInputEvent() const override { return fInputEvent; }
+    RESTValue GetOutputEvent() const override { return fInputEvent; }
 
     void PrintMetadata() override;
 
