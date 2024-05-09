@@ -32,11 +32,6 @@
 //! activity
 class TRestRawSignalChannelActivityProcess : public TRestEventProcess {
    protected:
-    /// The value of the lower signal threshold to add it to the histogram
-    Double_t fLowThreshold = 25;
-
-    /// The value of the higher signal threshold to add it to the histogram
-    Double_t fHighThreshold = 50;
 
     /// The number of bins at the daq channels histogram
     Int_t fDaqChannels = 300;
@@ -74,9 +69,6 @@ class TRestRawSignalChannelActivityProcess : public TRestEventProcess {
         if (!fChannelType.empty()) {
             RESTMetadata << "channelType : " << fChannelType << RESTendl;
         }
-
-        RESTMetadata << "Low signal threshold activity : " << fLowThreshold << RESTendl;
-        RESTMetadata << "High signal threshold activity : " << fHighThreshold << RESTendl;
 
         RESTMetadata << "Number of daq histogram channels : " << fDaqChannels << RESTendl;
         RESTMetadata << "Start daq channel : " << fDaqStartChannel << RESTendl;
