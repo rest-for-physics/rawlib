@@ -10,17 +10,17 @@ using namespace std;
 void TRestRawPeaksFinderProcess::InitProcess() {}
 
 TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
-    fSignalEvent = dynamic_cast<TRestRawSignalEvent*>(inputEvent);
+    fInputEvent = dynamic_cast<TRestRawSignalEvent*>(inputEvent);
 
     const auto run = GetRunInfo();
     if (run != nullptr) {
-        fSignalEvent->InitializeReferences(run);
+        fInputEvent->InitializeReferences(run);
     }
 
-    auto event = fSignalEvent->GetSignalEventForTypes(fChannelTypes, fReadoutMetadata);
+    auto event = fInputEvent->GetSignalEventForTypes(fChannelTypes, fReadoutMetadata);
 
     if (fReadoutMetadata == nullptr) {
-        fReadoutMetadata = fSignalEvent->GetReadoutMetadata();
+        fReadoutMetadata = fInputEvent->GetReadoutMetadata();
     }
 
     if (fReadoutMetadata == nullptr && !fChannelTypes.empty()) {

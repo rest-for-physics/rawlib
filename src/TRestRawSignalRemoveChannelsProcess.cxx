@@ -102,7 +102,7 @@ TRestRawSignalRemoveChannelsProcess::TRestRawSignalRemoveChannelsProcess(const c
 ///////////////////////////////////////////////
 /// \brief Default destructor
 ///
-TRestRawSignalRemoveChannelsProcess::~TRestRawSignalRemoveChannelsProcess() { delete fOutputSignalEvent; }
+TRestRawSignalRemoveChannelsProcess::~TRestRawSignalRemoveChannelsProcess() { delete fOutputEvent; }
 
 ///////////////////////////////////////////////
 /// \brief Function to load the default config in absence of RML input
@@ -120,8 +120,8 @@ void TRestRawSignalRemoveChannelsProcess::Initialize() {
     SetSectionName(this->ClassName());
     SetLibraryVersion(LIBRARY_VERSION);
 
-    fInputSignalEvent = nullptr;
-    fOutputSignalEvent = new TRestRawSignalEvent();
+    fInputEvent = nullptr;
+    fOutputEvent = new TRestRawSignalEvent();
 }
 
 ///////////////////////////////////////////////
@@ -146,15 +146,15 @@ void TRestRawSignalRemoveChannelsProcess::LoadConfig(const string& configFilenam
 /// \brief The main processing event function
 ///
 TRestEvent* TRestRawSignalRemoveChannelsProcess::ProcessEvent(TRestEvent* inputEvent) {
-    fInputSignalEvent = dynamic_cast<TRestRawSignalEvent*>(inputEvent);
+    fInputEvent = dynamic_cast<TRestRawSignalEvent*>(inputEvent);
 
     const auto run = GetRunInfo();
     if (run != nullptr) {
-        fInputSignalEvent->InitializeReferences(run);
+        fInputEvent->InitializeReferences(run);
     }
 
     if (fReadoutMetadata == nullptr) {
-        fReadoutMetadata = fInputSignalEvent->GetReadoutMetadata();
+        fReadoutMetadata = fInputEvent->GetReadoutMetadata();
     }
 
     if (fReadoutMetadata == nullptr && !fChannelTypes.empty()) {
@@ -164,8 +164,8 @@ TRestEvent* TRestRawSignalRemoveChannelsProcess::ProcessEvent(TRestEvent* inputE
         exit(1);
     }
 
-    for (int n = 0; n < fInputSignalEvent->GetNumberOfSignals(); n++) {
-        TRestRawSignal* signal = fInputSignalEvent->GetSignal(n);
+    for (int n = 0; n < fInputEvent->GetNumberOfSignals(); n++) {
+        TRestRawSignal* signal = fInputEvent->GetSignal(n);
 
         bool removeSignal = false;
 
@@ -195,7 +195,7 @@ TRestEvent* TRestRawSignalRemoveChannelsProcess::ProcessEvent(TRestEvent* inputE
         }
 
         if (!removeSignal) {
-            fOutputSignalEvent->AddSignal(*signal);
+            fOutputEvent->AddSignal(*signal);
         }
 
         // Logging messages
@@ -212,7 +212,7 @@ TRestEvent* TRestRawSignalRemoveChannelsProcess::ProcessEvent(TRestEvent* inputE
         GetChar();
     }
 
-    return fOutputSignalEvent;
+    return fOutputEvent;
 }
 
 ///////////////////////////////////////////////

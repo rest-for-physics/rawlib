@@ -88,8 +88,8 @@ void TRestRawBaseLineCorrectionProcess::Initialize() {
     fOutputEvent = new TRestRawSignalEvent();
 }
 
-TRestEvent* TRestRawBaseLineCorrectionProcess::ProcessEvent(TRestEvent* evInput) {
-    fInputEvent = dynamic_cast<TRestRawSignalEvent*>(evInput);
+TRestEvent* TRestRawBaseLineCorrectionProcess::ProcessEvent(TRestEvent* inputEvent) {
+    fInputEvent = dynamic_cast<TRestRawSignalEvent*>(inputEvent);
 
     const auto run = GetRunInfo();
     if (run != nullptr) {

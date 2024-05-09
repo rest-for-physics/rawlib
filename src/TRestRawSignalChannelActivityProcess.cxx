@@ -120,7 +120,7 @@ void TRestRawSignalChannelActivityProcess::Initialize() {
     SetSectionName(this->ClassName());
     SetLibraryVersion(LIBRARY_VERSION);
 
-    fSignalEvent = nullptr;
+    fInputEvent = nullptr;
 }
 
 ///////////////////////////////////////////////
@@ -143,15 +143,15 @@ void TRestRawSignalChannelActivityProcess::InitProcess() {
 /// \brief The main processing event function
 ///
 TRestEvent* TRestRawSignalChannelActivityProcess::ProcessEvent(TRestEvent* inputEvent) {
-    fSignalEvent = dynamic_cast<TRestRawSignalEvent*>(inputEvent);
+    fInputEvent = dynamic_cast<TRestRawSignalEvent*>(inputEvent);
 
     const auto run = GetRunInfo();
     if (run != nullptr) {
-        fSignalEvent->InitializeReferences(run);
+        fInputEvent->InitializeReferences(run);
     }
 
     if (fReadoutMetadata == nullptr) {
-        fReadoutMetadata = fSignalEvent->GetReadoutMetadata();
+        fReadoutMetadata = fInputEvent->GetReadoutMetadata();
     }
 
     if (fReadoutMetadata == nullptr && !fChannelType.empty()) {
@@ -161,8 +161,8 @@ TRestEvent* TRestRawSignalChannelActivityProcess::ProcessEvent(TRestEvent* input
         exit(1);
     }
 
-    for (int s = 0; s < fSignalEvent->GetNumberOfSignals(); s++) {
-        const auto signal = fSignalEvent->GetSignal(s);
+    for (int s = 0; s < fInputEvent->GetNumberOfSignals(); s++) {
+        const auto signal = fInputEvent->GetSignal(s);
         if (!fChannelType.empty()) {
             const auto channelType = fReadoutMetadata->GetTypeForChannelDaqId(signal->GetID());
             if (fChannelType != channelType) {
@@ -179,7 +179,7 @@ TRestEvent* TRestRawSignalChannelActivityProcess::ProcessEvent(TRestEvent* input
     if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Debug)
         fAnalysisTree->PrintObservables();
 
-    return fSignalEvent;
+    return fInputEvent;
 }
 
 ///////////////////////////////////////////////
