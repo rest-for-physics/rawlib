@@ -312,7 +312,7 @@ TRestEvent* TRestRawSignalAnalysisProcess::ProcessEvent(TRestEvent* inputEvent) 
              << endl;
         exit(1);
     }
-    
+
     auto event = fInputEvent->GetSignalEventForTypes(fChannelTypes, fReadoutMetadata);
 
     // we save some complex typed analysis result

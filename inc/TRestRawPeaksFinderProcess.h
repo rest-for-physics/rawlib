@@ -12,7 +12,7 @@
 
 class TRestRawPeaksFinderProcess : public TRestEventProcess {
    private:
-    TRestRawSignalEvent* fInputEvent = nullptr;          //!
+    TRestRawSignalEvent* fInputEvent = nullptr;           //!
     TRestRawReadoutMetadata* fReadoutMetadata = nullptr;  //!
 
     /// \brief threshold over baseline to consider a peak
