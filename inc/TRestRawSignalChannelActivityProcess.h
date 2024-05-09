@@ -32,7 +32,6 @@
 //! activity
 class TRestRawSignalChannelActivityProcess : public TRestEventProcess {
    protected:
-
     /// The number of bins at the daq channels histogram
     Int_t fDaqChannels = 300;
 
