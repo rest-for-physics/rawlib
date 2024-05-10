@@ -134,7 +134,11 @@ void TRestRawSignalChannelActivityProcess::Initialize() {
 ///
 void TRestRawSignalChannelActivityProcess::InitProcess() {
     if (!fReadOnly) {
-        fDaqChannelsHisto = new TH1D("daqChannelActivityRaw", "daqChannelActivityRaw", fDaqChannels,
+        // Create a unique histogram name based on signal type
+        string histogramName = "daqChannelActivityRaw_" + fChannelType;
+
+        // Create the histogram using the unique name
+        fDaqChannelsHisto = new TH1D(histogramName.c_str(), histogramName.c_str(), fDaqChannels,
                                      fDaqStartChannel, fDaqEndChannel);
     }
 }
