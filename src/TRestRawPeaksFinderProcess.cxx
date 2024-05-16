@@ -45,7 +45,8 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
         }
 
         signal->CalculateBaseLine(20, 200);
-        const auto peaks = signal->GetPeaks(signal->GetBaseLine() + 5*signal->GetBaseLineSigma(), fDistance);
+        const auto peaks =
+            signal->GetPeaks(signal->GetBaseLine() + 5 * signal->GetBaseLineSigma(), fDistance);
 
         for (const auto& [time, amplitude] : peaks) {
             eventPeaks.emplace_back(signalId, time, amplitude);

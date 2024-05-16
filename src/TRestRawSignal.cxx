@@ -61,9 +61,9 @@
 
 #include <TAxis.h>
 #include <TF1.h>
+#include <TH1D.h>
 #include <TMath.h>
 #include <TRandom3.h>
-#include <TH1D.h>
 
 #include <numeric>
 
@@ -913,7 +913,8 @@ TGraph* TRestRawSignal::GetGraph(Int_t color) {
 vector<pair<UShort_t, double>> TRestRawSignal::GetPeaks(double threshold, UShort_t distance) const {
     vector<pair<UShort_t, double>> peaks;
 
-    const UShort_t smoothingWindow = 10; // Region to compare for peak/no peak classification. 10 means 5 bins to each side
+    const UShort_t smoothingWindow =
+        10;  // Region to compare for peak/no peak classification. 10 means 5 bins to each side
     const size_t numPoints = GetNumberOfPoints();
 
     if (numPoints == 0) return peaks;
@@ -933,7 +934,8 @@ vector<pair<UShort_t, double>> TRestRawSignal::GetPeaks(double threshold, UShort
         if (i < smoothingWindow / 2 + 1) {
             // Adjust the window size at the beginning
             currentSum = 0.0;
-            UShort_t currentWindowSize = static_cast<UShort_t>(std::min<size_t>(windowSize, i + smoothingWindow / 2 + 1));
+            UShort_t currentWindowSize =
+                static_cast<UShort_t>(std::min<size_t>(windowSize, i + smoothingWindow / 2 + 1));
             for (UShort_t j = 0; j < currentWindowSize; ++j) {
                 currentSum += GetRawData(j);
             }
@@ -941,7 +943,8 @@ vector<pair<UShort_t, double>> TRestRawSignal::GetPeaks(double threshold, UShort
         } else if (i > numPoints - smoothingWindow / 2 - 1) {
             // Adjust the window size at the end
             currentSum = 0.0;
-            UShort_t currentWindowSize = static_cast<UShort_t>(std::min<size_t>(windowSize, numPoints - i + smoothingWindow / 2));
+            UShort_t currentWindowSize =
+                static_cast<UShort_t>(std::min<size_t>(windowSize, numPoints - i + smoothingWindow / 2));
             for (UShort_t j = i - smoothingWindow / 2; j < numPoints; ++j) {
                 currentSum += GetRawData(j);
             }
@@ -960,19 +963,21 @@ vector<pair<UShort_t, double>> TRestRawSignal::GetPeaks(double threshold, UShort
 
         if (i >= smoothingWindow / 2 && i < numPoints - smoothingWindow / 2) {
             bool isPeak = true;
-            int numGreaterEqual = 0; // Counter for smoothed values greater or equal to the studied bin
+            int numGreaterEqual = 0;  // Counter for smoothed values greater or equal to the studied bin
 
             for (UShort_t j = i - distance; j <= i + distance; ++j) {
                 if (j != i && smoothedValue <= smoothedValues[j]) {
                     numGreaterEqual++;
-                    if (numGreaterEqual > 2) { // If more than one smoothed value is greater or equal, it's not a peak
+                    if (numGreaterEqual >
+                        2) {  // If more than one smoothed value is greater or equal, it's not a peak
                         isPeak = false;
                         break;
                     }
                 }
             }
 
-            // If it's a peak and it´s above the threshold and further than distance to the previous peak, add to peaks
+            // If it's a peak and it´s above the threshold and further than distance to the previous peak, add
+            // to peaks
             if (isPeak && smoothedValue > threshold) {
                 if (peaks.empty() || i - peaks.back().first >= distance) {
                     double fitMinRange = i - 20;
@@ -981,12 +986,12 @@ vector<pair<UShort_t, double>> TRestRawSignal::GetPeaks(double threshold, UShort
                     // Create a Gaussian fit function
                     TF1 fitFunction("gaussianFit", "gaus", fitMinRange, fitMaxRange);
                     // Fit the data with the Gaussian function
-                    fitFunction.SetRange(fitMinRange, fitMaxRange); // Initial parameters
+                    fitFunction.SetRange(fitMinRange, fitMaxRange);  // Initial parameters
 
                     // Create histogram with the values to fit
                     TH1D histogram("hist", "hist", 40, fitMinRange, fitMaxRange);
                     for (int k = i - 20; k <= i + 20; ++k) {
-                        histogram.SetBinContent(k - (i - 20) + 1, GetRawData(k)); // Set bin content
+                        histogram.SetBinContent(k - (i - 20) + 1, GetRawData(k));  // Set bin content
                     }
                     histogram.Fit(&fitFunction, "RQ");
 
