@@ -44,13 +44,25 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
             continue;
         }
 
-        signal->CalculateBaseLine(20, 200);
-        const auto peaks =
-            signal->GetPeaks(signal->GetBaseLine() + 5 * signal->GetBaseLineSigma(), fDistance);
+        // Choose appropriate function based on channel type
+        if (channelType == "tpc") {
+            signal->CalculateBaseLine(20, 200);
+            const auto peaks =
+                signal->GetPeaks(signal->GetBaseLine() + 5 * signal->GetBaseLineSigma(), fDistance);
 
-        for (const auto& [time, amplitude] : peaks) {
-            eventPeaks.emplace_back(signalId, time, amplitude);
+            for (const auto& [time, amplitude] : peaks) {
+                eventPeaks.emplace_back(signalId, time, amplitude);
+            }
+        } else if (channelType == "veto") {
+            signal->CalculateBaseLine(20, 200);
+            const auto peaks =
+                signal->GetPeaksVeto(signal->GetBaseLine() + 5 * signal->GetBaseLineSigma(), fDistance);
+
+            for (const auto& [time, amplitude] : peaks) {
+                eventPeaks.emplace_back(signalId, time, amplitude);
+            }
         }
+
         /*
         cout << "Signal ID: " << channelId << " Name: " << channelName << endl;
         for (const auto& [time, amplitude] : peaks) {
