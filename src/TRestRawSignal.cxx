@@ -965,7 +965,7 @@ vector<pair<UShort_t, double>> TRestRawSignal::GetPeaks(double threshold, UShort
             bool isPeak = true;
             int numGreaterEqual = 0;  // Counter for smoothed values greater or equal to the studied bin
 
-            for (UShort_t j = i - distance; j <= i + distance; ++j) {
+            for (UShort_t j = i - smoothingWindow / 2; j <= i + smoothingWindow / 2; ++j) {
                 if (j != i && smoothedValue <= smoothedValues[j]) {
                     numGreaterEqual++;
                     if (numGreaterEqual >
@@ -1013,7 +1013,7 @@ vector<pair<UShort_t, double>> TRestRawSignal::GetPeaksVeto(double threshold, US
     vector<pair<UShort_t, double>> peaks;
 
     const UShort_t smoothingWindow =
-        10;  // Region to compare for peak/no peak classification. 10 means 5 bins to each side
+        4;  // Region to compare for peak/no peak classification. 10 means 5 bins to each side
     const size_t numPoints = GetNumberOfPoints();
 
     if (numPoints == 0) return peaks;
@@ -1064,7 +1064,7 @@ vector<pair<UShort_t, double>> TRestRawSignal::GetPeaksVeto(double threshold, US
             bool isPeak = true;
             int numGreaterEqual = 0;  // Counter for smoothed values greater or equal to the studied bin
 
-            for (UShort_t j = i - distance; j <= i + distance; ++j) {
+            for (UShort_t j = i - smoothingWindow / 2; j <= i + smoothingWindow / 2; ++j) {
                 if (j != i && smoothedValue <= smoothedValues[j]) {
                     numGreaterEqual++;
                     if (numGreaterEqual >
@@ -1079,23 +1079,8 @@ vector<pair<UShort_t, double>> TRestRawSignal::GetPeaksVeto(double threshold, US
             // to peaks
             if (isPeak && smoothedValue > threshold) {
                 if (peaks.empty() || i - peaks.back().first >= distance) {
-                    double fitMinRange = i - 20;
-                    double fitMaxRange = i + 20;
 
-                    // Create a Gaussian fit function
-                    TF1 fitFunction("gaussianFit", "gaus", fitMinRange, fitMaxRange);
-                    // Fit the data with the Gaussian function
-                    fitFunction.SetRange(fitMinRange, fitMaxRange);  // Initial parameters
-
-                    // Create histogram with the values to fit
-                    TH1D histogram("hist", "hist", 40, fitMinRange, fitMaxRange);
-                    for (int k = i - 20; k <= i + 20; ++k) {
-                        histogram.SetBinContent(k - (i - 20) + 1, GetRawData(k));  // Set bin content
-                    }
-                    histogram.Fit(&fitFunction, "RQ");
-
-                    // Get peak position and amplitude from the fit
-                    double peakPosition = fitFunction.GetParameter(1);
+                    double peakPosition = i;
                     UShort_t formattedPeakPosition = static_cast<UShort_t>(peakPosition);
                     double peakAmplitude = GetRawData(formattedPeakPosition);
 

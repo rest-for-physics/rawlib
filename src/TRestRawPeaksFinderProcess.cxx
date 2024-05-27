@@ -46,7 +46,7 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
 
         // Choose appropriate function based on channel type
         if (channelType == "tpc") {
-            signal->CalculateBaseLine(20, 200);
+            signal->CalculateBaseLine(fBaselineRange.X(), fBaselineRange.Y());
             const auto peaks =
                 signal->GetPeaks(signal->GetBaseLine() + 5 * signal->GetBaseLineSigma(), fDistance);
 
@@ -54,9 +54,11 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
                 eventPeaks.emplace_back(signalId, time, amplitude);
             }
         } else if (channelType == "veto") {
-            signal->CalculateBaseLine(20, 200);
+            // For veto signals the baseline is calculated over the whole range, as we don´t know where the signal will be.
+            signal->CalculateBaseLine(0, 511);
+            // For veto signals the threshold is selected by the user.
             const auto peaks =
-                signal->GetPeaksVeto(signal->GetBaseLine() + 5 * signal->GetBaseLineSigma(), fDistance);
+                signal->GetPeaksVeto(signal->GetBaseLine() + fThresholdOverBaseline, fDistance);
 
             for (const auto& [time, amplitude] : peaks) {
                 eventPeaks.emplace_back(signalId, time, amplitude);
@@ -201,8 +203,8 @@ void TRestRawPeaksFinderProcess::PrintMetadata() {
     }
     RESTMetadata << RESTendl;
 
-    RESTMetadata << "Threshold over baseline: " << fThresholdOverBaseline << RESTendl;
-    RESTMetadata << "Baseline range: " << fBaselineRange.X() << " - " << fBaselineRange.Y() << RESTendl;
+    RESTMetadata << "Baseline range for tpc signals: " << fBaselineRange.X() << " - " << fBaselineRange.Y() << RESTendl;
+    RESTMetadata << "Threshold over baseline for veto signals: " << fThresholdOverBaseline << RESTendl;
 
     RESTMetadata << "Distance: " << fDistance << RESTendl;
     RESTMetadata << "Window: " << fWindow << RESTendl;
