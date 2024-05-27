@@ -1079,7 +1079,6 @@ vector<pair<UShort_t, double>> TRestRawSignal::GetPeaksVeto(double threshold, US
             // to peaks
             if (isPeak && smoothedValue > threshold) {
                 if (peaks.empty() || i - peaks.back().first >= distance) {
-
                     double peakPosition = i;
                     UShort_t formattedPeakPosition = static_cast<UShort_t>(peakPosition);
                     double peakAmplitude = GetRawData(formattedPeakPosition);
