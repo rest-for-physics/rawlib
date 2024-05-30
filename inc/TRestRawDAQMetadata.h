@@ -59,7 +59,7 @@ const std::map<std::string, triggerTypes> triggerTypes_map = {{"internal", trigg
 
 const std::map<std::string, compressModeTypes> compressMode_map = {
     {"allchannels", compressModeTypes::ALLCHANNELS},
-    {"triggeredcchannels", compressModeTypes::TRIGGEREDCHANNELS},
+    {"triggeredchannels", compressModeTypes::TRIGGEREDCHANNELS},
     {"zerosuppression", compressModeTypes::ZEROSUPPRESSION},
 };
 
