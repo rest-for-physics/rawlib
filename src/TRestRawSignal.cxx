@@ -1059,14 +1059,14 @@ vector<pair<UShort_t, double>> TRestRawSignal::GetPeaksVeto(double threshold, US
     }
 
     // Compare pre-calculated smoothed values to identify peaks
-    for (UShort_t i = 0; i < numPoints; ++i) {
+    for (size_t i = 0; i < numPoints; ++i) {
         const double smoothedValue = smoothedValues[i];
 
         if (i >= smoothingWindow / 2 && i < numPoints - smoothingWindow / 2) {
             bool isPeak = true;
             int numGreaterEqual = 0;  // Counter for smoothed values greater or equal to the studied bin
 
-            for (UShort_t j = i - smoothingWindow / 2; j <= i + smoothingWindow / 2; ++j) {
+            for (size_t j = i - smoothingWindow / 2; j <= i + smoothingWindow / 2; ++j) {
                 if (j != i && smoothedValue <= smoothedValues[j]) {
                     numGreaterEqual++;
                     if (numGreaterEqual >
@@ -1081,7 +1081,7 @@ vector<pair<UShort_t, double>> TRestRawSignal::GetPeaksVeto(double threshold, US
             // to peaks
             if (isPeak && smoothedValue > threshold) {
                 if (peaks.empty() || i - peaks.back().first >= distance) {
-                    double peakPosition = i;
+                    auto peakPosition = double(i);
                     auto formattedPeakPosition = static_cast<UShort_t>(peakPosition);
                     double peakAmplitude = GetRawData(formattedPeakPosition);
 
