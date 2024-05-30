@@ -91,7 +91,7 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
     SetObservableValue("peaksChannelId", peaksChannelId);
     SetObservableValue("peaksTime", peaksTime);
     SetObservableValue("peaksAmplitude", peaksAmplitude);
-    SetObservableValue("peaksEnergy", peaksEnergy);
+    SetObservableValue("totalPeaksEnergy", peaksEnergy);
 
     vector<UShort_t> windowIndex(eventPeaks.size(), 0);  // Initialize with zeros
     vector<UShort_t> windowCenter;  // for each different window, the center of the window
