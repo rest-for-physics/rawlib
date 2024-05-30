@@ -49,7 +49,7 @@ class TRestRawPeaksFinderProcess : public TRestEventProcess {
     TRestRawPeaksFinderProcess() = default;
     ~TRestRawPeaksFinderProcess() = default;
 
-    ClassDefOverride(TRestRawPeaksFinderProcess, 5);
+    ClassDefOverride(TRestRawPeaksFinderProcess, 4);
 };
 
 #endif  // REST_TRESTRAWPEAKSFINDERPROCESS_H
