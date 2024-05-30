@@ -23,6 +23,10 @@ class TRestRawPeaksFinderProcess : public TRestEventProcess {
     UShort_t fDistance = 10;
     /// \brief window size to calculate the peak amplitude
     UShort_t fWindow = 10;
+    /// \brief option to remove all veto signals after finding the peaks
+    Bool_t fRemoveAllVetos = false;
+    /// \brief option to remove peakless veto signals after finding the peaks
+    Bool_t fRemovePeaklessVetos = false;
 
     std::set<std::string> fChannelTypes = {};  // this process will only be applied to selected channel types
 
@@ -45,7 +49,7 @@ class TRestRawPeaksFinderProcess : public TRestEventProcess {
     TRestRawPeaksFinderProcess() = default;
     ~TRestRawPeaksFinderProcess() = default;
 
-    ClassDefOverride(TRestRawPeaksFinderProcess, 3);
+    ClassDefOverride(TRestRawPeaksFinderProcess, 4);
 };
 
 #endif  // REST_TRESTRAWPEAKSFINDERPROCESS_H

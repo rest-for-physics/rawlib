@@ -17,8 +17,6 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
         fInputEvent->InitializeReferences(run);
     }
 
-    auto event = fInputEvent->GetSignalEventForTypes(fChannelTypes, fReadoutMetadata);
-
     if (fReadoutMetadata == nullptr) {
         fReadoutMetadata = fInputEvent->GetReadoutMetadata();
     }
@@ -32,8 +30,8 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
 
     vector<tuple<UShort_t, UShort_t, double>> eventPeaks;
 
-    for (int signalIndex = 0; signalIndex < event.GetNumberOfSignals(); signalIndex++) {
-        const auto signal = event.GetSignal(signalIndex);
+    for (int signalIndex = 0; signalIndex < fInputEvent->GetNumberOfSignals(); signalIndex++) {
+        const auto signal = fInputEvent->GetSignal(signalIndex);
         const UShort_t signalId = signal->GetSignalID();
 
         const string channelType = fReadoutMetadata->GetTypeForChannelDaqId(signalId);
@@ -44,18 +42,27 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
             continue;
         }
 
-        signal->CalculateBaseLine(0, 5);
-        const auto peaks = signal->GetPeaks(signal->GetBaseLine() + 1.0, fDistance);
+        // Choose appropriate function based on channel type
+        if (channelType == "tpc") {
+            signal->CalculateBaseLine(fBaselineRange.X(), fBaselineRange.Y());
+            const auto peaks =
+                signal->GetPeaks(signal->GetBaseLine() + 5 * signal->GetBaseLineSigma(), fDistance);
 
-        for (const auto& [time, amplitude] : peaks) {
-            eventPeaks.emplace_back(signalId, time, amplitude);
+            for (const auto& [time, amplitude] : peaks) {
+                eventPeaks.emplace_back(signalId, time, amplitude);
+            }
+        } else if (channelType == "veto") {
+            // For veto signals the baseline is calculated over the whole range, as we don´t know where the
+            // signal will be.
+            signal->CalculateBaseLine(0, 511, "robust");
+            // For veto signals the threshold is selected by the user.
+            const auto peaks =
+                signal->GetPeaksVeto(signal->GetBaseLine() + fThresholdOverBaseline, fDistance);
+
+            for (const auto& [time, amplitude] : peaks) {
+                eventPeaks.emplace_back(signalId, time, amplitude);
+            }
         }
-        /*
-        cout << "Signal ID: " << channelId << " Name: " << channelName << endl;
-        for (const auto& [time, amplitude] : peaks) {
-            cout << "   - Peak at " << time << " with amplitude " << amplitude << endl;
-        }
-        */
     }
 
     // sort eventPeaks by time, then signal id
@@ -68,16 +75,23 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
     vector<UShort_t> peaksChannelId;
     vector<UShort_t> peaksTime;
     vector<double> peaksAmplitude;
+    double peaksEnergy;
+    double amplitudeTotal = 0.0;
 
     for (const auto& [channelId, time, amplitude] : eventPeaks) {
         peaksChannelId.push_back(channelId);
         peaksTime.push_back(time);
         peaksAmplitude.push_back(amplitude);
+
+        amplitudeTotal += amplitude;
     }
+
+    peaksEnergy = amplitudeTotal;
 
     SetObservableValue("peaksChannelId", peaksChannelId);
     SetObservableValue("peaksTime", peaksTime);
     SetObservableValue("peaksAmplitude", peaksAmplitude);
+    SetObservableValue("totalPeaksEnergy", peaksEnergy);
 
     vector<UShort_t> windowIndex(eventPeaks.size(), 0);  // Initialize with zeros
     vector<UShort_t> windowCenter;  // for each different window, the center of the window
@@ -140,6 +154,49 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
     SetObservableValue("windowIndex", windowIndex);
     SetObservableValue("windowCenter", windowCenter);
 
+    // Remove peakless veto signals after the peak finding if chosen
+    if (fRemovePeaklessVetos && !fRemoveAllVetos) {
+        set<UShort_t> peakSignalIds;
+        for (const auto& [channelId, time, amplitude] : eventPeaks) {
+            peakSignalIds.insert(channelId);
+        }
+
+        vector<UShort_t> signalsToRemove;
+        for (int signalIndex = 0; signalIndex < fInputEvent->GetNumberOfSignals(); signalIndex++) {
+            const auto signal = fInputEvent->GetSignal(signalIndex);
+            const UShort_t signalId = signal->GetSignalID();
+            const string signalType = fReadoutMetadata->GetTypeForChannelDaqId(signalId);
+
+            if (signalType == "veto" && peakSignalIds.find(signalId) == peakSignalIds.end()) {
+                signalsToRemove.push_back(signalId);
+            }
+        }
+
+        // Now remove all veto signals identified
+        for (const auto& signalId : signalsToRemove) {
+            fInputEvent->RemoveSignalWithId(signalId);
+        }
+    }
+
+    // Remove all veto signals after the peak finding if chosen
+    if (fRemoveAllVetos) {
+        vector<UShort_t> signalsToRemove;
+        for (int signalIndex = 0; signalIndex < fInputEvent->GetNumberOfSignals(); signalIndex++) {
+            const auto signal = fInputEvent->GetSignal(signalIndex);
+            const UShort_t signalId = signal->GetSignalID();
+            const string signalType = fReadoutMetadata->GetTypeForChannelDaqId(signalId);
+
+            if (signalType == "veto") {
+                signalsToRemove.push_back(signalId);
+            }
+        }
+
+        // Now remove all veto signals identified
+        for (const auto& signalId : signalsToRemove) {
+            fInputEvent->RemoveSignalWithId(signalId);
+        }
+    }
+
     return inputEvent;
 }
 
@@ -157,6 +214,8 @@ void TRestRawPeaksFinderProcess::InitFromConfigFile() {
     fBaselineRange = Get2DVectorParameterWithUnits("baselineRange", fBaselineRange);
     fDistance = StringToDouble(GetParameter("distance", fDistance));
     fWindow = StringToDouble(GetParameter("window", fWindow));
+    fRemoveAllVetos = StringToBool(GetParameter("removeAllVetos", fRemoveAllVetos));
+    fRemovePeaklessVetos = StringToBool(GetParameter("removePeaklessVetos", fRemovePeaklessVetos));
 
     if (fBaselineRange.X() > fBaselineRange.Y() || fBaselineRange.X() < 0 || fBaselineRange.Y() < 0) {
         cerr << "TRestRawPeaksFinderProcess::InitProcess: baseline range is not sorted or < 0" << endl;
@@ -177,6 +236,13 @@ void TRestRawPeaksFinderProcess::InitFromConfigFile() {
         cerr << "TRestRawPeaksFinderProcess::InitProcess: window is < 0" << endl;
         exit(1);
     }
+
+    if (filterType != "veto" && fRemovePeaklessVetos) {
+        cerr << "TRestRawPeaksFinderProcess::InitProcess: removing veto signals only makes sense when the "
+                "process is applied to veto signals. Remove \"removePeaklessVetos\" parameter"
+             << endl;
+        exit(1);
+    }
 }
 
 void TRestRawPeaksFinderProcess::PrintMetadata() {
@@ -188,8 +254,9 @@ void TRestRawPeaksFinderProcess::PrintMetadata() {
     }
     RESTMetadata << RESTendl;
 
-    RESTMetadata << "Threshold over baseline: " << fThresholdOverBaseline << RESTendl;
-    RESTMetadata << "Baseline range: " << fBaselineRange.X() << " - " << fBaselineRange.Y() << RESTendl;
+    RESTMetadata << "Baseline range for tpc signals: " << fBaselineRange.X() << " - " << fBaselineRange.Y()
+                 << RESTendl;
+    RESTMetadata << "Threshold over baseline for veto signals: " << fThresholdOverBaseline << RESTendl;
 
     RESTMetadata << "Distance: " << fDistance << RESTendl;
     RESTMetadata << "Window: " << fWindow << RESTendl;
