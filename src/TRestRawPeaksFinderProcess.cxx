@@ -51,9 +51,9 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
             for (const auto& [time, amplitude] : peaks) {
                 eventPeaks.emplace_back(signalId, time, amplitude);
             }
-        } else if (channelType == "veto") {
-            // For veto signals the baseline is calculated over the whole range, as we don´t know where the
-            // signal will be.
+        } 
+        else if (channelType == "veto") {
+            // For veto signals the baseline is calculated over the whole range, as we don´t know where the signal will be.
             signal->CalculateBaseLine(0, 511);
             // For veto signals the threshold is selected by the user.
             const auto peaks =
@@ -70,25 +70,6 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
          [](const tuple<UShort_t, UShort_t, double>& a, const tuple<UShort_t, UShort_t, double>& b) {
              return tie(get<1>(a), get<0>(a)) < tie(get<1>(b), get<0>(b));
          });
-
-    if (fRemovePeaklessVetos) {
-        // Create a set to store the signal IDs from eventPeaks
-        set<UShort_t> peakSignalIds;
-        for (const auto& [channelId, time, amplitude] : eventPeaks) {
-            peakSignalIds.insert(channelId);
-        }
-
-        // Iterate over the signals in the event
-        for (int signalIndex = 0; signalIndex < fInputEvent->GetNumberOfSignals(); signalIndex++) {
-            const auto signal = fInputEvent->GetSignal(signalIndex);
-            const UShort_t signalId = signal->GetSignalID();
-
-            // If the signal ID is not in peakSignalIds, remove the signal
-            if (peakSignalIds.find(signalId) == peakSignalIds.end()) {
-                fInputEvent->RemoveSignalWithId(signalId);
-            }
-        }
-    }
 
     // SetObservableValue("peaks", eventPeaks); // problems with dictionaries
     vector<UShort_t> peaksChannelId;
@@ -166,15 +147,39 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
     SetObservableValue("windowIndex", windowIndex);
     SetObservableValue("windowCenter", windowCenter);
 
+    // Remove peakless veto signals after the peak finding if chosen
+    if (fRemovePeaklessVetos && !fRemoveAllVetos) {
+        set<UShort_t> peakSignalIds;
+        for (const auto& [channelId, time, amplitude] : eventPeaks) {
+            peakSignalIds.insert(channelId);
+        }
+
+        vector<UShort_t> signalsToRemove;
+        for (int signalIndex = 0; signalIndex < fInputEvent->GetNumberOfSignals(); signalIndex++) {
+            const auto signal = fInputEvent->GetSignal(signalIndex);
+            const UShort_t signalId = signal->GetSignalID();
+            const string signalType = fReadoutMetadata->GetTypeForChannelDaqId(signalId);
+
+            if (signalType == "veto" && peakSignalIds.find(signalId) == peakSignalIds.end()) {
+                signalsToRemove.push_back(signalId);
+            }
+        }
+
+        // Now remove all veto signals identified
+        for (const auto& signalId : signalsToRemove) {
+            fInputEvent->RemoveSignalWithId(signalId);
+        }
+    }
+
     // Remove all veto signals after the peak finding if chosen
     if (fRemoveAllVetos) {
         vector<UShort_t> signalsToRemove;
         for (int signalIndex = 0; signalIndex < fInputEvent->GetNumberOfSignals(); signalIndex++) {
             const auto signal = fInputEvent->GetSignal(signalIndex);
             const UShort_t signalId = signal->GetSignalID();
-            const string channelType = fReadoutMetadata->GetTypeForChannelDaqId(signalId);
+            const string signalType = fReadoutMetadata->GetTypeForChannelDaqId(signalId);
 
-            if (channelType == "veto") {
+            if (signalType == "veto") {
                 signalsToRemove.push_back(signalId);
             }
         }
@@ -226,9 +231,7 @@ void TRestRawPeaksFinderProcess::InitFromConfigFile() {
     }
 
     if (filterType != "veto" && fRemovePeaklessVetos) {
-        cerr << "TRestRawPeaksFinderProcess::InitProcess: removing veto signals only makes sense when the "
-                "process is applied to veto signals. Remove \"removePeaklessVetos\" parameter"
-             << endl;
+        cerr << "TRestRawPeaksFinderProcess::InitProcess: removing veto signals only makes sense when the process is applied to veto signals. Remove \"removePeaklessVetos\" parameter" << endl;
         exit(1);
     }
 }
@@ -242,8 +245,7 @@ void TRestRawPeaksFinderProcess::PrintMetadata() {
     }
     RESTMetadata << RESTendl;
 
-    RESTMetadata << "Baseline range for tpc signals: " << fBaselineRange.X() << " - " << fBaselineRange.Y()
-                 << RESTendl;
+    RESTMetadata << "Baseline range for tpc signals: " << fBaselineRange.X() << " - " << fBaselineRange.Y() << RESTendl;
     RESTMetadata << "Threshold over baseline for veto signals: " << fThresholdOverBaseline << RESTendl;
 
     RESTMetadata << "Distance: " << fDistance << RESTendl;
