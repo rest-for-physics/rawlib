@@ -1016,7 +1016,9 @@ vector<pair<UShort_t, double>> TRestRawSignal::GetPeaksVeto(double threshold, US
         4;  // Region to compare for peak/no peak classification. 10 means 5 bins to each side
     const size_t numPoints = GetNumberOfPoints();
 
-    if (numPoints == 0) return peaks;
+    if (numPoints == 0) {
+        return peaks;
+    }
 
     // Pre-calculate smoothed values for all bins using a rolling sum
     vector<double> smoothedValues(numPoints, 0.0);
@@ -1080,10 +1082,10 @@ vector<pair<UShort_t, double>> TRestRawSignal::GetPeaksVeto(double threshold, US
             if (isPeak && smoothedValue > threshold) {
                 if (peaks.empty() || i - peaks.back().first >= distance) {
                     double peakPosition = i;
-                    UShort_t formattedPeakPosition = static_cast<UShort_t>(peakPosition);
+                    auto formattedPeakPosition = static_cast<UShort_t>(peakPosition);
                     double peakAmplitude = GetRawData(formattedPeakPosition);
 
-                    peaks.push_back(std::make_pair(formattedPeakPosition, peakAmplitude));
+                    peaks.emplace_back(formattedPeakPosition, peakAmplitude);
                 }
             }
         }
