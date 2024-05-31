@@ -156,6 +156,8 @@ class TRestRawSignal {
 
     void InitializePointsOverThreshold(const TVector2& thrPar, Int_t nPointsOver, Int_t nPointsFlat = 512);
 
+    void ZeroSuppressionToRaw();
+
     UInt_t GetSeed() const { return fSeed; }
 
     Double_t GetIntegral();
@@ -208,6 +210,8 @@ class TRestRawSignal {
 
     void Scale(Double_t value);
 
+    double GetAmplitudeFast(const TVector2& baselineRange, double signalThreshold);
+
     void WriteSignalToTextFile(const TString& filename);
 
     void Print() const;
@@ -224,6 +228,7 @@ class TRestRawSignal {
 
     TRestRawSignal();
     TRestRawSignal(Int_t nBins);
+    TRestRawSignal(Int_t sID, std::vector<Short_t>& sData);
     ~TRestRawSignal();
 
     ClassDef(TRestRawSignal, 2);

@@ -21,39 +21,63 @@
  *************************************************************************/
 
 //////////////////////////////////////////////////////////////////////////
-/// The TRestRawDaqMetadata ...
+/// TRestRawDAQMetadata class is meant to hold DAQ information which is
+/// stored in the root files generated using `restDAQ` package. It contains
+/// information about the readout type DCC, FEMINOS,... and the different
+/// parameters of the readout electronics (FEC, FEM, AGET, AFTER,...). Note
+/// that the DAQ is under development, so further changes on this class are
+/// foreseen:
 ///
-/// TODO. This class might be obsolete today. It may need additional revision,
-/// validation, and documentation.
+/// ### Parameters
+/// Describe any parameters this process receives:
+/// * **electronicsType**: DAQ electronics type, only DCC and FEMINOS are
+/// supported so far.
+/// * **triggerType**: internal, external, auto or tcm
+/// * **acquisitionType**: Type of acquisition: pedestal, calibration or
+/// background
+/// * **compressMode**: allchannels, triggeredchannels or zerosuppression
+/// * **nEvents**: Number of events to be acquired (0 for infinite loop)
+/// * **nPedestalEvents**: Number of pedestal events to be acquired
+/// It also includes `FECMetadata` section (see example)
 ///
-/// <hr>
+/// ### Examples
+/// Give examples of usage and RML descriptions that can be tested.
+/// \code
+/// <TRestRawDAQMetadata name="DAQMetadata" title="DAQ Metadata" verboseLevel="info">
+///         <parameter name ="electronicsType" value="DUMMY"/>
+///         <parameter name ="triggerType" value="external"/>
+///         <parameter name ="acquisitionType" value="background"/>
+///         <parameter name ="compressMode" value="zerosuppression"/>
+///         <parameter name ="Nevents" value="0"/>
+///         <parameter name ="nPedestalEvents" value="100"/>
 ///
-/// \warning **⚠ REST is under continous development.** This
-/// documentation
-/// is offered to you by the REST community. Your HELP is needed to keep this
-/// code
-/// up to date. Your feedback will be worth to support this software, please
-/// report
-/// any problems/suggestions you may find while using it at [The REST Framework
-/// forum](http://ezpc10.unizar.es). You are welcome to contribute fixing typos,
-/// updating
-/// information or adding/proposing new contributions. See also our
-/// <a href="https://github.com/rest-for-physics/framework/blob/master/CONTRIBUTING.md">Contribution
-/// Guide</a>.
+///   <FEC id="2" ip="192:168:10:13" chip="after" clockDiv="0x2">
+///     <ASIC id="*" isActive="true" gain="0x1" shappingTime="0x2" polarity="0" pedcenter="250" pedthr="5.0"
+///     coarseThr="0x2" fineThr="0x7" multThr="32" multLimit="232">
+///         <channel id="*" isActive="true"></channel>
+///         <channel id="0" isActive="false"></channel>
+///         <channel id="1" isActive="false"></channel>
+///         <channel id="2" isActive="false"></channel>
+///     </ASIC>
+///   </FEC>
+/// </TRestRawDAQMetadata>
+/// \endcode
 ///
+///----------------------------------------------------------------------
 ///
-///--------------------------------------------------------------------------
-///
-/// RESTsoft - Software for Rare Event Searches with TPCs
+/// REST-for-Physics - Software for Rare Event Searches Toolkit
 ///
 /// History of developments:
 ///
 /// 2015-Nov: First implementation as part of the conceptualization of existing
-///			  REST software.
-///           Juanan Garcia
+///           REST software.
+/// JuanAn Garcia
 ///
-/// \class      TRestRawDAQMetadata
-/// \author     Juanan Garcia
+/// 2021-2022: New implementation for restDAQ package
+/// JuanAn Garcia
+///
+/// \class TRestRawDAQMetadata
+/// \author: Juanan Garcia e-mail: juanangp@unizar.es
 ///
 /// <hr>
 ///
@@ -68,9 +92,6 @@ TRestRawDAQMetadata::TRestRawDAQMetadata(const char* configFilename) : TRestMeta
     Initialize();
 
     LoadConfigFromFile(fConfigFileName);
-
-    SetScriptsBuffer();
-    SetParFromPedBuffer();
 }
 
 void TRestRawDAQMetadata::Initialize() {
@@ -78,112 +99,158 @@ void TRestRawDAQMetadata::Initialize() {
     SetLibraryVersion(LIBRARY_VERSION);
 }
 
-TRestRawDAQMetadata::~TRestRawDAQMetadata() { cout << "Deleting TRestRawDAQMetadata" << endl; }
+TRestRawDAQMetadata::~TRestRawDAQMetadata() {}
 
 void TRestRawDAQMetadata::InitFromConfigFile() {
-    // string daqString;
+    TRestMetadata::InitFromConfigFile();
 
-    fNamePedScript = GetParameter("pedScript");
-    if (fNamePedScript == "") {
-        cout << "Pedestal script " << endl;
-    }
-
-    fNameRunScript = GetParameter("runScript");
-    if (fNameRunScript == "") {
-        cout << "Run script " << endl;
-    }
-
-    fElectronicsType = GetParameter("electronics");
-    if (fElectronicsType == "") {
-        cout << "electronic type not found " << endl;
-    }
+    ReadFEC();
 }
 
 void TRestRawDAQMetadata::PrintMetadata() {
-    cout << endl;
-    cout << "====================================" << endl;
-    cout << "DAQ : " << GetTitle() << endl;
-    cout << "Pedestal script : " << fNamePedScript.Data() << endl;
-    cout << "Run script : " << fNameRunScript.Data() << endl;
-    cout << "Electronics type : " << fElectronicsType.Data() << endl;
-    cout << "Gain : " << GetGain() << endl;
-    cout << "Shapping time : " << GetShappingTime() << endl;
-    cout << "====================================" << endl;
+    RESTMetadata << "+++++++++++++++++++++++++++++++++++++++++++++" << RESTendl;
+    RESTMetadata << this->ClassName() << " content" << RESTendl;
+    RESTMetadata << "+++++++++++++++++++++++++++++++++++++++++++++" << RESTendl;
+    RESTMetadata << "Trigger type : " << fTriggerType.Data() << RESTendl;
+    RESTMetadata << "Acquisition type : " << fAcquisitionType.Data() << RESTendl;
+    RESTMetadata << "Compress mode : " << fCompressMode.Data() << RESTendl;
+    RESTMetadata << "Number of events : " << fNEvents << RESTendl;
+    RESTMetadata << "Number of pedestal events : " << fNPedestalEvents << RESTendl;
+    RESTMetadata << "Maximum file size : " << fMaxFileSize << " bytes" << RESTendl;
 
-    cout << endl;
+    for (const auto& f : fFEC) DumpFEC(f);
+    RESTMetadata << "+++++++++++++++++++++++++++++++++++++++++++++" << RESTendl;
+
+    RESTMetadata << RESTendl;
 }
 
-void TRestRawDAQMetadata::SetScriptsBuffer() {
-    TString folder = REST_PATH;
-    folder.Append("data/acquisition/");
+void TRestRawDAQMetadata::ReadFEC() {
+    TiXmlElement* FECDef = GetElement("FEC");
 
-    TString fName;
+    while (FECDef) {
+        FECMetadata fec;
+        fec.id = StringToInteger(GetFieldValue("id", FECDef));
+        std::string ip = GetFieldValue("ip", FECDef);
+        sscanf(ip.c_str(), "%d:%d:%d:%d", &fec.ip[0], &fec.ip[1], &fec.ip[2], &fec.ip[3]);
+        fec.chipType = GetFieldValue("chip", FECDef);
+        fec.clockDiv = StringToInteger(GetFieldValue("clockDiv", FECDef));
+        // std::cout<<"FEC "<<fec.id<<" ip:"<<fec.ip[0]<<"."<<fec.ip[1]<<"."<<fec.ip[2]<<"."<<fec.ip[3]<<"
+        // "<<ip<<" "<<fec.chipType<<" clockDiv "<<fec.clockDiv<<std::endl;
 
-    fName = folder + fNamePedScript;
+        TiXmlElement* ASICDef = GetElement("ASIC", FECDef);
+        // std::cout<<"ASICDef "<<ASICDef<<std::endl;
+        while (ASICDef) {
+            std::string id = GetFieldValue("id", ASICDef);
+            int gain = StringToInteger(GetFieldValue("gain", ASICDef));
+            int shappingTime = StringToInteger(GetFieldValue("shappingTime", ASICDef));
+            bool asicActive = StringToBool(GetFieldValue("isActive", ASICDef));
+            // std::cout<<"ASIC "<<id<<" gain "<<gain<<" shappingTime "<<shappingTime<<std::endl;
+            uint16_t polarity = StringToInteger(GetFieldValue("polarity", ASICDef)) & 0x1;
+            uint16_t pedCenter = StringToInteger(GetFieldValue("pedcenter", ASICDef));
+            float pedThr = StringToFloat(GetFieldValue("pedthr", ASICDef));
+            uint16_t coarseThr = StringToInteger(GetFieldValue("coarseThr", ASICDef));
+            uint16_t fineThr = StringToInteger(GetFieldValue("fineThr", ASICDef));
+            uint16_t multThr = StringToInteger(GetFieldValue("multThr", ASICDef));
+            uint16_t multLimit = StringToInteger(GetFieldValue("multLimit", ASICDef));
 
-    ifstream file(fName);
-    if (!file) {
-        cout << __PRETTY_FUNCTION__ << " ERROR:FILE " << fName << " not found " << endl;
-        return;
+            TiXmlElement* channelDef = GetElement("channel", ASICDef);
+            bool channelActive[nChannels];
+            while (channelDef) {
+                std::string chId = GetFieldValue("id", channelDef);
+                bool active = StringToBool(GetFieldValue("isActive", channelDef));
+                if (chId == "*") {
+                    for (int i = 0; i < nChannels; i++) channelActive[i] = active;
+                } else {
+                    int i = StringToInteger(chId);
+                    if (i < nChannels) channelActive[i] = active;
+                }
+                channelDef = GetNextElement(channelDef);
+            }
+
+            if (id == "*") {  // Wildcard
+                for (int i = 0; i < nAsics; i++) {
+                    fec.asic_gain[i] = gain;
+                    fec.asic_shappingTime[i] = shappingTime;
+                    fec.asic_isActive[i] = asicActive;
+                    fec.asic_polarity[i] = polarity;
+                    fec.asic_pedCenter[i] = pedCenter;
+                    fec.asic_pedThr[i] = pedThr;
+                    fec.asic_coarseThr[i] = coarseThr;
+                    fec.asic_fineThr[i] = fineThr;
+                    fec.asic_multThr[i] = multThr;
+                    fec.asic_multLimit[i] = multLimit;
+                    bool isFirst = true;
+                    for (int c = 0; c < nChannels; c++) {
+                        fec.asic_channelActive[i][c] = channelActive[c];
+                        if (channelActive[c] && isFirst) {
+                            fec.asic_channelStart[i] = c;
+                            isFirst = false;
+                        }
+                        if (channelActive[c]) fec.asic_channelEnd[i] = c;
+                    }
+                }
+            } else {
+                int i = StringToInteger(id);
+                if (i < nAsics) {
+                    fec.asic_gain[i] = gain;
+                    fec.asic_shappingTime[i] = shappingTime;
+                    fec.asic_isActive[i] = asicActive;
+                    fec.asic_polarity[i] = polarity;
+                    fec.asic_pedCenter[i] = pedCenter;
+                    fec.asic_pedThr[i] = pedThr;
+                    fec.asic_coarseThr[i] = coarseThr;
+                    fec.asic_fineThr[i] = fineThr;
+                    fec.asic_multThr[i] = multThr;
+                    fec.asic_multLimit[i] = multLimit;
+                    bool isFirst = true;
+                    for (int c = 0; c < nChannels; c++) {
+                        fec.asic_channelActive[i][c] = channelActive[c];
+                        if (channelActive[c] && isFirst) {
+                            fec.asic_channelStart[i] = c;
+                            isFirst = false;
+                        }
+                        if (channelActive[c]) fec.asic_channelEnd[i] = c;
+                    }
+                }
+            }
+            ASICDef = GetNextElement(ASICDef);
+        }
+
+        fFEC.emplace_back(std::move(fec));
+        FECDef = GetNextElement(FECDef);
     }
 
-    string line;
-    while (getline(file, line)) {
-        fPedBuffer.push_back(line);
-    }
-
-    file.close();
-
-    fName = folder + fNameRunScript;
-
-    ifstream file2(fName);
-    if (!file2) {
-        cout << __PRETTY_FUNCTION__ << " ERROR:FILE " << fName << " not found " << endl;
-        return;
-    }
-
-    while (getline(file2, line)) {
-        fRunBuffer.push_back(line);
-    }
-
-    file2.close();
+    std::sort(fFEC.begin(), fFEC.end());
 }
 
-void TRestRawDAQMetadata::PrintRunScript() {
-    for (unsigned int i = 0; i < fRunBuffer.size(); i++) cout << fRunBuffer[i].Data() << endl;
-}
-
-void TRestRawDAQMetadata::PrintPedScript() {
-    for (unsigned int i = 0; i < fPedBuffer.size(); i++) cout << fPedBuffer[i].Data() << endl;
-}
-
-void TRestRawDAQMetadata::SetParFromPedBuffer() {
-    for (unsigned int i = 0; i < fPedBuffer.size(); i++) {
-        if (fPedBuffer[i].Contains("aget * gain * "))
-            fGain = GetValFromString("aget * gain * ", fPedBuffer[i]);
-
-        if (fPedBuffer[i].Contains("aget * time "))
-            fShappingTime = GetValFromString("aget * time ", fPedBuffer[i]);
-
-        if (fPedBuffer[i].Contains("after * gain * "))
-            fGain = GetValFromString("after * gain * ", fPedBuffer[i]);
-
-        if (fPedBuffer[i].Contains("after * time "))
-            fShappingTime = GetValFromString("after * time ", fPedBuffer[i]);
+void TRestRawDAQMetadata::DumpFEC(const FECMetadata& fec) {
+    RESTMetadata << "+++++++++++++++++++++++++++++++++++++++++++++" << RESTendl;
+    RESTMetadata << "FEC id:" << fec.id << RESTendl;
+    RESTMetadata << "IP: " << fec.ip[0] << "." << fec.ip[1] << "." << fec.ip[2] << "." << fec.ip[3]
+                 << RESTendl;
+    RESTMetadata << "Chip type: " << fec.chipType << RESTendl;
+    RESTMetadata << "Clock Div: 0x" << std::hex << fec.clockDiv << std::dec << RESTendl;
+    for (int i = 0; i < nAsics; i++) {
+        if (!fec.asic_isActive[i]) continue;
+        RESTMetadata << "+++++++++++++++++++++++++++++++++++++++++++++" << RESTendl;
+        RESTMetadata << "ASIC " << i << RESTendl;
+        RESTMetadata << "Polarity: (AGET) " << fec.asic_polarity[i] << RESTendl;
+        RESTMetadata << "Gain: 0x" << std::hex << fec.asic_gain[i] << std::dec << RESTendl;
+        RESTMetadata << "ShappingTime: 0x" << std::hex << fec.asic_shappingTime[i] << std::dec << RESTendl;
+        RESTMetadata << "Channel start: " << fec.asic_channelStart[i] << RESTendl;
+        RESTMetadata << "Channel end: " << fec.asic_channelEnd[i] << RESTendl;
+        RESTMetadata << "Coarse threshold (AGET): 0x" << std::hex << fec.asic_coarseThr[i] << std::dec
+                     << RESTendl;
+        RESTMetadata << "Fine threshold (AGET): 0x" << std::hex << fec.asic_fineThr[i] << std::dec
+                     << RESTendl;
+        RESTMetadata << "Multiplicity threshold (AGET): " << fec.asic_multThr[i] << RESTendl;
+        RESTMetadata << "Multiplicity limit (AGET): " << fec.asic_multLimit[i] << RESTendl;
+        RESTMetadata << "Active channels: " << RESTendl;
+        for (int c = 0; c < nChannels; c++) {
+            if (fec.asic_channelActive[i][c]) RESTMetadata << c << "; ";
+            if (c > 0 && c % 10 == 0) RESTMetadata << RESTendl;
+        }
+        RESTMetadata << RESTendl;
     }
-}
-
-UInt_t TRestRawDAQMetadata::GetValFromString(TString var, TString line) {
-    unsigned int val;
-
-    unsigned int varSize = var.Sizeof();
-    unsigned int lineSize = line.Sizeof();
-
-    TString diff(line(varSize - 1, lineSize - 1));
-
-    cout << diff.Data() << endl;
-
-    sscanf(diff.Data(), "0x%x", &val);
-
-    return val;
+    RESTMetadata << "+++++++++++++++++++++++++++++++++++++++++++++" << RESTendl;
 }

@@ -92,6 +92,8 @@ TRestRawSignal::TRestRawSignal(Int_t nBins) {
     fSignalData.resize(nBins, 0);
 }
 
+TRestRawSignal::TRestRawSignal(Int_t sID, std::vector<Short_t>& sData) : fSignalID(sID), fSignalData(sData) {}
+
 ///////////////////////////////////////////////
 /// \brief Default destructor
 ///
@@ -823,6 +825,36 @@ void TRestRawSignal::CalculateBaseLineSigmaIQR(Int_t startBin, Int_t endBin) {
 }
 
 ///////////////////////////////////////////////
+/// \brief This method calculate the baseline in a certain range and returns the maximum amplitude
+/// if the signal is above certain threshold. The calculations are performed in a fast way only
+/// using a single loop.
+///
+double TRestRawSignal::GetAmplitudeFast(const TVector2& baselineRange, double signalThreshold) {
+    double max = 0;
+    fBaseLineSigma = 0;
+    fBaseLine = 0;
+    int nPoints = 0;
+    for (int i = 0; i < GetNumberOfPoints(); i++) {
+        short val = GetRawData(i);
+        if (val > max) max = val;
+        if (i < baselineRange.X() || i > baselineRange.Y() || val == 0) continue;
+        fBaseLine += val;
+        fBaseLineSigma += val * val;
+        nPoints++;
+    }
+
+    if (nPoints > 0) {
+        fBaseLine /= nPoints;
+        fBaseLineSigma = TMath::Sqrt(fBaseLineSigma / nPoints - fBaseLine * fBaseLine);
+    }
+
+    // Only pulses above certain threshold
+    if (max < (fBaseLine + signalThreshold * fBaseLineSigma)) return 0;
+
+    return max - fBaseLine;
+}
+
+///////////////////////////////////////////////
 /// \brief This method adds an offset to the signal data
 ///
 void TRestRawSignal::AddOffset(Short_t offset) {
@@ -864,6 +896,20 @@ void TRestRawSignal::WriteSignalToTextFile(const TString& filename) {
     FILE* file = fopen(filename.Data(), "w");
     for (int i = 0; i < GetNumberOfPoints(); i++) fprintf(file, "%d\t%lf\n", i, GetData(i));
     fclose(file);
+}
+
+///////////////////////////////////////////////
+/// \brief This method transforms zero suppression
+/// raw data into a raw data event using the firs
+///
+void TRestRawSignal::ZeroSuppressionToRaw() {
+    Short_t offset = 0;
+    for (int i = 0; i < GetNumberOfPoints(); i++) {
+        const Short_t val = fSignalData[i];
+        if (val == 0) continue;
+        if (offset == 0) offset = val;
+        fSignalData[i] = val - offset;
+    }
 }
 
 ///////////////////////////////////////////////
