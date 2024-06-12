@@ -363,7 +363,7 @@ TRestEvent* TRestRawMultiFEMINOSToSignalProcess::ProcessEvent(TRestEvent* inputE
             if (!endOfEvent) {
                 if (fread(&(cur_fr[fr_offset]), sizeof(unsigned short), nb_sh, fInputBinFile) != nb_sh) {
                     printf("Error: could not read %d bytes.\n", (nb_sh * 2));
-                    exit(1);
+                    return nullptr;  // exit(1);
                 }
                 totalBytesReaded += sizeof(unsigned short) * nb_sh;
 
