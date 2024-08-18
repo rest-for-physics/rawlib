@@ -33,7 +33,7 @@
 ///
 /// <hr>
 ///
-/// \warning **⚠ REST is under continous development.** This
+/// \warning **⚠ REST is under continuous development.** This
 /// documentation
 /// is offered to you by the REST community. Your HELP is needed to keep this
 /// code
@@ -276,10 +276,11 @@ void TRestRawMultiFEMINOSToSignalProcess::InitProcess() {
 }
 
 TRestEvent* TRestRawMultiFEMINOSToSignalProcess::ProcessEvent(TRestEvent* inputEvent) {
-    if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Debug)
+    if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Debug) {
         cout << "TRestRawMultiFEMINOSToSignalProcess::ProcessEvent" << endl;
+    }
 
-    while (1) {
+    while (true) {
         unsigned short* sh;
         sh = (unsigned short*)&(cur_fr[2]);
         unsigned int nb_sh;

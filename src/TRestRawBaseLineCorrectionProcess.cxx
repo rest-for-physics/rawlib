@@ -42,7 +42,7 @@
 /// ![A raw signal with and without TRestBaseLineCorrectionProcess with smoothing window size
 /// 75](doc_TRestRawBaseLineCorrectionProcess2.png) <hr>
 ///
-/// \warning **⚠ REST is under continous development.** This documentation
+/// \warning **⚠ REST is under continuous development.** This documentation
 /// is offered to you by the REST community. Your HELP is needed to keep this code
 /// up to date. Your feedback will be worth to support this software, please report
 /// any problems/suggestions you may find while using it at [The REST Framework
