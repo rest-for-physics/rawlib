@@ -111,7 +111,7 @@ void TRestRawFeminosRootToSignalProcess::InitProcess() {
 
     fInputEventTree->SetBranchAddress("timestamp", &fInputEventTreeTimestamp);
     fInputEventTree->SetBranchAddress("signal_ids", &fInputEventTreeSignalIds);
-    fInputEventTree->SetBranchAddress("signal_data", &fInputEventTreeSignalValues);
+    fInputEventTree->SetBranchAddress("signal_values", &fInputEventTreeSignalValues);
 }
 
 TRestEvent* TRestRawFeminosRootToSignalProcess::ProcessEvent(TRestEvent* inputEvent) {
