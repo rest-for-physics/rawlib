@@ -136,7 +136,7 @@ void TRestRawMultiCoBoAsAdToSignalProcess::InitProcess() {
         fStartTimeStamp = TTimeStamp(fRunInfo->GetStartTimestamp());
     }
 
-    totalBytesReaded = 0;
+    totalbytesRead = 0;
 }
 
 Bool_t TRestRawMultiCoBoAsAdToSignalProcess::AddInputFile(const string& file) {
@@ -155,7 +155,7 @@ Bool_t TRestRawMultiCoBoAsAdToSignalProcess::AddInputFile(const string& file) {
             fHeaderFrame[i].eventIdx = (unsigned int)4294967295;
             return kFALSE;
         }
-        totalBytesReaded += 256;
+        totalbytesRead += 256;
         if (!ReadFrameHeader(fHeaderFrame[i])) {
             cout << "error when reading frame header in file " << i << " \"" << fInputFileNames[i] << "\""
                  << endl;
@@ -262,7 +262,7 @@ bool TRestRawMultiCoBoAsAdToSignalProcess::FillBuffer() {
                 fHeaderFrame[i].eventIdx = (unsigned int)4294967295;
                 return kFALSE;
             }
-            totalBytesReaded += 256;
+            totalbytesRead += 256;
             if (!ReadFrameHeader(fHeaderFrame[i])) {
                 cout << "error when reading frame header in file " << i << " \"" << fInputFileNames[i] << "\""
                      << endl;
@@ -319,7 +319,7 @@ bool TRestRawMultiCoBoAsAdToSignalProcess::FillBuffer() {
                     fHeaderFrame[i].eventIdx = (unsigned int)4294967295;
                     break;
                 }
-                totalBytesReaded += 278528;
+                totalbytesRead += 278528;
                 ReadFrameDataF(fHeaderFrame[i]);
             } else {
                 fclose(fInputFiles[i]);
@@ -335,7 +335,7 @@ bool TRestRawMultiCoBoAsAdToSignalProcess::FillBuffer() {
                 fHeaderFrame[i].eventIdx = (unsigned int)4294967295;  // maximum of unsigned int
                 break;
             }
-            totalBytesReaded += 256;
+            totalbytesRead += 256;
             if (!ReadFrameHeader(fHeaderFrame[i])) {
                 RESTWarning << "Event " << fCurrentEvent << " : error when reading next frame header"
                             << RESTendl;
@@ -352,7 +352,7 @@ bool TRestRawMultiCoBoAsAdToSignalProcess::FillBuffer() {
                         feof(fInputFiles[i])) {
                         break;
                     }
-                    totalBytesReaded += 256;
+                    totalbytesRead += 256;
                     if (ReadFrameHeader(fHeaderFrame[i])) {
                         fVerboseLevel = tmp;
                         RESTWarning << "Successfully found next header (EventId : "
@@ -513,7 +513,7 @@ bool TRestRawMultiCoBoAsAdToSignalProcess::ReadFrameDataP(FILE* f, CoBoHeaderFra
                 f = nullptr;
                 return kFALSE;
             }
-            totalBytesReaded += 4;
+            totalbytesRead += 4;
             // total: 4bytes, 32 bits
             // 11         111111|1     1111111|11   11        1111|11111111
             // agetIdx    chanIdx      buckIdx      unused    samplepoint

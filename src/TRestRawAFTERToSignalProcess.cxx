@@ -127,7 +127,7 @@ void TRestRawAFTERToSignalProcess::InitProcess() {
     runUid[20] = '\0';
     sprintf(initTime, "%s", runUid);
     printf("File UID is %s \n", initTime);
-    totalBytesReaded = sizeof(runUid);
+    totalbytesRead = sizeof(runUid);
 
     int year, day, month, hour, minute, second;
     sscanf(runUid, "R%d.%02d.%02d-%02d:%02d:%02d", &year, &month, &day, &hour, &minute, &second);
@@ -346,7 +346,7 @@ TRestEvent* TRestRawAFTERToSignalProcess::ProcessEvent(TRestEvent* inputEvent) {
         RESTDebug << "Trailer " << eventTime << "\n" << RESTendl;
 
     }  // end while
-    totalBytesReaded += frameBits;
+    totalbytesRead += frameBits;
 
     // printf("Event ID %d time stored
     // %.3lf\n",fSignalEvent->GetID(),fSignalEvent->GetTime());
