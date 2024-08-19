@@ -33,7 +33,7 @@
 ///
 /// <hr>
 ///
-/// \warning **⚠ REST is under continous development.** This
+/// \warning **⚠ REST is under continuous development.** This
 /// documentation
 /// is offered to you by the REST community. Your HELP is needed to keep this
 /// code
@@ -231,14 +231,14 @@ void TRestRawMultiFEMINOSToSignalProcess::InitProcess() {
     unsigned short sh;
     unsigned short al;
 
-    totalBytesReaded = 0;
+    totalbytesRead = 0;
 
     // Read prefix
     if (fread(&sh, sizeof(unsigned short), 1, fInputBinFile) != 1) {
         printf("Error: could not read first prefix.\n");
         exit(1);
     }
-    totalBytesReaded += sizeof(unsigned short);
+    totalbytesRead += sizeof(unsigned short);
 
     // f->tot_file_rd+= sizeof(unsigned short);
 
@@ -255,7 +255,7 @@ void TRestRawMultiFEMINOSToSignalProcess::InitProcess() {
         if (z == 0)
             RESTError << "TRestRawMultiFEMINOSToSignalProcess::InitProcess. Problem reading from inputfile"
                       << RESTendl;
-        totalBytesReaded += sizeof(int);
+        totalbytesRead += sizeof(int);
 
         tStart = tt;
         RESTDebug << "Timestamp : " << tt << " - " << tStart << RESTendl;
@@ -268,7 +268,7 @@ void TRestRawMultiFEMINOSToSignalProcess::InitProcess() {
             printf("Error: could not read %d characters.\n", al);
             exit(1);
         }
-        totalBytesReaded += sizeof(char);
+        totalbytesRead += sizeof(char);
 
         // Show run string information if desired
         printf("Run string: %s\n", &(run_str[0]));
@@ -276,10 +276,11 @@ void TRestRawMultiFEMINOSToSignalProcess::InitProcess() {
 }
 
 TRestEvent* TRestRawMultiFEMINOSToSignalProcess::ProcessEvent(TRestEvent* inputEvent) {
-    if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Debug)
+    if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Debug) {
         cout << "TRestRawMultiFEMINOSToSignalProcess::ProcessEvent" << endl;
+    }
 
-    while (1) {
+    while (true) {
         unsigned short* sh;
         sh = (unsigned short*)&(cur_fr[2]);
         unsigned int nb_sh;
@@ -305,7 +306,7 @@ TRestEvent* TRestRawMultiFEMINOSToSignalProcess::ProcessEvent(TRestEvent* inputE
                     // The processing thread will be finished when return nullptr is reached
                     return nullptr;
                 }
-                totalBytesReaded += sizeof(unsigned short);
+                totalbytesRead += sizeof(unsigned short);
 
                 if ((*sh & PFX_0_BIT_CONTENT_MASK) == PFX_START_OF_BUILT_EVENT) {
                     if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Debug)
@@ -323,7 +324,7 @@ TRestEvent* TRestRawMultiFEMINOSToSignalProcess::ProcessEvent(TRestEvent* inputE
                         printf("Error: could not read two short words.\n");
                         exit(1);
                     }
-                    totalBytesReaded += sizeof(unsigned short) * 2;
+                    totalbytesRead += sizeof(unsigned short) * 2;
 
                     // Get the size of the event in bytes
                     fr_sz = (int)(((*(sh + 2)) << 16) | (*(sh + 1)));
@@ -342,7 +343,7 @@ TRestEvent* TRestRawMultiFEMINOSToSignalProcess::ProcessEvent(TRestEvent* inputE
                         printf("Error: could not read short word.\n");
                         exit(1);
                     }
-                    totalBytesReaded += sizeof(unsigned short);
+                    totalbytesRead += sizeof(unsigned short);
 
                     // Get the size of the event in bytes
                     fr_sz = (int)*(sh + 1);
@@ -365,7 +366,7 @@ TRestEvent* TRestRawMultiFEMINOSToSignalProcess::ProcessEvent(TRestEvent* inputE
                     printf("Error: could not read %d bytes.\n", (nb_sh * 2));
                     return nullptr;  // exit(1);
                 }
-                totalBytesReaded += sizeof(unsigned short) * nb_sh;
+                totalbytesRead += sizeof(unsigned short) * nb_sh;
 
                 // Zero the first two bytes because these are no longer used to specify
                 // the size of the frame

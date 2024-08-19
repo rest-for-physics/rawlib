@@ -81,7 +81,7 @@ void TRestRawTDSToSignalProcess::Initialize() { TRestRawToSignalProcess::Initial
 void TRestRawTDSToSignalProcess::InitProcess() {
     ANABlockHead blockhead;
     if (fread(&blockhead, sizeof(blockhead), 1, fInputBinFile) != 1) return;
-    totalBytesReaded = sizeof(blockhead);
+    totalbytesRead = sizeof(blockhead);
     nSamples = blockhead.NEvents;
     nChannels = blockhead.NHits / blockhead.NEvents;
     fRate = blockhead.SRate;
@@ -111,14 +111,14 @@ TRestEvent* TRestRawTDSToSignalProcess::ProcessEvent(TRestEvent* evInput) {
     // Read block header if any, note that we have nSamples events between 2 block headers
     if (nEvents % nSamples == 0 && nEvents != 0) {
         if (fread(&blockhead, sizeof(blockhead), 1, fInputBinFile) != 1) return nullptr;
-        totalBytesReaded += sizeof(blockhead);
+        totalbytesRead += sizeof(blockhead);
         // Update timestamp from the blockHeader
         tNow = static_cast<double>(blockhead.TimeStamp);
     }
 
     // Always read event header at the beginning of event
     if (fread(&eventhead, sizeof(eventhead), 1, fInputBinFile) != 1) return nullptr;
-    totalBytesReaded += sizeof(eventhead);
+    totalbytesRead += sizeof(eventhead);
     // This vector holds data which has a length of pulseDepth
     std::vector<Char_t> buffer(pulseDepth);
     fSignalEvent->SetID(nEvents);
@@ -132,7 +132,7 @@ TRestEvent* TRestRawTDSToSignalProcess::ProcessEvent(TRestEvent* evInput) {
         fSignalEvent->AddSignal(sgnl);
         // Read data frame and store in buffer
         if (fread((char*)&buffer[0], pulseDepth, 1, fInputBinFile) != 1) return nullptr;
-        totalBytesReaded += pulseDepth;
+        totalbytesRead += pulseDepth;
         for (int j = 0; j < pulseDepth; j++) {
             Short_t data = buffer[j];
             if (negPolarity[i]) data *= -1;  // Inversion in case pulses are negative

@@ -54,7 +54,7 @@
 ///
 /// <hr>
 ///
-/// \warning **⚠ REST is under continous development.** This documentation
+/// \warning **⚠ REST is under continuous development.** This documentation
 /// is offered to you by the REST community. Your HELP is needed to keep this
 /// code up to date. Your feedback will be worth to support this software, please
 /// report any problems/suggestions you may find will using it at [The REST Framework
@@ -124,7 +124,7 @@ void TRestRawBiPoToSignalProcess::InitProcess() {
         printf("Error: could not read first prefix.\n");
         exit(1);
     }
-    totalBytesReaded += CTAG_SZ * sizeof(char);
+    totalbytesRead += CTAG_SZ * sizeof(char);
 
     if (strcmp(buffer, TAG_RUN_BIPO) != 0) {
         RESTError << "The file " << fInputFileNames[0] << " is not BiPo format" << RESTendl;
@@ -155,7 +155,7 @@ TRestEvent* TRestRawBiPoToSignalProcess::ProcessEvent(TRestEvent* inputEvent) {
         printf("Error: could not read first ACQ prefix.\n");
         exit(1);
     }
-    totalBytesReaded += CTAG_SZ * sizeof(char);
+    totalbytesRead += CTAG_SZ * sizeof(char);
 
     if (strcmp(buffer, TAG_RUN_STOP) == 0) {
         RESTDebug << "The run ends" << RESTendl;
@@ -224,14 +224,14 @@ void TRestRawBiPoToSignalProcess::ReadFooter() {
         printf("Error: could not read timestamp.\n");
         exit(1);
     }
-    totalBytesReaded += sizeof(int32_t);
+    totalbytesRead += sizeof(int32_t);
     Double_t runEndTime = (Double_t)tmp;
 
     if (fread(&tmp, sizeof(int32_t), 1, fInputBinFile) != 1) {
         printf("Error: could not read timestamp (us).\n");
         exit(1);
     }
-    totalBytesReaded += sizeof(int32_t);
+    totalbytesRead += sizeof(int32_t);
     runEndTime += 1.e-6 * (Double_t)tmp;
 
     fRunInfo->SetEndTimeStamp(runEndTime);
@@ -251,14 +251,14 @@ void TRestRawBiPoToSignalProcess::ReadHeader() {
         printf("Error: could not read timestamp.\n");
         exit(1);
     }
-    totalBytesReaded += sizeof(int32_t);
+    totalbytesRead += sizeof(int32_t);
     Double_t runStartTime = (Double_t)tmp;
 
     if (fread(&tmp, sizeof(int32_t), 1, fInputBinFile) != 1) {
         printf("Error: could not read timestamp (us).\n");
         exit(1);
     }
-    totalBytesReaded += sizeof(int32_t);
+    totalbytesRead += sizeof(int32_t);
     runStartTime += 1.e-6 * (Double_t)tmp;
 
     fRunInfo->SetStartTimeStamp(runStartTime);
@@ -268,7 +268,7 @@ void TRestRawBiPoToSignalProcess::ReadHeader() {
         printf("Error: could not read nBoards.\n");
         exit(1);
     }
-    totalBytesReaded += sizeof(int32_t);
+    totalbytesRead += sizeof(int32_t);
 
     fNBoards = nBoards;
     RESTDebug << "N boards: " << fNBoards << RESTendl;
@@ -281,7 +281,7 @@ void TRestRawBiPoToSignalProcess::ReadHeader() {
             printf("Error: could not read BiPo flag.\n");
             exit(1);
         }
-        totalBytesReaded += sizeof(int32_t);
+        totalbytesRead += sizeof(int32_t);
 
         if (bipo != 1) {
             RESTError << "The file " << fInputFileNames[0] << " is not BiPo format" << RESTendl;
@@ -302,14 +302,14 @@ void TRestRawBiPoToSignalProcess::ReadBoard() {
         printf("Error: could not read base matacq address.\n");
         exit(1);
     }
-    totalBytesReaded += sizeof(int32_t);
+    totalbytesRead += sizeof(int32_t);
     board.address = tmp;
 
     if (fread(&board.en_ch[0], sizeof(int32_t), MATACQ_N_CH, fInputBinFile) != MATACQ_N_CH) {
         printf("Error: could not read base matacq en_ch.\n");
         exit(1);
     }
-    totalBytesReaded += MATACQ_N_CH * sizeof(int32_t);
+    totalbytesRead += MATACQ_N_CH * sizeof(int32_t);
 
     int cnt = 0;
     board.nChannels = 0;
@@ -327,48 +327,48 @@ void TRestRawBiPoToSignalProcess::ReadBoard() {
         printf("Error: could not read base matacq trg_ch.\n");
         exit(1);
     }
-    totalBytesReaded += MATACQ_N_CH * sizeof(int32_t);
+    totalbytesRead += MATACQ_N_CH * sizeof(int32_t);
 
     if (fread(&tmp, sizeof(int32_t), 1, fInputBinFile) != 1) {
         printf("Error: could not read Trig type.\n");
         exit(1);
     }
-    totalBytesReaded += sizeof(int32_t);
+    totalbytesRead += sizeof(int32_t);
     board.Trig_Type = tmp;
 
     if (fread(&tmp, sizeof(int32_t), 1, fInputBinFile) != 1) {
         printf("Error: could not read Threshold.\n");
         exit(1);
     }
-    totalBytesReaded += sizeof(int32_t);
+    totalbytesRead += sizeof(int32_t);
     board.Threshold = tmp;
 
     if (fread(&tmp, sizeof(int32_t), 1, fInputBinFile) != 1) {
         printf("Error: could not read Nb_Acq.\n");
         exit(1);
     }
-    totalBytesReaded += sizeof(int32_t);
+    totalbytesRead += sizeof(int32_t);
     board.Nb_Acq = tmp;
 
     if (fread(&tmp, sizeof(int32_t), 1, fInputBinFile) != 1) {
         printf("Error: could not read Posttrig.\n");
         exit(1);
     }
-    totalBytesReaded += sizeof(int32_t);
+    totalbytesRead += sizeof(int32_t);
     board.Posttrig = tmp;
 
     if (fread(&tmp, sizeof(int32_t), 1, fInputBinFile) != 1) {
         printf("Error: could not read Time_Tag_On.\n");
         exit(1);
     }
-    totalBytesReaded += sizeof(int32_t);
+    totalbytesRead += sizeof(int32_t);
     board.Time_Tag_On = tmp;
 
     if (fread(&tmp, sizeof(int32_t), 1, fInputBinFile) != 1) {
         printf("Error: could not read Sampling_GHz.\n");
         exit(1);
     }
-    totalBytesReaded += sizeof(int32_t);
+    totalbytesRead += sizeof(int32_t);
     board.Sampling_GHz = tmp;
 
     RESTDebug << "MATACQ Base memory address: " << board.address << RESTendl;
@@ -397,60 +397,60 @@ void TRestRawBiPoToSignalProcess::ReadBiPoSetup() {
         printf("Error: could not read BiPo trigger address.\n");
         exit(1);
     }
-    totalBytesReaded += sizeof(int32_t);
+    totalbytesRead += sizeof(int32_t);
     bipo.trigger_address = tmp;
 
     if (fread(&tmp, sizeof(int32_t), 1, fInputBinFile) != 1) {
         printf("Error: could not read BiPo Win1 Posttrig.\n");
         exit(1);
     }
-    totalBytesReaded += sizeof(int32_t);
+    totalbytesRead += sizeof(int32_t);
     bipo.Win1_Posttrig = tmp;
 
     if (fread(&tmp, sizeof(int32_t), 1, fInputBinFile) != 1) {
         printf("Error: could not read BiPo timeout 200KHz.\n");
         exit(1);
     }
-    totalBytesReaded += sizeof(int32_t);
+    totalbytesRead += sizeof(int32_t);
     bipo.Timeout_200KHz = tmp;
 
     if (fread(&bipo.Trig_Chan[0], sizeof(int32_t), MATACQ_N_CH, fInputBinFile) != MATACQ_N_CH) {
         printf("Error: could not read Trig_Chan.\n");
         exit(1);
     }
-    totalBytesReaded += MATACQ_N_CH * sizeof(int32_t);
+    totalbytesRead += MATACQ_N_CH * sizeof(int32_t);
 
     if (fread(&bipo.Level1_mV[0], sizeof(int32_t), MATACQ_N_CH, fInputBinFile) != MATACQ_N_CH) {
         printf("Error: could not read Level1_mV.\n");
         exit(1);
     }
-    totalBytesReaded += MATACQ_N_CH * sizeof(int32_t);
+    totalbytesRead += MATACQ_N_CH * sizeof(int32_t);
 
     if (fread(&bipo.Level2_mV[0], sizeof(int32_t), MATACQ_N_CH, fInputBinFile) != MATACQ_N_CH) {
         printf("Error: could not read Level2_mV.\n");
         exit(1);
     }
-    totalBytesReaded += MATACQ_N_CH * sizeof(int32_t);
+    totalbytesRead += MATACQ_N_CH * sizeof(int32_t);
 
     if (fread(&tmp, sizeof(int32_t), 1, fInputBinFile) != 1) {
         printf("Error: could not read BiPo Win1 Posttrig.\n");
         exit(1);
     }
-    totalBytesReaded += sizeof(int32_t);
+    totalbytesRead += sizeof(int32_t);
     bipo.t1_window = tmp;
 
     if (fread(&tmp, sizeof(int32_t), 1, fInputBinFile) != 1) {
         printf("Error: could not read BiPo Win1 Posttrig.\n");
         exit(1);
     }
-    totalBytesReaded += sizeof(int32_t);
+    totalbytesRead += sizeof(int32_t);
     bipo.t2_window = tmp;
 
     if (fread(&tmp, sizeof(int32_t), 1, fInputBinFile) != 1) {
         printf("Error: could not read BiPo Win1 Posttrig.\n");
         exit(1);
     }
-    totalBytesReaded += sizeof(int32_t);
+    totalbytesRead += sizeof(int32_t);
     bipo.t1_t2_timeout = tmp;
 
     RESTDebug << "BiPo trigger address: " << bipo.trigger_address << RESTendl;
@@ -488,7 +488,7 @@ Int_t TRestRawBiPoToSignalProcess::ReadBiPoEventData(std::vector<uint16_t>& mdat
         printf("Error: could not read  tmp .\n");
         exit(1);
     }
-    totalBytesReaded += sizeof(int32_t);
+    totalbytesRead += sizeof(int32_t);
     Int_t boardAddress = tmp;
 
     RESTDebug << " Event address --> " << boardAddress << RESTendl;
@@ -500,7 +500,7 @@ Int_t TRestRawBiPoToSignalProcess::ReadBiPoEventData(std::vector<uint16_t>& mdat
         printf("Error: could not read  tmp .\n");
         exit(1);
     }
-    totalBytesReaded += sizeof(int32_t);
+    totalbytesRead += sizeof(int32_t);
 
     Double_t timeStamp = tmp;
 
@@ -508,7 +508,7 @@ Int_t TRestRawBiPoToSignalProcess::ReadBiPoEventData(std::vector<uint16_t>& mdat
         printf("Error: could not read  tmp .\n");
         exit(1);
     }
-    totalBytesReaded += sizeof(int32_t);
+    totalbytesRead += sizeof(int32_t);
     timeStamp += 1.e-6 * (Double_t)tmp;
 
     fSignalEvent->SetTime(timeStamp);
@@ -519,7 +519,7 @@ Int_t TRestRawBiPoToSignalProcess::ReadBiPoEventData(std::vector<uint16_t>& mdat
         printf("Error: could not read  tmp .\n");
         exit(1);
     }
-    totalBytesReaded += sizeof(int32_t);
+    totalbytesRead += sizeof(int32_t);
     int32_t data_size = tmp;
     RESTDebug << "Data size --> " << tmp << RESTendl;
 
@@ -527,7 +527,7 @@ Int_t TRestRawBiPoToSignalProcess::ReadBiPoEventData(std::vector<uint16_t>& mdat
         printf("Error: could not read BiPo trigger address.\n");
         exit(1);
     }
-    totalBytesReaded += sizeof(int32_t);
+    totalbytesRead += sizeof(int32_t);
     RESTDebug << " T1-T2 distance --> " << tmp << RESTendl;
     fSignalEvent->SetAuxiliar(tmp);
 
@@ -536,7 +536,7 @@ Int_t TRestRawBiPoToSignalProcess::ReadBiPoEventData(std::vector<uint16_t>& mdat
         printf("Error: could not read MATACQ data.\n");
         exit(1);
     }
-    totalBytesReaded += data_size * sizeof(uint16_t);
+    totalbytesRead += data_size * sizeof(uint16_t);
 
     return boardAddress;
 }

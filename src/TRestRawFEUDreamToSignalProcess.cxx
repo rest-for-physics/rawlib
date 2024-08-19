@@ -36,7 +36,7 @@
 //
 // <hr>
 //
-// \warning **⚠ REST is under continous development.** This
+// \warning **⚠ REST is under continuous development.** This
 // documentation
 // is offered to you by the REST community. Your HELP is needed to keep this
 // code
@@ -101,7 +101,7 @@ void TRestRawFEUDreamToSignalProcess::InitProcess() {
     tStart = 0;  // timeStamp of the run initially set to 0
     RESTInfo << "TRestRawFEUDreamToSignalProcess::InitProcess" << RESTendl;
 
-    totalBytesReaded = 0;
+    totalbytesRead = 0;
 }
 
 TRestEvent* TRestRawFEUDreamToSignalProcess::ProcessEvent(TRestEvent* inputEvent) {
@@ -231,7 +231,7 @@ bool TRestRawFEUDreamToSignalProcess::ReadFeuHeaders(FeuReadOut& Feu) {
     if (!Feu.data_to_treat) {  // data not loaded
 
         int nbytes = fread((void*)&(Feu.current_data), sizeof(Feu.current_data), 1, fInputBinFile);
-        totalBytesReaded += sizeof(Feu.current_data);
+        totalbytesRead += sizeof(Feu.current_data);
         if (nbytes == 0) {
             //       perror("TRestRawFEUDreamToSignalProcess::ReadFeuHeaders: Error in reading FeuHeaders !");
             RESTWarning
@@ -321,7 +321,7 @@ bool TRestRawFEUDreamToSignalProcess::ReadFeuHeaders(FeuReadOut& Feu) {
             break;  // header finished
 
         if (fread((void*)&(Feu.current_data), sizeof(Feu.current_data), 1, fInputBinFile) == 0) return true;
-        totalBytesReaded += sizeof(Feu.current_data);
+        totalbytesRead += sizeof(Feu.current_data);
         Feu.current_data.ntohs_();
         Feu.data_to_treat = true;
 
@@ -347,7 +347,7 @@ bool TRestRawFEUDreamToSignalProcess::ReadDreamData(FeuReadOut& Feu) {
 
     if (!Feu.data_to_treat) {  // no data to treat
         int nbytes = fread((void*)&(Feu.current_data), sizeof(Feu.current_data), 1, fInputBinFile);
-        totalBytesReaded += sizeof(Feu.current_data);
+        totalbytesRead += sizeof(Feu.current_data);
         if (nbytes == 0) {
             perror("TRestRawFEUDreamToSignalProcess::ReadDreamData: no Dream data to read in file");
             RESTError << "TRestRawFEUDreamToSignalProcess::ReadDreamData:  problem in reading raw data file, "
@@ -547,7 +547,7 @@ bool TRestRawFEUDreamToSignalProcess::ReadDreamData(FeuReadOut& Feu) {
         }
 
         if (fread((char*)&(Feu.current_data), sizeof(Feu.current_data), 1, fInputBinFile) == 0) return true;
-        totalBytesReaded += sizeof(Feu.current_data);
+        totalbytesRead += sizeof(Feu.current_data);
         Feu.current_data.ntohs_();
         Feu.data_to_treat = true;
 
@@ -558,7 +558,7 @@ bool TRestRawFEUDreamToSignalProcess::ReadDreamData(FeuReadOut& Feu) {
 bool TRestRawFEUDreamToSignalProcess::ReadFeuTrailer(FeuReadOut& Feu) {
     if (!Feu.data_to_treat) {
         int nbytes = fread((void*)&(Feu.current_data), sizeof(Feu.current_data), 1, fInputBinFile);
-        totalBytesReaded += sizeof(Feu.current_data);
+        totalbytesRead += sizeof(Feu.current_data);
         if (nbytes == 0) {
             perror("TRestRawFEUDreamToSignalProcess::ReadFeuTrailer: can't read new data from file");
             RESTError
@@ -605,12 +605,12 @@ bool TRestRawFEUDreamToSignalProcess::ReadFeuTrailer(FeuReadOut& Feu) {
             if (z == 0)
                 RESTError << "TRestRawFEUDreamToSignalProcess::ReadFeuTrailer. Error reading file"
                           << RESTendl;
-            totalBytesReaded += sizeof(Feu.current_data);
+            totalbytesRead += sizeof(Feu.current_data);
             break;
         }
 
         if (fread((void*)&(Feu.current_data), sizeof(Feu.current_data), 1, fInputBinFile) == 0) return true;
-        totalBytesReaded += sizeof(Feu.current_data);
+        totalbytesRead += sizeof(Feu.current_data);
         Feu.current_data.ntohs_();
         Feu.data_to_treat = true;
 
