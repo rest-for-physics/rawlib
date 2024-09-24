@@ -109,6 +109,8 @@ void TRestRawFeminosRootToSignalProcess::InitProcess() {
         exit(1);
     }
 
+    fRunInfo->SetFeminosDaqTotalEvents(fInputEventTree->GetEntries());
+
     fInputEventTree->SetBranchAddress("timestamp", &fInputEventTreeTimestamp);
     fInputEventTree->SetBranchAddress("signal_ids", &fInputEventTreeSignalIds);
     fInputEventTree->SetBranchAddress("signal_values", &fInputEventTreeSignalValues);
