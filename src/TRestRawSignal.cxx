@@ -969,7 +969,7 @@ vector<pair<UShort_t, double>> TRestRawSignal::GetPeaks(double threshold, UShort
                 if (j != i && smoothedValue <= smoothedValues[j]) {
                     numGreaterEqual++;
                     if (numGreaterEqual >
-                        2) {  // If more than one smoothed value is greater or equal, it's not a peak
+                        3) {  // If more than one smoothed value is greater or equal, it's not a peak
                         isPeak = false;
                         break;
                     }
