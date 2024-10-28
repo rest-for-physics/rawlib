@@ -28,7 +28,7 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
         exit(1);
     }
 
-    vector<tuple<UShort_t, UShort_t, double>> eventPeaks;
+    vector<tuple<UShort_t, UShort_t, double>> eventPeaks;  // signalId, time, amplitude
 
     for (int signalIndex = 0; signalIndex < fInputEvent->GetNumberOfSignals(); signalIndex++) {
         const auto signal = fInputEvent->GetSignal(signalIndex);
@@ -71,15 +71,15 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
              return tie(get<1>(a), get<0>(a)) < tie(get<1>(b), get<0>(b));
          });
 
-    // SetObservableValue("peaks", eventPeaks); // problems with dictionaries
     vector<UShort_t> peaksChannelId;
     vector<UShort_t> peaksTime;
     vector<double> peaksAmplitude;
-    double peaksEnergy = 0.0;
-    unsigned int peaksCount = 0;
-    unsigned int peaksCountUnique = 0;
 
-    set<unsigned int> uniquePeaks;
+    double peaksEnergy = 0.0;
+    UShort_t peaksCount = 0;
+    UShort_t peaksCountUnique = 0;
+
+    set<UShort_t> uniquePeaks;
     for (const auto& [channelId, time, amplitude] : eventPeaks) {
         peaksChannelId.push_back(channelId);
         peaksTime.push_back(time);
@@ -102,66 +102,55 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
     SetObservableValue("peaksCount", peaksCount);
     SetObservableValue("peaksCountUnique", peaksCountUnique);
 
-    vector<UShort_t> windowIndex(eventPeaks.size(), 0);  // Initialize with zeros
-    vector<UShort_t> windowCenter;  // for each different window, the center of the window
+    vector<UShort_t> windowIndex(eventPeaks.size(), 0);
+    vector<UShort_t> windowCenter(eventPeaks.size(), 0);
+    vector<UShort_t> windowMultiplicity(eventPeaks.size(), 0);
 
+    UShort_t window_index = 0;
     for (size_t peakIndex = 0; peakIndex < eventPeaks.size(); peakIndex++) {
         const auto& [channelId, time, amplitude] = eventPeaks[peakIndex];
-        const auto windowTime = time - fWindow / 2;
-        const auto windowEnd = time + fWindow / 2;
+        const auto windowTimeStart = time - fWindow / 2;
+        const auto windowTimeEnd = time + fWindow / 2;
 
         // check if the peak is already in a window
         if (windowIndex[peakIndex] != 0) {
             continue;
         }
 
-        // create a new window
-        windowCenter.push_back(time);
+        UShort_t window_center_time = time;
+
+        set<UShort_t> windowPeaksIndex;
 
         // add the peak to the window
-        windowIndex[peakIndex] = windowCenter.size();
+        windowPeaksIndex.insert(peakIndex);
 
         // add the peaks that are in the window
         for (size_t otherPeakIndex = peakIndex + 1; otherPeakIndex < eventPeaks.size(); otherPeakIndex++) {
             const auto& [otherChannelId, otherTime, otherAmplitude] = eventPeaks[otherPeakIndex];
 
-            if (otherTime < windowTime) {
+            if (otherTime < windowTimeStart) {
                 continue;
             }
 
-            if (otherTime > windowEnd) {
+            if (otherTime > windowTimeEnd) {
                 break;
             }
 
-            windowIndex[otherPeakIndex] = windowCenter.size();
+            windowPeaksIndex.insert(otherPeakIndex);
         }
-    }
 
-    // subtract 1 from windowIndex so it starts on 0
-    for (auto& index : windowIndex) {
-        index--;
-    }
+        for (const auto& index : windowPeaksIndex) {
+            windowIndex[index] = window_index;
+            windowCenter[index] = window_center_time;
+            windowMultiplicity[index] = windowPeaksIndex.size();
+        }
 
-    // validation
-    // check only values from 0 ... windowCenter.size() -1 are in windowIndex
-    // ALL values in this range should appear at least once
-    for (size_t index = 0; index < windowCenter.size(); index++) {
-        bool found = false;
-        for (const auto& window : windowIndex) {
-            if (window == index) {
-                found = true;
-                break;
-            }
-        }
-        if (!found) {
-            cerr << "TRestRawPeaksFinderProcess::ProcessEvent: window index " << index << " not found"
-                 << endl;
-            exit(1);
-        }
+        window_index++;
     }
 
     SetObservableValue("windowIndex", windowIndex);
     SetObservableValue("windowCenter", windowCenter);
+    SetObservableValue("windowMultiplicity", windowMultiplicity);
 
     // Remove peak-less veto signals after the peak finding if chosen
     if (fRemovePeaklessVetos && !fRemoveAllVetos) {
