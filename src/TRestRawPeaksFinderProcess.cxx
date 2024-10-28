@@ -95,10 +95,10 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
     }
 
     SetObservableValue("peaksChannelId", peaksChannelId);
-    SetObservableValue("peaksTime", peaksTime);
-    SetObservableValue("peaksAmplitude", peaksAmplitude);
+    SetObservableValue("peaksTimeBin", peaksTime);
+    SetObservableValue("peaksAmplitudeADC", peaksAmplitude);
 
-    SetObservableValue("peaksAmplitudeSum", peaksEnergy);
+    SetObservableValue("peaksAmplitudeADCSum", peaksEnergy);
     SetObservableValue("peaksCount", peaksCount);
     SetObservableValue("peaksCountUnique", peaksCountUnique);
 
@@ -149,7 +149,7 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
     }
 
     SetObservableValue("windowPeakIndex", windowPeakIndex);
-    SetObservableValue("windowPeakCenter", windowPeakCenter);
+    SetObservableValue("windowPeakTimeBin", windowPeakCenter);
     SetObservableValue("windowPeakMultiplicity", windowPeakMultiplicity);
 
     vector<UShort_t> windowCenter;
@@ -168,8 +168,36 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
         windowMultiplicity.push_back(windowPeakMultiplicity[peakIndex]);
     }
 
-    SetObservableValue("windowCenter", windowCenter);
+    SetObservableValue("windowTimeBin", windowCenter);
     SetObservableValue("windowMultiplicity", windowMultiplicity);
+
+    // if defined, convert time bins to time and amplitude to energy
+    if (fTimeBinToTimeFactorMultiplier != 0.0) {
+        vector<Double_t> windowCenterTime(windowCenter.size(), 0.0);
+        vector<Double_t> windowPeakCenterTime(windowPeakCenter.size(), 0.0);
+        vector<Double_t> peaksTimePhysical(peaksTime.size(), 0.0);
+
+        // lambda to convert time bin to time
+        auto timeBinToTime = [this](UShort_t timeBin) {
+            return fTimeBinToTimeFactorMultiplier * timeBin - fTimeBinToTimeFactorOffset;
+        };
+
+        for (size_t i = 0; i < windowCenter.size(); i++) {
+            windowCenterTime[i] = timeBinToTime(windowCenter[i]);
+        }
+
+        for (size_t i = 0; i < windowPeakCenter.size(); i++) {
+            windowPeakCenterTime[i] = timeBinToTime(windowPeakCenter[i]);
+        }
+
+        for (size_t i = 0; i < peaksTime.size(); i++) {
+            peaksTimePhysical[i] = timeBinToTime(peaksTime[i]);
+        }
+
+        SetObservableValue("windowTime", windowCenterTime);
+        SetObservableValue("windowPeakTime", windowPeakCenterTime);
+        SetObservableValue("peaksTime", peaksTimePhysical);
+    }
 
     // Remove peak-less veto signals after the peak finding if chosen
     if (fRemovePeaklessVetoes && !fRemoveAllVetoes) {
@@ -217,7 +245,7 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
     return inputEvent;
 }
 
-std::map<UShort_t , double> parseStringToMap(const std::string& input) {
+std::map<UShort_t, double> parseStringToMap(const std::string& input) {
     std::map<UShort_t, double> my_map;
     std::string cleaned_input;
 
