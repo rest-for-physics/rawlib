@@ -102,9 +102,9 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
     SetObservableValue("peaksCount", peaksCount);
     SetObservableValue("peaksCountUnique", peaksCountUnique);
 
-    vector<UShort_t> windowIndex(eventPeaks.size(), 0);
-    vector<UShort_t> windowCenter(eventPeaks.size(), 0);
-    vector<UShort_t> windowMultiplicity(eventPeaks.size(), 0);
+    vector<UShort_t> windowPeakIndex(eventPeaks.size(), 0);
+    vector<UShort_t> windowPeakCenter(eventPeaks.size(), 0);
+    vector<UShort_t> windowPeakMultiplicity(eventPeaks.size(), 0);
 
     UShort_t window_index = 0;
     for (size_t peakIndex = 0; peakIndex < eventPeaks.size(); peakIndex++) {
@@ -113,7 +113,7 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
         const auto windowTimeEnd = time + fWindow / 2;
 
         // check if the peak is already in a window
-        if (windowIndex[peakIndex] != 0) {
+        if (windowPeakIndex[peakIndex] != 0) {
             continue;
         }
 
@@ -140,15 +140,34 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
         }
 
         for (const auto& index : windowPeaksIndex) {
-            windowIndex[index] = window_index;
-            windowCenter[index] = window_center_time;
-            windowMultiplicity[index] = windowPeaksIndex.size();
+            windowPeakIndex[index] = window_index;
+            windowPeakCenter[index] = window_center_time;
+            windowPeakMultiplicity[index] = windowPeaksIndex.size();
         }
 
         window_index++;
     }
 
-    SetObservableValue("windowIndex", windowIndex);
+    SetObservableValue("windowPeakIndex", windowPeakIndex);
+    SetObservableValue("windowPeakCenter", windowPeakCenter);
+    SetObservableValue("windowPeakMultiplicity", windowPeakMultiplicity);
+
+    vector<UShort_t> windowCenter;
+    vector<UShort_t> windowMultiplicity;
+
+    set<UShort_t> windowPeaksIndexInserted;
+    for (size_t peakIndex = 0; peakIndex < eventPeaks.size(); peakIndex++) {
+        const auto& window_peak_index = windowPeakIndex[peakIndex];
+        if (windowPeaksIndexInserted.find(window_peak_index) != windowPeaksIndexInserted.end()) {
+            continue;
+        }
+
+        windowPeaksIndexInserted.insert(window_peak_index);
+
+        windowCenter.push_back(windowPeakCenter[peakIndex]);
+        windowMultiplicity.push_back(windowPeakMultiplicity[peakIndex]);
+    }
+
     SetObservableValue("windowCenter", windowCenter);
     SetObservableValue("windowMultiplicity", windowMultiplicity);
 
