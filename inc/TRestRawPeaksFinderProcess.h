@@ -19,14 +19,19 @@ class TRestRawPeaksFinderProcess : public TRestEventProcess {
     Double_t fThresholdOverBaseline = 2.0;
     /// \brief range of samples to calculate baseline for peak finding
     TVector2 fBaselineRange = {0, 10};
-    /// \brief distance between two peaks to consider them as different
+    /// \brief distance between two peaks to consider them as different (ADC units)
     UShort_t fDistance = 10;
-    /// \brief window size to calculate the peak amplitude
+    /// \brief window size to calculate the peak amplitude (time bins)
     UShort_t fWindow = 10;
     /// \brief option to remove all veto signals after finding the peaks
-    Bool_t fRemoveAllVetos = false;
-    /// \brief option to remove peakless veto signals after finding the peaks
-    Bool_t fRemovePeaklessVetos = false;
+    Bool_t fRemoveAllVetoes = false;
+    /// \brief option to remove peak-less veto signals after finding the peaks
+    Bool_t fRemovePeaklessVetoes = false;
+
+    Double_t fTimeBinToTimeFactorMultiplier = 0.0;
+    Double_t fTimeBinToTimeFactorOffset = 0.0;
+    Double_t fADCtoEnergyFactor = 0.0;
+    std::map<UShort_t, Double_t> fChannelIDToADCtoEnergyFactor = {};
 
     std::set<std::string> fChannelTypes = {};  // this process will only be applied to selected channel types
 
@@ -42,14 +47,14 @@ class TRestRawPeaksFinderProcess : public TRestEventProcess {
 
     const char* GetProcessName() const override { return "peaksFinder"; }
 
-    explicit TRestRawPeaksFinderProcess(const char* configFilename){};
+    explicit TRestRawPeaksFinderProcess(const char* configFilename) {};
 
     void InitFromConfigFile() override;
 
     TRestRawPeaksFinderProcess() = default;
     ~TRestRawPeaksFinderProcess() = default;
 
-    ClassDefOverride(TRestRawPeaksFinderProcess, 4);
+    ClassDefOverride(TRestRawPeaksFinderProcess, 5);
 };
 
 #endif  // REST_TRESTRAWPEAKSFINDERPROCESS_H

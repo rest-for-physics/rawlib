@@ -98,7 +98,7 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
     SetObservableValue("peaksTime", peaksTime);
     SetObservableValue("peaksAmplitude", peaksAmplitude);
 
-    SetObservableValue("totalPeaksEnergy", peaksEnergy);
+    SetObservableValue("peaksAmplitudeSum", peaksEnergy);
     SetObservableValue("peaksCount", peaksCount);
     SetObservableValue("peaksCountUnique", peaksCountUnique);
 
@@ -172,7 +172,7 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
     SetObservableValue("windowMultiplicity", windowMultiplicity);
 
     // Remove peak-less veto signals after the peak finding if chosen
-    if (fRemovePeaklessVetos && !fRemoveAllVetos) {
+    if (fRemovePeaklessVetoes && !fRemoveAllVetoes) {
         set<UShort_t> peakSignalIds;
         for (const auto& [channelId, time, amplitude] : eventPeaks) {
             peakSignalIds.insert(channelId);
@@ -196,7 +196,7 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
     }
 
     // Remove all veto signals after the peak finding if chosen
-    if (fRemoveAllVetos) {
+    if (fRemoveAllVetoes) {
         vector<UShort_t> signalsToRemove;
         for (int signalIndex = 0; signalIndex < fInputEvent->GetNumberOfSignals(); signalIndex++) {
             const auto signal = fInputEvent->GetSignal(signalIndex);
@@ -217,6 +217,34 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
     return inputEvent;
 }
 
+std::map<UShort_t , double> parseStringToMap(const std::string& input) {
+    std::map<UShort_t, double> my_map;
+    std::string cleaned_input;
+
+    // Step 1: Clean the input to remove curly braces and spaces
+    for (char c : input) {
+        if (!std::isspace(c) && c != '{' && c != '}') {
+            cleaned_input += c;
+        }
+    }
+
+    // Step 2: Parse each key-value pair
+    std::stringstream ss(cleaned_input);
+    std::string pair;
+    while (std::getline(ss, pair, ',')) {
+        // Find the colon to split key and value
+        size_t colon_pos = pair.find(':');
+        if (colon_pos != std::string::npos) {
+            // Extract and convert key and value
+            int key = std::stoi(pair.substr(0, colon_pos));
+            double value = std::stod(pair.substr(colon_pos + 1));
+            my_map[key] = value;
+        }
+    }
+
+    return my_map;
+}
+
 void TRestRawPeaksFinderProcess::InitFromConfigFile() {
     const auto filterType = GetParameter("channelType", "");
     if (!filterType.empty()) {
@@ -231,8 +259,19 @@ void TRestRawPeaksFinderProcess::InitFromConfigFile() {
     fBaselineRange = Get2DVectorParameterWithUnits("baselineRange", fBaselineRange);
     fDistance = StringToDouble(GetParameter("distance", fDistance));
     fWindow = StringToDouble(GetParameter("window", fWindow));
-    fRemoveAllVetos = StringToBool(GetParameter("removeAllVetos", fRemoveAllVetos));
-    fRemovePeaklessVetos = StringToBool(GetParameter("removePeaklessVetos", fRemovePeaklessVetos));
+    fRemoveAllVetoes = StringToBool(GetParameter("removeAllVetos", fRemoveAllVetoes));
+    fRemovePeaklessVetoes = StringToBool(GetParameter("removePeaklessVetos", fRemovePeaklessVetoes));
+
+    fTimeBinToTimeFactorMultiplier = StringToDouble(GetParameter("sampling", fTimeBinToTimeFactorMultiplier));
+    fTimeBinToTimeFactorOffset = StringToDouble(GetParameter("delay", fTimeBinToTimeFactorOffset));
+
+    fADCtoEnergyFactor = StringToDouble(GetParameter("adcToEnergyFactor", fADCtoEnergyFactor));
+    const string fChannelIDToADCtoEnergyFactorAsString = GetParameter("channelIDToADCtoEnergyFactor", "");
+    if (!fChannelIDToADCtoEnergyFactorAsString.empty()) {
+        // map should be in the format: "{channelId1: factor1, channelId2: factor2, ...}" (spaces are allowed
+        // but not required)
+        fChannelIDToADCtoEnergyFactor = parseStringToMap(fChannelIDToADCtoEnergyFactorAsString);
+    }
 
     if (fBaselineRange.X() > fBaselineRange.Y() || fBaselineRange.X() < 0 || fBaselineRange.Y() < 0) {
         cerr << "TRestRawPeaksFinderProcess::InitProcess: baseline range is not sorted or < 0" << endl;
@@ -254,7 +293,7 @@ void TRestRawPeaksFinderProcess::InitFromConfigFile() {
         exit(1);
     }
 
-    if (filterType != "veto" && fRemovePeaklessVetos) {
+    if (filterType != "veto" && fRemovePeaklessVetoes) {
         cerr << "TRestRawPeaksFinderProcess::InitProcess: removing veto signals only makes sense when the "
                 "process is applied to veto signals. Remove \"removePeaklessVetos\" parameter"
              << endl;
