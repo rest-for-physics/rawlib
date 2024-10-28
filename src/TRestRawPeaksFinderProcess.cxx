@@ -75,23 +75,32 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
     vector<UShort_t> peaksChannelId;
     vector<UShort_t> peaksTime;
     vector<double> peaksAmplitude;
-    double peaksEnergy;
-    double amplitudeTotal = 0.0;
+    double peaksEnergy = 0.0;
+    unsigned int peaksCount = 0;
+    unsigned int peaksCountUnique = 0;
 
+    set<unsigned int> uniquePeaks;
     for (const auto& [channelId, time, amplitude] : eventPeaks) {
         peaksChannelId.push_back(channelId);
         peaksTime.push_back(time);
         peaksAmplitude.push_back(amplitude);
 
-        amplitudeTotal += amplitude;
-    }
+        peaksEnergy += amplitude;
+        peaksCount++;
 
-    peaksEnergy = amplitudeTotal;
+        if (uniquePeaks.find(channelId) == uniquePeaks.end()) {
+            uniquePeaks.insert(channelId);
+            peaksCountUnique++;
+        }
+    }
 
     SetObservableValue("peaksChannelId", peaksChannelId);
     SetObservableValue("peaksTime", peaksTime);
     SetObservableValue("peaksAmplitude", peaksAmplitude);
+
     SetObservableValue("totalPeaksEnergy", peaksEnergy);
+    SetObservableValue("peaksCount", peaksCount);
+    SetObservableValue("peaksCountUnique", peaksCountUnique);
 
     vector<UShort_t> windowIndex(eventPeaks.size(), 0);  // Initialize with zeros
     vector<UShort_t> windowCenter;  // for each different window, the center of the window
@@ -154,7 +163,7 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
     SetObservableValue("windowIndex", windowIndex);
     SetObservableValue("windowCenter", windowCenter);
 
-    // Remove peakless veto signals after the peak finding if chosen
+    // Remove peak-less veto signals after the peak finding if chosen
     if (fRemovePeaklessVetos && !fRemoveAllVetos) {
         set<UShort_t> peakSignalIds;
         for (const auto& [channelId, time, amplitude] : eventPeaks) {
