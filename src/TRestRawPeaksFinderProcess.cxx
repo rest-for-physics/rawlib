@@ -321,15 +321,23 @@ void TRestRawPeaksFinderProcess::InitFromConfigFile() {
     fRemoveAllVetoes = StringToBool(GetParameter("removeAllVetos", fRemoveAllVetoes));
     fRemovePeaklessVetoes = StringToBool(GetParameter("removePeaklessVetos", fRemovePeaklessVetoes));
 
-    fTimeBinToTimeFactorMultiplier = StringToDouble(GetParameter("sampling", fTimeBinToTimeFactorMultiplier));
-    fTimeBinToTimeFactorOffset = StringToDouble(GetParameter("delay", fTimeBinToTimeFactorOffset));
+    fTimeBinToTimeFactorMultiplier =
+        GetDblParameterWithUnits(GetParameter("sampling", fTimeBinToTimeFactorMultiplier));
+    fTimeBinToTimeFactorOffset = GetDblParameterWithUnits(GetParameter("delay", fTimeBinToTimeFactorOffset));
 
-    fADCtoEnergyFactor = StringToDouble(GetParameter("adcToEnergyFactor", fADCtoEnergyFactor));
+    fADCtoEnergyFactor = GetDblParameterWithUnits(GetParameter("adcToEnergyFactor", fADCtoEnergyFactor));
     const string fChannelIDToADCtoEnergyFactorAsString = GetParameter("channelIDToADCtoEnergyFactor", "");
     if (!fChannelIDToADCtoEnergyFactorAsString.empty()) {
         // map should be in the format: "{channelId1: factor1, channelId2: factor2, ...}" (spaces are allowed
         // but not required)
         fChannelIDToADCtoEnergyFactor = parseStringToMap(fChannelIDToADCtoEnergyFactorAsString);
+    }
+
+    if (fADCtoEnergyFactor != 0 && !fChannelIDToADCtoEnergyFactor.empty()) {
+        cerr << "TRestRawPeaksFinderProcess::InitFromConfigFile: both adcToEnergyFactor and "
+                "channelIDToADCtoEnergyFactor are defined. Please, remove one of them."
+             << endl;
+        exit(1);
     }
 
     if (fBaselineRange.X() > fBaselineRange.Y() || fBaselineRange.X() < 0 || fBaselineRange.Y() < 0) {
