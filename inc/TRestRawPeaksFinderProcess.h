@@ -47,7 +47,7 @@ class TRestRawPeaksFinderProcess : public TRestEventProcess {
 
     const char* GetProcessName() const override { return "peaksFinder"; }
 
-    explicit TRestRawPeaksFinderProcess(const char* configFilename) {};
+    explicit TRestRawPeaksFinderProcess(const char* configFilename){};
 
     void InitFromConfigFile() override;
 
