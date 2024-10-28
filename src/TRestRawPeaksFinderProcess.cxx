@@ -102,7 +102,7 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
     SetObservableValue("peaksCount", peaksCount);
     SetObservableValue("peaksCountUnique", peaksCountUnique);
 
-    vector<UShort_t> windowPeakIndex(eventPeaks.size(), 0);
+    vector<UShort_t> windowPeakIndex(eventPeaks.size(), std::numeric_limits<UShort_t>::max());
     vector<UShort_t> windowPeakCenter(eventPeaks.size(), 0);
     vector<UShort_t> windowPeakMultiplicity(eventPeaks.size(), 0);
 
@@ -113,7 +113,7 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
         const auto windowTimeEnd = time + fWindow / 2;
 
         // check if the peak is already in a window
-        if (windowPeakIndex[peakIndex] != 0) {
+        if (windowPeakIndex[peakIndex] != std::numeric_limits<UShort_t>::max()) {
             continue;
         }
 
