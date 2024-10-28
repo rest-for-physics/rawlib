@@ -171,7 +171,6 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
     SetObservableValue("windowTimeBin", windowCenter);
     SetObservableValue("windowMultiplicity", windowMultiplicity);
 
-    // if defined, convert time bins to time and amplitude to energy
     if (fTimeBinToTimeFactorMultiplier != 0.0) {
         vector<Double_t> windowCenterTime(windowCenter.size(), 0.0);
         vector<Double_t> windowPeakCenterTime(windowPeakCenter.size(), 0.0);
@@ -321,11 +320,10 @@ void TRestRawPeaksFinderProcess::InitFromConfigFile() {
     fRemoveAllVetoes = StringToBool(GetParameter("removeAllVetos", fRemoveAllVetoes));
     fRemovePeaklessVetoes = StringToBool(GetParameter("removePeaklessVetos", fRemovePeaklessVetoes));
 
-    fTimeBinToTimeFactorMultiplier =
-        GetDblParameterWithUnits(GetParameter("sampling", fTimeBinToTimeFactorMultiplier));
-    fTimeBinToTimeFactorOffset = GetDblParameterWithUnits(GetParameter("delay", fTimeBinToTimeFactorOffset));
+    fTimeBinToTimeFactorMultiplier = GetDblParameterWithUnits("sampling", fTimeBinToTimeFactorMultiplier);
+    fTimeBinToTimeFactorOffset = GetDblParameterWithUnits("delay", fTimeBinToTimeFactorOffset);
 
-    fADCtoEnergyFactor = GetDblParameterWithUnits(GetParameter("adcToEnergyFactor", fADCtoEnergyFactor));
+    fADCtoEnergyFactor = GetDblParameterWithUnits("adcToEnergyFactor", fADCtoEnergyFactor);
     const string fChannelIDToADCtoEnergyFactorAsString = GetParameter("channelIDToADCtoEnergyFactor", "");
     if (!fChannelIDToADCtoEnergyFactorAsString.empty()) {
         // map should be in the format: "{channelId1: factor1, channelId2: factor2, ...}" (spaces are allowed
