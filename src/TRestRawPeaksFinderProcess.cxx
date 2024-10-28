@@ -199,6 +199,37 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
         SetObservableValue("peaksTime", peaksTimePhysical);
     }
 
+    if (fADCtoEnergyFactor != 0.0 || !fChannelIDToADCtoEnergyFactor.empty()) {
+        vector<Double_t> peaksEnergyPhysical(peaksAmplitude.size(), 0.0);
+        Double_t peaksEnergySum = 0.0;
+
+        if (fADCtoEnergyFactor != 0.0) {
+            // same factor for all peaks
+            for (size_t i = 0; i < peaksAmplitude.size(); i++) {
+                peaksEnergyPhysical[i] = peaksAmplitude[i] * fADCtoEnergyFactor;
+                peaksEnergySum += peaksEnergyPhysical[i];
+            }
+        } else {
+            // use map to get factor for each channel
+            for (size_t i = 0; i < peaksAmplitude.size(); i++) {
+                const auto channelId = peaksChannelId[i];
+                // check if the channel is in the map
+                if (fChannelIDToADCtoEnergyFactor.find(channelId) == fChannelIDToADCtoEnergyFactor.end()) {
+                    cerr << "TRestRawPeaksFinderProcess::ProcessEvent: channel id " << channelId
+                         << " not found in the map of ADC to energy factors" << endl;
+                    exit(1);
+                }
+                const auto factor = fChannelIDToADCtoEnergyFactor[channelId];
+
+                peaksEnergyPhysical[i] = peaksAmplitude[i] * factor;
+                peaksEnergySum += peaksEnergyPhysical[i];
+            }
+        }
+
+        SetObservableValue("peaksEnergy", peaksEnergyPhysical);
+        SetObservableValue("peaksEnergySum", peaksEnergySum);
+    }
+
     // Remove peak-less veto signals after the peak finding if chosen
     if (fRemovePeaklessVetoes && !fRemoveAllVetoes) {
         set<UShort_t> peakSignalIds;
