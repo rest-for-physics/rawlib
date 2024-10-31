@@ -30,6 +30,10 @@ class TRestRawPeaksFinderProcess : public TRestEventProcess {
 
     Double_t fTimeBinToTimeFactorMultiplier = 0.0;
     Double_t fTimeBinToTimeFactorOffset = 0.0;
+    Double_t fTimeBinToTimeFactorOffsetTCM = 0.0;
+
+    Bool_t fTimeConversionElectronics = false;
+
     Double_t fADCtoEnergyFactor = 0.0;
     std::map<UShort_t, Double_t> fChannelIDToADCtoEnergyFactor = {};
 

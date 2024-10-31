@@ -178,7 +178,15 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
 
         // lambda to convert time bin to time
         auto timeBinToTime = [this](UShort_t timeBin) {
-            return fTimeBinToTimeFactorMultiplier * timeBin - fTimeBinToTimeFactorOffset;
+            if (!fTimeConversionElectronics) {
+                return fTimeBinToTimeFactorMultiplier * timeBin - fTimeBinToTimeFactorOffset;
+            } else {
+                // @jporron
+                double zero = -1 + (512 * fTimeBinToTimeFactorMultiplier - fTimeBinToTimeFactorOffset -
+                                    fTimeBinToTimeFactorOffsetTCM) /
+                                       fTimeBinToTimeFactorMultiplier;
+                return fTimeBinToTimeFactorMultiplier * (timeBin - zero);
+            }
         };
 
         for (size_t i = 0; i < windowCenter.size(); i++) {
@@ -321,7 +329,10 @@ void TRestRawPeaksFinderProcess::InitFromConfigFile() {
     fRemovePeaklessVetoes = StringToBool(GetParameter("removePeaklessVetos", fRemovePeaklessVetoes));
 
     fTimeBinToTimeFactorMultiplier = GetDblParameterWithUnits("sampling", fTimeBinToTimeFactorMultiplier);
-    fTimeBinToTimeFactorOffset = GetDblParameterWithUnits("delay", fTimeBinToTimeFactorOffset);
+    fTimeBinToTimeFactorOffset = GetDblParameterWithUnits("trigDelay", fTimeBinToTimeFactorOffset);
+    fTimeBinToTimeFactorOffsetTCM = GetDblParameterWithUnits("trigDelayTCM", fTimeBinToTimeFactorOffsetTCM);
+    fTimeConversionElectronics =
+        StringToBool(GetParameter("trigDelayElectronics", fTimeConversionElectronics));
 
     fADCtoEnergyFactor = GetDblParameterWithUnits("adcToEnergyFactor", fADCtoEnergyFactor);
     const string fChannelIDToADCtoEnergyFactorAsString = GetParameter("channelIDToADCtoEnergyFactor", "");
