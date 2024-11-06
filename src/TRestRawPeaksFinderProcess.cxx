@@ -50,7 +50,7 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
         // Choose appropriate function based on channel type
         if (channelType == "tpc") {
             signal->CalculateBaseLine(fBaselineRange.X(), fBaselineRange.Y());
-            
+
             double baseline = signal->GetBaseLine();
             double baselinesigma = signal->GetBaseLineSigma();
 
@@ -83,8 +83,7 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
         if (channelType == "tpc") {
             signal->CalculateBaseLine(fBaselineRange.X(), fBaselineRange.Y());
 
-            const auto peaks =
-                signal->GetPeaks(BaseLineMean + 10 * BaseLineSigmaMean, fDistance);
+            const auto peaks = signal->GetPeaks(BaseLineMean + 10 * BaseLineSigmaMean, fDistance);
 
             for (const auto& [time, amplitude] : peaks) {
                 eventPeaks.emplace_back(signalId, time, amplitude);

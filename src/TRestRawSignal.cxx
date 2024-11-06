@@ -977,15 +977,15 @@ vector<pair<UShort_t, double>> TRestRawSignal::GetPeaks(double threshold, UShort
             }
 
             // If it's a peak and it´s above the threshold and further than distance to the previous peak, add
-            // to peaks the biggest amplitude bin within the next "distance" bins and as amplitude the TripleMaxAverage.
-            // This is because for flat regions the detected peak is more to the left than the actual one.
+            // to peaks the biggest amplitude bin within the next "distance" bins and as amplitude the
+            // TripleMaxAverage. This is because for flat regions the detected peak is more to the left than
+            // the actual one.
             if (isPeak && smoothedValue > threshold) {
                 if (peaks.empty() || i - peaks.back().first >= distance) {
-                    
                     // Initialize variables to find the max amplitude within the next "distance" bins
                     int maxBin = i;
                     double maxAmplitude = smoothedValues[i];
-                    
+
                     // Look ahead within the specified distance to find the bin with the maximum amplitude
                     for (int j = i + 1; j <= i + distance && j < smoothedValues.size(); ++j) {
                         if (smoothedValues[j] > maxAmplitude) {
@@ -993,13 +993,13 @@ vector<pair<UShort_t, double>> TRestRawSignal::GetPeaks(double threshold, UShort
                             maxBin = j;
                         }
                     }
-                    
+
                     // Calculate the peak amplitude as the average of maxBin and its two neighbors
                     double amplitude1 = GetRawData(maxBin - 1);
                     double amplitude2 = GetRawData(maxBin);
                     double amplitude3 = GetRawData(maxBin + 1);
                     double peakAmplitude = (amplitude1 + amplitude2 + amplitude3) / 3.0;
-                    
+
                     // Store the peak position and amplitude
                     peaks.push_back(std::make_pair(maxBin, peakAmplitude));
                 }
