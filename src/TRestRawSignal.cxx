@@ -987,7 +987,7 @@ vector<pair<UShort_t, double>> TRestRawSignal::GetPeaks(double threshold, UShort
                     double maxAmplitude = smoothedValues[i];
 
                     // Look ahead within the specified distance to find the bin with the maximum amplitude
-                    for (int j = i + 1; j <= i + distance && j < smoothedValues.size(); ++j) {
+                    for (std::vector<double>::size_type j = i + 1; j <= i + distance && j < smoothedValues.size(); ++j) {
                         if (smoothedValues[j] > maxAmplitude) {
                             maxAmplitude = smoothedValues[j];
                             maxBin = j;
