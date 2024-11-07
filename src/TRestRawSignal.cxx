@@ -977,31 +977,30 @@ vector<pair<UShort_t, double>> TRestRawSignal::GetPeaks(double threshold, UShort
             }
 
             // If it's a peak and it´s above the threshold and further than distance to the previous peak, add
-            // to peaks the biggest amplitude bin within the next "distance" bins and as amplitude the
-            // TripleMaxAverage. This is because for flat regions the detected peak is more to the left than
-            // the actual one.
+            // to peaks
             if (isPeak && smoothedValue > threshold) {
                 if (peaks.empty() || i - peaks.back().first >= distance) {
-                    // Initialize variables to find the max amplitude within the next "distance" bins
-                    int maxBin = i;
-                    double maxAmplitude = smoothedValues[i];
+                    double fitMinRange = i - 20;
+                    double fitMaxRange = i + 20;
 
-                    // Look ahead within the specified distance to find the bin with the maximum amplitude
-                    for (int j = i + 1; j <= i + distance && j < smoothedValues.size(); ++j) {
-                        if (smoothedValues[j] > maxAmplitude) {
-                            maxAmplitude = smoothedValues[j];
-                            maxBin = j;
-                        }
+                    // Create a Gaussian fit function
+                    TF1 fitFunction("gaussianFit", "gaus", fitMinRange, fitMaxRange);
+                    // Fit the data with the Gaussian function
+                    fitFunction.SetRange(fitMinRange, fitMaxRange);  // Initial parameters
+
+                    // Create histogram with the values to fit
+                    TH1D histogram("hist", "hist", 40, fitMinRange, fitMaxRange);
+                    for (int k = i - 20; k <= i + 20; ++k) {
+                        histogram.SetBinContent(k - (i - 20) + 1, GetRawData(k));  // Set bin content
                     }
+                    histogram.Fit(&fitFunction, "RQ");
 
-                    // Calculate the peak amplitude as the average of maxBin and its two neighbors
-                    double amplitude1 = GetRawData(maxBin - 1);
-                    double amplitude2 = GetRawData(maxBin);
-                    double amplitude3 = GetRawData(maxBin + 1);
-                    double peakAmplitude = (amplitude1 + amplitude2 + amplitude3) / 3.0;
+                    // Get peak position and amplitude from the fit
+                    double peakPosition = fitFunction.GetParameter(1);
+                    UShort_t formattedPeakPosition = static_cast<UShort_t>(peakPosition);
+                    double peakAmplitude = GetRawData(formattedPeakPosition);
 
-                    // Store the peak position and amplitude
-                    peaks.push_back(std::make_pair(maxBin, peakAmplitude));
+                    peaks.push_back(std::make_pair(formattedPeakPosition, peakAmplitude));
                 }
             }
         }

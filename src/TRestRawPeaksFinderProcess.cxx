@@ -12,8 +12,6 @@ void TRestRawPeaksFinderProcess::InitProcess() {}
 TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
     fInputEvent = dynamic_cast<TRestRawSignalEvent*>(inputEvent);
 
-    std::cout << "Small change to test pipelines" << std::endl;
-
     const auto run = GetRunInfo();
     if (run != nullptr) {
         fInputEvent->InitializeReferences(run);
@@ -32,6 +30,43 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
 
     vector<tuple<UShort_t, UShort_t, double>> eventPeaks;  // signalId, time, amplitude
 
+    // Calculate average baseline and sigma of all the TPC signals
+    double BaseLineMean = 0.0;
+    double BaseLineSigmaMean = 0.0;
+    int count = 0;
+
+    for (int signalIndex = 0; signalIndex < fInputEvent->GetNumberOfSignals(); signalIndex++) {
+        const auto signal = fInputEvent->GetSignal(signalIndex);
+        const UShort_t signalId = signal->GetSignalID();
+
+        const string channelType = fReadoutMetadata->GetTypeForChannelDaqId(signalId);
+        const string channelName = fReadoutMetadata->GetNameForChannelDaqId(signalId);
+
+        // Check if channel type is in the list of selected channel types
+        if (fChannelTypes.find(channelType) == fChannelTypes.end()) {
+            continue;
+        }
+
+        // Choose appropriate function based on channel type
+        if (channelType == "tpc") {
+            signal->CalculateBaseLine(fBaselineRange.X(), fBaselineRange.Y());
+
+            double baseline = signal->GetBaseLine();
+            double baselinesigma = signal->GetBaseLineSigma();
+
+            // Accumulate the baseline and sigma values
+            BaseLineMean += baseline;
+            BaseLineSigmaMean += baselinesigma;
+            count++;  // Count the signals considered
+        }
+    }
+
+    // Calculate the average if there were any matching signals
+    if (count > 0) {
+        BaseLineMean /= count;
+        BaseLineSigmaMean /= count;
+    }
+
     for (int signalIndex = 0; signalIndex < fInputEvent->GetNumberOfSignals(); signalIndex++) {
         const auto signal = fInputEvent->GetSignal(signalIndex);
         const UShort_t signalId = signal->GetSignalID();
@@ -47,8 +82,8 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
         // Choose appropriate function based on channel type
         if (channelType == "tpc") {
             signal->CalculateBaseLine(fBaselineRange.X(), fBaselineRange.Y());
-            const auto peaks =
-                signal->GetPeaks(signal->GetBaseLine() + 5 * signal->GetBaseLineSigma(), fDistance);
+
+            const auto peaks = signal->GetPeaks(BaseLineMean + 10 * BaseLineSigmaMean, fDistance);
 
             for (const auto& [time, amplitude] : peaks) {
                 eventPeaks.emplace_back(signalId, time, amplitude);
