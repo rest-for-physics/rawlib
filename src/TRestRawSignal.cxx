@@ -913,6 +913,8 @@ TGraph* TRestRawSignal::GetGraph(Int_t color) {
 vector<pair<UShort_t, double>> TRestRawSignal::GetPeaks(double threshold, UShort_t distance) const {
     vector<pair<UShort_t, double>> peaks;
 
+    std::cout << "Small change to test pipelines" << std::endl;
+
     const UShort_t smoothingWindow =
         10;  // Region to compare for peak/no peak classification. 10 means 5 bins to each side
     const size_t numPoints = GetNumberOfPoints();

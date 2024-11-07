@@ -12,6 +12,8 @@ void TRestRawPeaksFinderProcess::InitProcess() {}
 TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
     fInputEvent = dynamic_cast<TRestRawSignalEvent*>(inputEvent);
 
+    std::cout << "Small change to test pipelines" << std::endl;
+
     const auto run = GetRunInfo();
     if (run != nullptr) {
         fInputEvent->InitializeReferences(run);
