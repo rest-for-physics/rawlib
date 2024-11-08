@@ -33,7 +33,7 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
     // Calculate average baseline and sigma of all the TPC signals
     double BaseLineMean = 0.0;
     double BaseLineSigmaMean = 0.0;
-    int count = 0;
+    unsigned int countTPC = 0;
 
     for (int signalIndex = 0; signalIndex < fInputEvent->GetNumberOfSignals(); signalIndex++) {
         const auto signal = fInputEvent->GetSignal(signalIndex);
@@ -50,21 +50,17 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
         // Choose appropriate function based on channel type
         if (channelType == "tpc") {
             signal->CalculateBaseLine(fBaselineRange.X(), fBaselineRange.Y());
-
-            double baseline = signal->GetBaseLine();
-            double baselinesigma = signal->GetBaseLineSigma();
-
             // Accumulate the baseline and sigma values
-            BaseLineMean += baseline;
-            BaseLineSigmaMean += baselinesigma;
-            count++;  // Count the signals considered
+            BaseLineMean += signal->GetBaseLine();
+            BaseLineSigmaMean += signal->GetBaseLineSigma();
+            countTPC++;  // Count the signals considered
         }
     }
 
     // Calculate the average if there were any matching signals
-    if (count > 0) {
-        BaseLineMean /= count;
-        BaseLineSigmaMean /= count;
+    if (countTPC > 0) {
+        BaseLineMean /= countTPC;
+        BaseLineSigmaMean /= countTPC;
     }
 
     for (int signalIndex = 0; signalIndex < fInputEvent->GetNumberOfSignals(); signalIndex++) {
@@ -83,7 +79,18 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
         if (channelType == "tpc") {
             signal->CalculateBaseLine(fBaselineRange.X(), fBaselineRange.Y());
 
-            const auto peaks = signal->GetPeaks(BaseLineMean + 10 * BaseLineSigmaMean, fDistance);
+            constexpr double numberOfBaselinesThreshold = 10;
+            // I think count will never be 0, just in case
+            const double threshold =
+                (countTPC > 0) ? BaseLineMean + numberOfBaselinesThreshold * BaseLineSigmaMean
+                            : signal->GetBaseLine() + numberOfBaselinesThreshold * signal->GetBaseLineSigma();
+            if (countTPC <= 0) {
+                cerr << "TRestRawPeaksFinderProcess::ProcessEvent: TPC count is 0 in TPC loop, this should "
+                        "not happen"
+                     << endl;
+                exit(1);
+            }
+            const auto peaks = signal->GetPeaks(threshold, fDistance);
 
             for (const auto& [time, amplitude] : peaks) {
                 eventPeaks.emplace_back(signalId, time, amplitude);
