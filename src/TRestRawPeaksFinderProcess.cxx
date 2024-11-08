@@ -369,8 +369,8 @@ void TRestRawPeaksFinderProcess::InitFromConfigFile() {
     fBaselineRange = Get2DVectorParameterWithUnits("baselineRange", fBaselineRange);
     fDistance = StringToDouble(GetParameter("distance", fDistance));
     fWindow = StringToDouble(GetParameter("window", fWindow));
-    fRemoveAllVetoes = StringToBool(GetParameter("removeAllVetos", fRemoveAllVetoes));
-    fRemovePeaklessVetoes = StringToBool(GetParameter("removePeaklessVetos", fRemovePeaklessVetoes));
+    fRemoveAllVetoes = StringToBool(GetParameter("removeAllVetoes", fRemoveAllVetoes));
+    fRemovePeaklessVetoes = StringToBool(GetParameter("removePeaklessVetoes", fRemovePeaklessVetoes));
 
     fTimeBinToTimeFactorMultiplier = GetDblParameterWithUnits("sampling", fTimeBinToTimeFactorMultiplier);
     fTimeBinToTimeFactorOffset = GetDblParameterWithUnits("trigDelay", fTimeBinToTimeFactorOffset);
@@ -415,7 +415,7 @@ void TRestRawPeaksFinderProcess::InitFromConfigFile() {
 
     if (filterType != "veto" && fRemovePeaklessVetoes) {
         cerr << "TRestRawPeaksFinderProcess::InitProcess: removing veto signals only makes sense when the "
-                "process is applied to veto signals. Remove \"removePeaklessVetos\" parameter"
+                "process is applied to veto signals. Remove \"removePeaklessVetoes\" parameter"
              << endl;
         exit(1);
     }
