@@ -82,8 +82,9 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
             constexpr double numberOfBaselinesThreshold = 10;
             // I think count will never be 0, just in case
             const double threshold =
-                (countTPC > 0) ? BaseLineMean + numberOfBaselinesThreshold * BaseLineSigmaMean
-                            : signal->GetBaseLine() + numberOfBaselinesThreshold * signal->GetBaseLineSigma();
+                (countTPC > 0)
+                    ? BaseLineMean + numberOfBaselinesThreshold * BaseLineSigmaMean
+                    : signal->GetBaseLine() + numberOfBaselinesThreshold * signal->GetBaseLineSigma();
             if (countTPC <= 0) {
                 cerr << "TRestRawPeaksFinderProcess::ProcessEvent: TPC count is 0 in TPC loop, this should "
                         "not happen"
