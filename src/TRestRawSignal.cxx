@@ -264,12 +264,15 @@ void TRestRawSignal::InitializePointsOverThreshold(const TVector2& thrPar, Int_t
             if (pulse.size() >= (unsigned int)nPointsOver) {
                 // auto stdev = TMath::StdDev(begin(pulse), end(pulse));
                 // calculate stdev
-                double mean = std::accumulate(pulse.begin(), pulse.end(), 0.0) / pulse.size();
+                double mean = std::accumulate(pulse.begin(), pulse.end(), 0.0) / double(pulse.size());
                 double sq_sum = std::inner_product(pulse.begin(), pulse.end(), pulse.begin(), 0.0);
-                double stdev = std::sqrt(sq_sum / pulse.size() - mean * mean);
+                double stdev = std::sqrt(sq_sum / double(pulse.size()) - mean * mean);
 
-                if (stdev > signalTh * fBaseLineSigma)
-                    for (int j = pos; j < i; j++) fPointsOverThreshold.push_back(j);
+                if (stdev > signalTh * fBaseLineSigma) {
+                    for (int j = pos; j < i; j++) {
+                        fPointsOverThreshold.push_back(j);
+                    }
+                }
             }
         }
     }
@@ -283,14 +286,18 @@ void TRestRawSignal::InitializePointsOverThreshold(const TVector2& thrPar, Int_t
 /// of fThresholdIntegral. This method is only used internally.
 ///
 void TRestRawSignal::CalculateThresholdIntegral() {
-    if (fRange.X() < 0) fRange.SetX(0);
-    if (fRange.Y() <= 0 || fRange.Y() > GetNumberOfPoints()) fRange.SetY(GetNumberOfPoints());
+    if (fRange.X() < 0) {
+        fRange.SetX(0);
+    }
+    if (fRange.Y() <= 0 || fRange.Y() > GetNumberOfPoints()) {
+        fRange.SetY(GetNumberOfPoints());
+    }
 
     fThresholdIntegral = 0;
 
-    for (unsigned int n = 0; n < fPointsOverThreshold.size(); n++) {
-        if (fPointsOverThreshold[n] >= fRange.X() && fPointsOverThreshold[n] < fRange.Y()) {
-            fThresholdIntegral += GetData(fPointsOverThreshold[n]);
+    for (int n : fPointsOverThreshold) {
+        if (n >= fRange.X() && n < fRange.Y()) {
+            fThresholdIntegral += GetData(n);
         }
     }
 }
@@ -301,11 +308,17 @@ void TRestRawSignal::CalculateThresholdIntegral() {
 /// the integral is calculated in the full range.
 ///
 Double_t TRestRawSignal::GetIntegral() {
-    if (fRange.X() < 0) fRange.SetX(0);
-    if (fRange.Y() <= 0 || fRange.Y() > GetNumberOfPoints()) fRange.SetY(GetNumberOfPoints());
+    if (fRange.X() < 0) {
+        fRange.SetX(0);
+    }
+    if (fRange.Y() <= 0 || fRange.Y() > GetNumberOfPoints()) {
+        fRange.SetY(GetNumberOfPoints());
+    }
 
     Double_t sum = 0;
-    for (int i = fRange.X(); i < fRange.Y(); i++) sum += GetData(i);
+    for (int i = fRange.X(); i < fRange.Y(); i++) {
+        sum += GetData(i);
+    }
     return sum;
 }
 
@@ -314,11 +327,17 @@ Double_t TRestRawSignal::GetIntegral() {
 /// by (startBin,endBin).
 ///
 Double_t TRestRawSignal::GetIntegralInRange(Int_t startBin, Int_t endBin) {
-    if (startBin < 0) startBin = 0;
-    if (endBin <= 0 || endBin > GetNumberOfPoints()) endBin = GetNumberOfPoints();
+    if (startBin < 0) {
+        startBin = 0;
+    }
+    if (endBin <= 0 || endBin > GetNumberOfPoints()) {
+        endBin = GetNumberOfPoints();
+    }
 
     Double_t sum = 0;
-    for (int i = startBin; i < endBin; i++) sum += GetRawData(i);
+    for (int i = startBin; i < endBin; i++) {
+        sum += GetRawData(i);
+    }
     return sum;
 }
 
@@ -328,7 +347,7 @@ Double_t TRestRawSignal::GetIntegralInRange(Int_t startBin, Int_t endBin) {
 /// have been called first.
 ///
 Double_t TRestRawSignal::GetThresholdIntegral() {
-    if (fThresholdIntegral == -1)
+    if (fThresholdIntegral == -1) {
         if (fShowWarnings) {
             std::cout << "TRestRawSignal::GetThresholdIntegral. "
                          "InitializePointsOverThreshold should be "
@@ -336,6 +355,7 @@ Double_t TRestRawSignal::GetThresholdIntegral() {
                       << endl;
             fShowWarnings = false;
         }
+    }
     return fThresholdIntegral;
 }
 
@@ -917,7 +937,9 @@ vector<pair<UShort_t, double>> TRestRawSignal::GetPeaks(double threshold, UShort
         10;  // Region to compare for peak/no peak classification. 10 means 5 bins to each side
     const size_t numPoints = GetNumberOfPoints();
 
-    if (numPoints == 0) return peaks;
+    if (numPoints == 0) {
+        return peaks;
+    }
 
     // Pre-calculate smoothed values for all bins using a rolling sum
     vector<double> smoothedValues(numPoints, 0.0);
@@ -977,30 +999,32 @@ vector<pair<UShort_t, double>> TRestRawSignal::GetPeaks(double threshold, UShort
             }
 
             // If it's a peak and it´s above the threshold and further than distance to the previous peak, add
-            // to peaks
+            // to peaks the biggest amplitude bin within the next "distance" bins and as amplitude the
+            // TripleMaxAverage. This is because for flat regions the detected peak is more to the left than
+            // the actual one.
             if (isPeak && smoothedValue > threshold) {
                 if (peaks.empty() || i - peaks.back().first >= distance) {
-                    double fitMinRange = i - 20;
-                    double fitMaxRange = i + 20;
+                    // Initialize variables to find the max amplitude within the next "distance" bins
+                    int maxBin = i;
+                    double maxAmplitude = smoothedValues[i];
 
-                    // Create a Gaussian fit function
-                    TF1 fitFunction("gaussianFit", "gaus", fitMinRange, fitMaxRange);
-                    // Fit the data with the Gaussian function
-                    fitFunction.SetRange(fitMinRange, fitMaxRange);  // Initial parameters
-
-                    // Create histogram with the values to fit
-                    TH1D histogram("hist", "hist", 40, fitMinRange, fitMaxRange);
-                    for (int k = i - 20; k <= i + 20; ++k) {
-                        histogram.SetBinContent(k - (i - 20) + 1, GetRawData(k));  // Set bin content
+                    // Look ahead within the specified distance to find the bin with the maximum amplitude
+                    for (std::vector<double>::size_type j = i + 1;
+                         j <= i + distance && j < smoothedValues.size(); ++j) {
+                        if (smoothedValues[j] > maxAmplitude) {
+                            maxAmplitude = smoothedValues[j];
+                            maxBin = j;
+                        }
                     }
-                    histogram.Fit(&fitFunction, "RQ");
 
-                    // Get peak position and amplitude from the fit
-                    double peakPosition = fitFunction.GetParameter(1);
-                    UShort_t formattedPeakPosition = static_cast<UShort_t>(peakPosition);
-                    double peakAmplitude = GetRawData(formattedPeakPosition);
+                    // Calculate the peak amplitude as the average of maxBin and its two neighbors
+                    double amplitude1 = GetRawData(maxBin - 1);
+                    double amplitude2 = GetRawData(maxBin);
+                    double amplitude3 = GetRawData(maxBin + 1);
+                    double peakAmplitude = (amplitude1 + amplitude2 + amplitude3) / 3.0;
 
-                    peaks.push_back(std::make_pair(formattedPeakPosition, peakAmplitude));
+                    // Store the peak position and amplitude
+                    peaks.emplace_back(maxBin, peakAmplitude);
                 }
             }
         }

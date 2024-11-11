@@ -30,6 +30,39 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
 
     vector<tuple<UShort_t, UShort_t, double>> eventPeaks;  // signalId, time, amplitude
 
+    // Calculate average baseline and sigma of all the TPC signals
+    double BaseLineMean = 0.0;
+    double BaseLineSigmaMean = 0.0;
+    unsigned int countTPC = 0;
+
+    for (int signalIndex = 0; signalIndex < fInputEvent->GetNumberOfSignals(); signalIndex++) {
+        const auto signal = fInputEvent->GetSignal(signalIndex);
+        const UShort_t signalId = signal->GetSignalID();
+
+        const string channelType = fReadoutMetadata->GetTypeForChannelDaqId(signalId);
+        const string channelName = fReadoutMetadata->GetNameForChannelDaqId(signalId);
+
+        // Check if channel type is in the list of selected channel types
+        if (fChannelTypes.find(channelType) == fChannelTypes.end()) {
+            continue;
+        }
+
+        // Choose appropriate function based on channel type
+        if (channelType == "tpc") {
+            signal->CalculateBaseLine(fBaselineRange.X(), fBaselineRange.Y());
+            // Accumulate the baseline and sigma values
+            BaseLineMean += signal->GetBaseLine();
+            BaseLineSigmaMean += signal->GetBaseLineSigma();
+            countTPC++;  // Count the signals considered
+        }
+    }
+
+    // Calculate the average if there were any matching signals
+    if (countTPC > 0) {
+        BaseLineMean /= countTPC;
+        BaseLineSigmaMean /= countTPC;
+    }
+
     for (int signalIndex = 0; signalIndex < fInputEvent->GetNumberOfSignals(); signalIndex++) {
         const auto signal = fInputEvent->GetSignal(signalIndex);
         const UShort_t signalId = signal->GetSignalID();
@@ -45,8 +78,18 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
         // Choose appropriate function based on channel type
         if (channelType == "tpc") {
             signal->CalculateBaseLine(fBaselineRange.X(), fBaselineRange.Y());
-            const auto peaks =
-                signal->GetPeaks(signal->GetBaseLine() + 5 * signal->GetBaseLineSigma(), fDistance);
+
+            // I think count will never be 0, just in case
+            const double threshold =
+                (countTPC > 0) ? BaseLineMean + fSigmaOverBaseline * BaseLineSigmaMean
+                               : signal->GetBaseLine() + fSigmaOverBaseline * signal->GetBaseLineSigma();
+            if (countTPC <= 0) {
+                cerr << "TRestRawPeaksFinderProcess::ProcessEvent: TPC count is 0 in TPC loop, this should "
+                        "not happen"
+                     << endl;
+                exit(1);
+            }
+            const auto peaks = signal->GetPeaks(threshold, fDistance);
 
             for (const auto& [time, amplitude] : peaks) {
                 eventPeaks.emplace_back(signalId, time, amplitude);
@@ -321,12 +364,13 @@ void TRestRawPeaksFinderProcess::InitFromConfigFile() {
         // if no channel type is specified, use all channel types
     }
 
-    fThresholdOverBaseline = StringToDouble(GetParameter("thresholdOverBaseline", fThresholdOverBaseline));
+    fThresholdOverBaseline = GetDblParameterWithUnits("thresholdOverBaseline", fThresholdOverBaseline);
+    fSigmaOverBaseline = GetDblParameterWithUnits("sigmaOverBaseline", fSigmaOverBaseline);
     fBaselineRange = Get2DVectorParameterWithUnits("baselineRange", fBaselineRange);
-    fDistance = StringToDouble(GetParameter("distance", fDistance));
-    fWindow = StringToDouble(GetParameter("window", fWindow));
-    fRemoveAllVetoes = StringToBool(GetParameter("removeAllVetos", fRemoveAllVetoes));
-    fRemovePeaklessVetoes = StringToBool(GetParameter("removePeaklessVetos", fRemovePeaklessVetoes));
+    fDistance = UShort_t(GetDblParameterWithUnits("distance", fDistance));
+    fWindow = UShort_t(GetDblParameterWithUnits("window", fWindow));
+    fRemoveAllVetoes = StringToBool(GetParameter("removeAllVetoes", fRemoveAllVetoes));
+    fRemovePeaklessVetoes = StringToBool(GetParameter("removePeaklessVetoes", fRemovePeaklessVetoes));
 
     fTimeBinToTimeFactorMultiplier = GetDblParameterWithUnits("sampling", fTimeBinToTimeFactorMultiplier);
     fTimeBinToTimeFactorOffset = GetDblParameterWithUnits("trigDelay", fTimeBinToTimeFactorOffset);
@@ -359,6 +403,11 @@ void TRestRawPeaksFinderProcess::InitFromConfigFile() {
         exit(1);
     }
 
+    if (fSigmaOverBaseline < 0) {
+        cerr << "TRestRawPeaksFinderProcess::InitProcess: sigma over baseline is < 0" << endl;
+        exit(1);
+    }
+
     if (fDistance <= 0) {
         cerr << "TRestRawPeaksFinderProcess::InitProcess: distance is < 0" << endl;
         exit(1);
@@ -371,7 +420,7 @@ void TRestRawPeaksFinderProcess::InitFromConfigFile() {
 
     if (filterType != "veto" && fRemovePeaklessVetoes) {
         cerr << "TRestRawPeaksFinderProcess::InitProcess: removing veto signals only makes sense when the "
-                "process is applied to veto signals. Remove \"removePeaklessVetos\" parameter"
+                "process is applied to veto signals. Remove \"removePeaklessVetoes\" parameter"
              << endl;
         exit(1);
     }
@@ -388,6 +437,8 @@ void TRestRawPeaksFinderProcess::PrintMetadata() {
 
     RESTMetadata << "Baseline range for tpc signals: " << fBaselineRange.X() << " - " << fBaselineRange.Y()
                  << RESTendl;
+    RESTMetadata << "Sigma over baseline for tpc signals: " << fSigmaOverBaseline << RESTendl;
+
     RESTMetadata << "Threshold over baseline for veto signals: " << fThresholdOverBaseline << RESTendl;
 
     RESTMetadata << "Distance: " << fDistance << RESTendl;
