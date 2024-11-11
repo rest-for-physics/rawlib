@@ -41,6 +41,8 @@ class TRestRawSignal {
 
     void CalculateBaseLineSigmaIQR(Int_t startBin, Int_t endBin);
 
+    void CalculateBaseLineSigmaExcludeOutliers(Int_t startBin, Int_t endBin);
+
     std::vector<Float_t> GetSignalSmoothed_ExcludeOutliers(Int_t averagingPoints);
 
    protected:
@@ -197,6 +199,8 @@ class TRestRawSignal {
     void CalculateBaseLineMean(Int_t startBin, Int_t endBin);
 
     void CalculateBaseLineMedian(Int_t startBin, Int_t endBin);
+
+    void CalculateBaseLineMedianExcludeOutliers(Int_t startBin, Int_t endBin);
 
     void CalculateBaseLine(Int_t startBin, Int_t endBin, const std::string& option = "");
 

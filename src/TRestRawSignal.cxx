@@ -785,6 +785,48 @@ void TRestRawSignal::CalculateBaseLineMedian(Int_t startBin, Int_t endBin) {
 }
 
 ///////////////////////////////////////////////
+/// \brief This method is called by CalculateBaseLine with the "OUTLIERS"-option and is used to determine the
+/// value of the baseline as the median of the data points found in the range defined between startBin and
+/// endBin after excluding the outliers. The median is calculated using only the values in the 25-75% removing
+/// big and small outliers.
+///
+void TRestRawSignal::CalculateBaseLineMedianExcludeOutliers(Int_t startBin, Int_t endBin) {
+    if (endBin - startBin <= 0) {
+        fBaseLine = 0.;
+        return;
+    } else if (endBin > static_cast<int>(fSignalData.size())) {
+        cout << "TRestRawSignal::CalculateBaseLine. Error! Baseline range exceeds the rawdata depth!!" << endl;
+        endBin = fSignalData.size();
+    } else{
+        // Extract the data within the interval
+        std::vector<Short_t> data(fSignalData.begin() + startBin, fSignalData.begin() + endBin);
+        std::sort(data.begin(), data.end());
+
+        // Calculate Q1 and Q3 for IQR
+        size_t dataSize = data.size();
+        Short_t Q1 = data[dataSize / 4];
+        Short_t Q3 = data[(3 * dataSize) / 4];
+        Double_t lowerBound = Q1;
+        Double_t upperBound = Q3;
+
+        // Filter out the outliers
+        std::vector<Short_t> filteredData;
+        for (const auto& value : data) {
+            if (value >= lowerBound && value <= upperBound) {
+                filteredData.emplace_back(value);
+            }
+        }
+
+        // Calculate median of filtered data
+        if (filteredData.empty()) {
+            fBaseLine = TMath::Median(data.size(), &data[0]);  // Fall back to original median if all values are outliers
+        } else {
+            fBaseLine = TMath::Median(filteredData.size(), &filteredData[0]);
+        }
+    }
+}
+
+///////////////////////////////////////////////
 /// \brief This method calculates the average and fluctuation of the baseline in the
 /// specified range and writes the values to fBaseLine and fBaseLineSigma respectively.
 /// Without further option, this method calculates the average as arithmetic mean,
@@ -792,12 +834,16 @@ void TRestRawSignal::CalculateBaseLineMedian(Int_t startBin, Int_t endBin) {
 ///
 /// \param option By setting this option to "ROBUST", the average is calculated as median,
 /// and the fluctuation as interquartile range (IQR), which are less affected by outliers (e.g. a signal
-/// pulse).
+/// pulse). By setting it to "OUTLIERS" the median and sigma will only take into account the
+/// 25-75% values of the interval.
 ///
 void TRestRawSignal::CalculateBaseLine(Int_t startBin, Int_t endBin, const std::string& option) {
     if (ToUpper(option) == "ROBUST") {
         CalculateBaseLineMedian(startBin, endBin);
         CalculateBaseLineSigmaIQR(startBin, endBin);
+    } else if (ToUpper(option) == "OUTLIERS") {
+        CalculateBaseLineMedianExcludeOutliers(startBin, endBin);
+        CalculateBaseLineSigmaExcludeOutliers(startBin, endBin);
     } else {
         CalculateBaseLineMean(startBin, endBin);
         CalculateBaseLineSigmaSD(startBin, endBin);
@@ -839,6 +885,53 @@ void TRestRawSignal::CalculateBaseLineSigmaIQR(Int_t startBin, Int_t endBin) {
         Double_t IQR = Q3 - Q1;
         fBaseLineSigma =
             IQR / 1.349;  // IQR/1.349 equals the standard deviation in case of normally distributed data
+    }
+}
+
+///////////////////////////////////////////////
+/// \brief This method is called by CalculateBaseLine with the "OUTLIERS"-option to
+/// determine the value of the baseline
+/// fluctuation as the standard deviation in the baseline range provided excluding outliers.
+/// Since outliers are strongly suppressed there is no need to use the IQR.
+///
+void TRestRawSignal::CalculateBaseLineSigmaExcludeOutliers(Int_t startBin, Int_t endBin) {
+    if (endBin - startBin <= 0) {
+        fBaseLineSigma = 0.;
+        return;
+    } else if (endBin > static_cast<int>(fSignalData.size())) {
+        cout << "TRestRawSignal::CalculateBaseLineSigma. Error! Range exceeds the rawdata depth!!" << endl;
+        endBin = fSignalData.size();
+    } else{
+        // Extract the data within the interval
+        std::vector<Short_t> data(fSignalData.begin() + startBin, fSignalData.begin() + endBin);
+        std::sort(data.begin(), data.end());
+
+        // Calculate Q1 and Q3 for IQR
+        size_t dataSize = data.size();
+        Short_t Q1 = data[dataSize / 4];
+        Short_t Q3 = data[(3 * dataSize) / 4];
+        Double_t lowerBound = Q1;
+        Double_t upperBound = Q3;
+
+        // Filter out the outliers
+        std::vector<Short_t> filteredData;
+        for (const auto& value : data) {
+            if (value >= lowerBound && value <= upperBound) {
+                filteredData.emplace_back(value);
+            }
+        }
+
+        // Calculate standard deviation of filtered data
+        if (filteredData.empty()) {
+            fBaseLineSigma = 0.;  // If all values are outliers, set sigma to zero
+        } else {
+            double mean = std::accumulate(filteredData.begin(), filteredData.end(), 0.0) / filteredData.size();
+            double variance = 0.0;
+            for (const auto& value : filteredData) {
+                variance += std::pow(value - mean, 2);
+            }
+            fBaseLineSigma = std::sqrt(variance / filteredData.size());  // Standard deviation
+        }
     }
 }
 
