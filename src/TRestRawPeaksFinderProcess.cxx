@@ -364,11 +364,11 @@ void TRestRawPeaksFinderProcess::InitFromConfigFile() {
         // if no channel type is specified, use all channel types
     }
 
-    fThresholdOverBaseline = StringToDouble(GetParameter("thresholdOverBaseline", fThresholdOverBaseline));
-    fSigmaOverBaseline = StringToDouble(GetParameter("sigmaOverBaseline", fSigmaOverBaseline));
+    fThresholdOverBaseline = GetDblParameterWithUnits("thresholdOverBaseline", fThresholdOverBaseline);
+    fSigmaOverBaseline = GetDblParameterWithUnits("sigmaOverBaseline", fSigmaOverBaseline);
     fBaselineRange = Get2DVectorParameterWithUnits("baselineRange", fBaselineRange);
-    fDistance = StringToDouble(GetParameter("distance", fDistance));
-    fWindow = StringToDouble(GetParameter("window", fWindow));
+    fDistance = UShort_t(GetDblParameterWithUnits("distance", fDistance));
+    fWindow = UShort_t(GetDblParameterWithUnits("window", fWindow));
     fRemoveAllVetoes = StringToBool(GetParameter("removeAllVetoes", fRemoveAllVetoes));
     fRemovePeaklessVetoes = StringToBool(GetParameter("removePeaklessVetoes", fRemovePeaklessVetoes));
 
