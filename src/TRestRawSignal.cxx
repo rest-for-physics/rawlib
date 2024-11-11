@@ -795,9 +795,10 @@ void TRestRawSignal::CalculateBaseLineMedianExcludeOutliers(Int_t startBin, Int_
         fBaseLine = 0.;
         return;
     } else if (endBin > static_cast<int>(fSignalData.size())) {
-        cout << "TRestRawSignal::CalculateBaseLine. Error! Baseline range exceeds the rawdata depth!!" << endl;
+        cout << "TRestRawSignal::CalculateBaseLine. Error! Baseline range exceeds the rawdata depth!!"
+             << endl;
         endBin = fSignalData.size();
-    } else{
+    } else {
         // Extract the data within the interval
         std::vector<Short_t> data(fSignalData.begin() + startBin, fSignalData.begin() + endBin);
         std::sort(data.begin(), data.end());
@@ -819,7 +820,8 @@ void TRestRawSignal::CalculateBaseLineMedianExcludeOutliers(Int_t startBin, Int_
 
         // Calculate median of filtered data
         if (filteredData.empty()) {
-            fBaseLine = TMath::Median(data.size(), &data[0]);  // Fall back to original median if all values are outliers
+            fBaseLine = TMath::Median(data.size(),
+                                      &data[0]);  // Fall back to original median if all values are outliers
         } else {
             fBaseLine = TMath::Median(filteredData.size(), &filteredData[0]);
         }
@@ -901,7 +903,7 @@ void TRestRawSignal::CalculateBaseLineSigmaExcludeOutliers(Int_t startBin, Int_t
     } else if (endBin > static_cast<int>(fSignalData.size())) {
         cout << "TRestRawSignal::CalculateBaseLineSigma. Error! Range exceeds the rawdata depth!!" << endl;
         endBin = fSignalData.size();
-    } else{
+    } else {
         // Extract the data within the interval
         std::vector<Short_t> data(fSignalData.begin() + startBin, fSignalData.begin() + endBin);
         std::sort(data.begin(), data.end());
@@ -925,7 +927,8 @@ void TRestRawSignal::CalculateBaseLineSigmaExcludeOutliers(Int_t startBin, Int_t
         if (filteredData.empty()) {
             fBaseLineSigma = 0.;  // If all values are outliers, set sigma to zero
         } else {
-            double mean = std::accumulate(filteredData.begin(), filteredData.end(), 0.0) / filteredData.size();
+            double mean =
+                std::accumulate(filteredData.begin(), filteredData.end(), 0.0) / filteredData.size();
             double variance = 0.0;
             for (const auto& value : filteredData) {
                 variance += std::pow(value - mean, 2);
