@@ -79,12 +79,11 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
         if (channelType == "tpc") {
             signal->CalculateBaseLine(fBaselineRange.X(), fBaselineRange.Y());
 
-            constexpr double numberOfBaselinesThreshold = 10;
             // I think count will never be 0, just in case
             const double threshold =
                 (countTPC > 0)
-                    ? BaseLineMean + numberOfBaselinesThreshold * BaseLineSigmaMean
-                    : signal->GetBaseLine() + numberOfBaselinesThreshold * signal->GetBaseLineSigma();
+                    ? BaseLineMean + fSigmaOverBaseline * BaseLineSigmaMean
+                    : signal->GetBaseLine() + fSigmaOverBaseline * signal->GetBaseLineSigma();
             if (countTPC <= 0) {
                 cerr << "TRestRawPeaksFinderProcess::ProcessEvent: TPC count is 0 in TPC loop, this should "
                         "not happen"
@@ -367,6 +366,7 @@ void TRestRawPeaksFinderProcess::InitFromConfigFile() {
     }
 
     fThresholdOverBaseline = StringToDouble(GetParameter("thresholdOverBaseline", fThresholdOverBaseline));
+    fSigmaOverBaseline = StringToDouble(GetParameter("sigmaOverBaseline", fSigmaOverBaseline));
     fBaselineRange = Get2DVectorParameterWithUnits("baselineRange", fBaselineRange);
     fDistance = StringToDouble(GetParameter("distance", fDistance));
     fWindow = StringToDouble(GetParameter("window", fWindow));
@@ -404,6 +404,11 @@ void TRestRawPeaksFinderProcess::InitFromConfigFile() {
         exit(1);
     }
 
+    if (fSigmaOverBaseline < 0) {
+        cerr << "TRestRawPeaksFinderProcess::InitProcess: sigma over baseline is < 0" << endl;
+        exit(1);
+    }
+
     if (fDistance <= 0) {
         cerr << "TRestRawPeaksFinderProcess::InitProcess: distance is < 0" << endl;
         exit(1);
@@ -433,6 +438,8 @@ void TRestRawPeaksFinderProcess::PrintMetadata() {
 
     RESTMetadata << "Baseline range for tpc signals: " << fBaselineRange.X() << " - " << fBaselineRange.Y()
                  << RESTendl;
+    RESTMetadata << "Sigma over baseline for tpc signals: " << fSigmaOverBaseline << RESTendl;
+
     RESTMetadata << "Threshold over baseline for veto signals: " << fThresholdOverBaseline << RESTendl;
 
     RESTMetadata << "Distance: " << fDistance << RESTendl;

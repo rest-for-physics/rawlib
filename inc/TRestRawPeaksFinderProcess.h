@@ -17,6 +17,8 @@ class TRestRawPeaksFinderProcess : public TRestEventProcess {
 
     /// \brief threshold over baseline to consider a peak
     Double_t fThresholdOverBaseline = 2.0;
+    /// \brief choose times the sigma of the baseline must be overcome to consider a peak
+    Double_t fSigmaOverBaseline = 10.0;
     /// \brief range of samples to calculate baseline for peak finding
     TVector2 fBaselineRange = {0, 10};
     /// \brief distance between two peaks to consider them as different (ADC units)
@@ -58,7 +60,7 @@ class TRestRawPeaksFinderProcess : public TRestEventProcess {
     TRestRawPeaksFinderProcess() = default;
     ~TRestRawPeaksFinderProcess() = default;
 
-    ClassDefOverride(TRestRawPeaksFinderProcess, 5);
+    ClassDefOverride(TRestRawPeaksFinderProcess, 6);
 };
 
 #endif  // REST_TRESTRAWPEAKSFINDERPROCESS_H
