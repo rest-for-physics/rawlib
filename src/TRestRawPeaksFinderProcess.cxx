@@ -81,9 +81,8 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
 
             // I think count will never be 0, just in case
             const double threshold =
-                (countTPC > 0)
-                    ? BaseLineMean + fSigmaOverBaseline * BaseLineSigmaMean
-                    : signal->GetBaseLine() + fSigmaOverBaseline * signal->GetBaseLineSigma();
+                (countTPC > 0) ? BaseLineMean + fSigmaOverBaseline * BaseLineSigmaMean
+                               : signal->GetBaseLine() + fSigmaOverBaseline * signal->GetBaseLineSigma();
             if (countTPC <= 0) {
                 cerr << "TRestRawPeaksFinderProcess::ProcessEvent: TPC count is 0 in TPC loop, this should "
                         "not happen"
