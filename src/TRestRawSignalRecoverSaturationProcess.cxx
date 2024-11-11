@@ -21,93 +21,88 @@
  *************************************************************************/
 
 /////////////////////////////////////////////////////////////////////////
-/// Write the process description Here                                   
-/// 
+/// Write the process description Here
+///
 /// ### Parameters
-/// Describe any parameters this process receives: 
+/// Describe any parameters this process receives:
 /// * **parameter1**: This parameter ...
 /// * **parameter2**: This parameter is ...
-/// 
-/// 
+///
+///
 /// ### Examples
-/// Give examples of usage and RML descriptions that can be tested.      
+/// Give examples of usage and RML descriptions that can be tested.
 /// \code
 ///     <WRITE A CODE EXAMPLE HERE>
 /// \endcode
-/// 
+///
 /// ### Running pipeline example
-/// Add the examples to a pipeline to guarantee the code will be running 
-/// on future framework upgrades.                                        
-/// 
-/// 
-/// Please, add any figure that may help to ilustrate the process        
-/// 
+/// Add the examples to a pipeline to guarantee the code will be running
+/// on future framework upgrades.
+///
+///
+/// Please, add any figure that may help to ilustrate the process
+///
 /// \htmlonly <style>div.image img[src="trigger.png"]{width:500px;}</style> \endhtmlonly
-/// ![An ilustration of the trigger definition](trigger.png)             
-/// 
-/// The png image should be uploaded to the ./images/ directory          
-///                                                                      
+/// ![An ilustration of the trigger definition](trigger.png)
+///
+/// The png image should be uploaded to the ./images/ directory
+///
 ///----------------------------------------------------------------------
-///                                                                      
-/// REST-for-Physics - Software for Rare Event Searches Toolkit 		    
-///                                                                      
-/// History of developments:                                             
-///                                                                      
+///
+/// REST-for-Physics - Software for Rare Event Searches Toolkit
+///
+/// History of developments:
+///
 /// YEAR-Month: First implementation of TRestRawSignalRecoverSaturationProcess
-/// WRITE YOUR FULL NAME 
-///                                                                      
-/// \class TRestRawSignalRecoverSaturationProcess                                               
+/// WRITE YOUR FULL NAME
+///
+/// \class TRestRawSignalRecoverSaturationProcess
 /// \author: TODO. Write full name and e-mail:        aezquerro
-///                                                                      
-/// <hr>                                                                 
-///                                                                      
+///
+/// <hr>
+///
 
 #include "TRestRawSignalRecoverSaturationProcess.h"
 
 ClassImp(TRestRawSignalRecoverSaturationProcess);
 
-///////////////////////////////////////////////                          
-/// \brief Default constructor                                          
-///                                                                      
-TRestRawSignalRecoverSaturationProcess::TRestRawSignalRecoverSaturationProcess() {
-    Initialize();
-}
+///////////////////////////////////////////////
+/// \brief Default constructor
+///
+TRestRawSignalRecoverSaturationProcess::TRestRawSignalRecoverSaturationProcess() { Initialize(); }
 
-///////////////////////////////////////////////                          
-/// \brief Default destructor                                           
-///                                                                      
-TRestRawSignalRecoverSaturationProcess::~TRestRawSignalRecoverSaturationProcess() {
-}
+///////////////////////////////////////////////
+/// \brief Default destructor
+///
+TRestRawSignalRecoverSaturationProcess::~TRestRawSignalRecoverSaturationProcess() {}
 
-///////////////////////////////////////////////                          
-/// \brief Function to initialize input/output event members and define  
-/// the section name                                                     
-///                                                                      
+///////////////////////////////////////////////
+/// \brief Function to initialize input/output event members and define
+/// the section name
+///
 void TRestRawSignalRecoverSaturationProcess::Initialize() {
     SetSectionName(this->ClassName());
     SetLibraryVersion(LIBRARY_VERSION);
     fAnaEvent = NULL;
 
-    // Initialize here the values of class data members if needed       
-
+    // Initialize here the values of class data members if needed
 }
 
-///////////////////////////////////////////////                           
-/// \brief Process initialization. Observable names can be re-interpreted 
-/// here. Any action in the process required before starting event process 
-/// might be added here.                                                 
-///                                                                      
+///////////////////////////////////////////////
+/// \brief Process initialization. Observable names can be re-interpreted
+/// here. Any action in the process required before starting event process
+/// might be added here.
+///
 void TRestRawSignalRecoverSaturationProcess::InitProcess() {
     // Write here the jobs to do before processing
     // i.e., initialize histograms and auxiliary vectors,
     // read TRestRun metadata, or load additional rml sections
-
 }
 
-///////////////////////////////////////////////                          
-/// \brief The main processing event function                           
-///                                                                      
-TRestEvent* TRestRawSignalRecoverSaturationProcess::ProcessEvent(TRestEvent * evInput) {
+///////////////////////////////////////////////
+/// \brief The main processing event function
+///
+TRestEvent* TRestRawSignalRecoverSaturationProcess::ProcessEvent(TRestEvent* evInput) {
     fAnaEvent = (TRestRawSignalEvent*)evInput;
 
     // If cut condition matches the event will be not registered.
@@ -125,8 +120,7 @@ TRestEvent* TRestRawSignalRecoverSaturationProcess::ProcessEvent(TRestEvent * ev
     for (int s = 0; s < fAnaEvent->GetNumberOfSignals(); s++) {
         TRestRawSignal* signal = fAnaEvent->GetSignal(s);
 
-        if (!signal->IsADCSaturation(3))
-            continue;
+        if (!signal->IsADCSaturation(3)) continue;
         nSignalsSaturated++;
         RESTDebug << "Processing signal " << s << RESTendl;
 
@@ -135,8 +129,10 @@ TRestEvent* TRestRawSignalRecoverSaturationProcess::ProcessEvent(TRestEvent * ev
         std::vector<size_t> saturatedBins;
 
         for (size_t i = (size_t)maxPeakBin; i < (size_t)signal->GetNumberOfPoints(); i++) {
-            if ((*signal)[i] == maxValue) saturatedBins.push_back(i);
-            else break; // Stop when the signal stops being saturated
+            if ((*signal)[i] == maxValue)
+                saturatedBins.push_back(i);
+            else
+                break;  // Stop when the signal stops being saturated
         }
 
         RESTDebug << "Saturated bins: ";
@@ -149,33 +145,33 @@ TRestEvent* TRestRawSignalRecoverSaturationProcess::ProcessEvent(TRestEvent * ev
         // Create TGraph with the not saturated bins for the fit
         TGraph* g = new TGraph();
         for (size_t i = 0; i < (size_t)signal->GetNumberOfPoints(); i++) {
-            if (std::find(saturatedBins.begin(), saturatedBins.end(), i) != saturatedBins.end())
-                continue;
+            if (std::find(saturatedBins.begin(), saturatedBins.end(), i) != saturatedBins.end()) continue;
             g->AddPoint(i, (*signal)[i]);
         }
-        //g = signal->GetGraph(); // this would return (*signal)[i]-baseLine (if baseline has been initialized)
+        // g = signal->GetGraph(); // this would return (*signal)[i]-baseLine (if baseline has been
+        // initialized)
 
         for (size_t i = 0; i < saturatedBins.size(); i++) {
-            g->RemovePoint(maxPeakBin); // when one point is removed the other points are shifted
+            g->RemovePoint(maxPeakBin);  // when one point is removed the other points are shifted
         }
 
- 
         // ShaperSin function (AGET theoretic curve) times logistic function. Better without the sin
         TF1* f = new TF1("fit",
                          "[0]+[1]*TMath::Exp(-3. * (x-[3])/[2]) * "
                          "(x-[3])/[2] * (x-[3])/[2] * (x-[3])/[2] / "
                          "(1+TMath::Exp(-10000*(x-[3])))",
                          0, signal->GetNumberOfPoints());
-        auto peakPosition = maxPeakBin + saturatedBins.size()/2;
+        auto peakPosition = maxPeakBin + saturatedBins.size() / 2;
         Double_t amplEstimate = maxValue;
         Double_t widthEstimate = 30;
         auto pOverThreshold = signal->GetPointsOverThreshold();
         if (!pOverThreshold.empty()) {
-            amplEstimate = 0.9 * (maxValue - signal->GetRawData(pOverThreshold[0])) / (maxPeakBin-pOverThreshold[0]) * (peakPosition-pOverThreshold[0]);
+            amplEstimate = 0.9 * (maxValue - signal->GetRawData(pOverThreshold[0])) /
+                           (maxPeakBin - pOverThreshold[0]) * (peakPosition - pOverThreshold[0]);
             if (amplEstimate < maxValue) amplEstimate = maxValue;
         }
 
-        f->SetParameters(250, amplEstimate/0.0498, widthEstimate, peakPosition-widthEstimate);
+        f->SetParameters(250, amplEstimate / 0.0498, widthEstimate, peakPosition - widthEstimate);
         // f->SetParameters(0, 250);  // no baseline correction is used in this process
         // f->SetParLimits(0, 150, 350);
         // f->SetParameters(1, 2000);
@@ -185,7 +181,7 @@ TRestEvent* TRestRawSignalRecoverSaturationProcess::ProcessEvent(TRestEvent * ev
         // f->SetParameters(3, 80);
         // f->SetParLimits(3, 150, 250);
         f->SetParNames("Baseline", "Amplitude", "ShapingTime", "PeakPosition");
-        if (signal->isBaseLineInitialized()){
+        if (signal->isBaseLineInitialized()) {
             f->FixParameter(0, signal->GetBaseLine());
         }
 
@@ -195,18 +191,17 @@ TRestEvent* TRestRawSignalRecoverSaturationProcess::ProcessEvent(TRestEvent * ev
         TRestRawSignal toAddSignal(0);
         bool anyBinRecovered = false;
         for (size_t i = 0; i < (size_t)signal->GetNumberOfPoints(); i++) {
-            if (std::find(saturatedBins.begin(), saturatedBins.end(), i) != saturatedBins.end()){
-                Double_t value = f->Eval(i)-maxValue;
-                if (value > 0){
+            if (std::find(saturatedBins.begin(), saturatedBins.end(), i) != saturatedBins.end()) {
+                Double_t value = f->Eval(i) - maxValue;
+                if (value > 0) {
                     toAddSignal.AddPoint(value);
                     anyBinRecovered = true;
                     addedIntegral += value;
                     if (value > addedAmplitude) addedAmplitude = value;
-                }
-                else toAddSignal.AddPoint((Short_t) 0);
-            }
-            else {
-                toAddSignal.AddPoint((Short_t) 0);
+                } else
+                    toAddSignal.AddPoint((Short_t)0);
+            } else {
+                toAddSignal.AddPoint((Short_t)0);
             }
         }
         delete g;
@@ -214,10 +209,9 @@ TRestEvent* TRestRawSignalRecoverSaturationProcess::ProcessEvent(TRestEvent * ev
 
         if (anyBinRecovered) {
             nSignalsRecovered++;
-        }
-        else {
+        } else {
             RESTDebug << "Signal " << s << " not recovered" << RESTendl;
-            continue; // nothing to add
+            continue;  // nothing to add
         }
         signal->SignalAddition(toAddSignal);
     }
@@ -226,16 +220,14 @@ TRestEvent* TRestRawSignalRecoverSaturationProcess::ProcessEvent(TRestEvent * ev
     SetObservableValue("AddedIntegral", addedIntegral);
     SetObservableValue("SignalsSaturated", nSignalsSaturated);
     SetObservableValue("SignalsRecovered", nSignalsRecovered);
- 
+
     return fAnaEvent;
 }
 
-///////////////////////////////////////////////                          
+///////////////////////////////////////////////
 /// \brief Function to include required actions after all events have been
-/// processed.                                                            
-///                                                                       
+/// processed.
+///
 void TRestRawSignalRecoverSaturationProcess::EndProcess() {
     // Write here the jobs to do when all the events are processed
-
 }
-
