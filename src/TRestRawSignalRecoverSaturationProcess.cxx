@@ -90,9 +90,8 @@ void TRestRawSignalRecoverSaturationProcess::Initialize() {
     fProcessAllSignals = false;
     fNBinsIfNotSaturated = 20;
     fMinSaturationValue = 0;
-    fBaseLineRange = TVector2(-1, -1); // -1 means no baseline range
-    fFitRange = TVector2(-1, -1); // -1 means no fit range
-
+    fBaseLineRange = TVector2(-1, -1);  // -1 means no baseline range
+    fFitRange = TVector2(-1, -1);       // -1 means no fit range
 }
 
 ///////////////////////////////////////////////
@@ -132,7 +131,8 @@ TRestEvent* TRestRawSignalRecoverSaturationProcess::ProcessEvent(TRestEvent* evI
 
     // Set the baseline range if it has been provided
     if (fBaseLineRange.X() != -1 && fBaseLineRange.Y() != -1)
-        fAnaEvent->SetBaseLineRange(fBaseLineRange.X(), fBaseLineRange.Y()); // this will also calculate the baseline
+        fAnaEvent->SetBaseLineRange(fBaseLineRange.X(),
+                                    fBaseLineRange.Y());  // this will also calculate the baseline
 
     // process each signal in the event
     for (int s = 0; s < fAnaEvent->GetNumberOfSignals(); s++) {
@@ -168,14 +168,15 @@ TRestEvent* TRestRawSignalRecoverSaturationProcess::ProcessEvent(TRestEvent* evI
         if (fProcessAllSignals && saturatedBins.size() < fMinSaturatedBins) {
             saturatedBins.clear();
             // set saturated bins around maxPeakBin
-            for (size_t i = maxPeakBin-fNBinsIfNotSaturated/2; i < maxPeakBin+fNBinsIfNotSaturated/2 && i<(size_t)signal->GetNumberOfPoints(); i++) {
+            for (size_t i = maxPeakBin - fNBinsIfNotSaturated / 2;
+                 i < maxPeakBin + fNBinsIfNotSaturated / 2 && i < (size_t)signal->GetNumberOfPoints(); i++) {
                 saturatedBins.push_back(i);
             }
         }
 
         if (!saturatedBins.empty()) {
-            RESTDebug << "    Saturated bins:" << saturatedBins.front() << " to " << saturatedBins.back() <<
-            " at " << maxValue << RESTendl;
+            RESTDebug << "    Saturated bins:" << saturatedBins.front() << " to " << saturatedBins.back()
+                      << " at " << maxValue << RESTendl;
         }
 
         // Create TGraph with the not saturated bins for the fit
@@ -202,13 +203,13 @@ TRestEvent* TRestRawSignalRecoverSaturationProcess::ProcessEvent(TRestEvent* evI
                          "[0]+[1]*TMath::Exp(-3. * (x-[3])/[2]) * "
                          "(x-[3])/[2] * (x-[3])/[2] * (x-[3])/[2] / "
                          "(1+TMath::Exp(-10000*(x-[3])))",
-                            startFitRange, endFitRange);
+                         startFitRange, endFitRange);
         RESTDebug << "    nPoints" << signal->GetNumberOfPoints() << RESTendl;
         RESTDebug << "    Function created" << RESTendl;
         // First estimation of the parameters
         auto peakposEstimate = maxPeakBin + saturatedBins.size() / 2;
         Double_t amplEstimate = maxValue;
-        Double_t widthEstimate = (endFitRange - startFitRange)*0.2;
+        Double_t widthEstimate = (endFitRange - startFitRange) * 0.2;
         Double_t baselineEstimate = 250;
 
         // Second (and better) estimation of the parameters
@@ -223,7 +224,7 @@ TRestEvent* TRestRawSignalRecoverSaturationProcess::ProcessEvent(TRestEvent* evI
             // the amplitude estimate should be at least the maximum value of the signal
             if (amplEstimate < maxValue) amplEstimate = maxValue;
         }
-        //signal->CalculateBaseLine(20,150);
+        // signal->CalculateBaseLine(20,150);
         if (signal->isBaseLineInitialized()) {
             baselineEstimate = signal->GetBaseLine();
         }
@@ -231,22 +232,26 @@ TRestEvent* TRestRawSignalRecoverSaturationProcess::ProcessEvent(TRestEvent* evI
                   << " baseline=" << baselineEstimate << " peakpos=" << peakposEstimate << RESTendl;
         // Configure the fit parameters
         f->SetParNames("Baseline", "Amplitude", "ShapingTime", "PeakPosition");
-        //f->SetParameters(baselineEstimate, amplEstimate / 0.0498, widthEstimate, peakposEstimate - widthEstimate);
-        // Baseline
+        // f->SetParameters(baselineEstimate, amplEstimate / 0.0498, widthEstimate, peakposEstimate -
+        // widthEstimate);
+        //  Baseline
         f->SetParameter(0, baselineEstimate);
-        f->SetParLimits(0, 0, maxValue); // baseline should be positive and less than the saturation value
-        if (signal->isBaseLineInitialized()) { // fix the baseline to make it faster and more reliable
+        f->SetParLimits(0, 0, maxValue);  // baseline should be positive and less than the saturation value
+        if (signal->isBaseLineInitialized()) {  // fix the baseline to make it faster and more reliable
             f->FixParameter(0, baselineEstimate);
-        }//*/
+        }  //*/
         // Amplitude
-        f->SetParameter(1, amplEstimate / 0.0498); // 0.0498=e^{-3}
-        f->SetParLimits(1, 0, maxValue / 0.0498 * 100); // max allowed amplitude is 100 times the saturation value
+        f->SetParameter(1, amplEstimate / 0.0498);  // 0.0498=e^{-3}
+        f->SetParLimits(1, 0,
+                        maxValue / 0.0498 * 100);  // max allowed amplitude is 100 times the saturation value
         // Width or shaping time
         f->SetParameter(2, widthEstimate);
-        f->SetParLimits(2, 0, signal->GetNumberOfPoints()); // width should be positive and less than the window
+        f->SetParLimits(2, 0,
+                        signal->GetNumberOfPoints());  // width should be positive and less than the window
         // Peak position
         f->SetParameter(3, peakposEstimate - widthEstimate);
-        f->SetParLimits(3, 0, signal->GetNumberOfPoints()); // peak position should be positive and less than the window
+        f->SetParLimits(
+            3, 0, signal->GetNumberOfPoints());  // peak position should be positive and less than the window
 
         std::string fitOptions = "R";
         if (GetVerboseLevel() < TRestStringOutput::REST_Verbose_Level::REST_Debug) {
@@ -263,7 +268,7 @@ TRestEvent* TRestRawSignalRecoverSaturationProcess::ProcessEvent(TRestEvent* evI
         for (size_t i = 0; i < (size_t)signal->GetNumberOfPoints(); i++) {
             if (std::find(saturatedBins.begin(), saturatedBins.end(), i) != saturatedBins.end()) {
                 Double_t value = f->Eval(i) - maxValue;
-                if (value > 0 || fProcessAllSignals)  {
+                if (value > 0 || fProcessAllSignals) {
                     toAddSignal.AddPoint(value);
                     anyBinRecovered = true;
                     addedIntegral += value;
@@ -272,7 +277,7 @@ TRestEvent* TRestRawSignalRecoverSaturationProcess::ProcessEvent(TRestEvent* evI
                     continue;
                 }
             }
-            toAddSignal.AddPoint((Short_t) 0);
+            toAddSignal.AddPoint((Short_t)0);
         }
 
         if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Extreme) {
