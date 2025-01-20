@@ -25,22 +25,24 @@
 /// The process uses a fit to recover the signal lost information. If the fit
 /// is successful, the points of the signal that are saturating are replaced
 /// by the fit values at those bins.
-/// \htmlonly <style>div.image img[src="RecoverSignalProcess_eventRecovered.png"]{width:350px;}</style> \endhtmlonly
+/// \htmlonly <style>div.image img[src="RecoverSignalProcess_eventRecovered.png"]{width:350px;}</style>
+/// \endhtmlonly
 ///
 /// The idea of the process is to recover the signal information that is lost
 /// when the signal saturates the ADC in order to continue the analysis of the
-/// event as if the signal was not saturated at all. For example, here is the 
+/// event as if the signal was not saturated at all. For example, here is the
 /// comparison in the spectrum of the observable ThresholdIntegral of the
 /// TRestRawSignalAnalysisProcess before (red) and after (blue) applying this
 /// TRestRawSignalRecoverSaturationProcess:
-/// \htmlonly <style>div.image img[src="RecoverSignalProcess_spectrumComparison.png"]{width:350px;}</style> \endhtmlonly
+/// \htmlonly <style>div.image img[src="RecoverSignalProcess_spectrumComparison.png"]{width:350px;}</style>
+/// \endhtmlonly
 ///
 /// ### Fitting function
 /// The fitting function is fixed (hardcoded) to the AGET response function
 /// (without the sin) times a logistic function:
 /// \code
-/// [0]+[1]*TMath::Exp(-3. * (x-[3])/[2]) * 
-/// (x-[3])/[2] * (x-[3])/[2] * (x-[3])/[2] / 
+/// [0]+[1]*TMath::Exp(-3. * (x-[3])/[2]) *
+/// (x-[3])/[2] * (x-[3])/[2] * (x-[3])/[2] /
 /// (1+TMath::Exp(-10000*(x-[3])))
 ///
 /// [0] = "Baseline",
@@ -48,14 +50,15 @@
 /// [2] = "ShapingTime",
 /// [3] = "PeakPosition"
 /// \endcode
-/// \htmlonly <style>div.image img[src="RecoverSignalProcess_signalFit.png"]{width:350px;}</style> \endhtmlonly
+/// \htmlonly <style>div.image img[src="RecoverSignalProcess_signalFit.png"]{width:350px;}</style>
+/// \endhtmlonly
 ///
 ///
 /// ### Parameters
 /// The default behaviour is to process only the saturated signals, but it
 /// can be configured to process all signals in the event
 /// (using the fProcessAllSignals parameter). The saturated signals are
-/// identified by a minimun number of bins (fMinSaturatedBins) that must 
+/// identified by a minimun number of bins (fMinSaturatedBins) that must
 /// have the maximum value of the signal and by a threshold value which
 /// this saturating value must exceed (fMinSaturationValue).
 ///
@@ -92,13 +95,15 @@
 /// modified by the fitted pulse. It is always <=saturatedSignals. If it is less, it means that
 /// the fit values of the saturated bins of the those signals were lower than the original value
 /// of the signal so they are not replaced and those signals has not been recovered.
-/// \htmlonly <style>div.image img[src="RecoverSignalProcess_addedAmplIntegral.png"]{width:350px;}</style> \endhtmlonly
+/// \htmlonly <style>div.image img[src="RecoverSignalProcess_addedAmplIntegral.png"]{width:350px;}</style>
+/// \endhtmlonly
 ///
 ///
 /// ### Examples
 /// Give examples of usage and RML descriptions that can be tested.
 /// \code
-///    <addProcess type="TRestRawSignalRecoverSaturationProcess" name="recSat" value="ON" verboseLevel="info" observable="all">
+///    <addProcess type="TRestRawSignalRecoverSaturationProcess" name="recSat" value="ON" verboseLevel="info"
+///    observable="all">
 ///        <parameter name="minSaturatedBins" value="3" />
 ///        <parameter name="minSaturationValue" value="3500" />
 ///        <parameter name="baseLineRange" value="(20,150)" />
