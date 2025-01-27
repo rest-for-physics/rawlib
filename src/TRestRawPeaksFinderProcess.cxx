@@ -28,7 +28,8 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
         exit(1);
     }
 
-    vector<tuple<UShort_t, UShort_t, double, double>> eventPeaks;  // signalId, time, amplitude, amplitudeBaseLineCorrected
+    vector<tuple<UShort_t, UShort_t, double, double>>
+        eventPeaks;  // signalId, time, amplitude, amplitudeBaseLineCorrected
 
     // Calculate average baseline and sigma of all the TPC signals
     double BaseLineMean = 0.0;
@@ -82,8 +83,9 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
 
             // I think count will never be 0, just in case
             if (countTPC <= 0) {
-                cerr << "TRestRawPeaksFinderProcess::ProcessEvent: TPC count is 0 in TPC loop, this should not happen"
-                    << endl;
+                cerr << "TRestRawPeaksFinderProcess::ProcessEvent: TPC count is 0 in TPC loop, this should "
+                        "not happen"
+                     << endl;
                 exit(1);
             }
 
@@ -110,7 +112,8 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
 
     // sort eventPeaks by time, then signal id
     sort(eventPeaks.begin(), eventPeaks.end(),
-         [](const tuple<UShort_t, UShort_t, double, double>& a, const tuple<UShort_t, UShort_t, double, double>& b) {
+         [](const tuple<UShort_t, UShort_t, double, double>& a,
+            const tuple<UShort_t, UShort_t, double, double>& b) {
              return tie(get<1>(a), get<0>(a)) < tie(get<1>(b), get<0>(b));
          });
 
@@ -175,7 +178,8 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
 
         // add the peaks that are in the window
         for (size_t otherPeakIndex = peakIndex + 1; otherPeakIndex < eventPeaks.size(); otherPeakIndex++) {
-            const auto& [otherChannelId, otherTime, otherAmplitude, otherAmplitudeBaseLineCorrected] = eventPeaks[otherPeakIndex];
+            const auto& [otherChannelId, otherTime, otherAmplitude, otherAmplitudeBaseLineCorrected] =
+                eventPeaks[otherPeakIndex];
 
             if (otherTime < windowTimeStart) {
                 continue;

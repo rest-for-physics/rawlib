@@ -30,8 +30,8 @@
 
 #include <iostream>
 #include <string>
-#include <vector>
 #include <tuple>
+#include <vector>
 
 //! It defines a Short_t array with a physical parameter that evolves in time using a fixed time bin.
 class TRestRawSignal {
@@ -224,8 +224,10 @@ class TRestRawSignal {
     /// Returns the (time, amplitude) of the peaks in the signal.
     /// Peaks are defined as the points that are above the threshold and are separated by a minimum distance
     /// in time bin units. The threshold must be set in absolute value (regardless of the baseline)
-    std::vector<std::tuple<double, UShort_t, double>> GetPeaks(double threshold, UShort_t distance = 5, double signalBaseLine = 0.0) const;
-    std::vector<std::tuple<double, UShort_t, double>> GetPeaksVeto(double threshold, UShort_t distance = 5, double signalBaseLine = 0.0) const;
+    std::vector<std::tuple<double, UShort_t, double>> GetPeaks(double threshold, UShort_t distance = 5,
+                                                               double signalBaseLine = 0.0) const;
+    std::vector<std::tuple<double, UShort_t, double>> GetPeaksVeto(double threshold, UShort_t distance = 5,
+                                                                   double signalBaseLine = 0.0) const;
 
     TRestRawSignal();
     TRestRawSignal(Int_t nBins);

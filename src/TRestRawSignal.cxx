@@ -1026,7 +1026,9 @@ TGraph* TRestRawSignal::GetGraph(Int_t color) {
     return fGraph;
 }
 
-std::vector<std::tuple<double, UShort_t, double>> TRestRawSignal::GetPeaks(double threshold, UShort_t distance, double signalBaseLine) const {
+std::vector<std::tuple<double, UShort_t, double>> TRestRawSignal::GetPeaks(double threshold,
+                                                                           UShort_t distance,
+                                                                           double signalBaseLine) const {
     std::vector<std::tuple<double, UShort_t, double>> peaks;
 
     const UShort_t smoothingWindow =
@@ -1130,7 +1132,9 @@ std::vector<std::tuple<double, UShort_t, double>> TRestRawSignal::GetPeaks(doubl
     return peaks;
 }
 
-std::vector<std::tuple<double, UShort_t, double>> TRestRawSignal::GetPeaksVeto(double threshold, UShort_t distance, double signalBaseLine) const {
+std::vector<std::tuple<double, UShort_t, double>> TRestRawSignal::GetPeaksVeto(double threshold,
+                                                                               UShort_t distance,
+                                                                               double signalBaseLine) const {
     std::vector<std::tuple<double, UShort_t, double>> peaks;
 
     const UShort_t smoothingWindow =
