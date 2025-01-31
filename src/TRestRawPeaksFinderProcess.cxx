@@ -28,7 +28,8 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
         exit(1);
     }
 
-    vector<tuple<UShort_t, UShort_t, double>> eventPeaks;  // signalId, time, amplitude
+    vector<tuple<UShort_t, UShort_t, double, double>>
+        eventPeaks;  // signalId, time, amplitude, amplitudeBaseLineCorrected
 
     // Calculate average baseline and sigma of all the TPC signals
     double BaseLineMean = 0.0;
@@ -78,57 +79,63 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
         // Choose appropriate function based on channel type
         if (channelType == "tpc") {
             signal->CalculateBaseLine(fBaselineRange.X(), fBaselineRange.Y());
+            double signalBaseLine = signal->GetBaseLine();
 
             // I think count will never be 0, just in case
-            const double threshold =
-                (countTPC > 0) ? BaseLineMean + fSigmaOverBaseline * BaseLineSigmaMean
-                               : signal->GetBaseLine() + fSigmaOverBaseline * signal->GetBaseLineSigma();
             if (countTPC <= 0) {
                 cerr << "TRestRawPeaksFinderProcess::ProcessEvent: TPC count is 0 in TPC loop, this should "
                         "not happen"
                      << endl;
                 exit(1);
             }
-            const auto peaks = signal->GetPeaks(threshold, fDistance);
 
-            for (const auto& [time, amplitude] : peaks) {
-                eventPeaks.emplace_back(signalId, time, amplitude);
+            const double threshold = BaseLineMean + fSigmaOverBaseline * BaseLineSigmaMean;
+            const auto peaks = signal->GetPeaks(threshold, fDistance, signalBaseLine);
+
+            for (const auto& [time, amplitude, amplitudeBaseLineCorrected] : peaks) {
+                eventPeaks.emplace_back(signalId, time, amplitude, amplitudeBaseLineCorrected);
             }
         } else if (channelType == "veto") {
             // For veto signals the baseline is calculated over the whole range, as we don´t know where the
             // signal will be.
             signal->CalculateBaseLine(0, 511, "OUTLIERS");
+            double signalBaseLine = signal->GetBaseLine();
             // For veto signals the threshold is selected by the user.
             const auto peaks =
-                signal->GetPeaksVeto(signal->GetBaseLine() + fThresholdOverBaseline, fDistance);
+                signal->GetPeaksVeto(signalBaseLine + fThresholdOverBaseline, fDistance, signalBaseLine);
 
-            for (const auto& [time, amplitude] : peaks) {
-                eventPeaks.emplace_back(signalId, time, amplitude);
+            for (const auto& [time, amplitude, amplitudeBaseLineCorrected] : peaks) {
+                eventPeaks.emplace_back(signalId, time, amplitude, amplitudeBaseLineCorrected);
             }
         }
     }
 
     // sort eventPeaks by time, then signal id
     sort(eventPeaks.begin(), eventPeaks.end(),
-         [](const tuple<UShort_t, UShort_t, double>& a, const tuple<UShort_t, UShort_t, double>& b) {
+         [](const tuple<UShort_t, UShort_t, double, double>& a,
+            const tuple<UShort_t, UShort_t, double, double>& b) {
              return tie(get<1>(a), get<0>(a)) < tie(get<1>(b), get<0>(b));
          });
 
     vector<UShort_t> peaksChannelId;
     vector<UShort_t> peaksTime;
     vector<double> peaksAmplitude;
+    vector<double> peaksAmplitudeBaseLineCorrected;
 
     double peaksEnergy = 0.0;
+    double peaksEnergyBaseLineCorrected = 0.0;
     UShort_t peaksCount = 0;
     UShort_t peaksCountUnique = 0;
 
     set<UShort_t> uniquePeaks;
-    for (const auto& [channelId, time, amplitude] : eventPeaks) {
+    for (const auto& [channelId, time, amplitude, amplitudeBaseLineCorrected] : eventPeaks) {
         peaksChannelId.push_back(channelId);
         peaksTime.push_back(time);
         peaksAmplitude.push_back(amplitude);
+        peaksAmplitudeBaseLineCorrected.push_back(amplitudeBaseLineCorrected);
 
         peaksEnergy += amplitude;
+        peaksEnergyBaseLineCorrected += amplitudeBaseLineCorrected;
         peaksCount++;
 
         if (uniquePeaks.find(channelId) == uniquePeaks.end()) {
@@ -140,8 +147,10 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
     SetObservableValue("peaksChannelId", peaksChannelId);
     SetObservableValue("peaksTimeBin", peaksTime);
     SetObservableValue("peaksAmplitudeADC", peaksAmplitude);
+    SetObservableValue("peaksAmplitudeBaseLineCorrectedADC", peaksAmplitudeBaseLineCorrected);
 
     SetObservableValue("peaksAmplitudeADCSum", peaksEnergy);
+    SetObservableValue("peaksAmplitudeBaseLineCorrectedADCSum", peaksEnergyBaseLineCorrected);
     SetObservableValue("peaksCount", peaksCount);
     SetObservableValue("peaksCountUnique", peaksCountUnique);
 
@@ -151,7 +160,7 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
 
     UShort_t window_index = 0;
     for (size_t peakIndex = 0; peakIndex < eventPeaks.size(); peakIndex++) {
-        const auto& [channelId, time, amplitude] = eventPeaks[peakIndex];
+        const auto& [channelId, time, amplitude, amplitudeBaseLineCorrected] = eventPeaks[peakIndex];
         const auto windowTimeStart = time - fWindow / 2;
         const auto windowTimeEnd = time + fWindow / 2;
 
@@ -169,7 +178,8 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
 
         // add the peaks that are in the window
         for (size_t otherPeakIndex = peakIndex + 1; otherPeakIndex < eventPeaks.size(); otherPeakIndex++) {
-            const auto& [otherChannelId, otherTime, otherAmplitude] = eventPeaks[otherPeakIndex];
+            const auto& [otherChannelId, otherTime, otherAmplitude, otherAmplitudeBaseLineCorrected] =
+                eventPeaks[otherPeakIndex];
 
             if (otherTime < windowTimeStart) {
                 continue;
@@ -250,13 +260,13 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
     }
 
     if (fADCtoEnergyFactor != 0.0 || !fChannelIDToADCtoEnergyFactor.empty()) {
-        vector<Double_t> peaksEnergyPhysical(peaksAmplitude.size(), 0.0);
+        vector<Double_t> peaksEnergyPhysical(peaksAmplitudeBaseLineCorrected.size(), 0.0);
         Double_t peaksEnergySum = 0.0;
 
         if (fADCtoEnergyFactor != 0.0) {
             // same factor for all peaks
             for (size_t i = 0; i < peaksAmplitude.size(); i++) {
-                peaksEnergyPhysical[i] = peaksAmplitude[i] * fADCtoEnergyFactor;
+                peaksEnergyPhysical[i] = peaksAmplitudeBaseLineCorrected[i] * fADCtoEnergyFactor;
                 peaksEnergySum += peaksEnergyPhysical[i];
             }
         } else {
@@ -271,7 +281,7 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
                 }
                 const auto factor = fChannelIDToADCtoEnergyFactor[channelId];
 
-                peaksEnergyPhysical[i] = peaksAmplitude[i] * factor;
+                peaksEnergyPhysical[i] = peaksAmplitudeBaseLineCorrected[i] * factor;
                 peaksEnergySum += peaksEnergyPhysical[i];
             }
         }
@@ -283,7 +293,7 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
     // Remove peak-less veto signals after the peak finding if chosen
     if (fRemovePeaklessVetoes && !fRemoveAllVetoes) {
         set<UShort_t> peakSignalIds;
-        for (const auto& [channelId, time, amplitude] : eventPeaks) {
+        for (const auto& [channelId, time, amplitude, amplitudeBaseLineCorrected] : eventPeaks) {
             peakSignalIds.insert(channelId);
         }
 

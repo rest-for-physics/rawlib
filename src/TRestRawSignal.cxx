@@ -1026,8 +1026,10 @@ TGraph* TRestRawSignal::GetGraph(Int_t color) {
     return fGraph;
 }
 
-vector<pair<UShort_t, double>> TRestRawSignal::GetPeaks(double threshold, UShort_t distance) const {
-    vector<pair<UShort_t, double>> peaks;
+std::vector<std::tuple<double, UShort_t, double>> TRestRawSignal::GetPeaks(double threshold,
+                                                                           UShort_t distance,
+                                                                           double signalBaseLine) const {
+    std::vector<std::tuple<double, UShort_t, double>> peaks;
 
     const UShort_t smoothingWindow =
         10;  // Region to compare for peak/no peak classification. 10 means 5 bins to each side
@@ -1099,7 +1101,7 @@ vector<pair<UShort_t, double>> TRestRawSignal::GetPeaks(double threshold, UShort
             // TripleMaxAverage. This is because for flat regions the detected peak is more to the left than
             // the actual one.
             if (isPeak && smoothedValue > threshold) {
-                if (peaks.empty() || i - peaks.back().first >= distance) {
+                if (peaks.empty() || i - std::get<0>(peaks.back()) >= distance) {
                     // Initialize variables to find the max amplitude within the next "distance" bins
                     int maxBin = i;
                     double maxAmplitude = smoothedValues[i];
@@ -1118,9 +1120,10 @@ vector<pair<UShort_t, double>> TRestRawSignal::GetPeaks(double threshold, UShort
                     double amplitude2 = GetRawData(maxBin);
                     double amplitude3 = GetRawData(maxBin + 1);
                     double peakAmplitude = (amplitude1 + amplitude2 + amplitude3) / 3.0;
+                    double peakAmplitudeBaseLineCorrected = peakAmplitude - signalBaseLine;
 
                     // Store the peak position and amplitude
-                    peaks.emplace_back(maxBin, peakAmplitude);
+                    peaks.emplace_back(maxBin, peakAmplitude, peakAmplitudeBaseLineCorrected);
                 }
             }
         }
@@ -1129,8 +1132,10 @@ vector<pair<UShort_t, double>> TRestRawSignal::GetPeaks(double threshold, UShort
     return peaks;
 }
 
-vector<pair<UShort_t, double>> TRestRawSignal::GetPeaksVeto(double threshold, UShort_t distance) const {
-    vector<pair<UShort_t, double>> peaks;
+std::vector<std::tuple<double, UShort_t, double>> TRestRawSignal::GetPeaksVeto(double threshold,
+                                                                               UShort_t distance,
+                                                                               double signalBaseLine) const {
+    std::vector<std::tuple<double, UShort_t, double>> peaks;
 
     const UShort_t smoothingWindow =
         4;  // Region to compare for peak/no peak classification. 10 means 5 bins to each side
@@ -1200,12 +1205,13 @@ vector<pair<UShort_t, double>> TRestRawSignal::GetPeaksVeto(double threshold, US
             // If it's a peak and it´s above the threshold and further than distance to the previous peak, add
             // to peaks
             if (isPeak && smoothedValue > threshold) {
-                if (peaks.empty() || i - peaks.back().first >= distance) {
+                if (peaks.empty() || i - std::get<0>(peaks.back()) >= distance) {
                     auto peakPosition = double(i);
                     auto formattedPeakPosition = static_cast<UShort_t>(peakPosition);
                     double peakAmplitude = GetRawData(formattedPeakPosition);
+                    double peakAmplitudeBaseLineCorrected = peakAmplitude - signalBaseLine;
 
-                    peaks.emplace_back(formattedPeakPosition, peakAmplitude);
+                    peaks.emplace_back(formattedPeakPosition, peakAmplitude, peakAmplitudeBaseLineCorrected);
                 }
             }
         }
