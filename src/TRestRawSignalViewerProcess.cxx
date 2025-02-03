@@ -176,8 +176,7 @@ TRestEvent* TRestRawSignalViewerProcess::ProcessEvent(TRestEvent* inputEvent) {
             } else if (a == 27)  // esc
             {
                 fDrawRefresh = 1e99;
-                while (getchar() != '\n')
-                    ;
+                while (getchar() != '\n');
                 break;
             } else if (a == 110 || a == 78)  // n
             {
@@ -202,8 +201,7 @@ TRestEvent* TRestRawSignalViewerProcess::ProcessEvent(TRestEvent* inputEvent) {
                     RESTWarning << "cannot plot signal with id " << sgnCounter << RESTendl;
                 }
             }
-            while (getchar() != '\n')
-                ;
+            while (getchar() != '\n');
         }
     }
 
