@@ -59,7 +59,7 @@ jobs:
           branch: ${{ env.BRANCH_NAME }}
       - name: Cache framework installation
         id: rawlib-install-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           key: ${{ env.BRANCH_NAME }}-${{ github.sha }}
           path: ${{ env.REST_PATH }}
@@ -77,7 +77,7 @@ jobs:
           repository: rest-for-physics/rawlib
           path: ${{ env.RAW_LIB_PATH }}
       - name: Restore cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         id: rawlib-install-cache
         with:
           key: ${{ env.BRANCH_NAME }}-${{ github.sha }}
@@ -133,7 +133,7 @@ jobs:
           repository: rest-for-physics/rawlib
           path: ${{ env.RAW_LIB_PATH }}
       - name: Restore cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         id: rawlib-install-cache
         with:
           key: ${{ env.BRANCH_NAME }}-${{ github.sha }}
@@ -157,7 +157,7 @@ jobs:
           repository: rest-for-physics/rawlib
           path: ${{ env.RAW_LIB_PATH }}
       - name: Restore cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         id: rawlib-install-cache
         with:
           key: ${{ env.BRANCH_NAME }}-${{ github.sha }}
