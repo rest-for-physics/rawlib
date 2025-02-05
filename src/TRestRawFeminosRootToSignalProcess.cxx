@@ -123,8 +123,8 @@ TRestEvent* TRestRawFeminosRootToSignalProcess::ProcessEvent(TRestEvent* inputEv
 
     fSignalEvent->SetID(fInputTreeEntry);
 
-    // TODO: double check this is correct
-    fSignalEvent->SetTime(fInputEventTreeTimestamp / 1000, fInputEventTreeTimestamp % 1000);
+    // fInputEventTreeTimestamp is in milliseconds and TRestEvent::SetTime(seconds, nanoseconds)
+    fSignalEvent->SetTime(fInputEventTreeTimestamp / 1000, fInputEventTreeTimestamp % 1000 * 1000000);
 
     for (size_t i = 0; i < fInputEventTreeSignalIds->size(); i++) {
         auto signal = TRestRawSignal();
