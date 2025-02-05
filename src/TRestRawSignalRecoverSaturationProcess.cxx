@@ -74,7 +74,8 @@
 /// - **minSaturationValue**: Threshold for considering a signal value as saturated (default: 0).
 /// - **baseLineRange**: Bins range for baseline calculation.
 /// - **fitRange**: Bins range used for fitting.
-/// - **processAllSignals**: If `false` (default), only saturated signals are processed. If `true`, all signals are processed.
+/// - **processAllSignals**: If `false` (default), only saturated signals are processed. If `true`, all
+/// signals are processed.
 /// - **nBinsIfNotSaturated**: Number of bins considered 'saturated' when processing all signals.
 ///
 /// ### Observables
