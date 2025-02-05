@@ -21,94 +21,86 @@
  *************************************************************************/
 
 /////////////////////////////////////////////////////////////////////////
-/// This class is a process to recover the signals that saturated the ADC.
-/// The process uses a fit to recover the signal lost information. If the fit
-/// is successful, the points of the signal that are saturating are replaced
-/// by the fit values at those bins.
-/// \htmlonly <style>div.image img[src="RecoverSignalProcess_eventRecovered.png"]{width:350px;}</style>
-/// \endhtmlonly
+/// This class processes signals that have saturated the ADC, recovering
+/// lost information using a fit. If the fit is successful, the saturated
+/// points are replaced by the corresponding fit values.
 ///
-/// The idea of the process is to recover the signal information that is lost
-/// when the signal saturates the ADC in order to continue the analysis of the
-/// event as if the signal was not saturated at all. For example, here is the
-/// comparison in the spectrum of the observable ThresholdIntegral of the
-/// TRestRawSignalAnalysisProcess before (red) and after (blue) applying this
+/// \image html RecoverSignalProcess_eventRecovered.png "Recovered Event" width=350px
+///
+/// This process reconstructs the lost signal data due to ADC saturation,
+/// allowing further event analysis as if no saturation had occurred.
+/// For example, the following image compares the ThresholdIntegral spectrum
+/// in TRestRawSignalAnalysisProcess before (red) and after (blue) applying
 /// TRestRawSignalRecoverSaturationProcess:
-/// \htmlonly <style>div.image img[src="RecoverSignalProcess_spectrumComparison.png"]{width:350px;}</style>
-/// \endhtmlonly
 ///
-/// ### Fitting function
+/// \image html RecoverSignalProcess_spectrumComparison.png "Spectrum Comparison" width=350px
+///
+/// ### Fitting Function
 /// The fitting function is fixed (hardcoded) to the AGET response function
-/// (without the sin) times a logistic function:
-/// \code
-/// [0]+[1]*TMath::Exp(-3. * (x-[3])/[2]) *
-/// (x-[3])/[2] * (x-[3])/[2] * (x-[3])/[2] /
-/// (1+TMath::Exp(-10000*(x-[3])))
+/// (without the sine term) multiplied by a logistic function:
 ///
-/// [0] = "Baseline",
-/// [1] = "Amplitude",
-/// [2] = "ShapingTime",
+/// \code
+/// [0] + [1] * TMath::Exp(-3. * (x-[3])/[2]) *
+/// (x-[3])/[2] * (x-[3])/[2] * (x-[3])/[2] /
+/// (1 + TMath::Exp(-10000 * (x-[3])))
+///
+/// [0] = "Baseline"
+/// [1] = "Amplitude"
+/// [2] = "ShapingTime"
 /// [3] = "PeakPosition"
 /// \endcode
-/// \htmlonly <style>div.image img[src="RecoverSignalProcess_signalFit.png"]{width:350px;}</style>
-/// \endhtmlonly
 ///
+/// \image html RecoverSignalProcess_signalFit.png "Signal Fit" width=350px
 ///
 /// ### Parameters
-/// The default behaviour is to process only the saturated signals, but it
-/// can be configured to process all signals in the event
-/// (using the fProcessAllSignals parameter). The saturated signals are
-/// identified by a minimun number of bins (fMinSaturatedBins) that must
-/// have the maximum value of the signal and by a threshold value which
-/// this saturating value must exceed (fMinSaturationValue).
+/// By default, only saturated signals are processed, but all signals can be
+/// included using `fProcessAllSignals`. Saturated signals are identified
+/// based on two conditions:
+/// - A minimum number of bins (`fMinSaturatedBins`) must have the maximum value.
+/// - The maximum value must exceed a threshold (`fMinSaturationValue`).
 ///
-/// The fit can be configured with the fBaseLineRange and fFitRange parameters.
-/// The baseline range is used to calculate the baseline of the signal and fix
-/// that parameter in the fit. This will make the fit faster and more reliable.
-/// The fit range is the range of bins to fit the signal. If not provided, the
-/// whole signal will be used.
+/// The fit configuration includes:
+/// - `fBaseLineRange`: Used to calculate and fix the signal baseline in the fit,
+///   improving speed and reliability.
+/// - `fFitRange`: Defines the range of bins used in the fit. If not provided,
+///   the entire signal is used.
 ///
-/// To debug the process, you may use _debug_ or _extreme_ verbose levels.
-/// In the extreme level, a canvas will be created to draw the signal and
-/// the fit for each processed signal of the event. In the debug level, the
-/// fit result will be printed in the console but no canvas will be created.
+/// Debugging options:
+/// - **Debug mode:** Prints fit results in the console.
+/// - **Extreme mode:** Generates a canvas to visualize each processed signal and its fit.
 ///
-/// * **minSaturatedBins**: Minimum number of saturated bins to consider a signal as saturated.
-/// Default is 3.
-/// * **minSaturationValue**: Threshold to consider a maximum value of the signal as possible saturation.
-/// Default is 0.
-/// * **baseLineRange**: Range of bins to calculate the baseline and fix that parameter in the fit.
-/// * **fitRange**: Range of bins to fit the signal.
-/// * **processAllSignals**: If false (default), only signals considered as saturated will be processed.
-/// If true, all signals will be processed.
-/// * **nBinsIfNotSaturated**: Number of bins to consider as 'saturated' if the signal is not saturated.
-/// This is used when fProcessAllSignals is true to set the 'saturated' bins.
+/// **Parameters:**
+/// - **minSaturatedBins**: Minimum number of saturated bins to consider a signal as saturated (default: 3).
+/// - **minSaturationValue**: Threshold for considering a signal value as saturated (default: 0).
+/// - **baseLineRange**: Bins range for baseline calculation.
+/// - **fitRange**: Bins range used for fitting.
+/// - **processAllSignals**: If `false` (default), only saturated signals are processed. If `true`, all signals are processed.
+/// - **nBinsIfNotSaturated**: Number of bins considered 'saturated' when processing all signals.
 ///
 /// ### Observables
-/// The process will add the following observables to the event:
-/// * **addedAmplitude**: Sum of the extra amplitude (newamplitude - previousamplitude) of the
-/// recovered saturated signals of the event.
-/// * **addedIntegral**: Sum of the extra integral (sum of newvalue-previousvalue of the saturated bins)
-/// of the recovered saturated signals of the event.
-/// * **saturatedSignals**: number of signals of the event detected as saturated.
-/// * **recoveredSignals**: number of signals of the event detected as saturated and that have been
-/// modified by the fitted pulse. It is always <=saturatedSignals. If it is less, it means that
-/// the fit values of the saturated bins of the those signals were lower than the original value
-/// of the signal so they are not replaced and those signals has not been recovered.
-/// \htmlonly <style>div.image img[src="RecoverSignalProcess_addedAmplIntegral.png"]{width:350px;}</style>
-/// \endhtmlonly
+/// The process adds the following observables to the event:
+/// - **addedAmplitude**: Sum of the extra amplitude (new amplitude - previous amplitude)
+///   from recovered saturated signals.
+/// - **addedIntegral**: Sum of the extra integral (sum of new value - previous value in saturated bins)
+///   from recovered signals.
+/// - **saturatedSignals**: Number of signals detected as saturated in the event.
+/// - **recoveredSignals**: Number of saturated signals successfully modified by the fitted pulse.
+///   Always ≤ `saturatedSignals`. If lower, it means the fit values were below the original
+///   signal values, so no replacements were made.
 ///
+/// \image html RecoverSignalProcess_addedAmplIntegral.png "Added Amplitude and Integral" width=350px
 ///
 /// ### Examples
-/// Give examples of usage and RML descriptions that can be tested.
+/// Example of usage with RML configuration:
+///
 /// \code
-///    <addProcess type="TRestRawSignalRecoverSaturationProcess" name="recSat" value="ON" verboseLevel="info"
-///    observable="all">
-///        <parameter name="minSaturatedBins" value="3" />
-///        <parameter name="minSaturationValue" value="3500" />
-///        <parameter name="baseLineRange" value="(20,150)" />
-///        <parameter name="fitRange" value="(150,300)" />
-///    </addProcess>
+/// <addProcess type="TRestRawSignalRecoverSaturationProcess" name="recSat" value="ON" verboseLevel="info"
+/// observable="all">
+///     <parameter name="minSaturatedBins" value="3" />
+///     <parameter name="minSaturationValue" value="3500" />
+///     <parameter name="baseLineRange" value="(20,150)" />
+///     <parameter name="fitRange" value="(150,300)" />
+/// </addProcess>
 /// \endcode
 ///
 ///
