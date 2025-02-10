@@ -103,20 +103,26 @@
 ///
 /// Example of a more complex RML configuration:
 /// \code
-/// <addProcess type="TRestRawSignalRecoverSaturationProcess" name="recSat" value="ON" verboseLevel="info"
-/// observable="all"> 	<parameter name="minSaturatedBins" value="3" /> 	<parameter name="minSaturationValue"
-/// value="3500" /> 	<parameter name="fitRange" value="(150,300)" /> 	<parameter name="baseLineRange"
-/// value="(20,150)" /> 	<parameter name="initPointsOverThreshold" value="(3.5, 2.5, 7)" />
+/// <addProcess type="TRestRawSignalRecoverSaturationProcess" name="recSat" value="ON" obervable="all">
+///     <parameter name="minSaturatedBins" value="3" />
+///     <parameter name="processAllSignals" value="true" />
+///     <parameter name="nBinsIfNotSaturated" value="16" />
+///     <parameter name="fitRange" value="(150,300)" />
+///     <parameter name="baseLineRange" value="(20,150)" />
+///     <parameter name="initPointsOverThreshold" value="(3.5, 2.5, 7)" />
 /// </addProcess>
 /// \endcode
 ///
 /// Example of a testing RML configuration:
 /// \code
-/// <addProcess type="TRestRawSignalRecoverSaturationProcess" name="recSat" value="ON" verboseLevel="extreme"
-/// observable="all"> 	<parameter name="processAllSignals" value="true" /> 	<parameter
-/// name="nBinsIfNotSaturated" value="16" /> 	<parameter name="fitRange" value="(150,300)" /> 	<parameter
-/// name="baseLineRange" value="(20,150)" /> 	<parameter name="initPointsOverThreshold" value="(3.5, 2.5, 7)"
-/// />
+/// <addProcess type="TRestRawSignalRecoverSaturationProcess" name="recSat" value="ON"
+/// verboseLevel="extreme" observable="all">
+///     <parameter name="minSaturatedBins" value="3" />
+///     <parameter name="processAllSignals" value="true" />
+///     <parameter name="nBinsIfNotSaturated" value="16" />
+///     <parameter name="fitRange" value="(150,300)" />
+///     <parameter name="baseLineRange" value="(20,150)" />
+///     <parameter name="initPointsOverThreshold" value="(3.5, 2.5, 7)" />
 /// </addProcess>
 /// \endcode
 ///
