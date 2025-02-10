@@ -45,9 +45,9 @@
 /// (1 + TMath::Exp(-10000 * (x-[3])))
 ///
 /// [0] = "Baseline"
-/// [1] = "Amplitude"
-/// [2] = "ShapingTime"
-/// [3] = "PeakPosition"
+/// [1] = "Amplitude * e^{3}"
+/// [2] = "HalfWidth"
+/// [3] = "PulseStart"
 /// \endcode
 ///
 /// \image html RecoverSignalProcess_signalFit.png "Signal Fit" width=350px
@@ -276,6 +276,8 @@ TRestEvent* TRestRawSignalRecoverSaturationProcess::ProcessEvent(TRestEvent* evI
         // Second (and better) estimation of the parameters
         auto pOverThreshold = signal->GetPointsOverThreshold();
         if (!pOverThreshold.empty()) {
+            RESTDebug << "    Points over threshold: " << pOverThreshold.size() << ". From point "
+                      << pOverThreshold.front() << " to " << pOverThreshold.back() << RESTendl;
             // extrapolate the line connecting the first point of the pulse peak:
             // (pOverThreshold[0], signal->GetRawData(pOverThreshold[0]))
             // with the first point to be saturated: (maxPeakBin, maxValue)
@@ -285,14 +287,12 @@ TRestEvent* TRestRawSignalRecoverSaturationProcess::ProcessEvent(TRestEvent* evI
             // the amplitude estimate should be at least the maximum value of the signal
             if (amplEstimate < maxValue) amplEstimate = maxValue;
         }
-        // signal->CalculateBaseLine(20,150);
-        if (signal->isBaseLineInitialized()) {
-            baselineEstimate = signal->GetBaseLine();
-        }
-        RESTDebug << "    Estimations: ampl=" << amplEstimate << " width=" << widthEstimate
-                  << " baseline=" << baselineEstimate << " peakpos=" << peakposEstimate << RESTendl;
+
+        RESTDebug << "    Estimations: ampl=" << amplEstimate << " (" << amplEstimate / 0.0498
+                  << ")  width=" << widthEstimate << " baseline=" << baselineEstimate << " peakpos="
+                  << peakposEstimate << " (" << peakposEstimate - widthEstimate  << ")" << RESTendl;
         // Configure the fit parameters
-        f->SetParNames("Baseline", "Amplitude", "ShapingTime", "PeakPosition");
+        f->SetParNames("Baseline", "Amplitude*e^{3}", "HalfWidth", "PulseStart");
         // f->SetParameters(baselineEstimate, amplEstimate / 0.0498, widthEstimate, peakposEstimate -
         // widthEstimate);
         //  Baseline
