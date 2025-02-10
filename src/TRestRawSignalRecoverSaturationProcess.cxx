@@ -230,6 +230,9 @@ TRestEvent* TRestRawSignalRecoverSaturationProcess::ProcessEvent(TRestEvent* evI
                  i < maxPeakBin + fNBinsIfNotSaturated / 2 && i < (size_t)signal->GetNumberOfPoints(); i++) {
                 saturatedBins.push_back(i);
             }
+            // maxPeakBin should be the first saturated bin
+            maxPeakBin = saturatedBins.empty() ? maxPeakBin : saturatedBins.front();
+            maxValue = (*signal)[maxPeakBin];
         }
 
         if (!saturatedBins.empty()) {
