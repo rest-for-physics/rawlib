@@ -52,8 +52,7 @@ class TRestRawSignalRecoverSaturationProcess : public TRestEventProcess {
     /// Range of bins to fit the signal
     TVector2 fFitRange;  //<
 
-    /// Parameters to initialize the points over threshold (pointThreshold, signalThreshold,
-    /// pointsOverThreshold)
+    /// Wrapper of (pointThreshold, signalThreshold, pointsOverThreshold) params
     TVector3 fInitPointsOverThreshold;  //<
 
     /// Canvas to draw the signals
