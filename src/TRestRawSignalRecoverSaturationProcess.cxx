@@ -150,6 +150,8 @@ void TRestRawSignalRecoverSaturationProcess::Initialize() {
     fMinSaturationValue = 0;
     fBaseLineRange = TVector2(-1, -1);  // -1 means no baseline range
     fFitRange = TVector2(-1, -1);       // -1 means no fit range
+    fInitPointsOverThreshold = TVector3(-1, -1, -1);  // -1 means no initialization
+    fC = nullptr;
 }
 
 ///////////////////////////////////////////////
@@ -284,7 +286,14 @@ TRestEvent* TRestRawSignalRecoverSaturationProcess::ProcessEvent(TRestEvent* evI
             baselineEstimate = signal->GetBaseLine();
         }
 
-        // Second (and better) estimation of the parameters
+        // Second (and better) estimation of amplitude and width. It needs to initialize the points over threshold
+        Double_t pointThreshold = fInitPointsOverThreshold.X();
+        Double_t signalThreshold = fInitPointsOverThreshold.Y();
+        Int_t pointsOverThreshold = fInitPointsOverThreshold.Z();
+        if (pointsOverThreshold > 0 && pointThreshold > 0 && signalThreshold > 0) {
+            signal->InitializePointsOverThreshold(TVector2(pointThreshold, signalThreshold), pointsOverThreshold,
+                                                  signal->GetNumberOfPoints()); // we dont care about overshoot here
+        }
         auto pOverThreshold = signal->GetPointsOverThreshold();
         if (!pOverThreshold.empty()) {
             RESTDebug << "    Points over threshold: " << pOverThreshold.size() << ". From point "

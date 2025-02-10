@@ -34,20 +34,29 @@ class TRestRawSignalRecoverSaturationProcess : public TRestEventProcess {
 
     void Initialize() override;
 
-    // Add here the members or parameters for your event process.
-    // You can set their default values here together.
-    // Note: add "//!" mark at the end of the member definition
-    // if you don't want to save them to disk.
-    Size_t fMinSaturatedBins;  //<  ///< Minimum number of saturated bins to consider a signal as saturated
+    /// Minimum number of saturated bins to consider a signal as saturated
+    Size_t fMinSaturatedBins;  //<
 
-    Bool_t fProcessAllSignals;    //<  ///< Process all signals in the event
-    Size_t fNBinsIfNotSaturated;  //<  ///< Number of bins to consider if the signal is not saturated
-    Short_t fMinSaturationValue;  //<  ///< Threshold to consider a bin as saturated
+    /// Process all signals in the event
+    Bool_t fProcessAllSignals;    //<
 
-    TVector2
-        fBaseLineRange;  //<  ///< Range of bins to calculate the baseline and fix that parameter in the fit
-    TVector2 fFitRange;  //<  ///< Range of bins to fit the signal
-    TCanvas* fC;         //!  ///< Canvas to draw the signals
+    /// Number of bins to consider if the signal is not saturated
+    Size_t fNBinsIfNotSaturated;  //<
+
+    /// Minimum value to consider a signal as saturated
+    Short_t fMinSaturationValue;  //<
+
+    /// Range of bins to calculate the baseline and fix that parameter in the fit
+    TVector2 fBaseLineRange;  //<
+
+    /// Range of bins to fit the signal
+    TVector2 fFitRange;  //<
+
+    /// Parameters to initialize the points over threshold (pointThreshold, signalThreshold, pointsOverThreshold)
+    TVector3 fInitPointsOverThreshold;  //<
+
+    /// Canvas to draw the signals
+    TCanvas* fC;         //!
 
    public:
     RESTValue GetInputEvent() const override { return fAnaEvent; }
@@ -74,6 +83,8 @@ class TRestRawSignalRecoverSaturationProcess : public TRestEventProcess {
         RESTMetadata << "BaseLineRange: (" << fBaseLineRange.X() << ", " << fBaseLineRange.Y() << ")"
                      << RESTendl;
         RESTMetadata << "FitRange: (" << fFitRange.X() << ", " << fFitRange.Y() << ")" << RESTendl;
+        RESTMetadata << "InitPointsOverThreshold: (" << fInitPointsOverThreshold.X() << ", "
+                     << fInitPointsOverThreshold.Y() << ", " << fInitPointsOverThreshold.Z() << ")" << RESTendl;
 
         EndPrintProcess();
     }
