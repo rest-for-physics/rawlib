@@ -38,7 +38,7 @@ class TRestRawSignalRecoverSaturationProcess : public TRestEventProcess {
     Size_t fMinSaturatedBins;  //<
 
     /// Process all signals in the event
-    Bool_t fProcessAllSignals;    //<
+    Bool_t fProcessAllSignals;  //<
 
     /// Number of bins to consider if the signal is not saturated
     Size_t fNBinsIfNotSaturated;  //<
@@ -52,11 +52,12 @@ class TRestRawSignalRecoverSaturationProcess : public TRestEventProcess {
     /// Range of bins to fit the signal
     TVector2 fFitRange;  //<
 
-    /// Parameters to initialize the points over threshold (pointThreshold, signalThreshold, pointsOverThreshold)
+    /// Parameters to initialize the points over threshold (pointThreshold, signalThreshold,
+    /// pointsOverThreshold)
     TVector3 fInitPointsOverThreshold;  //<
 
     /// Canvas to draw the signals
-    TCanvas* fC;         //!
+    TCanvas* fC;  //!
 
    public:
     RESTValue GetInputEvent() const override { return fAnaEvent; }
@@ -84,7 +85,8 @@ class TRestRawSignalRecoverSaturationProcess : public TRestEventProcess {
                      << RESTendl;
         RESTMetadata << "FitRange: (" << fFitRange.X() << ", " << fFitRange.Y() << ")" << RESTendl;
         RESTMetadata << "InitPointsOverThreshold: (" << fInitPointsOverThreshold.X() << ", "
-                     << fInitPointsOverThreshold.Y() << ", " << fInitPointsOverThreshold.Z() << ")" << RESTendl;
+                     << fInitPointsOverThreshold.Y() << ", " << fInitPointsOverThreshold.Z() << ")"
+                     << RESTendl;
 
         EndPrintProcess();
     }

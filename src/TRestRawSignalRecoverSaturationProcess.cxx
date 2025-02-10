@@ -54,7 +54,8 @@
 ///
 /// ### Parameters
 /// Basic parameters of the process meant to configure the identification of saturated signals to process:
-/// - **minSaturatedBins**: Minimum number of saturated bins required to classify a signal as saturated (default: 3).
+/// - **minSaturatedBins**: Minimum number of saturated bins required to classify a signal as saturated
+/// (default: 3).
 /// - **minSaturationValue**: Threshold value for considering a signal as saturated (default: 0).
 /// - **processAllSignals**: If `false` (default), only saturated signals are processed.
 ///   If `true`, all signals are processed.
@@ -63,18 +64,18 @@
 ///
 /// Advanced parameters to configure the fitting process:
 /// - **fitRange**: Range of bins used for fitting. If not provided, the entire signal is used.
-/// Default: (-1, -1), meaning the whole signal is used.  
+/// Default: (-1, -1), meaning the whole signal is used.
 /// - **baseLineRange**: Range of bins used to calculate the baseline. If provided, the baseline
 ///   will be fixed in the fit, improving speed and reliability.
-/// Default: (-1, -1), meaning no baseline calculation.  
+/// Default: (-1, -1), meaning no baseline calculation.
 /// - **initPointsOverThreshold**: Parameters used as input to `TRestRawSignal::InitializePointsOverThreshold`
 /// to improve amplitude and width estimation. These parameters are wrapped into a `TVector3`:
 /// (`pointThreshold`, `signalThreshold`, `pointsOverThreshold`).
 /// Default: (-1, -1, -1), meaning no initialization. \n
 ///   - `pointThreshold`: Number of standard deviations above baseline fluctuations required
-///     to identify a point as over-threshold.  
-///   - `signalThreshold`: Minimum required signal fluctuation, measured in standard deviations.  
-///   - `pointsOverThreshold`: Minimum number of points over threshold needed to classify a signal as such.  
+///     to identify a point as over-threshold.
+///   - `signalThreshold`: Minimum required signal fluctuation, measured in standard deviations.
+///   - `pointsOverThreshold`: Minimum number of points over threshold needed to classify a signal as such.
 ///
 ///
 /// ### Observables
@@ -102,23 +103,20 @@
 ///
 /// Example of a more complex RML configuration:
 /// \code
-/// <addProcess type="TRestRawSignalRecoverSaturationProcess" name="recSat" value="ON" verboseLevel="info" observable="all">
-/// 	<parameter name="minSaturatedBins" value="3" />
-/// 	<parameter name="minSaturationValue" value="3500" />
-/// 	<parameter name="fitRange" value="(150,300)" />
-/// 	<parameter name="baseLineRange" value="(20,150)" />
-/// 	<parameter name="initPointsOverThreshold" value="(3.5, 2.5, 7)" />
+/// <addProcess type="TRestRawSignalRecoverSaturationProcess" name="recSat" value="ON" verboseLevel="info"
+/// observable="all"> 	<parameter name="minSaturatedBins" value="3" /> 	<parameter name="minSaturationValue"
+/// value="3500" /> 	<parameter name="fitRange" value="(150,300)" /> 	<parameter name="baseLineRange"
+/// value="(20,150)" /> 	<parameter name="initPointsOverThreshold" value="(3.5, 2.5, 7)" />
 /// </addProcess>
 /// \endcode
 ///
 /// Example of a testing RML configuration:
 /// \code
-/// <addProcess type="TRestRawSignalRecoverSaturationProcess" name="recSat" value="ON" verboseLevel="extreme" observable="all">
-/// 	<parameter name="processAllSignals" value="true" />
-/// 	<parameter name="nBinsIfNotSaturated" value="16" />
-/// 	<parameter name="fitRange" value="(150,300)" />
-/// 	<parameter name="baseLineRange" value="(20,150)" />
-/// 	<parameter name="initPointsOverThreshold" value="(3.5, 2.5, 7)" />
+/// <addProcess type="TRestRawSignalRecoverSaturationProcess" name="recSat" value="ON" verboseLevel="extreme"
+/// observable="all"> 	<parameter name="processAllSignals" value="true" /> 	<parameter
+/// name="nBinsIfNotSaturated" value="16" /> 	<parameter name="fitRange" value="(150,300)" /> 	<parameter
+/// name="baseLineRange" value="(20,150)" /> 	<parameter name="initPointsOverThreshold" value="(3.5, 2.5, 7)"
+/// />
 /// </addProcess>
 /// \endcode
 ///
@@ -165,8 +163,8 @@ void TRestRawSignalRecoverSaturationProcess::Initialize() {
     fProcessAllSignals = false;
     fNBinsIfNotSaturated = 20;
     fMinSaturationValue = 0;
-    fBaseLineRange = TVector2(-1, -1);  // -1 means no baseline range
-    fFitRange = TVector2(-1, -1);       // -1 means no fit range
+    fBaseLineRange = TVector2(-1, -1);                // -1 means no baseline range
+    fFitRange = TVector2(-1, -1);                     // -1 means no fit range
     fInitPointsOverThreshold = TVector3(-1, -1, -1);  // -1 means no initialization
     fC = nullptr;
 }
@@ -286,29 +284,34 @@ TRestEvent* TRestRawSignalRecoverSaturationProcess::ProcessEvent(TRestEvent* evI
                          startFitRange, endFitRange);
 
         // First estimation of the parameters
-        auto peakposEstimate = maxPeakBin + saturatedBins.size() / 2; // maxPeakBin is the first saturated bin
+        auto peakposEstimate =
+            maxPeakBin + saturatedBins.size() / 2;  // maxPeakBin is the first saturated bin
         Double_t amplEstimate = maxValue;
-        Double_t widthEstimate = (endFitRange - startFitRange) * 0.33; // 0.33 is somehow arbitrary
-        Int_t binAtHalfMaximum = (Int_t) startFitRange;
-        for (size_t i = (size_t) startFitRange; i < (size_t) endFitRange; i++) {
+        Double_t widthEstimate = (endFitRange - startFitRange) * 0.33;  // 0.33 is somehow arbitrary
+        Int_t binAtHalfMaximum = (Int_t)startFitRange;
+        for (size_t i = (size_t)startFitRange; i < (size_t)endFitRange; i++) {
             if ((*signal)[i] > amplEstimate / 2) {
                 binAtHalfMaximum = i;
                 break;
             }
         }
-        widthEstimate = peakposEstimate - binAtHalfMaximum > 0 ? peakposEstimate - binAtHalfMaximum : widthEstimate;
-        Double_t baselineEstimate = (*signal)[0]; // first point of the signal is usually part of the baseline
-        if (signal->isBaseLineInitialized()) { // if the baseline has been initialized, use it
+        widthEstimate =
+            peakposEstimate - binAtHalfMaximum > 0 ? peakposEstimate - binAtHalfMaximum : widthEstimate;
+        Double_t baselineEstimate =
+            (*signal)[0];                       // first point of the signal is usually part of the baseline
+        if (signal->isBaseLineInitialized()) {  // if the baseline has been initialized, use it
             baselineEstimate = signal->GetBaseLine();
         }
 
-        // Second (and better) estimation of amplitude and width. It needs to initialize the points over threshold
+        // Second (and better) estimation of amplitude and width. It needs to initialize the points over
+        // threshold
         Double_t pointThreshold = fInitPointsOverThreshold.X();
         Double_t signalThreshold = fInitPointsOverThreshold.Y();
         Int_t pointsOverThreshold = fInitPointsOverThreshold.Z();
         if (pointsOverThreshold > 0 && pointThreshold > 0 && signalThreshold > 0) {
-            signal->InitializePointsOverThreshold(TVector2(pointThreshold, signalThreshold), pointsOverThreshold,
-                                                  signal->GetNumberOfPoints()); // we dont care about overshoot here
+            signal->InitializePointsOverThreshold(
+                TVector2(pointThreshold, signalThreshold), pointsOverThreshold,
+                signal->GetNumberOfPoints());  // we dont care about overshoot here
         }
         auto pOverThreshold = signal->GetPointsOverThreshold();
         if (!pOverThreshold.empty()) {
@@ -329,8 +332,9 @@ TRestEvent* TRestRawSignalRecoverSaturationProcess::ProcessEvent(TRestEvent* evI
         }
 
         RESTDebug << "    Estimations: ampl=" << amplEstimate << " (" << amplEstimate / 0.0498
-                  << ")  width=" << widthEstimate << " baseline=" << baselineEstimate << " peakpos="
-                  << peakposEstimate << " (" << peakposEstimate - widthEstimate  << ")" << RESTendl;
+                  << ")  width=" << widthEstimate << " baseline=" << baselineEstimate
+                  << " peakpos=" << peakposEstimate << " (" << peakposEstimate - widthEstimate << ")"
+                  << RESTendl;
         // Configure the fit parameters
         f->SetParNames("Baseline", "Amplitude*e^{3}", "HalfWidth", "PulseStart");
         // f->SetParameters(baselineEstimate, amplEstimate / 0.0498, widthEstimate, peakposEstimate -
