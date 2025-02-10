@@ -286,6 +286,10 @@ TRestEvent* TRestRawSignalRecoverSaturationProcess::ProcessEvent(TRestEvent* evI
                            (maxPeakBin - pOverThreshold[0]) * (peakposEstimate - pOverThreshold[0]);
             // the amplitude estimate should be at least the maximum value of the signal
             if (amplEstimate < maxValue) amplEstimate = maxValue;
+
+            // estimate the width as the distance between the first pulse point and the
+            // peak position
+            widthEstimate = peakposEstimate - pOverThreshold[0];
         }
 
         RESTDebug << "    Estimations: ampl=" << amplEstimate << " (" << amplEstimate / 0.0498
