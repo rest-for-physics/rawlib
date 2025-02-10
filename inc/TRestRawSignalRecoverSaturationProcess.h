@@ -26,7 +26,7 @@
 #include "TRestEventProcess.h"
 #include "TRestRawSignalEvent.h"
 
-/// TODO Write here a brief description. Just one line!
+/// This class recovers the saturated signals in a TRestRawSignalEvent using a fit to the AGET pulse.
 class TRestRawSignalRecoverSaturationProcess : public TRestEventProcess {
    private:
     /// A pointer to the specific TRestRawSignalEvent input event

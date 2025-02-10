@@ -24,16 +24,15 @@
 /// This class processes signals that have saturated the ADC, recovering
 /// lost information using a fit. If the fit is successful, the saturated
 /// points are replaced by the corresponding fit values.
-///
-/// \image html RecoverSignalProcess_eventRecovered.png "Recovered Event" width=350px
-///
-/// This process reconstructs the lost signal data due to ADC saturation,
+/// The process reconstructs the lost signal data due to ADC saturation,
 /// allowing further event analysis as if no saturation had occurred.
-/// For example, the following image compares the ThresholdIntegral spectrum
-/// in TRestRawSignalAnalysisProcess before (red) and after (blue) applying
-/// TRestRawSignalRecoverSaturationProcess:
+/// For example, the following image compares the original to the recovered
+/// event and the ThresholdIntegral spectrum in TRestRawSignalAnalysisProcess
+/// before (red) and after (blue) applying TRestRawSignalRecoverSaturationProcess:
 ///
-/// \image html RecoverSignalProcess_spectrumComparison.png "Spectrum Comparison" width=350px
+/// \image html RecoverSignalProcess_eventRecovered.png "Recovered Event" width=900px
+/// \image html RecoverSignalProcess_spectrumComparison.png "Spectrum Comparison" width=500px
+///
 ///
 /// ### Fitting Function
 /// The fitting function is fixed (hardcoded) to the AGET response function
@@ -50,33 +49,33 @@
 /// [3] = "PulseStart"
 /// \endcode
 ///
-/// \image html RecoverSignalProcess_signalFit.png "Signal Fit" width=350px
+///
+/// \image html RecoverSignalProcess_signalFit.png "Signal Fit" width=500px
 ///
 /// ### Parameters
-/// By default, only saturated signals are processed, but all signals can be
-/// included using `fProcessAllSignals`. Saturated signals are identified
-/// based on two conditions:
-/// - A minimum number of bins (`fMinSaturatedBins`) must have the maximum value.
-/// - The maximum value must exceed a threshold (`fMinSaturationValue`).
+/// Basic parameters of the process meant to configure the identification of saturated signals to process:
+/// - **minSaturatedBins**: Minimum number of saturated bins required to classify a signal as saturated (default: 3).
+/// - **minSaturationValue**: Threshold value for considering a signal as saturated (default: 0).
+/// - **processAllSignals**: If `false` (default), only saturated signals are processed.
+///   If `true`, all signals are processed.
+/// - **nBinsIfNotSaturated**: Number of bins treated as 'saturated' when processing all signals.
+///   Has no effect when `processAllSignals` is `false`. Default: 20.
 ///
-/// The fit configuration includes:
-/// - `fBaseLineRange`: Used to calculate and fix the signal baseline in the fit,
-///   improving speed and reliability.
-/// - `fFitRange`: Defines the range of bins used in the fit. If not provided,
-///   the entire signal is used.
+/// Advanced parameters to configure the fitting process:
+/// - **fitRange**: Range of bins used for fitting. If not provided, the entire signal is used.
+/// Default: (-1, -1), meaning the whole signal is used.  
+/// - **baseLineRange**: Range of bins used to calculate the baseline. If provided, the baseline
+///   will be fixed in the fit, improving speed and reliability.
+/// Default: (-1, -1), meaning no baseline calculation.  
+/// - **initPointsOverThreshold**: Parameters used as input to `TRestRawSignal::InitializePointsOverThreshold`
+/// to improve amplitude and width estimation. These parameters are wrapped into a `TVector3`:
+/// (`pointThreshold`, `signalThreshold`, `pointsOverThreshold`).
+/// Default: (-1, -1, -1), meaning no initialization. \n
+///   - `pointThreshold`: Number of standard deviations above baseline fluctuations required
+///     to identify a point as over-threshold.  
+///   - `signalThreshold`: Minimum required signal fluctuation, measured in standard deviations.  
+///   - `pointsOverThreshold`: Minimum number of points over threshold needed to classify a signal as such.  
 ///
-/// Debugging options:
-/// - **Debug mode:** Prints fit results in the console.
-/// - **Extreme mode:** Generates a canvas to visualize each processed signal and its fit.
-///
-/// **Parameters:**
-/// - **minSaturatedBins**: Minimum number of saturated bins to consider a signal as saturated (default: 3).
-/// - **minSaturationValue**: Threshold for considering a signal value as saturated (default: 0).
-/// - **baseLineRange**: Bins range for baseline calculation.
-/// - **fitRange**: Bins range used for fitting.
-/// - **processAllSignals**: If `false` (default), only saturated signals are processed. If `true`, all
-/// signals are processed.
-/// - **nBinsIfNotSaturated**: Number of bins considered 'saturated' when processing all signals.
 ///
 /// ### Observables
 /// The process adds the following observables to the event:
@@ -89,21 +88,39 @@
 ///   Always ≤ `saturatedSignals`. If lower, it means the fit values were below the original
 ///   signal values, so no replacements were made.
 ///
-/// \image html RecoverSignalProcess_addedAmplIntegral.png "Added Amplitude and Integral" width=350px
+/// \image html RecoverSignalProcess_addedAmplIntegral.png "Added Amplitude and Integral" width=500px
 ///
 /// ### Examples
-/// Example of usage with RML configuration:
-///
+/// Example of usage with a minimal RML configuration:
 /// \code
-/// <addProcess type="TRestRawSignalRecoverSaturationProcess" name="recSat" value="ON" verboseLevel="info"
-/// observable="all">
-///     <parameter name="minSaturatedBins" value="3" />
+/// <addProcess type="TRestRawSignalRecoverSaturationProcess" name="recSat" value="ON" observable="all">
 ///     <parameter name="minSaturationValue" value="3500" />
 ///     <parameter name="baseLineRange" value="(20,150)" />
 ///     <parameter name="fitRange" value="(150,300)" />
 /// </addProcess>
 /// \endcode
 ///
+/// Example of a more complex RML configuration:
+/// \code
+/// <addProcess type="TRestRawSignalRecoverSaturationProcess" name="recSat" value="ON" verboseLevel="info" observable="all">
+/// 	<parameter name="minSaturatedBins" value="3" />
+/// 	<parameter name="minSaturationValue" value="3500" />
+/// 	<parameter name="fitRange" value="(150,300)" />
+/// 	<parameter name="baseLineRange" value="(20,150)" />
+/// 	<parameter name="initPointsOverThreshold" value="(3.5, 2.5, 7)" />
+/// </addProcess>
+/// \endcode
+///
+/// Example of a testing RML configuration:
+/// \code
+/// <addProcess type="TRestRawSignalRecoverSaturationProcess" name="recSat" value="ON" verboseLevel="extreme" observable="all">
+/// 	<parameter name="processAllSignals" value="true" />
+/// 	<parameter name="nBinsIfNotSaturated" value="16" />
+/// 	<parameter name="fitRange" value="(150,300)" />
+/// 	<parameter name="baseLineRange" value="(20,150)" />
+/// 	<parameter name="initPointsOverThreshold" value="(3.5, 2.5, 7)" />
+/// </addProcess>
+/// \endcode
 ///
 ///----------------------------------------------------------------------
 ///
@@ -112,10 +129,10 @@
 /// History of developments:
 ///
 /// 2025-Jan: First implementation of TRestRawSignalRecoverSaturationProcess
-/// Álvaro Ezquerro
+/// by Álvaro Ezquerro
 ///
 /// \class TRestRawSignalRecoverSaturationProcess
-/// \author: aezquerro
+/// \author Álvaro Ezquerro
 ///
 /// <hr>
 ///
