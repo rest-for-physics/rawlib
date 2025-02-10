@@ -268,10 +268,21 @@ TRestEvent* TRestRawSignalRecoverSaturationProcess::ProcessEvent(TRestEvent* evI
         RESTDebug << "    nPoints" << signal->GetNumberOfPoints() << RESTendl;
         RESTDebug << "    Function created" << RESTendl;
         // First estimation of the parameters
-        auto peakposEstimate = maxPeakBin + saturatedBins.size() / 2;
+        auto peakposEstimate = maxPeakBin + saturatedBins.size() / 2; // maxPeakBin is the first saturated bin
         Double_t amplEstimate = maxValue;
-        Double_t widthEstimate = (endFitRange - startFitRange) * 0.2;
-        Double_t baselineEstimate = 250;
+        Double_t widthEstimate = (endFitRange - startFitRange) * 0.33; // 0.33 is somehow arbitrary
+        Int_t binAtHalfMaximum = (Int_t) startFitRange;
+        for (size_t i = (size_t) startFitRange; i < (size_t) endFitRange; i++) {
+            if ((*signal)[i] > amplEstimate / 2) {
+                binAtHalfMaximum = i;
+                break;
+            }
+        }
+        widthEstimate = peakposEstimate - binAtHalfMaximum > 0 ? peakposEstimate - binAtHalfMaximum : widthEstimate;
+        Double_t baselineEstimate = (*signal)[0]; // first point of the signal is usually part of the baseline
+        if (signal->isBaseLineInitialized()) { // if the baseline has been initialized, use it
+            baselineEstimate = signal->GetBaseLine();
+        }
 
         // Second (and better) estimation of the parameters
         auto pOverThreshold = signal->GetPointsOverThreshold();
