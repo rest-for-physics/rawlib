@@ -267,8 +267,7 @@ TRestEvent* TRestRawSignalRecoverSaturationProcess::ProcessEvent(TRestEvent* evI
                          "(x-[3])/[2] * (x-[3])/[2] * (x-[3])/[2] / "
                          "(1+TMath::Exp(-10000*(x-[3])))",
                          startFitRange, endFitRange);
-        RESTDebug << "    nPoints" << signal->GetNumberOfPoints() << RESTendl;
-        RESTDebug << "    Function created" << RESTendl;
+
         // First estimation of the parameters
         auto peakposEstimate = maxPeakBin + saturatedBins.size() / 2; // maxPeakBin is the first saturated bin
         Double_t amplEstimate = maxValue;
