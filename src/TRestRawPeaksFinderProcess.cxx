@@ -384,7 +384,8 @@ void TRestRawPeaksFinderProcess::InitFromConfigFile() {
     fRemoveAllVetoes = StringToBool(GetParameter("removeAllVetoes", fRemoveAllVetoes));
     fRemovePeaklessVetoes = StringToBool(GetParameter("removePeaklessVetoes", fRemovePeaklessVetoes));
 
-    fSimulationZeroTimeBin = UShort_t(GetDblParameterWithUnits("simulationZeroTimeBin", fSimulationZeroTimeBin));
+    fSimulationZeroTimeBin =
+        UShort_t(GetDblParameterWithUnits("simulationZeroTimeBin", fSimulationZeroTimeBin));
 
     fTimeConversionElectronics =
         StringToBool(GetParameter("trigDelayElectronics", fTimeConversionElectronics));
