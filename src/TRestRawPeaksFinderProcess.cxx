@@ -232,7 +232,8 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
         // lambda to convert time bin to time
         auto timeBinToTime = [this](UShort_t timeBin) {
             if (!fTimeConversionElectronics) {
-                return fTimeBinToTimeFactorMultiplier * timeBin - fTimeBinToTimeFactorOffset;
+                UShort_t simulation_zero_bin = fSimulationZeroTimeBin;
+                return fTimeBinToTimeFactorMultiplier * (timeBin - simulation_zero_bin);
             } else {
                 // @jporron
                 double zero = -1 + (512 * fTimeBinToTimeFactorMultiplier - fTimeBinToTimeFactorOffset -
@@ -379,14 +380,17 @@ void TRestRawPeaksFinderProcess::InitFromConfigFile() {
     fBaselineRange = Get2DVectorParameterWithUnits("baselineRange", fBaselineRange);
     fDistance = UShort_t(GetDblParameterWithUnits("distance", fDistance));
     fWindow = UShort_t(GetDblParameterWithUnits("window", fWindow));
+
     fRemoveAllVetoes = StringToBool(GetParameter("removeAllVetoes", fRemoveAllVetoes));
     fRemovePeaklessVetoes = StringToBool(GetParameter("removePeaklessVetoes", fRemovePeaklessVetoes));
 
+    fSimulationZeroTimeBin = UShort_t(GetDblParameterWithUnits("simulationZeroTimeBin", fSimulationZeroTimeBin));
+
+    fTimeConversionElectronics =
+        StringToBool(GetParameter("trigDelayElectronics", fTimeConversionElectronics));
     fTimeBinToTimeFactorMultiplier = GetDblParameterWithUnits("sampling", fTimeBinToTimeFactorMultiplier);
     fTimeBinToTimeFactorOffset = GetDblParameterWithUnits("trigDelay", fTimeBinToTimeFactorOffset);
     fTimeBinToTimeFactorOffsetTCM = GetDblParameterWithUnits("trigDelayTCM", fTimeBinToTimeFactorOffsetTCM);
-    fTimeConversionElectronics =
-        StringToBool(GetParameter("trigDelayElectronics", fTimeConversionElectronics));
 
     fADCtoEnergyFactor = GetDblParameterWithUnits("adcToEnergyFactor", fADCtoEnergyFactor);
     const string fChannelIDToADCtoEnergyFactorAsString = GetParameter("channelIDToADCtoEnergyFactor", "");
@@ -453,6 +457,28 @@ void TRestRawPeaksFinderProcess::PrintMetadata() {
 
     RESTMetadata << "Distance: " << fDistance << RESTendl;
     RESTMetadata << "Window: " << fWindow << RESTendl;
+
+    RESTMetadata << "Remove all vetoes: " << fRemoveAllVetoes << RESTendl;
+    RESTMetadata << "Remove peakless vetoes: " << fRemovePeaklessVetoes << RESTendl;
+
+    RESTMetadata << "Simulation zero time bin: " << fSimulationZeroTimeBin << RESTendl;
+
+    RESTMetadata << "Data taken with electronics: " << fTimeConversionElectronics << RESTendl;
+
+    RESTMetadata << "Sampling: " << fTimeBinToTimeFactorMultiplier << RESTendl;
+    RESTMetadata << "Trigger delay: " << fTimeBinToTimeFactorOffset << RESTendl;
+    RESTMetadata << "Trigger delay TCM: " << fTimeBinToTimeFactorOffsetTCM << RESTendl;
+
+    RESTMetadata << "Calibration factors: " << RESTendl;
+    RESTMetadata << "ADC to Energy Factor: " << fADCtoEnergyFactor << RESTendl;
+
+    // Print the map if it's not empty
+    if (!fChannelIDToADCtoEnergyFactor.empty()) {
+        RESTMetadata << "Channel ID to ADC to Energy Factors: " << RESTendl;
+        for (const auto& [channelID, factor] : fChannelIDToADCtoEnergyFactor) {
+            RESTMetadata << "  Channel " << channelID << " -> " << factor << RESTendl;
+        }
+    }
 
     EndPrintProcess();
 }

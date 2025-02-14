@@ -30,6 +30,7 @@ class TRestRawPeaksFinderProcess : public TRestEventProcess {
     /// \brief option to remove peak-less veto signals after finding the peaks
     Bool_t fRemovePeaklessVetoes = false;
 
+    UShort_t fSimulationZeroTimeBin = 210;
     Double_t fTimeBinToTimeFactorMultiplier = 0.0;
     Double_t fTimeBinToTimeFactorOffset = 0.0;
     Double_t fTimeBinToTimeFactorOffsetTCM = 0.0;
@@ -60,7 +61,7 @@ class TRestRawPeaksFinderProcess : public TRestEventProcess {
     TRestRawPeaksFinderProcess() = default;
     ~TRestRawPeaksFinderProcess() = default;
 
-    ClassDefOverride(TRestRawPeaksFinderProcess, 6);
+    ClassDefOverride(TRestRawPeaksFinderProcess, 7);
 };
 
 #endif  // REST_TRESTRAWPEAKSFINDERPROCESS_H
