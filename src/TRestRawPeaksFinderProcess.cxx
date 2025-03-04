@@ -224,24 +224,75 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
     SetObservableValue("windowTimeBin", windowCenter);
     SetObservableValue("windowMultiplicity", windowMultiplicity);
 
+    int triggerBin = -1;
+
     if (fTimeBinToTimeFactorMultiplier != 0.0) {
         vector<Double_t> windowCenterTime(windowCenter.size(), 0.0);
         vector<Double_t> windowPeakCenterTime(windowPeakCenter.size(), 0.0);
         vector<Double_t> peaksTimePhysical(peaksTime.size(), 0.0);
 
-        // lambda to convert time bin to time
-        auto timeBinToTime = [this](UShort_t timeBin) {
-            if (!fTimeConversionElectronics) {
-                UShort_t simulation_zero_bin = fSimulationZeroTimeBin;
-                return fTimeBinToTimeFactorMultiplier * (timeBin - simulation_zero_bin);
-            } else {
-                // @jporron
-                double zero = -1 + (512 * fTimeBinToTimeFactorMultiplier - fTimeBinToTimeFactorOffset -
-                                    fTimeBinToTimeFactorOffsetTCM) /
-                                       fTimeBinToTimeFactorMultiplier;
-                return fTimeBinToTimeFactorMultiplier * (timeBin - zero);
+        std::function<Double_t(UShort_t)> timeBinToTime;
+
+        if (!fTimeConversionElectronics) {  // SIMULATION (trigger bin is defined as input)
+            UShort_t smallestBin = UShort_t(-1);
+
+            // Loop through all signals to find the first bin where the threshold is exceeded
+            for (int signalIndex = 0; signalIndex < fInputEvent->GetNumberOfSignals(); signalIndex++) {
+                const auto signal = fInputEvent->GetSignal(signalIndex);
+                const UShort_t signalId = signal->GetSignalID();
+                const string channelType = fReadoutMetadata->GetTypeForChannelDaqId(signalId);
+
+                // Skip if this signal is not of the selected trigger type (tpc or veto)
+                if (channelType != fSimulationTriggerType) {
+                    continue;
+                }
+
+                // Find the first bin where the threshold is exceeded for this signal
+                UShort_t firstBinForSignal = UShort_t(-1);
+                for (UShort_t bin = 0; bin < signal->GetNumberOfPoints(); bin++) {
+                    double binValue = signal->GetData(bin);
+
+                    if (binValue >= fSimulationTriggerHeight) {
+                        firstBinForSignal = bin;
+                        break;
+                    }
+                }
+
+                // If this signal has a valid first bin where the threshold is exceeded, compare it to the smallestBin
+                if (firstBinForSignal != UShort_t(-1)) {
+                    if (smallestBin == UShort_t(-1) || firstBinForSignal < smallestBin) {
+                        smallestBin = firstBinForSignal;
+                    }
+                }
             }
-        };
+
+            if (smallestBin == UShort_t(-1)) {
+                std::cout << "No valid bin found across all signals." << std::endl;
+            } else {// Determine if the current processing type matches the trigger type. If not a correction is applied to find the equivalent trigger bin in different signals types
+                bool isTriggerTypeTPC = (fSimulationTriggerType == "tpc");
+                bool isProcessingTPC = (fChannelTypes.find("tpc") != fChannelTypes.end());
+                
+                if ((isTriggerTypeTPC && isProcessingTPC) || (!isTriggerTypeTPC && !isProcessingTPC)) {
+                    triggerBin = smallestBin;  // No correction needed if trigger type and processing type are the same
+                } else {
+                    triggerBin = smallestBin - 10;  // Apply correction
+                }
+    
+                // Lambda to convert time bin to time using the found smallest bin (triggerBin)
+                timeBinToTime = [this, &triggerBin](UShort_t timeBin) {
+                    return fTimeBinToTimeFactorMultiplier * (timeBin - triggerBin);  // Convert the time bin to time
+                };
+            }
+
+        } else {    // EXPERIMENTAL (trigger bin is found via electronics)
+            // @jporron
+            timeBinToTime = [this, &triggerBin](UShort_t timeBin) {
+                triggerBin = -1 + (512 * fTimeBinToTimeFactorMultiplier - fTimeBinToTimeFactorOffset -
+                                    fTimeBinToTimeFactorOffsetTCM) /
+                                fTimeBinToTimeFactorMultiplier;
+                return fTimeBinToTimeFactorMultiplier * (timeBin - triggerBin);
+            };
+        }
 
         for (size_t i = 0; i < windowCenter.size(); i++) {
             windowCenterTime[i] = timeBinToTime(windowCenter[i]);
@@ -258,6 +309,7 @@ TRestEvent* TRestRawPeaksFinderProcess::ProcessEvent(TRestEvent* inputEvent) {
         SetObservableValue("windowTime", windowCenterTime);
         SetObservableValue("windowPeakTime", windowPeakCenterTime);
         SetObservableValue("peaksTime", peaksTimePhysical);
+        SetObservableValue("triggerBin", triggerBin);
     }
 
     if (fADCtoEnergyFactor != 0.0 || !fChannelIDToADCtoEnergyFactor.empty()) {
@@ -384,11 +436,16 @@ void TRestRawPeaksFinderProcess::InitFromConfigFile() {
     fRemoveAllVetoes = StringToBool(GetParameter("removeAllVetoes", fRemoveAllVetoes));
     fRemovePeaklessVetoes = StringToBool(GetParameter("removePeaklessVetoes", fRemovePeaklessVetoes));
 
-    fSimulationZeroTimeBin =
-        UShort_t(GetDblParameterWithUnits("simulationZeroTimeBin", fSimulationZeroTimeBin));
-
     fTimeConversionElectronics =
         StringToBool(GetParameter("trigDelayElectronics", fTimeConversionElectronics));
+    fSimulationTriggerType = GetParameter("simulationTriggerType", fSimulationTriggerType);
+        if (fSimulationTriggerType != "tpc" && fSimulationTriggerType != "veto") {
+            std::cerr << "Warning: Invalid simulationTriggerType '" << fSimulationTriggerType 
+                      << "'. Defaulting to 'tpc'." << std::endl;
+            fSimulationTriggerType = "tpc";
+        }
+    fSimulationTriggerHeight = GetDblParameterWithUnits("simulationTriggerHeight", fSimulationTriggerHeight);
+
     fTimeBinToTimeFactorMultiplier = GetDblParameterWithUnits("sampling", fTimeBinToTimeFactorMultiplier);
     fTimeBinToTimeFactorOffset = GetDblParameterWithUnits("trigDelay", fTimeBinToTimeFactorOffset);
     fTimeBinToTimeFactorOffsetTCM = GetDblParameterWithUnits("trigDelayTCM", fTimeBinToTimeFactorOffsetTCM);
@@ -462,9 +519,9 @@ void TRestRawPeaksFinderProcess::PrintMetadata() {
     RESTMetadata << "Remove all vetoes: " << fRemoveAllVetoes << RESTendl;
     RESTMetadata << "Remove peakless vetoes: " << fRemovePeaklessVetoes << RESTendl;
 
-    RESTMetadata << "Simulation zero time bin: " << fSimulationZeroTimeBin << RESTendl;
-
     RESTMetadata << "Data taken with electronics: " << fTimeConversionElectronics << RESTendl;
+    RESTMetadata << "Simulation trigger type (only used if simulation): " << fSimulationTriggerType << RESTendl;
+    RESTMetadata << "Simulation trigger height in ADC units (only used if simulation): " << fSimulationTriggerHeight << RESTendl;
 
     RESTMetadata << "Sampling: " << fTimeBinToTimeFactorMultiplier << RESTendl;
     RESTMetadata << "Trigger delay: " << fTimeBinToTimeFactorOffset << RESTendl;

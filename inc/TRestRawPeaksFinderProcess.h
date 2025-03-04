@@ -30,7 +30,9 @@ class TRestRawPeaksFinderProcess : public TRestEventProcess {
     /// \brief option to remove peak-less veto signals after finding the peaks
     Bool_t fRemovePeaklessVetoes = false;
 
-    UShort_t fSimulationZeroTimeBin = 210;
+    std::string fSimulationTriggerType = "tpc";
+    Double_t fSimulationTriggerHeight = 450.0; // ADC units, approx 2F threshold
+
     Double_t fTimeBinToTimeFactorMultiplier = 0.0;
     Double_t fTimeBinToTimeFactorOffset = 0.0;
     Double_t fTimeBinToTimeFactorOffsetTCM = 0.0;
