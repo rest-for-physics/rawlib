@@ -31,7 +31,7 @@ class TRestRawPeaksFinderProcess : public TRestEventProcess {
     Bool_t fRemovePeaklessVetoes = false;
 
     std::string fSimulationTriggerType = "tpc";
-    Double_t fSimulationTriggerHeight = 450.0; // ADC units, approx 2F threshold
+    Double_t fSimulationTriggerHeight = 450.0;  // ADC units, approx 2F threshold
 
     Double_t fTimeBinToTimeFactorMultiplier = 0.0;
     Double_t fTimeBinToTimeFactorOffset = 0.0;
