@@ -135,7 +135,7 @@ void TRestRawFeminosRootToSignalProcess::InitProcess() {
     fInputRunTree->GetEntry(0);
 
     // set run info
-    Double_t startTimeStamp = startTimeStampMilliseconds / 1000.0; // convert ms to seconds
+    Double_t startTimeStamp = startTimeStampMilliseconds / 1000.0;  // convert ms to seconds
     fRunInfo->SetStartTimeStamp(startTimeStamp);
     fRunInfo->SetRunNumber(runNumber);
     fRunInfo->SetRunTag(*runTag);
@@ -187,5 +187,5 @@ TRestEvent* TRestRawFeminosRootToSignalProcess::ProcessEvent(TRestEvent* inputEv
 
 void TRestRawFeminosRootToSignalProcess::EndProcess() {
     // use last event timestamp as end of run
-    fRunInfo->SetEndTimeStamp(fEndTimestamp / 1000.0); // convert from ms to s
+    fRunInfo->SetEndTimeStamp(fEndTimestamp / 1000.0);  // convert from ms to s
 }

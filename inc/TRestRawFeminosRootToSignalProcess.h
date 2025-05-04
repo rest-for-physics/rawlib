@@ -45,7 +45,7 @@ class TRestRawFeminosRootToSignalProcess : public TRestEventProcess {
     ULong64_t fInputEventTreeTimestamp = 0;                              //!
     std::vector<unsigned short>* fInputEventTreeSignalIds = nullptr;     //!
     std::vector<unsigned short>* fInputEventTreeSignalValues = nullptr;  //!
-    ULong64_t fEndTimestamp=0;  //!
+    ULong64_t fEndTimestamp = 0;                                         //!
 
    public:
     RESTValue GetInputEvent() const override { return RESTValue((TRestEvent*)nullptr); }
