@@ -109,6 +109,37 @@ void TRestRawFeminosRootToSignalProcess::InitProcess() {
         exit(1);
     }
 
+    ULong64_t startTimeStampMilliseconds = 0;
+    ULong64_t runNumber = 0;
+    std::string* runTag = new std::string();
+    std::string* runDescription = new std::string();
+    fInputRunTree->SetBranchAddress("timestamp", &startTimeStampMilliseconds);
+    fInputRunTree->SetBranchAddress("number", &runNumber);
+    fInputRunTree->SetBranchAddress("tag", &runTag);
+    fInputRunTree->SetBranchAddress("comments", &runDescription);
+
+    /* // Unused because they cannot be set in the run info
+    std::string* runComment = new std::string();
+    fInputRunTree->SetBranchAddress("comments", &runComment);
+    std::string* runDetector = new std::string();
+    fInputRunTree->SetBranchAddress("detector", &runDetector);
+    Float_t driftField = 0;
+    fInputRunTree->SetBranchAddress("drift_field_V_cm_bar", &driftField);
+    Float_t meshVoltage = 0;
+    fInputRunTree->SetBranchAddress("mesh_voltage_V", &meshVoltage);
+    Float_t detectorPressure = 0;
+    fInputRunTree->SetBranchAddress("detector_pressure_bar", &detectorPressure);
+    */
+
+    // retrieve row 0
+    fInputRunTree->GetEntry(0);
+
+    // set run info
+    Double_t startTimeStamp = startTimeStampMilliseconds / 1000.0; // convert ms to seconds
+    fRunInfo->SetStartTimeStamp(startTimeStamp);
+    fRunInfo->SetRunNumber(runNumber);
+    fRunInfo->SetRunTag(*runTag);
+    fRunInfo->SetRunDescription(*runDescription);
     fRunInfo->SetFeminosDaqTotalEvents(fInputEventTree->GetEntries());
 
     fInputEventTree->SetBranchAddress("timestamp", &fInputEventTreeTimestamp);
@@ -125,6 +156,11 @@ TRestEvent* TRestRawFeminosRootToSignalProcess::ProcessEvent(TRestEvent* inputEv
 
     // fInputEventTreeTimestamp is in milliseconds and TRestEvent::SetTime(seconds, nanoseconds)
     fSignalEvent->SetTime(fInputEventTreeTimestamp / 1000, fInputEventTreeTimestamp % 1000 * 1000000);
+
+    // get the last event timestamp
+    if (fInputEventTreeTimestamp > fEndTimestamp) {
+        fEndTimestamp = fInputEventTreeTimestamp;
+    }
 
     for (size_t i = 0; i < fInputEventTreeSignalIds->size(); i++) {
         auto signal = TRestRawSignal();
@@ -147,4 +183,9 @@ TRestEvent* TRestRawFeminosRootToSignalProcess::ProcessEvent(TRestEvent* inputEv
     }
 
     return fSignalEvent;
+}
+
+void TRestRawFeminosRootToSignalProcess::EndProcess() {
+    // use last event timestamp as end of run
+    fRunInfo->SetEndTimeStamp(fEndTimestamp / 1000.0); // convert from ms to s
 }
