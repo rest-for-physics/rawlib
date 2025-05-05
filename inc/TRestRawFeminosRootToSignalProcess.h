@@ -45,9 +45,9 @@ class TRestRawFeminosRootToSignalProcess : public TRestEventProcess {
     ULong64_t fInputEventTreeTimestamp = 0;                              //!
     std::vector<unsigned short>* fInputEventTreeSignalIds = nullptr;     //!
     std::vector<unsigned short>* fInputEventTreeSignalValues = nullptr;  //!
-    ULong64_t fStartTimestamp = -1;                                     //!
+    ULong64_t fStartTimestamp = -1;                                      //!
     ULong64_t fEndTimestamp = 0;                                         //!
-    Bool_t fUseFeminosDaqRunInfo = true;    //<
+    Bool_t fUseFeminosDaqRunInfo = true;                                 //<
 
    public:
     RESTValue GetInputEvent() const override { return RESTValue((TRestEvent*)nullptr); }
@@ -62,11 +62,11 @@ class TRestRawFeminosRootToSignalProcess : public TRestEventProcess {
 
     /// It prints out the process parameters stored in the metadata structure
     inline void PrintMetadata() override {
-       BeginPrintProcess();
-       std::string useFemDaqRunInfoStr = fUseFeminosDaqRunInfo ? "true" : "false";
-       RESTMetadata << "Use feminos-daq run information: " << useFemDaqRunInfoStr << RESTendl;
+        BeginPrintProcess();
+        std::string useFemDaqRunInfoStr = fUseFeminosDaqRunInfo ? "true" : "false";
+        RESTMetadata << "Use feminos-daq run information: " << useFemDaqRunInfoStr << RESTendl;
 
-       EndPrintProcess();
+        EndPrintProcess();
     }
     // Constructor
     TRestRawFeminosRootToSignalProcess();

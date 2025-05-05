@@ -166,7 +166,8 @@ TRestEvent* TRestRawFeminosRootToSignalProcess::ProcessEvent(TRestEvent* inputEv
     // fInputEventTreeTimestamp is in milliseconds and TRestEvent::SetTime(seconds, nanoseconds)
     fSignalEvent->SetTime(fInputEventTreeTimestamp / 1000, fInputEventTreeTimestamp % 1000 * 1000000);
 
-    // get the first event timestamp (if we are not using FeminosDaq run info where this is set from the run tree)
+    // get the first event timestamp (if we are not using FeminosDaq run info where this is set from the run
+    // tree)
     if (!fUseFeminosDaqRunInfo && fInputEventTreeTimestamp < fStartTimestamp) {
         fStartTimestamp = fInputEventTreeTimestamp;
     }
