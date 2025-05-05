@@ -109,38 +109,47 @@ void TRestRawFeminosRootToSignalProcess::InitProcess() {
         exit(1);
     }
 
-    ULong64_t startTimeStampMilliseconds = 0;
-    ULong64_t runNumber = 0;
-    std::string* runTag = new std::string();
-    std::string* runDescription = new std::string();
-    fInputRunTree->SetBranchAddress("timestamp", &startTimeStampMilliseconds);
-    fInputRunTree->SetBranchAddress("number", &runNumber);
-    fInputRunTree->SetBranchAddress("tag", &runTag);
-    fInputRunTree->SetBranchAddress("comments", &runDescription);
+    if (fUseFeminosDaqRunInfo) {
+        ULong64_t startTimeStampMilliseconds = 0;
+        ULong64_t runNumber = 0;
+        std::string* runTag = new std::string();
+        std::string* runDescription = new std::string();
+        fInputRunTree->SetBranchAddress("timestamp", &startTimeStampMilliseconds);
+        fInputRunTree->SetBranchAddress("number", &runNumber);
+        fInputRunTree->SetBranchAddress("tag", &runTag);
+        fInputRunTree->SetBranchAddress("comments", &runDescription);
 
-    /* // Unused because they cannot be set in the run info
-    std::string* runComment = new std::string();
-    fInputRunTree->SetBranchAddress("comments", &runComment);
-    std::string* runDetector = new std::string();
-    fInputRunTree->SetBranchAddress("detector", &runDetector);
-    Float_t driftField = 0;
-    fInputRunTree->SetBranchAddress("drift_field_V_cm_bar", &driftField);
-    Float_t meshVoltage = 0;
-    fInputRunTree->SetBranchAddress("mesh_voltage_V", &meshVoltage);
-    Float_t detectorPressure = 0;
-    fInputRunTree->SetBranchAddress("detector_pressure_bar", &detectorPressure);
-    */
+        /* // Unused because they cannot be set in the run info
+        std::string* runComment = new std::string();
+        fInputRunTree->SetBranchAddress("comments", &runComment);
+        std::string* runDetector = new std::string();
+        fInputRunTree->SetBranchAddress("detector", &runDetector);
+        Float_t driftField = 0;
+        fInputRunTree->SetBranchAddress("drift_field_V_cm_bar", &driftField);
+        Float_t meshVoltage = 0;
+        fInputRunTree->SetBranchAddress("mesh_voltage_V", &meshVoltage);
+        Float_t detectorPressure = 0;
+        fInputRunTree->SetBranchAddress("detector_pressure_bar", &detectorPressure);
+        */
 
-    // retrieve row 0
-    fInputRunTree->GetEntry(0);
+        // retrieve row 0
+        fInputRunTree->GetEntry(0);
 
-    // set run info
-    Double_t startTimeStamp = startTimeStampMilliseconds / 1000.0;  // convert ms to seconds
-    fRunInfo->SetStartTimeStamp(startTimeStamp);
-    fRunInfo->SetRunNumber(runNumber);
-    fRunInfo->SetRunTag(*runTag);
-    fRunInfo->SetRunDescription(*runDescription);
-    fRunInfo->SetFeminosDaqTotalEvents(fInputEventTree->GetEntries());
+        // set run info
+        Double_t startTimeStamp = startTimeStampMilliseconds / 1000.0;  // convert ms to seconds
+        fRunInfo->SetStartTimeStamp(startTimeStamp);
+        fRunInfo->SetRunNumber(runNumber);
+        // mclient sets the run tag and description to "\n" if they are empty
+        if (*runTag == "\n") {
+            runTag->clear();
+        }
+        if (*runDescription == "\n") {
+            runDescription->clear();
+        }
+        fRunInfo->SetRunTag(*runTag);
+        fRunInfo->SetRunDescription(*runDescription);
+        fRunInfo->SetFeminosDaqTotalEvents(fInputEventTree->GetEntries());
+    }
 
     fInputEventTree->SetBranchAddress("timestamp", &fInputEventTreeTimestamp);
     fInputEventTree->SetBranchAddress("signal_ids", &fInputEventTreeSignalIds);
@@ -157,6 +166,10 @@ TRestEvent* TRestRawFeminosRootToSignalProcess::ProcessEvent(TRestEvent* inputEv
     // fInputEventTreeTimestamp is in milliseconds and TRestEvent::SetTime(seconds, nanoseconds)
     fSignalEvent->SetTime(fInputEventTreeTimestamp / 1000, fInputEventTreeTimestamp % 1000 * 1000000);
 
+    // get the first event timestamp (if we are not using FeminosDaq run info where this is set from the run tree)
+    if (!fUseFeminosDaqRunInfo && fInputEventTreeTimestamp < fStartTimestamp) {
+        fStartTimestamp = fInputEventTreeTimestamp;
+    }
     // get the last event timestamp
     if (fInputEventTreeTimestamp > fEndTimestamp) {
         fEndTimestamp = fInputEventTreeTimestamp;
@@ -186,6 +199,10 @@ TRestEvent* TRestRawFeminosRootToSignalProcess::ProcessEvent(TRestEvent* inputEv
 }
 
 void TRestRawFeminosRootToSignalProcess::EndProcess() {
+    // use first event timestamp as start of run if we are not using FeminosDaq run info
+    if (!fUseFeminosDaqRunInfo) {
+        fRunInfo->SetStartTimeStamp(fStartTimestamp / 1000.0);  // convert from ms to s
+    }
     // use last event timestamp as end of run
     fRunInfo->SetEndTimeStamp(fEndTimestamp / 1000.0);  // convert from ms to s
 }
