@@ -45,6 +45,9 @@ class TRestRawFeminosRootToSignalProcess : public TRestEventProcess {
     ULong64_t fInputEventTreeTimestamp = 0;                              //!
     std::vector<unsigned short>* fInputEventTreeSignalIds = nullptr;     //!
     std::vector<unsigned short>* fInputEventTreeSignalValues = nullptr;  //!
+    ULong64_t fStartTimestamp = -1;                                      //!
+    ULong64_t fEndTimestamp = 0;                                         //!
+    Bool_t fUseFeminosDaqRunInfo = true;                                 //<
 
    public:
     RESTValue GetInputEvent() const override { return RESTValue((TRestEvent*)nullptr); }
@@ -52,10 +55,19 @@ class TRestRawFeminosRootToSignalProcess : public TRestEventProcess {
 
     void InitProcess() override;
     void Initialize() override;
+    void EndProcess() override;
 
     TRestEvent* ProcessEvent(TRestEvent* inputEvent) override;
     const char* GetProcessName() const override { return "FeminosRootToSignal"; }
 
+    /// It prints out the process parameters stored in the metadata structure
+    inline void PrintMetadata() override {
+        BeginPrintProcess();
+        std::string useFemDaqRunInfoStr = fUseFeminosDaqRunInfo ? "true" : "false";
+        RESTMetadata << "Use feminos-daq run information: " << useFemDaqRunInfoStr << RESTendl;
+
+        EndPrintProcess();
+    }
     // Constructor
     TRestRawFeminosRootToSignalProcess();
     TRestRawFeminosRootToSignalProcess(const char* configFilename);
@@ -64,7 +76,7 @@ class TRestRawFeminosRootToSignalProcess : public TRestEventProcess {
     ~TRestRawFeminosRootToSignalProcess();
 
     ClassDefOverride(TRestRawFeminosRootToSignalProcess,
-                     1);  // Template for a REST "event process" class inherited from
+                     2);  // Template for a REST "event process" class inherited from
                           // TRestEventProcess
 };
 #endif
