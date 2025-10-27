@@ -28,7 +28,7 @@
 ///
 /// <hr>
 ///
-/// \warning **⚠ REST is under continous development.** This
+/// \warning **⚠ REST is under continuous development.** This
 /// documentation
 /// is offered to you by the REST community. Your HELP is needed to keep this
 /// code
@@ -104,7 +104,7 @@ void TRestRawUSTCToSignalProcess::InitProcess() {
     fRunOrigin = fRunInfo->GetRunNumber();
     fCurrentFile = 0;
     fCurrentBuffer = 0;
-    totalBytesReaded = 0;
+    totalbytesRead = 0;
 
     USTCDataFrame frame;
     if ((!GetNextFrame(frame)) || (!ReadFrameData(frame))) {
@@ -315,7 +315,7 @@ bool TRestRawUSTCToSignalProcess::GetNextFrame(USTCDataFrame& frame) {
             fInputFiles[fCurrentFile] = nullptr;
             return OpenNextFile(frame);
         }
-        totalBytesReaded += PROTOCOL_SIZE;
+        totalbytesRead += PROTOCOL_SIZE;
 
         if (!(Protocol[0] ^ 0xac) && !(Protocol[1] ^ 0x0f)) {
             // the first 2 bytes must be 0xac0f, otherwise it is wrong
@@ -331,7 +331,7 @@ bool TRestRawUSTCToSignalProcess::GetNextFrame(USTCDataFrame& frame) {
                     fInputFiles[fCurrentFile] = nullptr;
                     return OpenNextFile(frame);
                 }
-                totalBytesReaded += ENDING_SIZE;
+                totalbytesRead += ENDING_SIZE;
             } else if (flag & 0x2) {
                 // this is the evt_header frame
                 memcpy(fHeader, Protocol, PROTOCOL_SIZE);
@@ -342,7 +342,7 @@ bool TRestRawUSTCToSignalProcess::GetNextFrame(USTCDataFrame& frame) {
                     fInputFiles[fCurrentFile] = nullptr;
                     return OpenNextFile(frame);
                 }
-                totalBytesReaded += HEADER_SIZE;
+                totalbytesRead += HEADER_SIZE;
             } else {
                 // this is the evt_data frame
                 memcpy(frame.data, Protocol, PROTOCOL_SIZE);
@@ -353,7 +353,7 @@ bool TRestRawUSTCToSignalProcess::GetNextFrame(USTCDataFrame& frame) {
                     fInputFiles[fCurrentFile] = nullptr;
                     return OpenNextFile(frame);
                 }
-                totalBytesReaded += DATA_SIZE;
+                totalbytesRead += DATA_SIZE;
                 return true;
             }
         } else {
@@ -366,7 +366,7 @@ bool TRestRawUSTCToSignalProcess::GetNextFrame(USTCDataFrame& frame) {
         fInputFiles[fCurrentFile] = nullptr;
         return OpenNextFile(frame);
     }
-    totalBytesReaded += DATA_SIZE;
+    totalbytesRead += DATA_SIZE;
 
     if (frame.data[0] * 0x100 + frame.data[1] != 0xEEEE) {
         RESTarning << "wrong header!" << RESTendl;
@@ -414,7 +414,7 @@ void TRestRawUSTCToSignalProcess::FixToNextFrame(FILE* f) {
         }
 #endif
     }
-    totalBytesReaded += n;
+    totalbytesRead += n;
 }
 
 bool TRestRawUSTCToSignalProcess::ReadFrameData(USTCDataFrame& frame) {

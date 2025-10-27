@@ -27,7 +27,7 @@
 ///
 /// <hr>
 ///
-/// \warning **⚠ REST is under continous development.** This
+/// \warning **⚠ REST is under continuous development.** This
 /// documentation
 /// is offered to you by the REST community. Your HELP is needed to keep this
 /// code
@@ -61,6 +61,7 @@
 
 #include <TAxis.h>
 #include <TF1.h>
+#include <TH1D.h>
 #include <TMath.h>
 #include <TRandom3.h>
 
@@ -265,12 +266,15 @@ void TRestRawSignal::InitializePointsOverThreshold(const TVector2& thrPar, Int_t
             if (pulse.size() >= (unsigned int)nPointsOver) {
                 // auto stdev = TMath::StdDev(begin(pulse), end(pulse));
                 // calculate stdev
-                double mean = std::accumulate(pulse.begin(), pulse.end(), 0.0) / pulse.size();
+                double mean = std::accumulate(pulse.begin(), pulse.end(), 0.0) / double(pulse.size());
                 double sq_sum = std::inner_product(pulse.begin(), pulse.end(), pulse.begin(), 0.0);
-                double stdev = std::sqrt(sq_sum / pulse.size() - mean * mean);
+                double stdev = std::sqrt(sq_sum / double(pulse.size()) - mean * mean);
 
-                if (stdev > signalTh * fBaseLineSigma)
-                    for (int j = pos; j < i; j++) fPointsOverThreshold.push_back(j);
+                if (stdev > signalTh * fBaseLineSigma) {
+                    for (int j = pos; j < i; j++) {
+                        fPointsOverThreshold.push_back(j);
+                    }
+                }
             }
         }
     }
@@ -284,14 +288,18 @@ void TRestRawSignal::InitializePointsOverThreshold(const TVector2& thrPar, Int_t
 /// of fThresholdIntegral. This method is only used internally.
 ///
 void TRestRawSignal::CalculateThresholdIntegral() {
-    if (fRange.X() < 0) fRange.SetX(0);
-    if (fRange.Y() <= 0 || fRange.Y() > GetNumberOfPoints()) fRange.SetY(GetNumberOfPoints());
+    if (fRange.X() < 0) {
+        fRange.SetX(0);
+    }
+    if (fRange.Y() <= 0 || fRange.Y() > GetNumberOfPoints()) {
+        fRange.SetY(GetNumberOfPoints());
+    }
 
     fThresholdIntegral = 0;
 
-    for (unsigned int n = 0; n < fPointsOverThreshold.size(); n++) {
-        if (fPointsOverThreshold[n] >= fRange.X() && fPointsOverThreshold[n] < fRange.Y()) {
-            fThresholdIntegral += GetData(fPointsOverThreshold[n]);
+    for (int n : fPointsOverThreshold) {
+        if (n >= fRange.X() && n < fRange.Y()) {
+            fThresholdIntegral += GetData(n);
         }
     }
 }
@@ -302,11 +310,17 @@ void TRestRawSignal::CalculateThresholdIntegral() {
 /// the integral is calculated in the full range.
 ///
 Double_t TRestRawSignal::GetIntegral() {
-    if (fRange.X() < 0) fRange.SetX(0);
-    if (fRange.Y() <= 0 || fRange.Y() > GetNumberOfPoints()) fRange.SetY(GetNumberOfPoints());
+    if (fRange.X() < 0) {
+        fRange.SetX(0);
+    }
+    if (fRange.Y() <= 0 || fRange.Y() > GetNumberOfPoints()) {
+        fRange.SetY(GetNumberOfPoints());
+    }
 
     Double_t sum = 0;
-    for (int i = fRange.X(); i < fRange.Y(); i++) sum += GetData(i);
+    for (int i = fRange.X(); i < fRange.Y(); i++) {
+        sum += GetData(i);
+    }
     return sum;
 }
 
@@ -315,11 +329,17 @@ Double_t TRestRawSignal::GetIntegral() {
 /// by (startBin,endBin).
 ///
 Double_t TRestRawSignal::GetIntegralInRange(Int_t startBin, Int_t endBin) {
-    if (startBin < 0) startBin = 0;
-    if (endBin <= 0 || endBin > GetNumberOfPoints()) endBin = GetNumberOfPoints();
+    if (startBin < 0) {
+        startBin = 0;
+    }
+    if (endBin <= 0 || endBin > GetNumberOfPoints()) {
+        endBin = GetNumberOfPoints();
+    }
 
     Double_t sum = 0;
-    for (int i = startBin; i < endBin; i++) sum += GetRawData(i);
+    for (int i = startBin; i < endBin; i++) {
+        sum += GetRawData(i);
+    }
     return sum;
 }
 
@@ -329,7 +349,7 @@ Double_t TRestRawSignal::GetIntegralInRange(Int_t startBin, Int_t endBin) {
 /// have been called first.
 ///
 Double_t TRestRawSignal::GetThresholdIntegral() {
-    if (fThresholdIntegral == -1)
+    if (fThresholdIntegral == -1) {
         if (fShowWarnings) {
             std::cout << "TRestRawSignal::GetThresholdIntegral. "
                          "InitializePointsOverThreshold should be "
@@ -337,6 +357,7 @@ Double_t TRestRawSignal::GetThresholdIntegral() {
                       << endl;
             fShowWarnings = false;
         }
+    }
     return fThresholdIntegral;
 }
 
@@ -766,6 +787,50 @@ void TRestRawSignal::CalculateBaseLineMedian(Int_t startBin, Int_t endBin) {
 }
 
 ///////////////////////////////////////////////
+/// \brief This method is called by CalculateBaseLine with the "OUTLIERS"-option and is used to determine the
+/// value of the baseline as the median of the data points found in the range defined between startBin and
+/// endBin after excluding the outliers. The median is calculated using only the values in the 25-75% removing
+/// big and small outliers.
+///
+void TRestRawSignal::CalculateBaseLineMedianExcludeOutliers(Int_t startBin, Int_t endBin) {
+    if (endBin - startBin <= 0) {
+        fBaseLine = 0.;
+        return;
+    } else if (endBin > static_cast<int>(fSignalData.size())) {
+        cout << "TRestRawSignal::CalculateBaseLine. Error! Baseline range exceeds the rawdata depth!!"
+             << endl;
+        endBin = fSignalData.size();
+    } else {
+        // Extract the data within the interval
+        std::vector<Short_t> data(fSignalData.begin() + startBin, fSignalData.begin() + endBin);
+        std::sort(data.begin(), data.end());
+
+        // Calculate Q1 and Q3 for IQR
+        size_t dataSize = data.size();
+        Short_t Q1 = data[dataSize / 4];
+        Short_t Q3 = data[(3 * dataSize) / 4];
+        Double_t lowerBound = Q1;
+        Double_t upperBound = Q3;
+
+        // Filter out the outliers
+        std::vector<Short_t> filteredData;
+        for (const auto& value : data) {
+            if (value >= lowerBound && value <= upperBound) {
+                filteredData.emplace_back(value);
+            }
+        }
+
+        // Calculate median of filtered data
+        if (filteredData.empty()) {
+            fBaseLine = TMath::Median(data.size(),
+                                      &data[0]);  // Fall back to original median if all values are outliers
+        } else {
+            fBaseLine = TMath::Median(filteredData.size(), &filteredData[0]);
+        }
+    }
+}
+
+///////////////////////////////////////////////
 /// \brief This method calculates the average and fluctuation of the baseline in the
 /// specified range and writes the values to fBaseLine and fBaseLineSigma respectively.
 /// Without further option, this method calculates the average as arithmetic mean,
@@ -773,12 +838,16 @@ void TRestRawSignal::CalculateBaseLineMedian(Int_t startBin, Int_t endBin) {
 ///
 /// \param option By setting this option to "ROBUST", the average is calculated as median,
 /// and the fluctuation as interquartile range (IQR), which are less affected by outliers (e.g. a signal
-/// pulse).
+/// pulse). By setting it to "OUTLIERS" the median and sigma will only take into account the
+/// 25-75% values of the interval.
 ///
 void TRestRawSignal::CalculateBaseLine(Int_t startBin, Int_t endBin, const std::string& option) {
     if (ToUpper(option) == "ROBUST") {
         CalculateBaseLineMedian(startBin, endBin);
         CalculateBaseLineSigmaIQR(startBin, endBin);
+    } else if (ToUpper(option) == "OUTLIERS") {
+        CalculateBaseLineMedianExcludeOutliers(startBin, endBin);
+        CalculateBaseLineSigmaExcludeOutliers(startBin, endBin);
     } else {
         CalculateBaseLineMean(startBin, endBin);
         CalculateBaseLineSigmaSD(startBin, endBin);
@@ -955,22 +1024,196 @@ TGraph* TRestRawSignal::GetGraph(Int_t color) {
     return fGraph;
 }
 
-vector<pair<UShort_t, double>> TRestRawSignal::GetPeaks(double threshold, UShort_t distance) const {
-    vector<pair<UShort_t, double>> peaks;
+std::vector<std::tuple<double, UShort_t, double>> TRestRawSignal::GetPeaks(double threshold,
+                                                                           UShort_t distance,
+                                                                           double signalBaseLine) const {
+    std::vector<std::tuple<double, UShort_t, double>> peaks;
 
-    for (UShort_t i = 0; i < GetNumberOfPoints(); i++) {
-        const double point = GetRawData(i);
-        if (i > 0 && i < GetNumberOfPoints() - 1) {
-            double prevPoint = GetRawData(i - 1);
-            double nextPoint = GetRawData(i + 1);
+    const UShort_t smoothingWindow =
+        10;  // Region to compare for peak/no peak classification. 10 means 5 bins to each side
+    const size_t numPoints = GetNumberOfPoints();
 
-            if (point > threshold && point >= prevPoint && point >= nextPoint) {
-                // Check if the peak is spaced far enough from the previous peak
-                if (peaks.empty() || i - peaks.back().first >= distance) {
-                    peaks.push_back(std::make_pair(i, point));
+    if (numPoints == 0) {
+        return peaks;
+    }
+
+    // Pre-calculate smoothed values for all bins using a rolling sum
+    vector<double> smoothedValues(numPoints, 0.0);
+    double currentSum = 0.0;
+    UShort_t windowSize = smoothingWindow + 1;
+
+    // Initialize the sum for the first window
+    for (UShort_t i = 0; i < static_cast<UShort_t>(std::min<size_t>(windowSize, numPoints)); ++i) {
+        currentSum += GetRawData(i);
+    }
+    smoothedValues[0] = currentSum / windowSize;
+
+    for (UShort_t i = 1; i < numPoints; ++i) {
+        if (i < smoothingWindow / 2 + 1) {
+            // Adjust the window size at the beginning
+            currentSum = 0.0;
+            UShort_t currentWindowSize =
+                static_cast<UShort_t>(std::min<size_t>(windowSize, i + smoothingWindow / 2 + 1));
+            for (UShort_t j = 0; j < currentWindowSize; ++j) {
+                currentSum += GetRawData(j);
+            }
+            smoothedValues[i] = currentSum / currentWindowSize;
+        } else if (i > numPoints - smoothingWindow / 2 - 1) {
+            // Adjust the window size at the end
+            currentSum = 0.0;
+            UShort_t currentWindowSize =
+                static_cast<UShort_t>(std::min<size_t>(windowSize, numPoints - i + smoothingWindow / 2));
+            for (UShort_t j = i - smoothingWindow / 2; j < numPoints; ++j) {
+                currentSum += GetRawData(j);
+            }
+            smoothedValues[i] = currentSum / currentWindowSize;
+        } else {
+            // Use the rolling sum for the middle bins
+            currentSum -= GetRawData(i - smoothingWindow / 2 - 1);
+            currentSum += GetRawData(i + smoothingWindow / 2);
+            smoothedValues[i] = currentSum / windowSize;
+        }
+    }
+
+    // Compare pre-calculated smoothed values to identify peaks
+    for (UShort_t i = 0; i < numPoints; ++i) {
+        const double smoothedValue = smoothedValues[i];
+
+        if (i >= smoothingWindow / 2 && i < numPoints - smoothingWindow / 2) {
+            bool isPeak = true;
+            int numGreaterEqual = 0;  // Counter for smoothed values greater or equal to the studied bin
+
+            for (UShort_t j = i - smoothingWindow / 2; j <= i + smoothingWindow / 2; ++j) {
+                if (j != i && smoothedValue <= smoothedValues[j]) {
+                    numGreaterEqual++;
+                    if (numGreaterEqual >
+                        3) {  // If more than one smoothed value is greater or equal, it's not a peak
+                        isPeak = false;
+                        break;
+                    }
+                }
+            }
+
+            // If it's a peak and it´s above the threshold and further than distance to the previous peak, add
+            // to peaks the biggest amplitude bin within the next "distance" bins and as amplitude the
+            // TripleMaxAverage. This is because for flat regions the detected peak is more to the left than
+            // the actual one.
+            if (isPeak && smoothedValue > threshold) {
+                if (peaks.empty() || i - std::get<0>(peaks.back()) >= distance) {
+                    // Initialize variables to find the max amplitude within the next "distance" bins
+                    int maxBin = i;
+                    double maxAmplitude = smoothedValues[i];
+
+                    // Look ahead within the specified distance to find the bin with the maximum amplitude
+                    for (std::vector<double>::size_type j = i + 1;
+                         j <= i + distance && j < smoothedValues.size(); ++j) {
+                        if (smoothedValues[j] > maxAmplitude) {
+                            maxAmplitude = smoothedValues[j];
+                            maxBin = j;
+                        }
+                    }
+
+                    // Calculate the peak amplitude as the average of maxBin and its two neighbors
+                    double amplitude1 = GetRawData(maxBin - 1);
+                    double amplitude2 = GetRawData(maxBin);
+                    double amplitude3 = GetRawData(maxBin + 1);
+                    double peakAmplitude = (amplitude1 + amplitude2 + amplitude3) / 3.0;
+                    double peakAmplitudeBaseLineCorrected = peakAmplitude - signalBaseLine;
+
+                    // Store the peak position and amplitude
+                    peaks.emplace_back(maxBin, peakAmplitude, peakAmplitudeBaseLineCorrected);
                 }
             }
         }
     }
+
+    return peaks;
+}
+
+std::vector<std::tuple<double, UShort_t, double>> TRestRawSignal::GetPeaksVeto(double threshold,
+                                                                               UShort_t distance,
+                                                                               double signalBaseLine) const {
+    std::vector<std::tuple<double, UShort_t, double>> peaks;
+
+    const UShort_t smoothingWindow =
+        4;  // Region to compare for peak/no peak classification. 10 means 5 bins to each side
+    const size_t numPoints = GetNumberOfPoints();
+
+    if (numPoints == 0) {
+        return peaks;
+    }
+
+    // Pre-calculate smoothed values for all bins using a rolling sum
+    vector<double> smoothedValues(numPoints, 0.0);
+    double currentSum = 0.0;
+    UShort_t windowSize = smoothingWindow + 1;
+
+    // Initialize the sum for the first window
+    for (UShort_t i = 0; i < static_cast<UShort_t>(std::min<size_t>(windowSize, numPoints)); ++i) {
+        currentSum += GetRawData(i);
+    }
+    smoothedValues[0] = currentSum / windowSize;
+
+    for (UShort_t i = 1; i < numPoints; ++i) {
+        if (i < smoothingWindow / 2 + 1) {
+            // Adjust the window size at the beginning
+            currentSum = 0.0;
+            UShort_t currentWindowSize =
+                static_cast<UShort_t>(std::min<size_t>(windowSize, i + smoothingWindow / 2 + 1));
+            for (UShort_t j = 0; j < currentWindowSize; ++j) {
+                currentSum += GetRawData(j);
+            }
+            smoothedValues[i] = currentSum / currentWindowSize;
+        } else if (i > numPoints - smoothingWindow / 2 - 1) {
+            // Adjust the window size at the end
+            currentSum = 0.0;
+            UShort_t currentWindowSize =
+                static_cast<UShort_t>(std::min<size_t>(windowSize, numPoints - i + smoothingWindow / 2));
+            for (UShort_t j = i - smoothingWindow / 2; j < numPoints; ++j) {
+                currentSum += GetRawData(j);
+            }
+            smoothedValues[i] = currentSum / currentWindowSize;
+        } else {
+            // Use the rolling sum for the middle bins
+            currentSum -= GetRawData(i - smoothingWindow / 2 - 1);
+            currentSum += GetRawData(i + smoothingWindow / 2);
+            smoothedValues[i] = currentSum / windowSize;
+        }
+    }
+
+    // Compare pre-calculated smoothed values to identify peaks
+    for (size_t i = 0; i < numPoints; ++i) {
+        const double smoothedValue = smoothedValues[i];
+
+        if (i >= smoothingWindow / 2 && i < numPoints - smoothingWindow / 2) {
+            bool isPeak = true;
+            int numGreaterEqual = 0;  // Counter for smoothed values greater or equal to the studied bin
+
+            for (size_t j = i - smoothingWindow / 2; j <= i + smoothingWindow / 2; ++j) {
+                if (j != i && smoothedValue <= smoothedValues[j]) {
+                    numGreaterEqual++;
+                    if (numGreaterEqual >
+                        0) {  // If more than one smoothed value is greater or equal, it's not a peak
+                        isPeak = false;
+                        break;
+                    }
+                }
+            }
+
+            // If it's a peak and it´s above the threshold and further than distance to the previous peak, add
+            // to peaks
+            if (isPeak && smoothedValue > threshold) {
+                if (peaks.empty() || i - std::get<0>(peaks.back()) >= distance) {
+                    auto peakPosition = double(i);
+                    auto formattedPeakPosition = static_cast<UShort_t>(peakPosition);
+                    double peakAmplitude = GetRawData(formattedPeakPosition);
+                    double peakAmplitudeBaseLineCorrected = peakAmplitude - signalBaseLine;
+
+                    peaks.emplace_back(formattedPeakPosition, peakAmplitude, peakAmplitudeBaseLineCorrected);
+                }
+            }
+        }
+    }
+
     return peaks;
 }

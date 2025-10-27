@@ -43,7 +43,7 @@
 ///
 /// \htmlonly <style>div.image img[src="daqChActRaw.png"]{width:1000px;}</style>
 /// \endhtmlonly
-/// ![An ilustration of the daq raw signals channel activity](daqChActRaw.png)
+/// ![An illustration of the daq raw signals channel activity](daqChActRaw.png)
 ///
 /// * **rChannelActivityRaw**: histogram based on the readout channels, i.e.,
 /// after converting the daq channel numbering into readout channel numbering
@@ -68,7 +68,7 @@
 ///
 /// <hr>
 ///
-/// \warning **⚠ REST is under continous development.** This
+/// \warning **⚠ REST is under continuous development.** This
 /// documentation
 /// is offered to you by the REST community. Your HELP is needed to keep this
 /// code
@@ -120,7 +120,7 @@ void TRestRawSignalChannelActivityProcess::Initialize() {
     SetSectionName(this->ClassName());
     SetLibraryVersion(LIBRARY_VERSION);
 
-    fSignalEvent = nullptr;
+    fInputEvent = nullptr;
 }
 
 ///////////////////////////////////////////////
@@ -128,13 +128,17 @@ void TRestRawSignalChannelActivityProcess::Initialize() {
 /// using
 /// the limits defined in the process metadata members.
 ///
-/// The readout histograms will only be created in case an appropiate readout
+/// The readout histograms will only be created in case an appropriate readout
 /// definition
 /// is found in the processing chain.
 ///
 void TRestRawSignalChannelActivityProcess::InitProcess() {
     if (!fReadOnly) {
-        fDaqChannelsHisto = new TH1D("daqChannelActivityRaw", "daqChannelActivityRaw", fDaqChannels,
+        // Create a unique histogram name based on signal type
+        string histogramName = "daqChannelActivityRaw_" + fChannelType;
+
+        // Create the histogram using the unique name
+        fDaqChannelsHisto = new TH1D(histogramName.c_str(), histogramName.c_str(), fDaqChannels,
                                      fDaqStartChannel, fDaqEndChannel);
     }
 }
@@ -143,20 +147,35 @@ void TRestRawSignalChannelActivityProcess::InitProcess() {
 /// \brief The main processing event function
 ///
 TRestEvent* TRestRawSignalChannelActivityProcess::ProcessEvent(TRestEvent* inputEvent) {
-    fSignalEvent = (TRestRawSignalEvent*)inputEvent;
+    fInputEvent = dynamic_cast<TRestRawSignalEvent*>(inputEvent);
 
-    Int_t Nlow = 0;
-    Int_t Nhigh = 0;
-    for (int s = 0; s < fSignalEvent->GetNumberOfSignals(); s++) {
-        TRestRawSignal* sgnl = fSignalEvent->GetSignal(s);
-        if (sgnl->GetMaxValue() > fHighThreshold) Nhigh++;
-        if (sgnl->GetMaxValue() > fLowThreshold) Nlow++;
+    const auto run = GetRunInfo();
+    if (run != nullptr) {
+        fInputEvent->InitializeReferences(run);
     }
 
-    for (int s = 0; s < fSignalEvent->GetNumberOfSignals(); s++) {
+    if (fReadoutMetadata == nullptr) {
+        fReadoutMetadata = fInputEvent->GetReadoutMetadata();
+    }
+
+    if (fReadoutMetadata == nullptr && !fChannelType.empty()) {
+        cerr << "TRestRawSignalChannelActivityProcess::ProcessEvent: readout metadata is null, cannot filter "
+                "the process by signal type"
+             << endl;
+        exit(1);
+    }
+
+    for (int s = 0; s < fInputEvent->GetNumberOfSignals(); s++) {
+        const auto signal = fInputEvent->GetSignal(s);
+        if (!fChannelType.empty()) {
+            const auto channelType = fReadoutMetadata->GetTypeForChannelDaqId(signal->GetID());
+            if (fChannelType != channelType) {
+                continue;
+            }
+        }
         // Adding signal to the channel activity histogram
         if (!fReadOnly) {
-            Int_t daqChannel = fSignalEvent->GetSignal(s)->GetID();
+            Int_t daqChannel = signal->GetID();
             fDaqChannelsHisto->Fill(daqChannel);
         }
     }
@@ -164,7 +183,7 @@ TRestEvent* TRestRawSignalChannelActivityProcess::ProcessEvent(TRestEvent* input
     if (GetVerboseLevel() >= TRestStringOutput::REST_Verbose_Level::REST_Debug)
         fAnalysisTree->PrintObservables();
 
-    return fSignalEvent;
+    return fInputEvent;
 }
 
 ///////////////////////////////////////////////

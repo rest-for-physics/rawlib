@@ -36,7 +36,7 @@ class TRestRawToSignalProcess : public TRestEventProcess {
     Int_t fMinPoints;
 
     Double_t tStart;
-    Long64_t totalBytesReaded;
+    Long64_t totalbytesRead;
     Long64_t totalBytes;
 
     TRestRawSignalEvent* fSignalEvent = nullptr;  //!
@@ -80,7 +80,7 @@ class TRestRawToSignalProcess : public TRestEventProcess {
 
     Bool_t ResetEntry() override;
 
-    Long64_t GetTotalBytesRead() const override { return totalBytesReaded; }
+    Long64_t GetTotalBytesRead() const override { return totalbytesRead; }
     Long64_t GetTotalBytes() const override { return totalBytes; }
     virtual std::string GetElectronicsType() const { return fElectronicsType; }
 

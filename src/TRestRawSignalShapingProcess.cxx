@@ -48,7 +48,7 @@
 ///
 /// <hr>
 ///
-/// \warning **⚠ REST is under continous development.** This
+/// \warning **⚠ REST is under continuous development.** This
 /// documentation
 /// is offered to you by the REST community. Your HELP is needed to keep this
 /// code

@@ -28,7 +28,7 @@
 ///
 /// <hr>
 ///
-/// \warning **⚠ REST is under continous development.** This
+/// \warning **⚠ REST is under continuous development.** This
 /// documentation
 /// is offered to you by the REST community. Your HELP is needed to keep this
 /// code
@@ -102,7 +102,7 @@ void TRestRawToSignalProcess::Initialize() {
     fgKeepFileOpen = true;
 
     totalBytes = 0;
-    totalBytesReaded = 0;
+    totalbytesRead = 0;
 }
 
 void TRestRawToSignalProcess::InitFromConfigFile() {
@@ -139,7 +139,7 @@ Bool_t TRestRawToSignalProcess::OpenInputFiles(const vector<string>& files) {
     fInputFiles.clear();
     fInputFileNames.clear();
     totalBytes = 0;
-    totalBytesReaded = 0;
+    totalbytesRead = 0;
 
     for (const auto& file : files) {
         AddInputFile(file);

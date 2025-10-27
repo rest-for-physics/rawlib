@@ -31,7 +31,7 @@
 class TRestRawSignalAnalysisProcess : public TRestEventProcess {
    private:
     /// A pointer to the specific TRestRawSignalEvent input
-    TRestRawSignalEvent* fSignalEvent;  //!
+    TRestRawSignalEvent* fInputEvent;  //!
 
     /// Just a flag to quickly determine if we have to apply the range filter
     Bool_t fRangeEnabled = false;  //!
@@ -70,9 +70,9 @@ class TRestRawSignalAnalysisProcess : public TRestEventProcess {
     // add here the members of your event process
 
    public:
-    RESTValue GetInputEvent() const override { return fSignalEvent; }
+    RESTValue GetInputEvent() const override { return fInputEvent; }
 
-    RESTValue GetOutputEvent() const override { return fSignalEvent; }
+    RESTValue GetOutputEvent() const override { return fInputEvent; }
 
     void InitProcess() override;
 

@@ -30,6 +30,7 @@
 
 #include <iostream>
 #include <string>
+#include <tuple>
 #include <vector>
 
 //! It defines a Short_t array with a physical parameter that evolves in time using a fixed time bin.
@@ -40,6 +41,8 @@ class TRestRawSignal {
     void CalculateBaseLineSigmaSD(Int_t startBin, Int_t endBin);
 
     void CalculateBaseLineSigmaIQR(Int_t startBin, Int_t endBin);
+
+    void CalculateBaseLineSigmaExcludeOutliers(Int_t startBin, Int_t endBin);
 
     std::vector<Float_t> GetSignalSmoothed_ExcludeOutliers(Int_t averagingPoints);
 
@@ -200,6 +203,8 @@ class TRestRawSignal {
 
     void CalculateBaseLineMedian(Int_t startBin, Int_t endBin);
 
+    void CalculateBaseLineMedianExcludeOutliers(Int_t startBin, Int_t endBin);
+
     void CalculateBaseLine(Int_t startBin, Int_t endBin, const std::string& option = "");
 
     void GetBaseLineCorrected(TRestRawSignal* smoothedSignal, Int_t averagingPoints);
@@ -223,13 +228,16 @@ class TRestRawSignal {
     /// Returns the (time, amplitude) of the peaks in the signal.
     /// Peaks are defined as the points that are above the threshold and are separated by a minimum distance
     /// in time bin units. The threshold must be set in absolute value (regardless of the baseline)
-    std::vector<std::pair<UShort_t, double>> GetPeaks(double threshold, UShort_t distance = 5) const;
+    std::vector<std::tuple<double, UShort_t, double>> GetPeaks(double threshold, UShort_t distance = 5,
+                                                               double signalBaseLine = 0.0) const;
+    std::vector<std::tuple<double, UShort_t, double>> GetPeaksVeto(double threshold, UShort_t distance = 5,
+                                                                   double signalBaseLine = 0.0) const;
 
     TRestRawSignal();
     TRestRawSignal(Int_t nBins);
     TRestRawSignal(Int_t sID, std::vector<Short_t>& sData);
     ~TRestRawSignal();
 
-    ClassDef(TRestRawSignal, 2);
+    ClassDef(TRestRawSignal, 3);
 };
 #endif

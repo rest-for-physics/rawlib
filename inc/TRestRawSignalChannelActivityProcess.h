@@ -24,20 +24,14 @@
 #define RestCore_TRestRawSignalChannelActivityProcess
 
 #include <TH1D.h>
-#include <TRestRawSignalEvent.h>
+#include <TRestEventProcess.h>
 
-#include "TRestEventProcess.h"
+#include "TRestRawSignalEvent.h"
 
 //! A pure analysis process to generate histograms with detector channels
 //! activity
 class TRestRawSignalChannelActivityProcess : public TRestEventProcess {
    protected:
-    /// The value of the lower signal threshold to add it to the histogram
-    Double_t fLowThreshold = 25;
-
-    /// The value of the higher signal threshold to add it to the histogram
-    Double_t fHighThreshold = 50;
-
     /// The number of bins at the daq channels histogram
     Int_t fDaqChannels = 300;
 
@@ -52,13 +46,16 @@ class TRestRawSignalChannelActivityProcess : public TRestEventProcess {
 
    private:
     /// A pointer to the specific TRestRawSignalEvent input
-    TRestRawSignalEvent* fSignalEvent = nullptr;  //!
+    TRestRawSignalEvent* fInputEvent = nullptr;  //!
+
+    std::string fChannelType;
+    TRestRawReadoutMetadata* fReadoutMetadata = nullptr;  //!
 
     void Initialize() override;
 
    public:
-    RESTValue GetInputEvent() const override { return fSignalEvent; }
-    RESTValue GetOutputEvent() const override { return fSignalEvent; }
+    RESTValue GetInputEvent() const override { return fInputEvent; }
+    RESTValue GetOutputEvent() const override { return fInputEvent; }
 
     void InitProcess() override;
     TRestEvent* ProcessEvent(TRestEvent* inputEvent) override;
@@ -68,8 +65,9 @@ class TRestRawSignalChannelActivityProcess : public TRestEventProcess {
     void PrintMetadata() override {
         BeginPrintProcess();
 
-        RESTMetadata << "Low signal threshold activity : " << fLowThreshold << RESTendl;
-        RESTMetadata << "High signal threshold activity : " << fHighThreshold << RESTendl;
+        if (!fChannelType.empty()) {
+            RESTMetadata << "channelType : " << fChannelType << RESTendl;
+        }
 
         RESTMetadata << "Number of daq histogram channels : " << fDaqChannels << RESTendl;
         RESTMetadata << "Start daq channel : " << fDaqStartChannel << RESTendl;
@@ -84,6 +82,6 @@ class TRestRawSignalChannelActivityProcess : public TRestEventProcess {
     TRestRawSignalChannelActivityProcess();
     ~TRestRawSignalChannelActivityProcess();
 
-    ClassDefOverride(TRestRawSignalChannelActivityProcess, 4);
+    ClassDefOverride(TRestRawSignalChannelActivityProcess, 6);
 };
 #endif

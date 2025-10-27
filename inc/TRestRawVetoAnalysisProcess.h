@@ -66,6 +66,8 @@ class TRestRawVetoAnalysisProcess : public TRestEventProcess {
     Double_t fSignalThreshold;
     Int_t fPointsOverThreshold;
 
+    TRestRawReadoutMetadata* fReadoutMetadata = nullptr;  //!
+
     void InitFromConfigFile() override;
 
     void Initialize() override;
@@ -105,8 +107,8 @@ class TRestRawVetoAnalysisProcess : public TRestEventProcess {
         return output;
     }
 
-    Int_t GetGroupIndex(std::string groupName);
-    std::string GetGroupIds(std::string groupName);
+    Int_t GetGroupIndex(const std::string& groupName);
+    std::string GetGroupIds(const std::string& groupName);
 
     TRestRawVetoAnalysisProcess();
     TRestRawVetoAnalysisProcess(const char* configFilename);
