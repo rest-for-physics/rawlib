@@ -6,10 +6,13 @@ find_package(yaml-cpp QUIET)
 if (yaml-cpp_FOUND)
     message(STATUS "yaml-cpp found")
     set(external_libs ${external_libs} yaml-cpp)
-else()
-    message(WARNING "yaml-cpp NOT found, TRestRawFemDAQToSignalProcess won't be compiled.")
+else ()
+    message(
+        WARNING
+            "yaml-cpp NOT found, TRestRawFemDAQToSignalProcess won't be compiled."
+    )
     set(excludes TTRestRawFemDAQToSignalProcess)
-endif()
+endif ()
 
 if (CMAKE_SYSTEM_NAME MATCHES "Windows")
     set(excludes TRestRawMemoryBufferToSignalProcess)
