@@ -153,7 +153,7 @@ void TRestRawFemDAQToSignalProcess::InitProcess() {
         }
     }
 #else
-fUseFeminosDaqRunInfo = false;
+    fUseFeminosDaqRunInfo = false;
 #endif
 
     fInputTree->SetBranchAddress("timestamp", &fTimestamp);

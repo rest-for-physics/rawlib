@@ -41,13 +41,13 @@ class TRestRawFemDAQToSignalProcess : public TRestEventProcess {
     TFile* fInputFile = nullptr;  //!
     TTree* fInputTree = nullptr;  //!
 
-    Double_t fTimestamp = 0;                      //!
-    Int_t fEventID = 0;                           //!
-    std::vector<int>* fSignalIds = nullptr;       //!
-    std::vector<short>* fSignalValues = nullptr;  //!
-    Double_t fStartTimestamp = std::numeric_limits<double>::max();                //!
-    Double_t fEndTimestamp = 0;                   //!
-    Bool_t fUseFeminosDaqRunInfo = true;          //<
+    Double_t fTimestamp = 0;                                        //!
+    Int_t fEventID = 0;                                             //!
+    std::vector<int>* fSignalIds = nullptr;                         //!
+    std::vector<short>* fSignalValues = nullptr;                    //!
+    Double_t fStartTimestamp = std::numeric_limits<double>::max();  //!
+    Double_t fEndTimestamp = 0;                                     //!
+    Bool_t fUseFeminosDaqRunInfo = true;                            //<
 
    public:
     RESTValue GetInputEvent() const override { return RESTValue((TRestEvent*)nullptr); }
