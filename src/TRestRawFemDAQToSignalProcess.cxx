@@ -70,7 +70,10 @@
 #include "TRestRawFemDAQToSignalProcess.h"
 
 #include <TObjString.h>
+
+#ifndef NO_YAML_CPP
 #include <yaml-cpp/yaml.h>
+#endif
 
 using namespace std;
 
@@ -115,6 +118,7 @@ void TRestRawFemDAQToSignalProcess::InitProcess() {
         exit(1);
     }
 
+#ifndef NO_YAML_CPP
     if (fUseFeminosDaqRunInfo) {
         TObjString* yamlConfigObj = (TObjString*)fInputFile->Get("RunConfigYAML");
         TObjString* yamlfNameObj = (TObjString*)fInputFile->Get("yaml_fileName");
@@ -148,6 +152,9 @@ void TRestRawFemDAQToSignalProcess::InitProcess() {
             fEndTimestamp = std::stod(etObj->GetString().Data());
         }
     }
+#else
+fUseFeminosDaqRunInfo = false;
+#endif
 
     fInputTree->SetBranchAddress("timestamp", &fTimestamp);
     fInputTree->SetBranchAddress("signalsID", &fSignalIds);
@@ -165,9 +172,8 @@ TRestEvent* TRestRawFemDAQToSignalProcess::ProcessEvent(TRestEvent* inputEvent) 
     // fTimestamp is in seconds
     fSignalEvent->SetTime(fTimestamp);
 
-    // get the first event timestamp (if we are not using FeminosDaq run info where this is set from the run
-    // tree)
-    if (!fUseFeminosDaqRunInfo && fTimestamp < fStartTimestamp) {
+    // Check if start timestamp is lower than event timestamp
+    if (fTimestamp < fStartTimestamp) {
         fStartTimestamp = fTimestamp;
     }
     // get the last event timestamp

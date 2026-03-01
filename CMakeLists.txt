@@ -11,7 +11,7 @@ else ()
         WARNING
             "yaml-cpp NOT found, TRestRawFemDAQToSignalProcess won't be compiled."
     )
-    set(excludes TTRestRawFemDAQToSignalProcess)
+     add_definitions(-DNO_YAML_CPP)
 endif ()
 
 if (CMAKE_SYSTEM_NAME MATCHES "Windows")

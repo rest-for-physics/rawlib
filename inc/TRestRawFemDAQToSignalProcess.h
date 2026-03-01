@@ -45,7 +45,7 @@ class TRestRawFemDAQToSignalProcess : public TRestEventProcess {
     Int_t fEventID = 0;                           //!
     std::vector<int>* fSignalIds = nullptr;       //!
     std::vector<short>* fSignalValues = nullptr;  //!
-    Double_t fStartTimestamp = -1;                //!
+    Double_t fStartTimestamp = std::numeric_limits<double>::max();                //!
     Double_t fEndTimestamp = 0;                   //!
     Bool_t fUseFeminosDaqRunInfo = true;          //<
 
