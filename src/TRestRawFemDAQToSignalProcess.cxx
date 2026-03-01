@@ -69,9 +69,8 @@
 
 #include "TRestRawFemDAQToSignalProcess.h"
 
-#include <yaml-cpp/yaml.h>
-
 #include <TObjString.h>
+#include <yaml-cpp/yaml.h>
 
 using namespace std;
 
@@ -79,9 +78,7 @@ ClassImp(TRestRawFemDAQToSignalProcess);
 
 TRestRawFemDAQToSignalProcess::TRestRawFemDAQToSignalProcess() { Initialize(); }
 
-TRestRawFemDAQToSignalProcess::TRestRawFemDAQToSignalProcess(const char* configFilename) {
-    Initialize();
-}
+TRestRawFemDAQToSignalProcess::TRestRawFemDAQToSignalProcess(const char* configFilename) { Initialize(); }
 
 TRestRawFemDAQToSignalProcess::~TRestRawFemDAQToSignalProcess() {}
 
@@ -119,7 +116,6 @@ void TRestRawFemDAQToSignalProcess::InitProcess() {
     }
 
     if (fUseFeminosDaqRunInfo) {
-        
         TObjString* yamlConfigObj = (TObjString*)fInputFile->Get("RunConfigYAML");
         TObjString* yamlfNameObj = (TObjString*)fInputFile->Get("yaml_fileName");
         TObjString* tsObj = (TObjString*)fInputFile->Get("startTime");
@@ -130,13 +126,13 @@ void TRestRawFemDAQToSignalProcess::InitProcess() {
             std::cout << "Config YAML: " << yamlConfig << std::endl;
             YAML::Node config = YAML::Load(yamlConfig);
             YAML::Node run = config["run"];
-            //std::string exp  = run["experiment"].as<std::string>();
-            //fRunInfo->fExperimentName = (TString)exp;
-            std::string tag  = run["tag"].as<std::string>();
+            // std::string exp  = run["experiment"].as<std::string>();
+            // fRunInfo->fExperimentName = (TString)exp;
+            std::string tag = run["tag"].as<std::string>();
             fRunInfo->SetRunTag(tag);
-            std::string type  = run["type"].as<std::string>();
+            std::string type = run["type"].as<std::string>();
             fRunInfo->SetRunType(type);
-            //TODO Add run info?
+            // TODO Add run info?
         }
 
         if (yamlfNameObj) {
@@ -152,7 +148,7 @@ void TRestRawFemDAQToSignalProcess::InitProcess() {
             fEndTimestamp = std::stod(etObj->GetString().Data());
         }
     }
-        
+
     fInputTree->SetBranchAddress("timestamp", &fTimestamp);
     fInputTree->SetBranchAddress("signalsID", &fSignalIds);
     fInputTree->SetBranchAddress("pulses", &fSignalValues);
