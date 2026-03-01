@@ -24,6 +24,8 @@
 /// The TRestRawFemDAQToSignalProcess converts the events acquired by
 /// the FEMDAQ acquisition program into TRestRawSignalEvent objects.
 ///
+/// --- IMPORTANT REQUIRES yaml-cpp insalled in your system ---
+///
 /// ### Parameters
 /// - **fUseFeminosDaqRunInfo**: Flag to determine if Feminos DAQ run info is transferred
 ///  to the TRestRun object. If `true` (default), the run info such as start time,
