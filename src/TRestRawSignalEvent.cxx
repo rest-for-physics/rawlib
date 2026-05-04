@@ -21,14 +21,68 @@
  *************************************************************************/
 
 //////////////////////////////////////////////////////////////////////////
-/// The TRestRawSignalEvent ...
+/// TRestRawSignalEvent stores the digitized raw waveforms recorded for one
+/// REST event.
 ///
-/// DOCUMENTATION TO BE WRITTEN (main description, figures, methods, data
-/// members)
+/// A TRestRawSignalEvent is a collection of TRestRawSignal objects. Each
+/// TRestRawSignal represents one readout channel, identified by its signal ID,
+/// and contains a fixed-length array of ADC samples. The event object groups
+/// all channels that belong to the same acquisition event and provides
+/// event-level operations such as drawing, signal lookup, baseline
+/// initialization, and global observables obtained by combining the individual
+/// signals.
 ///
-/// \htmlonly <style>div.image img[src="rawsignals.png"]{width:750px;}</style> \endhtmlonly
+/// This is usually the first event type encountered when opening data produced
+/// from a raw DAQ file. Conversion processes read the external binary format
+/// and fill a TRestRawSignalEvent with one waveform per active channel. Later
+/// analysis processes, such as TRestRawSignalAnalysisProcess, use this event to
+/// calculate baseline values, threshold integrals, amplitudes, rise times, and
+/// other waveform observables.
 ///
-/// ![Raw event signals produced with DrawEvent method](rawsignals.png)
+/// A minimal inspection of a raw-signal event from a `restRoot` session or
+/// ROOT macro typically looks like:
+///
+/// \code
+/// TRestRun run("rawSignals.root");
+/// run.GetEntry(0);
+///
+/// auto rawEvent = run.GetInputEvent<TRestRawSignalEvent>();
+/// std::cout << "Signals in event: " << rawEvent->GetNumberOfSignals() << std::endl;
+///
+/// auto signal = rawEvent->GetSignalById(12);
+/// if (signal != nullptr) {
+///     std::cout << "Channel 12 has " << signal->GetNumberOfPoints()
+///               << " samples" << std::endl;
+/// }
+///
+/// rawEvent->DrawEvent();
+/// \endcode
+///
+/// Signals can be accessed either by their position in the internal collection
+/// with GetSignal(), or by their detector/readout identifier with
+/// GetSignalById(). The latter is usually safer in analysis code, because the
+/// ordering of signals in the event should not be assumed to define the channel
+/// mapping.
+///
+/// Baseline and range definitions can be applied at event level. Calling
+/// SetBaseLineRange() forwards the selected sample interval to all contained
+/// TRestRawSignal objects and calculates their baseline parameters. Calling
+/// SetRange() constrains subsequent signal observable calculations to the given
+/// sample interval.
+///
+/// The following figure shows the output of DrawEvent(), where each trace corresponds to
+/// one TRestRawSignal contained in the event.
+///
+/// \htmlonly <style>div.image img[src="raw_signal_event.png"]{width:650px;}</style> \endhtmlonly
+///
+/// ![Raw event signals produced with DrawEvent method](raw_signal_event.png)
+///
+/// In a typical processing chain this event type sits before detector-level
+/// signal and hit reconstruction. TRestRawSignalEvent keeps the data in ADC-bin
+/// form, while TRestDetectorSignalEvent stores signals as time-charge points
+/// using physical coordinates. Use TRestRawSignalEvent when the analysis still
+/// depends on raw samples, baseline windows, thresholds, or ADC-level pulse
+/// shape information.
 ///
 /// <hr>
 ///
