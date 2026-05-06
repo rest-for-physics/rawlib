@@ -174,7 +174,7 @@ TRestEvent* TRestRawFemDAQToSignalProcess::ProcessEvent(TRestEvent* inputEvent) 
     // fTimestamp is in seconds
     fSignalEvent->SetTime(fTimestamp);
 
-    // Check if start timestamp is lower than event timestamp
+    // get the first event timestamp
     if (fTimestamp < fStartTimestamp) {
         fStartTimestamp = fTimestamp;
     }
@@ -207,6 +207,8 @@ TRestEvent* TRestRawFemDAQToSignalProcess::ProcessEvent(TRestEvent* inputEvent) 
 }
 
 void TRestRawFemDAQToSignalProcess::EndProcess() {
-    fRunInfo->SetStartTimeStamp(fStartTimestamp);
-    fRunInfo->SetEndTimeStamp(fEndTimestamp);
+    if (fSetRunStartEndFromEvents) {
+        fRunInfo->SetStartTimeStamp(fStartTimestamp);
+        fRunInfo->SetEndTimeStamp(fEndTimestamp);
+    }
 }
