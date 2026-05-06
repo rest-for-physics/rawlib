@@ -79,7 +79,7 @@ class TRestRawFemDAQToSignalProcess : public TRestEventProcess {
     ~TRestRawFemDAQToSignalProcess();
 
     ClassDefOverride(TRestRawFemDAQToSignalProcess,
-                     0);  // Template for a REST "event process" class inherited from
+                     1);  // Template for a REST "event process" class inherited from
                           // TRestEventProcess
 };
 #endif
