@@ -67,8 +67,7 @@ class TRestRawFemDAQToSignalProcess : public TRestEventProcess {
         std::string useFemDaqRunInfoStr = fUseFeminosDaqRunInfo ? "true" : "false";
         std::string setRunStartEndFromEventsStr = fSetRunStartEndFromEvents ? "true" : "false";
         RESTMetadata << "Use fem-daq run information: " << useFemDaqRunInfoStr << RESTendl;
-        RESTMetadata << "Set run start/end times from events: " << setRunStartEndFromEventsStr
-                    << RESTendl;
+        RESTMetadata << "Set run start/end times from events: " << setRunStartEndFromEventsStr << RESTendl;
 
         EndPrintProcess();
     }

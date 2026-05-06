@@ -156,7 +156,6 @@ void TRestRawFemDAQToSignalProcess::InitProcess() {
             std::string fileName = yamlfNameObj->GetString().Data();
             std::cout << "Config fileName: " << fileName << std::endl;
         }
-
     }
 #else
     fUseFeminosDaqRunInfo = false;
