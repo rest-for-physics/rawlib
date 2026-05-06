@@ -48,6 +48,7 @@ class TRestRawFemDAQToSignalProcess : public TRestEventProcess {
     Double_t fStartTimestamp = std::numeric_limits<double>::max();  //!
     Double_t fEndTimestamp = 0;                                     //!
     Bool_t fUseFeminosDaqRunInfo = true;                            //<
+    Bool_t fSetRunStartEndFromEvents = false;                       //<
 
    public:
     RESTValue GetInputEvent() const override { return RESTValue((TRestEvent*)nullptr); }
@@ -64,7 +65,9 @@ class TRestRawFemDAQToSignalProcess : public TRestEventProcess {
     inline void PrintMetadata() override {
         BeginPrintProcess();
         std::string useFemDaqRunInfoStr = fUseFeminosDaqRunInfo ? "true" : "false";
+        std::string setRunStartEndFromEventsStr = fSetRunStartEndFromEvents ? "true" : "false";
         RESTMetadata << "Use fem-daq run information: " << useFemDaqRunInfoStr << RESTendl;
+        RESTMetadata << "Set run start/end times from events: " << setRunStartEndFromEventsStr << RESTendl;
 
         EndPrintProcess();
     }
@@ -76,7 +79,7 @@ class TRestRawFemDAQToSignalProcess : public TRestEventProcess {
     ~TRestRawFemDAQToSignalProcess();
 
     ClassDefOverride(TRestRawFemDAQToSignalProcess,
-                     0);  // Template for a REST "event process" class inherited from
+                     1);  // Template for a REST "event process" class inherited from
                           // TRestEventProcess
 };
 #endif
