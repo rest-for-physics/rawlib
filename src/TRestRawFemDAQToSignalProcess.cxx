@@ -118,12 +118,21 @@ void TRestRawFemDAQToSignalProcess::InitProcess() {
         exit(1);
     }
 
+    TObjString* tsObj = (TObjString*)fInputFile->Get("startTime");
+    TObjString* etObj = (TObjString*)fInputFile->Get("endTime");
+    if (tsObj) {
+        Double_t startTimestamp = std::stod(tsObj->GetString().Data());
+        fRunInfo->SetStartTimeStamp(startTimestamp);
+    }
+    if (etObj) {
+        Double_t endTimestamp = std::stod(etObj->GetString().Data());
+        fRunInfo->SetEndTimeStamp(endTimestamp);
+    }
+
 #ifndef NO_YAML_CPP
     if (fUseFeminosDaqRunInfo) {
         TObjString* yamlConfigObj = (TObjString*)fInputFile->Get("RunConfigYAML");
         TObjString* yamlfNameObj = (TObjString*)fInputFile->Get("yaml_fileName");
-        TObjString* tsObj = (TObjString*)fInputFile->Get("startTime");
-        TObjString* etObj = (TObjString*)fInputFile->Get("endTime");
 
         if (yamlConfigObj) {
             std::string yamlConfig = yamlConfigObj->GetString().Data();
@@ -144,13 +153,6 @@ void TRestRawFemDAQToSignalProcess::InitProcess() {
             std::cout << "Config fileName: " << fileName << std::endl;
         }
 
-        if (tsObj) {
-            fStartTimestamp = std::stod(tsObj->GetString().Data());
-        }
-
-        if (etObj) {
-            fEndTimestamp = std::stod(etObj->GetString().Data());
-        }
     }
 #else
     fUseFeminosDaqRunInfo = false;
