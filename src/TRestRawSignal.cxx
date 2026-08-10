@@ -92,6 +92,8 @@ TRestRawSignal::TRestRawSignal(Int_t nBins) {
     fSignalData.resize(nBins, 0);
 }
 
+TRestRawSignal::TRestRawSignal(Int_t sID, std::vector<Short_t>& sData) : fSignalID(sID), fSignalData(sData) {}
+
 ///////////////////////////////////////////////
 /// \brief Default destructor
 ///
@@ -891,51 +893,33 @@ void TRestRawSignal::CalculateBaseLineSigmaIQR(Int_t startBin, Int_t endBin) {
 }
 
 ///////////////////////////////////////////////
-/// \brief This method is called by CalculateBaseLine with the "OUTLIERS"-option to
-/// determine the value of the baseline
-/// fluctuation as the standard deviation in the baseline range provided excluding outliers.
-/// Since outliers are strongly suppressed there is no need to use the IQR.
+/// \brief This method calculate the baseline in a certain range and returns the maximum amplitude
+/// if the signal is above certain threshold. The calculations are performed in a fast way only
+/// using a single loop.
 ///
-void TRestRawSignal::CalculateBaseLineSigmaExcludeOutliers(Int_t startBin, Int_t endBin) {
-    if (endBin - startBin <= 0) {
-        fBaseLineSigma = 0.;
-        return;
-    } else if (endBin > static_cast<int>(fSignalData.size())) {
-        cout << "TRestRawSignal::CalculateBaseLineSigma. Error! Range exceeds the rawdata depth!!" << endl;
-        endBin = fSignalData.size();
-    } else {
-        // Extract the data within the interval
-        std::vector<Short_t> data(fSignalData.begin() + startBin, fSignalData.begin() + endBin);
-        std::sort(data.begin(), data.end());
-
-        // Calculate Q1 and Q3 for IQR
-        size_t dataSize = data.size();
-        Short_t Q1 = data[dataSize / 4];
-        Short_t Q3 = data[(3 * dataSize) / 4];
-        Double_t lowerBound = Q1;
-        Double_t upperBound = Q3;
-
-        // Filter out the outliers
-        std::vector<Short_t> filteredData;
-        for (const auto& value : data) {
-            if (value >= lowerBound && value <= upperBound) {
-                filteredData.emplace_back(value);
-            }
-        }
-
-        // Calculate standard deviation of filtered data
-        if (filteredData.empty()) {
-            fBaseLineSigma = 0.;  // If all values are outliers, set sigma to zero
-        } else {
-            double mean =
-                std::accumulate(filteredData.begin(), filteredData.end(), 0.0) / filteredData.size();
-            double variance = 0.0;
-            for (const auto& value : filteredData) {
-                variance += std::pow(value - mean, 2);
-            }
-            fBaseLineSigma = std::sqrt(variance / filteredData.size());  // Standard deviation
-        }
+double TRestRawSignal::GetAmplitudeFast(const TVector2& baselineRange, double signalThreshold) {
+    double max = 0;
+    fBaseLineSigma = 0;
+    fBaseLine = 0;
+    int nPoints = 0;
+    for (int i = 0; i < GetNumberOfPoints(); i++) {
+        short val = GetRawData(i);
+        if (val > max) max = val;
+        if (i < baselineRange.X() || i > baselineRange.Y() || val == 0) continue;
+        fBaseLine += val;
+        fBaseLineSigma += val * val;
+        nPoints++;
     }
+
+    if (nPoints > 0) {
+        fBaseLine /= nPoints;
+        fBaseLineSigma = TMath::Sqrt(fBaseLineSigma / nPoints - fBaseLine * fBaseLine);
+    }
+
+    // Only pulses above certain threshold
+    if (max < (fBaseLine + signalThreshold * fBaseLineSigma)) return 0;
+
+    return max - fBaseLine;
 }
 
 ///////////////////////////////////////////////
