@@ -80,8 +80,8 @@
 //
 // Macros to act on 8-bit data content
 //
-#define GET_ASCII_LEN(w) (((w)&0x00FF) >> 0)
-#define PUT_ASCII_LEN(w) (PFX_ASCII_MSG_LEN | ((w)&0x00FF))
+#define GET_ASCII_LEN(w) (((w) & 0x00FF) >> 0)
+#define PUT_ASCII_LEN(w) (PFX_ASCII_MSG_LEN | ((w) & 0x00FF))
 //
 // Prefix Codes for 0-bit data content
 //
@@ -121,37 +121,37 @@
 //
 // Macros to act on 4-bit data content
 //
-#define GET_EVENT_TYPE(w) (((w)&0x0007) >> 0)
-#define GET_EOE_SIZE(w) (((w)&0x000F) >> 0)
+#define GET_EVENT_TYPE(w) (((w) & 0x0007) >> 0)
+#define GET_EOE_SIZE(w) (((w) & 0x000F) >> 0)
 
 //
 // Macros to extract 14-bit data content
 //
-#define GET_CARD_IX(w) (((w)&0x3E00) >> 9)
-#define GET_CHIP_IX(w) (((w)&0x0180) >> 7)
-#define GET_CHAN_IX(w) (((w)&0x007F) >> 0)
+#define GET_CARD_IX(w) (((w) & 0x3E00) >> 9)
+#define GET_CHIP_IX(w) (((w) & 0x0180) >> 7)
+#define GET_CHAN_IX(w) (((w) & 0x007F) >> 0)
 
 //
 // Macros to extract 12-bit data content
 //
-#define GET_ADC_DATA(w) (((w)&0x0FFF) >> 0)
-#define GET_LAT_HISTO_BIN(w) (((w)&0x0FFF) >> 0)
-#define PUT_LAT_HISTO_BIN(w) (PFX_LAT_HISTO_BIN | (((w)&0x0FFF) >> 0))
-#define GET_LST_READ_CELL(w) (((w)&0x03FF) >> 0)
-#define GET_LST_READ_CELL_CHIP_IX(w) (((w)&0x0C00) >> 10)
+#define GET_ADC_DATA(w) (((w) & 0x0FFF) >> 0)
+#define GET_LAT_HISTO_BIN(w) (((w) & 0x0FFF) >> 0)
+#define PUT_LAT_HISTO_BIN(w) (PFX_LAT_HISTO_BIN | (((w) & 0x0FFF) >> 0))
+#define GET_LST_READ_CELL(w) (((w) & 0x03FF) >> 0)
+#define GET_LST_READ_CELL_CHIP_IX(w) (((w) & 0x0C00) >> 10)
 
 //
 // Macros to extract 9-bit data content
 //
-#define GET_TIME_BIN(w) (((w)&0x01FF) >> 0)
-#define GET_HISTO_BIN(w) (((w)&0x01FF) >> 0)
-#define GET_PEDTHR_LIST_FEM(w) (((w)&0x01F0) >> 4)
-#define GET_PEDTHR_LIST_ASIC(w) (((w)&0x000C) >> 2)
-#define GET_PEDTHR_LIST_MODE(w) (((w)&0x0002) >> 1)
-#define GET_PEDTHR_LIST_TYPE(w) (((w)&0x0001) >> 0)
-#define PUT_FVERSION_FEMID(w, fv, id) (((w)&0xFE00) | (((fv)&0x0003) << 7) | (((id)&0x001F) << 0))
-#define GET_FRAMING_VERSION(w) (((w)&0x0180) >> 7)
-#define GET_FEMID(w) (((w)&0x001F) >> 0)
+#define GET_TIME_BIN(w) (((w) & 0x01FF) >> 0)
+#define GET_HISTO_BIN(w) (((w) & 0x01FF) >> 0)
+#define GET_PEDTHR_LIST_FEM(w) (((w) & 0x01F0) >> 4)
+#define GET_PEDTHR_LIST_ASIC(w) (((w) & 0x000C) >> 2)
+#define GET_PEDTHR_LIST_MODE(w) (((w) & 0x0002) >> 1)
+#define GET_PEDTHR_LIST_TYPE(w) (((w) & 0x0001) >> 0)
+#define PUT_FVERSION_FEMID(w, fv, id) (((w) & 0xFE00) | (((fv) & 0x0003) << 7) | (((id) & 0x001F) << 0))
+#define GET_FRAMING_VERSION(w) (((w) & 0x0180) >> 7)
+#define GET_FEMID(w) (((w) & 0x001F) >> 0)
 
 // Definition of verboseness flags used by MFrame_Print
 #define FRAME_PRINT_ALL 0x00000001
